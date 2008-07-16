@@ -23,35 +23,26 @@
 import sys, os, thread, time, commands
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from glob import glob
 from math import sqrt, acos, asin, pi, cos, sin, atan2
 from vecteur import vecteur
 
-class Zoom(QLabel):
-    def __init__(self, parent):
-        QLabel.__init__(self, parent)
+class Zoom_Croix(QWidget):
+    def __init__(self, parent, app):
+        QWidget.__init__(self)
         self.parent = parent
-    def fait_crop(self, x, y):
-        rect = QRect(x-25,y-25,50,50)
-        crop = self.parent.app.image_640_480.copy(rect)
-	cropX2=crop.scaled(100,100,Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        return cropX2
-
-class Zoom_Croix(QLabel):
-    def __init__(self, parent):
-        QLabel.__init__(self, parent)
-        self.parent = parent
-    def fait_crop(self, x, y):
-        rect = (x-25,y-25,50,50)
-        crop = self.parent.app.image.copy(rect)
-        cropX2=crop.scaled(100,100,Qt.KeepAspectRatio)
-        return cropX2
+        self.app=app
+        self.cropX2=None
+        
+    def fait_crop(self, p):
+        rect = QRect(p.x()-25,p.y()-25,50,50)
+        crop = self.app.image_640_480.copy(rect)
+        self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
     
     def paintEvent(self, event):
-        if self.parent.app.lance_capture==True:
+        if self.app.lance_capture==True:
             painter = QPainter()
             painter.begin(self)
-           
+            painter.drawPixmap(0,0,self.cropX2)
             painter.setPen(Qt.white)
             painter.drawLine(50, 0, 50, 100)
             painter.drawLine(0, 50, 100, 50)

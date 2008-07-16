@@ -28,6 +28,6 @@ class Dbg:
         """
         affiche un message si le niveau de débogage est suffisant
         """
-        if niveau<=self.niveau:
+        if niveau>=self.niveau:
             print msg
     

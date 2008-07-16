@@ -88,7 +88,7 @@ class StartQT4(QMainWindow):
         
 
     def init_variables(self, filename, opts):
-        self.dbg=Dbg(9)
+        self.dbg=Dbg(0)
         self.deltaT = 0.04       #durée 40 ms par défaut : 25 images/s
         self.lance_capture = False
         self.modifie=False

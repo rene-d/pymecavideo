@@ -21,46 +21,40 @@
 """
 
 import sys, os, thread, time, commands
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt4 import QtCore, QtGui
 from glob import glob
 from math import sqrt, acos, asin, pi, cos, sin, atan2
 from vecteur import vecteur
-from zoom import Zoom, Zoom_Croix
+from zoom import Zoom_Croix
 
-class Label_Video(QLabel):
+class Label_Video(QtGui.QLabel):
     def __init__(self, parent, app):
-        QLabel.__init__(self,parent)
-        self.setGeometry(QRect(0,0,640,480))
+        QtGui.QLabel.__init__(self,parent)
+        self.setGeometry(QtCore.QRect(0,0,640,480))
         self.parent=parent
         self.liste_points = []
         self.app=app
-        self.setCursor(Qt.ArrowCursor)
-        self.x1=self.y1 = 0
-        self.zoom=Zoom(self)
-        self.zoom_croix=Zoom_Croix(self)
-        self.zoom.setGeometry(QRect(self.x1,self.y1,100,100))
-        self.zoom_croix.setGeometry(QRect(self.x1,self.y1,100,100))
-        #self.zoom.setPixmap(.QPixmap("croix.png"))
+        self.setCursor(QtCore.Qt.ArrowCursor)
+        self.pos=vecteur(0,0)
+        self.zoom_croix=Zoom_Croix(self,app)
+        self.croixGeometry()
 
+    def croixGeometry(self):
+        """
+        fixe dynamiquement la géométrie du widget
+        """
+        r=QtCore.QRect(self.pos.x()+5,self.pos.y()+5,100,100)
+        self.zoom_croix.setGeometry(r)
         
     def mouseReleaseEvent(self, event):
         self.liste_points.append(vecteur(event.x(), event.y()))
-        self.zoom.hide()
         self.zoom_croix.hide()
-        self.app.emit(SIGNAL('clic_sur_video()'))
+        self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
 
     def mouseMoveEvent(self, event):
         if self.app.lance_capture==True:#ne se lance que si la capture est lancée
-            self.x1 = event.x() +1
-            self.y1 = event.y() +1
-	    
-            self.zoom.setGeometry(QRect(self.x1+5,self.y1+5,100,100))
-            self.zoom_croix.setGeometry(QRect(self.x1+5,self.y1+5,100,100))
-            cropX2=self.zoom.fait_crop(self.x1, self.y1)
-            #self.zoom.setPixmap(.QPixmap.fromImage(ImageQt.ImageQt(image_crop)))
-            self.zoom.setPixmap(QPixmap.fromImage(cropX2))
-            self.zoom.show()
+            self.pos=vecteur(event.x(), event.y())
+            self.croixGeometry()
+            self.zoom_croix.fait_crop(self.pos)
             self.zoom_croix.show()
-            self.zoom.update()
             self.zoom_croix.update()

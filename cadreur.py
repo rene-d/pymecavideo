@@ -85,7 +85,7 @@ class Cadreur:
             if basdroite.x()%2==1  : basdroite  += vecteur(1,0)
             if hautgauche.y()%2==1 : hautgauche += vecteur(0,1)
             if basdroite.y()%2==1  : basdroite  += vecteur(0,1)
-            cmd="ffmpeg -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg -cropleft %d -croptop %d -cropright %d -cropbottom %d crop%04d.jpg" %(self.app.filename,(i-1)*self.app.deltaT,hautgauche.x(),hautgauche.y(),basdroite.x(),basdroite.y(),i)
+            cmd="ffmpeg -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg -cropleft %d -croptop %d -cropright %d -cropbottom %d crop%04d.jpg" %(self.app.filename,(i+self.app.premiere_image-1)*self.app.deltaT,hautgauche.x(),hautgauche.y(),basdroite.x(),basdroite.y(),i)
             commands.getstatusoutput(cmd)
         
     def creefilm(self, ralenti):
