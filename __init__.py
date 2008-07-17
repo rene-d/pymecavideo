@@ -475,12 +475,19 @@ class StartQT4(QMainWindow):
         
     def tracer_trajectoires(self, newValue):
         """
+        traite les signaux émis par le changement d'onglet, ou
+        par le changement de référentiel dans l'onglet des trajectoires.
+        On peut aussi appeler cette fonction directement, auquel cas on
+        donne la valeur "absolu" à newValue pour reconnaître ce cas.
         efface les trajectoires anciennes, puis
         trace les trajectoires en fonction du référentiel choisi.
         Pour le moment l'origine a pour coordonéees QT -> (320,240).
         """
         self.oubliePoints()
-        ref = self.ui.comboBox_referentiel.currentText()
+        if newValue=="absolu":
+            ref="camera"
+        else:
+            ref = self.ui.comboBox_referentiel.currentText()
         if len(ref)==0 : return
         if ref != "camera":
             bc=self.mediane_trajectoires(int(ref)-1)
@@ -501,15 +508,22 @@ class StartQT4(QMainWindow):
                 if ref != "camera" and n == ref-1:
                     # on a affaire au tracé du repère du référentiel :
                     # une seule instance suffira, vu qu'il ne bouge pas.
-                    if i == self.points.keys()[0]:
-                        point = Repere(self.label_trajectoire, p, couleur, 0, self)
+                    if newValue!="absolu":
+                        if i == self.points.keys()[0]:
+                            point = Repere(self.label_trajectoire, p, couleur, 0, self)
+                            point.show()
+                            self.retientPoint(n,ref,i,p,point)
+                else:
+                    if newValue!="absolu":
+                        point = Point(self.label_trajectoire, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
+                        ancienPoint=point
                         point.show()
                         self.retientPoint(n,ref,i,p,point)
-                else:
-                    point = Point(self.label_trajectoire, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
-                    ancienPoint=point
-                    point.show()
-                    self.retientPoint(n,ref,i,p,point)
+                    else: #newValue=="absolu"
+                        point = Point(self.label_video, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
+                        ancienPoint=point
+                        point.show()
+                        self.retientPoint(n,ref,i,p,point)
         #self.label_trajectoire.update()
         
     def affiche_point_attendu(self,n):
@@ -530,7 +544,7 @@ class StartQT4(QMainWindow):
             self.label_video.liste_points=[]
             self.index_de_l_image += 1
             self.affiche_image()
-            
+            self.tracer_trajectoires("absolu")
             
     def stock_coordonnees_image(self, ligne, liste_points):
         """ """
