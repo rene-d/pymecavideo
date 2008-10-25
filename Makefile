@@ -2,7 +2,7 @@ DESTDIR =
 NOT_INSTALLED = essai_label.py extrait_video.py reencode_video.py
 HELPFILES = $(shell ls help | grep -E 'xhtml$$|css$$|png$$')
 
-all:	Ui_pymecavideo.py Ui_preferences.py pymecavideo.1 helpfiles
+all:	Ui_pymecavideo.py Ui_preferences.py  helpfiles
 
 helpfiles:
 	@$(MAKE) -C help

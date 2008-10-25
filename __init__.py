@@ -117,6 +117,7 @@ class StartQT4(QMainWindow):
         self.ui.echelleEdit.setText(u"indéf.")
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
+	self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
         self.ui.spinBox_image.setEnabled(0)
         self.ui.Bouton_lance_capture.setEnabled(0)
         self.ui.spinBox_nb_de_points.setEnabled(0)
@@ -141,7 +142,8 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.actionPreferences,SIGNAL("triggered()"), self.prefs.setFromDialog)
         QObject.connect(self.ui.actionQuitter,SIGNAL("triggered()"), self.close)
         QObject.connect(self.ui.actionSaveData,SIGNAL("triggered()"), self.enregistre_ui)
-        QObject.connect(self.ui.actionRouvrirMecavideo,SIGNAL("triggered()"), self.rouvre_ui)
+	QObject.connect(self.ui.actionCopier_dans_le_presse_papier,SIGNAL("triggered()"), self.presse_papier)
+	QObject.connect(self.ui.actionRouvrirMecavideo,SIGNAL("triggered()"), self.rouvre_ui)
         QObject.connect(self.ui.Bouton_Echelle,SIGNAL("clicked()"), self.echelle)
         QObject.connect(self.ui.horizontalSlider,SIGNAL("valueChanged(int)"), self.affiche_image_slider)
         QObject.connect(self.ui.spinBox_image,SIGNAL("valueChanged(int)"),self.affiche_image_spinbox)
@@ -152,6 +154,15 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.echelle_v,SIGNAL("currentIndexChanged (int)"),self.refait_vitesses)
         QObject.connect(self.ui.echelle_v,SIGNAL("editTextChanged (int)"),self.refait_vitesses)
         QObject.connect(self.ui.button_video,SIGNAL("clicked()"),self.video)
+
+    def presse_papier(self):
+      self.clipboard = QApplication.clipboard()
+      tableau = QByteArray()
+      tableau.append("1")
+      tableau.append("2")
+      mimedata = QMimeData()
+      mimedata.setData("text/csv", tableau)
+      self.clipboard.setMimeData(mimedata)
 
     def _dir(self,lequel=None):
         """renvoie les répertoires utiles.
@@ -309,6 +320,7 @@ class StartQT4(QMainWindow):
         self.label_video.setCursor(Qt.CrossCursor)
         self.ui.tab_traj.setEnabled(1)
         self.ui.actionSaveData.setEnabled(1)
+	self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
         self.ui.comboBox_referentiel.setEnabled(1)
         
         self.label_trajectoire = Label_Trajectoire(self.ui.tab_traj,self)
