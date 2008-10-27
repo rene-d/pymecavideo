@@ -157,12 +157,24 @@ class StartQT4(QMainWindow):
 
     def presse_papier(self):
       self.clipboard = QApplication.clipboard()
-      tableau = QByteArray()
-      tableau.append("1")
-      tableau.append("2")
-      mimedata = QMimeData()
-      mimedata.setData("text/csv", tableau)
-      self.clipboard.setMimeData(mimedata)
+      table = ""
+      liste_des_cles = []
+      
+      for key in self.points:
+        liste_des_cles.append(key)
+        liste_des_cles.sort()
+        for cle in liste_des_cles:
+          donnee=self.points[cle]
+          t=float(donnee[0])
+          a = "\n%.2f\t" %t
+          for p in donnee[1:]:
+            a+= "%d\t" %p.x()
+            a+= "%d\t" %p.y()
+        
+        table = table + a
+      print table
+  
+      self.clipboard.setText(table)
 
     def _dir(self,lequel=None):
         """renvoie les répertoires utiles.
