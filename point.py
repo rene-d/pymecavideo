@@ -29,7 +29,7 @@ class label_numero(QLabel):
         self.setGeometry(point.x(), point.y(), 30, 15)
 
 class Point(QLabel):
-    def __init__(self, parent, point, color, numero, app, pred=None):
+    def __init__(self, parent, point, color, numero, app, pred=None, show=True):
         """
         Crée un point graphique. Paramètres :
         parent : widget parent
@@ -38,6 +38,7 @@ class Point(QLabel):
         numero : numéro à afficher
         app : l'application qui commande
         pred : le point prédecesseur
+        show : montre les vitesses
         """
         QLabel.__init__(self, parent)
         self.app=app
@@ -49,9 +50,9 @@ class Point(QLabel):
         self.pred=pred
         if pred != None:
             pred.succ = self
-            pred.calcule_vitesse(self.app.ui.echelle_v.currentText())
+            pred.calcule_vitesse(self.app.ui.echelle_v.currentText(),show)
 
-    def montre_vitesse(self, show=True):
+    def montre_vitesse(self, show):
         """
         montre ou cache la vitesse, selon le paramètre show
         """

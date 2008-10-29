@@ -500,6 +500,19 @@
        <attribute name="title" >
         <string>Coordonnées</string>
        </attribute>
+       <widget class="QPushButton" name="pushButton_select_all_table" >
+        <property name="geometry" >
+         <rect>
+          <x>40</x>
+          <y>40</y>
+          <width>241</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text" >
+         <string>Copier les mesures dans le presse papier</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>
