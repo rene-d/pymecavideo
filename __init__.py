@@ -654,16 +654,22 @@ class StartQT4(QMainWindow):
 
     def echelle(self):
         
-        echelle_result = QInputDialog.getDouble(self, u"Définir une échelle", u"Quelle est la longueur en mètre de votre étalon sur l'image ?", 1, 0, 2147483647, 2)
-        
-        if echelle_result[0] <= 0 or echelle_result[1] == False :
+        echelle_result_raw = QInputDialog.getText(self, u"Définir une échelle", u"Quelle est la longueur en mètre de votre étalon sur l'image ?"
+,QLineEdit.Normal, QString("1.0"))
+        print echelle_result_raw[0]
+        try :
+            echelle_result = [float(echelle_result_raw[0].replace(",",".")), echelle_result_raw[1]]
+
+            if echelle_result[0] <= 0 or echelle_result[1] == False :
+                self.mets_a_jour_label_infos(u" Merci d'indiquer une échelle valable")
+            else :
+                self.echelle_image.longueur_reelle_etalon=float(echelle_result[0])
+                self.job = Label_Echelle(self.ui.tab_acq,self)
+                self.job.setPixmap(QPixmap(self.chemin_image))
+                self.job.show()
+        except ValueError :
             self.mets_a_jour_label_infos(u" Merci d'indiquer une échelle valable")
-        else : 
-            self.echelle_image.longueur_reelle_etalon=float(echelle_result[0])
-            self.job = Label_Echelle(self.ui.tab_acq,self)
-            self.job.setPixmap(QPixmap(self.chemin_image))
-            self.job.show()
-        
+            self.echelle()
     def feedbackEchelle(self):
         """
         affiche une trace au-dessus du self.job, qui reflète les positions
