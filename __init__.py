@@ -163,9 +163,11 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_select_all_table.setEnabled(0)
         self.ui.echelle_v.setDuplicatesEnabled(False)
         self.setEchelle_v()
+        self.table_widget.clear()
         for enfant in self.label_video.children():
               enfant.hide()
               del enfant
+        
 
     def ui_connections(self):
         """connecte les signaux de QT"""
@@ -647,14 +649,16 @@ class StartQT4(QMainWindow):
         liste_points.insert(0,"%4f" % t)
         self.points[ligne]=liste_points
         #rentre le temps dans la première colonne
+        self.table_widget.insertRow(ligne)
         self.table_widget.setItem(ligne,0,QTableWidgetItem(str(liste_points[0])))
         i=1
-        self.table_widget.insertRow(ligne)
+        
         #Pour chaque point dans liste_points, insère les vlauer dans la ligne
         for point in liste_points[1:] :
             self.table_widget.setItem(ligne,2*i-1,QTableWidgetItem(str(point.x()*self.echelle_image.mParPx())))
             self.table_widget.setItem(ligne,2*i,QTableWidgetItem(str((480-point.y())*self.echelle_image.mParPx())))
             i+=1
+        #print liste_points[0]
         self.table_widget.show()
         #enlève la ligne supplémentaire, une fois qu'une ligne a été remplie
         if ligne == 0 :
