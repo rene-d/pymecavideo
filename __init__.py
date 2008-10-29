@@ -396,6 +396,13 @@ class StartQT4(QMainWindow):
         self.ui.tab_coord.setEnabled(1)
         self.table_widget.setRowCount(1)
         self.table_widget.setColumnCount(self.nb_de_points*2 + 1)
+        # on met des titres aux colonnes.
+        self.table_widget.setHorizontalHeaderItem(0,QTableWidgetItem('t (s)'))
+        for i in range(self.nb_de_points):
+            x="X%d (m)" %(1+i)
+            y="Y%d (m)" %(1+i)
+            self.table_widget.setHorizontalHeaderItem(1+2*i,QTableWidgetItem(x))
+            self.table_widget.setHorizontalHeaderItem(2+2*i,QTableWidgetItem(y))
         self.table_widget.setGeometry(QRect(10, 100, 640, 480))
         self.table_widget.setDragEnabled(True)
 
