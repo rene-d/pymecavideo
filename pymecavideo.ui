@@ -16,14 +16,20 @@
    <layout class="QHBoxLayout" >
     <item>
      <widget class="QTabWidget" name="tabWidget" >
+      <property name="autoFillBackground" >
+       <bool>true</bool>
+      </property>
       <property name="currentIndex" >
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_acq" >
        <attribute name="title" >
         <string>Acquisition des données</string>
        </attribute>
        <widget class="QLabel" name="label" >
+        <property name="enabled" >
+         <bool>true</bool>
+        </property>
         <property name="geometry" >
          <rect>
           <x>10</x>
@@ -104,6 +110,9 @@
         </property>
         <property name="text" >
          <string>Pas de vidéos chargées</string>
+        </property>
+        <property name="textInteractionFlags" >
+         <set>Qt::NoTextInteraction</set>
         </property>
        </widget>
        <widget class="QLabel" name="label_infos_image" >
@@ -486,6 +495,11 @@
          </item>
         </layout>
        </widget>
+      </widget>
+      <widget class="QWidget" name="tab_coord" >
+       <attribute name="title" >
+        <string>Coordonnées</string>
+       </attribute>
       </widget>
      </widget>
     </item>

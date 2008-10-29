@@ -117,7 +117,7 @@ class StartQT4(QMainWindow):
         self.ui.echelleEdit.setText(u"indéf.")
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
-	self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
+        self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
         self.ui.spinBox_image.setEnabled(0)
         self.ui.Bouton_lance_capture.setEnabled(0)
         self.ui.spinBox_nb_de_points.setEnabled(0)
@@ -156,24 +156,33 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.button_video,SIGNAL("clicked()"),self.video)
 
     def presse_papier(self):
-      self.clipboard = QApplication.clipboard()
+      
       table = ""
       liste_des_cles = []
-      
+      sep_decimal="."
+      if locale.getdefaultlocale()[0][0:2]=='fr':
+            # en France, le séparateur décimal est la virgule
+            sep_decimal=","
       for key in self.points:
-        liste_des_cles.append(key)
-        liste_des_cles.sort()
-        for cle in liste_des_cles:
-          donnee=self.points[cle]
-          t=float(donnee[0])
-          a = "\n%.2f\t" %t
-          for p in donnee[1:]:
-            a+= "%d\t" %p.x()
-            a+= "%d\t" %p.y()
-        
-        table = table + a
+          liste_des_cles.append(key)
+          liste_des_cles.sort()
+          for cle in liste_des_cles:
+              donnee=self.points[cle]
+              t=float(donnee[0])
+              a = ("%.2f\t" %t).replace(".", sep_decimal)
+
+
+              for p in donnee[1:]:
+                  a+= ("%5f\t"
+%(float(p.x())*self.echelle_image.mParPx())).replace(".", sep_decimal)
+                  a+= ("%5f\t"
+%(float(480-p.y())*self.echelle_image.mParPx())).replace(".", sep_decimal)
+
+              a+="\n"
+          table = table + a
       print table
-  
+      self.clipboard = QApplication.clipboard()
+
       self.clipboard.setText(table)
 
     def _dir(self,lequel=None):
@@ -332,7 +341,7 @@ class StartQT4(QMainWindow):
         self.label_video.setCursor(Qt.CrossCursor)
         self.ui.tab_traj.setEnabled(1)
         self.ui.actionSaveData.setEnabled(1)
-	self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
+        self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
         self.ui.comboBox_referentiel.setEnabled(1)
         
         self.label_trajectoire = Label_Trajectoire(self.ui.tab_traj,self)
@@ -341,6 +350,15 @@ class StartQT4(QMainWindow):
         for i in range(self.nb_de_points) :
             self.ui.comboBox_referentiel.insertItem(-1, str(i+1))
 
+
+        #met en place le tableau des coordonnées
+        from table import standardDragTable
+        self.table_widget=standardDragTable(self.ui.tab_coord)
+        self.ui.tab_coord.setEnabled(1)
+        self.table_widget.setRowCount(1)
+        self.table_widget.setColumnCount(self.nb_de_points*2 + 1)
+        self.table_widget.setGeometry(QRect(10, 100, 640, 480))
+        self.table_widget.setDragEnabled(True)
 
     def traiteSouris(self,p):
         """
@@ -507,6 +525,8 @@ class StartQT4(QMainWindow):
         trace les trajectoires en fonction du référentiel choisi.
         Pour le moment l'origine a pour coordonéees QT -> (320,240).
         """
+        self.ui.label_3.setEnabled(1)
+
         self.oubliePoints()
         if newValue=="absolu":
             ref="camera"
@@ -575,7 +595,20 @@ class StartQT4(QMainWindow):
         t = ligne*self.deltaT
         liste_points.insert(0,"%4f" % t)
         self.points[ligne]=liste_points
-        
+        print liste_points, ligne
+
+        #rentre le temps dans la première colonne
+        self.table_widget.setItem(ligne,0,QTableWidgetItem(liste_points[0]))
+        i=1
+        #Pour chaque point dans liste_points, insère les vlauer dans la ligne
+        for point in liste_points[1:] :
+            print  ligne,2*i-1,int(point.x()), ligne,2*i,int(point.y())
+            self.table_widget.insertRow(ligne)
+            
+            self.table_widget.setItem(ligne,2*i-1,QTableWidgetItem(int(point.x())))
+            self.table_widget.setItem(ligne,2*i,QTableWidgetItem(int(point.y())))
+            i+=1
+        self.table_widget.show()
     def transforme_index_en_temps(self, index):
         return float(self.deltaT*(index))
     
