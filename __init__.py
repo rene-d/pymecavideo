@@ -131,9 +131,42 @@ class StartQT4(QMainWindow):
         self.montre_vitesses(False)
         self.oubliePoints()
         self.label_trajectoire.update()
+        self.ui.label.update()
+        self.label_video.update()
         self.init_variables(self.filename,None)
         self.init_interface()
-        
+        for enfant in self.label_video.children():
+              enfant.hide()      
+              del enfant
+
+    def reinitialise_capture(self):
+        self.montre_vitesses(False)
+        self.oubliePoints()
+        self.label_trajectoire.update()
+        self.ui.label.update()
+        self.label_video.update()
+        self.init_variables(self.filename,None)
+        self.label_trajectoire=Label_Trajectoire(self.ui.tab_traj, self)
+        self.ui.Bouton_Echelle.setEnabled(1)
+        self.ui.horizontalSlider.setEnabled(1)
+        self.ui.echelleEdit.setEnabled(0)
+        self.ui.echelleEdit.setText(u"indéf.")
+        self.ui.tab_traj.setEnabled(0)
+        self.ui.actionSaveData.setEnabled(0)
+        self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
+        self.ui.spinBox_image.setEnabled(1)
+        self.ui.spinBox_image.setValue(1)
+        self.ui.Bouton_lance_capture.setEnabled(0)
+        self.ui.spinBox_nb_de_points.setEnabled(0)
+        self.ui.spinBox_nb_de_points.setValue(1)
+        self.ui.button_video.setEnabled(0)
+        self.ui.pushButton_select_all_table.setEnabled(0)
+        self.ui.echelle_v.setDuplicatesEnabled(False)
+        self.setEchelle_v()
+        for enfant in self.label_video.children():
+              enfant.hide()
+              del enfant
+
     def ui_connections(self):
         """connecte les signaux de QT"""
         QObject.connect(self.ui.actionOuvrir_un_fichier,SIGNAL("triggered()"), self.openfile)
@@ -156,6 +189,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.echelle_v,SIGNAL("editTextChanged (int)"),self.refait_vitesses)
         QObject.connect(self.ui.button_video,SIGNAL("clicked()"),self.video)
         QObject.connect(self.ui.pushButton_select_all_table,SIGNAL("clicked()"),self.presse_papier)
+        QObject.connect(self.ui.pushButton_reinit,SIGNAL("clicked()"),self.reinitialise_capture)
 
     def presse_papier(self):
       
@@ -182,7 +216,7 @@ class StartQT4(QMainWindow):
 
               a+="\n"
           table = table + a
-      print table
+
       self.clipboard = QApplication.clipboard()
 
       self.clipboard.setText(table)
@@ -351,7 +385,7 @@ class StartQT4(QMainWindow):
         
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points) :
-            self.ui.comboBox_referentiel.insertItem(-1, str(i+1))
+            self.ui.comboBox_referentiel.insertItem(-1, QString(u"point N° "+str(i+1)))
 
 
         #met en place le tableau des coordonnées
@@ -510,7 +544,7 @@ class StartQT4(QMainWindow):
 
     def video(self):
         ralenti=[1,2,4,8][self.ui.comboBox_fps.currentIndex()]
-        ref=self.ui.comboBox_referentiel.currentText()
+        ref=self.ui.comboBox_referentiel.currentText().split(" ")[-1]
         if len(ref)==0 or ref == "camera": return
         c=Cadreur(int(ref),self)
         c.cropimages()
@@ -535,7 +569,7 @@ class StartQT4(QMainWindow):
               if newValue=="absolu":
                   ref="camera"
               else:
-                  ref = self.ui.comboBox_referentiel.currentText()
+                  ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
               if len(ref)==0 : return
               if ref != "camera":
                   bc=self.mediane_trajectoires(int(ref)-1)
@@ -638,6 +672,7 @@ class StartQT4(QMainWindow):
         image=QImage(self.chemin_image)
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
         self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
+        self.label_video.setMouseTracking(True)
         self.ui.horizontalSlider.setValue(self.index_de_l_image)
         self.ui.spinBox_image.setValue(self.index_de_l_image)
         
@@ -656,7 +691,7 @@ class StartQT4(QMainWindow):
         
         echelle_result_raw = QInputDialog.getText(self, u"Définir une échelle", u"Quelle est la longueur en mètre de votre étalon sur l'image ?"
 ,QLineEdit.Normal, QString("1.0"))
-        print echelle_result_raw[0]
+
         try :
             echelle_result = [float(echelle_result_raw[0].replace(",",".")), echelle_result_raw[1]]
 
@@ -670,6 +705,7 @@ class StartQT4(QMainWindow):
         except ValueError :
             self.mets_a_jour_label_infos(u" Merci d'indiquer une échelle valable")
             self.echelle()
+
     def feedbackEchelle(self):
         """
         affiche une trace au-dessus du self.job, qui reflète les positions
@@ -677,7 +713,9 @@ class StartQT4(QMainWindow):
         """
         # à implémenter
         return
-    
+
+          
+
     def reinitialise_environnement(self):
         os.chdir(self._dir("images"))
         for filename in glob("*.jpg"):  # a remettre à la fin ;) 
@@ -715,34 +753,17 @@ class StartQT4(QMainWindow):
     
     def mets_a_jour_label_infos(self, message):
         self.ui.label_infos_image.setText(message)
-    
-    def init_tableau(self, tableau, sorte="pixels", largeurCol=60):
-        """mets à zéro le tableau passé en argument"""
-        if sorte == "pixels":
-            titres=["t (s)","x (px)","y (px)","x0 (px)","y0 (px)"]
-        else:
-            titres=["t (s)","x (m)","y (m)","x0 (m)","y0 (m)"]
-        tableau.setRowCount(1)
-        tableau.setColumnCount(5)
-        tableau.clear()
-        tableau.setColumnCount(5)
-        tableau.setRowCount(1)
-        #for i in range(5):
-            #tableau.setColumnWidth(i,largeurCol)
-            #headerItem = QTableWidgetItem()
-            #headerItem.setText(QApplication.translate("pymecavideo", titres[i], None, QApplication.UnicodeUTF8))
-            #tableau.setHorizontalHeaderItem(i,headerItem)
 
     def openexample(self):
         dir="%s/video" %(self._dir("share"))
-        filename=QFileDialog.getOpenFileName(self,u"Ouvrir une vidéo", dir,"*.avi")
         self.reinitialise_tout()
+        filename=QFileDialog.getOpenFileName(self,u"Ouvrir une vidéo", dir,"*.avi")
         self.openTheFile(filename)
         
     def openfile(self):
         dir=self._dir("cwd")
         filename=QFileDialog.getOpenFileName(self,u"Ouvrir une vidéo", dir,"*.avi")
-        self.reinitialise_tout()
+
         self.openTheFile(filename)
             
             
