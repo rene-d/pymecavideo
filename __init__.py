@@ -682,8 +682,11 @@ class StartQT4(QMainWindow):
         self.extract_image(self.filename, self.index_de_l_image)
         image=QImage(self.chemin_image)
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
-        self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
         self.label_video.setMouseTracking(True)
+        self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
+        
+        self.label_video.update()
+        self.label_video.show()
         self.ui.horizontalSlider.setValue(self.index_de_l_image)
         self.ui.spinBox_image.setValue(self.index_de_l_image)
         
@@ -830,11 +833,13 @@ class StartQT4(QMainWindow):
         self.ui.spinBox_image.setMaximum(int(self.image_max))
         
         os.chdir(self._dir("images"))
-        os.remove("video_000001.jpg")
-        a = self.extract_image(self.filename, 1)
-        os.chdir(self._dir("images"))
-        os.remove("video_000001.jpg")
-
+        try :
+              os.remove("video_000001.jpg")
+              a = self.extract_image(self.filename, 1)
+              os.chdir(self._dir("images"))
+              os.remove("video_000001.jpg")
+        except OSError:
+              pass
     def extract_image(self, video, index):
         """
         extrait l'image d'index "index" de la video à l'aide de ffmpeg

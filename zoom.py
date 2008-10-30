@@ -32,6 +32,7 @@ class Zoom_Croix(QWidget):
         self.parent = parent
         self.app=app
         self.cropX2=None
+        self.setWindowFlags(Qt.SplashScreen)
         
     def fait_crop(self, p):
         rect = QRect(p.x()-25,p.y()-25,50,50)

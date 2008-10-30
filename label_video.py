@@ -38,7 +38,7 @@ class Label_Video(QtGui.QLabel):
         self.pos=vecteur(0,0)
         self.zoom_croix=Zoom_Croix(self,app)
         self.croixGeometry()
-        #self.setMouseTracking(True)
+        self.setMouseTracking(True)
 
     def croixGeometry(self):
         """

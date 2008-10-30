@@ -27,6 +27,9 @@ class label_numero(QLabel):
     def __init__(self, text, parent, point):
         QLabel.__init__(self, text,parent)
         self.setGeometry(point.x(), point.y(), 30, 15)
+        self.setMouseTracking(True) 
+    def mouseMoveEvent(self, event):
+        event.ignore()
 
 class Point(QLabel):
     def __init__(self, parent, point, color, numero, app, pred=None, show=True):
@@ -48,10 +51,12 @@ class Point(QLabel):
         self.vitesse=None
         self.succ=None     # le successeur
         self.pred=pred
+        self.setMouseTracking(True)
         if pred != None:
             pred.succ = self
             pred.calcule_vitesse(self.app.ui.echelle_v.currentText(),show)
-
+    def mouseMoveEvent(self, event):
+        event.ignore()
     def montre_vitesse(self, show):
         """
         montre ou cache la vitesse, selon le paramètre show
@@ -112,3 +117,5 @@ class Repere(Point):
         self.painter.rotate(-90)
         self.painter.drawPolyline(p1,p2,p3,p4,p2)
         self.painter.end()
+    def mouseMoveEvent(self, event):
+        event.ignore()
