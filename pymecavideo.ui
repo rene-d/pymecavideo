@@ -118,7 +118,7 @@
        <widget class="QLabel" name="label_infos_image" >
         <property name="geometry" >
          <rect>
-          <x>170</x>
+          <x>0</x>
           <y>70</y>
           <width>341</width>
           <height>20</height>
@@ -353,6 +353,22 @@
         </property>
         <property name="text" >
          <string>Tout réinitialiser</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_revient" >
+        <property name="geometry" >
+         <rect>
+          <x>420</x>
+          <y>60</y>
+          <width>31</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="toolTip" >
+         <string>efface le point précédent</string>
+        </property>
+        <property name="text" >
+         <string/>
         </property>
        </widget>
       </widget>

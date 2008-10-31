@@ -59,7 +59,11 @@ class Label_Echelle(QLabel):
         self.p2=vecteur()
         self.app = app
         self.setCursor(Qt.CrossCursor)
-        
+        try :
+              self.app.label_echelle_trace.hide()
+              del self.app.label_echelle_trace
+        except AttributeError :
+              pass
     def mousePressEvent(self, event):
         if event.button() != 1:
             self.p1=vecteur(-1,-1)
@@ -98,7 +102,25 @@ class Label_Echelle(QLabel):
         self.app.ui.spinBox_nb_de_points.setEnabled(1)
         self.app.mets_a_jour_label_infos(u"""Choisir le nombre de points puis "Démarrer l'acquisition" """)
         self.app.ui.Bouton_lance_capture.setEnabled(1)
-        self.app.feedbackEchelle()
+        self.app.feedbackEchelle(self.p1, self.p2)
             
         self.close()
     
+class Label_Echelle_Trace(QLabel):
+    def __init__(self, parent, p1, p2):
+        QLabel.__init__(self, parent)
+        self.parent = parent
+        self.setGeometry(QRect(0,0,640,480))
+        self.setAutoFillBackground(False)
+        self.p1=p1
+        self.p2=p2
+        #self.setCursor(Qt.CrossCursor)
+
+    def paintEvent(self, event):
+        painter = QPainter()
+        painter.begin(self)
+        #painter.drawPixmap(0,0,self.pix)
+        painter.setPen(Qt.green)
+        painter.drawLine(self.p1.x(), self.p1.y()-40, self.p2.x(), self.p2.y()-40)
+        painter.end()
+

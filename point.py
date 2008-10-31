@@ -30,6 +30,8 @@ class label_numero(QLabel):
         self.setMouseTracking(True) 
     def mouseMoveEvent(self, event):
         event.ignore()
+    def mouseReleaseEvent(self, event):
+        event.ignore()
 
 class Point(QLabel):
     def __init__(self, parent, point, color, numero, app, pred=None, show=True):
@@ -55,8 +57,15 @@ class Point(QLabel):
         if pred != None:
             pred.succ = self
             pred.calcule_vitesse(self.app.ui.echelle_v.currentText(),show)
+########empeche le widget de capturer les signaux, que l'on récupère dans label_video
     def mouseMoveEvent(self, event):
         event.ignore()
+
+########empeche le widget de capturer les signaux, que l'on récupère dans label_video
+    def mouseReleaseEvent(self, event):
+        event.ignore()
+
+
     def montre_vitesse(self, show):
         """
         montre ou cache la vitesse, selon le paramètre show

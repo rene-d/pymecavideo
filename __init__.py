@@ -68,8 +68,7 @@ class StartQT4(QMainWindow):
         #connections internes
         self.ui_connections()
         
-        #création du label qui contiendra la vidéo.
-        self.label_video = Label_Video(parent=self.ui.label, app=self)
+
 
         #prise en compte d'options de la ligne de commande
         self.traiteOptions()
@@ -120,12 +119,17 @@ class StartQT4(QMainWindow):
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
         self.ui.spinBox_image.setEnabled(0)
         self.ui.Bouton_lance_capture.setEnabled(0)
+        
         self.ui.spinBox_nb_de_points.setEnabled(0)
         self.ui.spinBox_nb_de_points.setValue(1)
         self.ui.button_video.setEnabled(0)
         self.ui.pushButton_select_all_table.setEnabled(0)
+        self.ui.pushButton_revient.setEnabled(0)
+
         self.ui.echelle_v.setDuplicatesEnabled(False)
         self.setEchelle_v()
+        #création du label qui contiendra la vidéo.
+        self.label_video = Label_Video(parent=self.ui.label, app=self)
 
     def reinitialise_tout(self):
         self.montre_vitesses(False)
@@ -145,29 +149,22 @@ class StartQT4(QMainWindow):
         self.label_trajectoire.update()
         self.ui.label.update()
         self.label_video.update()
-        self.init_variables(self.filename,None)
-        self.label_trajectoire=Label_Trajectoire(self.ui.tab_traj, self)
-        self.ui.Bouton_Echelle.setEnabled(1)
-        self.ui.horizontalSlider.setEnabled(1)
-        self.ui.echelleEdit.setEnabled(0)
-        self.ui.echelleEdit.setText(u"indéf.")
-        self.ui.tab_traj.setEnabled(0)
-        self.ui.actionSaveData.setEnabled(0)
-        self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
-        self.ui.spinBox_image.setEnabled(1)
-        self.ui.spinBox_image.setValue(1)
-        self.ui.Bouton_lance_capture.setEnabled(0)
-        self.ui.spinBox_nb_de_points.setEnabled(0)
-        self.ui.spinBox_nb_de_points.setValue(1)
-        self.ui.button_video.setEnabled(0)
-        self.ui.pushButton_select_all_table.setEnabled(0)
-        self.ui.echelle_v.setDuplicatesEnabled(False)
-        self.setEchelle_v()
-        self.table_widget.clear()
+        self.label_video.setCursor(Qt.ArrowCursor)
+
         for enfant in self.label_video.children():
               enfant.hide()
               del enfant
-        
+        del self.label_video.zoom_croix
+        del self.label_video
+        self.init_variables(self.filename,None)
+        self.affiche_image()
+
+        self.ui.Bouton_Echelle.setEnabled(1)
+        self.ui.horizontalSlider.setEnabled(1)
+        self.ui.spinBox_image.setEnabled(1)
+        self.ui.spinBox_image.setValue(1)
+        self.ui.spinBox_nb_de_points.setValue(1)
+        self.table_widget.clear()
 
     def ui_connections(self):
         """connecte les signaux de QT"""
@@ -192,6 +189,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.button_video,SIGNAL("clicked()"),self.video)
         QObject.connect(self.ui.pushButton_select_all_table,SIGNAL("clicked()"),self.presse_papier)
         QObject.connect(self.ui.pushButton_reinit,SIGNAL("clicked()"),self.reinitialise_capture)
+        QObject.connect(self.ui.pushButton_revient,SIGNAL("clicked()"),self.efface_point_precedent)
 
     def presse_papier(self):
       
@@ -261,9 +259,12 @@ class StartQT4(QMainWindow):
                 os.mkdir(pymecavideo_rep)
                 os.mkdir(pymecavideo_rep_images)
                 os.mkdir(pymecavideo_rep_icones)
-                copy_commands='cp -R '+pymecavideo_rep_install+'/icones/* '+pymecavideo_rep_icones
+                copy_commands='cp -R '+self.pymecavideo_rep_install+'/icones/* '+pymecavideo_rep_icones
                 status,output=commands.getstatusoutput(copy_commands)
             os.chdir(self.cwd)
+
+        #icone = QIcon.addPixmap(QPixmap(str(self._dir("icones")+"/"+"fleche.png")))
+        self.ui.pushButton_revient.setIcon(QIcon(self._dir("icones")+"/"+"fleche.png"))
 
     def rouvre_ui(self):
         os.chdir(self._dir("home"))
@@ -521,6 +522,25 @@ class StartQT4(QMainWindow):
                 point.montre_vitesse(show)
         if not show:
             self.label_trajectoire.update()
+    def efface_point_precedent(self):
+        """revient au point précédent :
+           efface le point actuel
+           décrémente d'une image
+           enlève une ligne au tableau"""
+        for index in self.trajectoire.keys():
+            if str(index.split("_")[1].split("-")[1])==str(int(self.nb_image_deja_analysees)-1) :
+                [p,point] = self.trajectoire[index]
+                point.hide()
+                del point
+                del p
+                del self.trajectoire[index]
+        
+        self.table_widget.removeRow(self.nb_image_deja_analysees-1)
+        self.nb_image_deja_analysees -= 1
+        self.label_video.liste_points=[]
+        self.index_de_l_image -= 1
+        self.affiche_image()
+        
 
     def retientPoint(self,n,ref,i,p,point):
         """
@@ -637,6 +657,7 @@ class StartQT4(QMainWindow):
         self.mets_a_jour_label_infos(u"Cliquer sur le point N°%d" %n)
 
     def clic_sur_label_video(self):
+        self.ui.pushButton_revient.setEnabled(1)
         self.encore_a_cliquer -= 1
         if self.encore_a_cliquer > 0 :
             self.affiche_point_attendu(1+self.nb_de_points-self.encore_a_cliquer)
@@ -720,16 +741,15 @@ class StartQT4(QMainWindow):
             self.mets_a_jour_label_infos(u" Merci d'indiquer une échelle valable")
             self.echelle()
 
-    def feedbackEchelle(self):
+    def feedbackEchelle(self, p1, p2):
         """
         affiche une trace au-dessus du self.job, qui reflète les positions
         retenues pour l'échelle
         """
-        # à implémenter
-        return
-
-          
-
+        from echelle import Label_Echelle_Trace
+        self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1,p2)
+        self.label_echelle_trace.show()
+        
     def reinitialise_environnement(self):
         os.chdir(self._dir("images"))
         for filename in glob("*.jpg"):  # a remettre à la fin ;) 
