@@ -369,11 +369,14 @@ class StartQT4(QMainWindow):
 
     def debut_capture(self):
         """permet de mettre en place le nombre de point à acquérir"""
+        
         self.nb_de_points = self.ui.spinBox_nb_de_points.value()
         self.ui.spinBox_nb_de_points.setEnabled(0)
         self.ui.Bouton_lance_capture.setEnabled(0)
         self.ui.horizontalSlider.setEnabled(0)
         self.premiere_image=self.ui.horizontalSlider.value()
+        #self.affiche_image()
+        self.label_video.zoom_croix.hide()
         self.encore_a_cliquer = self.nb_de_points
         self.affiche_point_attendu(1)
         self.lance_capture = True
@@ -527,20 +530,35 @@ class StartQT4(QMainWindow):
            efface le point actuel
            décrémente d'une image
            enlève une ligne au tableau"""
+        print self.pX, self.pY
         for index in self.trajectoire.keys():
-            if str(index.split("_")[1].split("-")[1])==str(int(self.nb_image_deja_analysees)-1) :
-                [p,point] = self.trajectoire[index]
-                point.hide()
-                del point
-                del p
-                del self.trajectoire[index]
-        
-        self.table_widget.removeRow(self.nb_image_deja_analysees-1)
-        self.nb_image_deja_analysees -= 1
-        self.label_video.liste_points=[]
-        self.index_de_l_image -= 1
-        self.affiche_image()
-        
+            
+            if str(index.split("_")[1].split("-")[1])==str(int(self.nb_image_deja_analysees)-1):
+                print self.trajectoire[index]
+                if index[:6]=="point-":
+                    [p,point] = self.trajectoire[index]
+                    print p, point
+                    point.hide()
+                    for index_ in self.pX :
+                        if self.pX[index_] == point : 
+                            del self.pX[point]
+                    for index_ in self.pY :
+                        if self.pY[index_] == point :
+                            del self.pY[point]
+                    del point
+                    del p
+                    del self.trajectoire[index]
+
+                del self.points[int(self.nb_image_deja_analysees)-1]
+        if self.nb_image_deja_analysees > 0 :
+            self.table_widget.removeRow(self.nb_image_deja_analysees-1)
+            self.nb_image_deja_analysees -= 1
+            self.label_video.liste_points=[]
+            self.index_de_l_image -= 1
+            self.affiche_image()
+            self.tracer_trajectoires("absolu")
+        else :
+            self.ui.pushButton_revient.setEnabled(0)
 
     def retientPoint(self,n,ref,i,p,point):
         """
@@ -594,6 +612,7 @@ class StartQT4(QMainWindow):
 
 
         if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
+              self.label_video.zoom_croix.hide()
               self.oubliePoints()
               if newValue=="absolu":
                   ref="camera"
@@ -638,6 +657,7 @@ class StartQT4(QMainWindow):
                               self.retientPoint(n,ref,i,p,point)
               
         else : #premier onglet
+              #self.label_video.zoom_croix.show()
               ref="camera"
               for n in range(self.nb_de_points):
                   couleur = self.couleurs[n]

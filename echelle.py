@@ -115,7 +115,11 @@ class Label_Echelle_Trace(QLabel):
         self.p1=p1
         self.p2=p2
         #self.setCursor(Qt.CrossCursor)
-
+        self.setMouseTracking(True)
+    def mouseMoveEvent(self, event):
+        event.ignore()
+    def mouseReleaseEvent(self, event):
+        event.ignore()
     def paintEvent(self, event):
         painter = QPainter()
         painter.begin(self)

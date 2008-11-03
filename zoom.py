@@ -33,7 +33,8 @@ class Zoom_Croix(QWidget):
         self.app=app
         self.cropX2=None
         self.setWindowFlags(Qt.SplashScreen)
-        
+        if self.app.lance_capture==True:
+            self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
     def fait_crop(self, p):
         rect = QRect(p.x()-25,p.y()-25,50,50)
         crop = self.app.image_640_480.copy(rect)
@@ -41,9 +42,10 @@ class Zoom_Croix(QWidget):
     
     def paintEvent(self, event):
         if self.app.lance_capture==True:
-            painter = QPainter()
-            painter.begin(self)
-            painter.drawPixmap(0,0,self.cropX2)
-            painter.setPen(Qt.white)
-            painter.drawLine(50, 0, 50, 100)
-            painter.drawLine(0, 50, 100, 50)
+            if self.cropX2 != None :
+                painter = QPainter()
+                painter.begin(self)
+                painter.drawPixmap(0,0,self.cropX2)
+                painter.setPen(Qt.white)
+                painter.drawLine(50, 0, 50, 100)
+                painter.drawLine(0, 50, 100, 50)
