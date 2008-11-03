@@ -45,6 +45,7 @@ from label_trajectoire import Label_Trajectoire
 from cadreur import Cadreur
 from preferences import Preferences
 from dbg import Dbg
+from listes import listePointee
 
 class StartQT4(QMainWindow):
     def __init__(self, parent, filename, opts):
@@ -100,38 +101,72 @@ class StartQT4(QMainWindow):
         self.nb_image_deja_analysees = 0 #indique le nombre d'images dont on a dejà fait l'étude, ce qui correspond aussi au nombre de lignes dans le tableau.
         self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green"] #correspond aux couleurs des points del a trajectoire
         self.nb_de_points = 1        # nombre de points suivis
-        self.encore_a_cliquer = -1   # combien de points encore à cliquer
         self.premiere_image = 1      # n° de la première image cliquée
+        self.index_de_l_image = 1    # image à afficher
         self.prefs=Preferences(self)
         self.echelle_v = 1
         self.filename=filename
         self.opts=opts
+        self.tousLesClics=listePointee() # tous les clics faits sur l'image
         self.init_interface()
         
     def init_interface(self):
+        self.cree_tableau()
         self.label_trajectoire=Label_Trajectoire(self.ui.tab_traj, self)
-        self.ui.Bouton_Echelle.setEnabled(0)
         self.ui.horizontalSlider.setEnabled(0)
         self.ui.echelleEdit.setEnabled(0)
-        self.ui.echelleEdit.setText(u"indéf.")
+        self.affiche_echelle()
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
         self.ui.spinBox_image.setEnabled(0)
-        self.ui.Bouton_lance_capture.setEnabled(0)
+        self.affiche_lance_capture(False)
         
-        self.ui.spinBox_nb_de_points.setEnabled(0)
-        self.ui.spinBox_nb_de_points.setValue(1)
         self.ui.button_video.setEnabled(0)
-        self.ui.pushButton_select_all_table.setEnabled(0)
-        self.ui.pushButton_revient.setEnabled(0)
+        self.affiche_nb_points(False)
 
         self.ui.echelle_v.setDuplicatesEnabled(False)
         self.setEchelle_v()
         #création du label qui contiendra la vidéo.
         self.label_video = Label_Video(parent=self.ui.label, app=self)
 
-    def reinitialise_tout(self):
+    def affiche_lance_capture (self,active=False):
+        """
+        Met à jour l'affichage du bouton pour lancer la capture
+        @param active vrai si le bouton doit être activé
+        """
+        self.ui.Bouton_lance_capture.setEnabled(active)
+        
+    def affiche_nb_points(self, active=False):
+        """
+        Met à jour l'afficheur de nombre de points à saisir
+        @param active vrai si on doit permettre la saisie du nombre de points
+        """
+        self.ui.spinBox_nb_de_points.setEnabled(active)
+        self.ui.spinBox_nb_de_points.setValue(self.nb_de_points)
+        
+    def affiche_echelle(self):
+        """
+        affiche l'échelle courante pour les distances sur l'image
+        """
+        if self.echelle_image.isUndef():
+            self.ui.echelleEdit.setText(u"indéf.")
+            self.ui.Bouton_Echelle.setEnabled(True)
+        else:
+            epxParM=self.echelle_image.longueur_pixel_etalon/self.echelle_image.longueur_reelle_etalon
+            self.ui.echelleEdit.setText("%.1f" %epxParM)
+            self.ui.Bouton_Echelle.setEnabled(False)
+        self.ui.echelleEdit.show()
+        self.ui.Bouton_Echelle.show()
+ 
+    def reinitialise_tout(self, echelle_image=None, nb_de_points=None, tousLesClics=None):
+        """
+        Réinitialise complètement l'interface de saisie. On peut quand même
+        passer quelques paramètres à conserver :
+        @param echelle_image évite de ressaisir l'échelle de l'image
+        @param nb_de_points évite de ressaisir le nombre de points à suivre
+        @param tousLesClics permet de conserver une liste de poinst à refaire
+        """
         self.montre_vitesses(False)
         self.oubliePoints()
         self.label_trajectoire.update()
@@ -142,6 +177,12 @@ class StartQT4(QMainWindow):
         for enfant in self.label_video.children():
               enfant.hide()      
               del enfant
+        if echelle_image:
+            self.echelle_image=echelle_image
+        if nb_de_points:
+            self.nb_de_points=nb_de_points
+        if tousLesClics:
+            self.tousLesClics=tousLesClics
 
     def reinitialise_capture(self):
         self.montre_vitesses(False)
@@ -159,12 +200,14 @@ class StartQT4(QMainWindow):
         self.init_variables(self.filename,None)
         self.affiche_image()
 
-        self.ui.Bouton_Echelle.setEnabled(1)
+        self.echelle_image=echelle()
+        self.affiche_echelle()
         self.ui.horizontalSlider.setEnabled(1)
         self.ui.spinBox_image.setEnabled(1)
         self.ui.spinBox_image.setValue(1)
-        self.ui.spinBox_nb_de_points.setValue(1)
-        self.table_widget.clear()
+        self.affiche_nb_points(1)
+        if self.table_widget:
+            self.table_widget.clear()
 
     def ui_connections(self):
         """connecte les signaux de QT"""
@@ -177,7 +220,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.actionSaveData,SIGNAL("triggered()"), self.enregistre_ui)
 	QObject.connect(self.ui.actionCopier_dans_le_presse_papier,SIGNAL("triggered()"), self.presse_papier)
 	QObject.connect(self.ui.actionRouvrirMecavideo,SIGNAL("triggered()"), self.rouvre_ui)
-        QObject.connect(self.ui.Bouton_Echelle,SIGNAL("clicked()"), self.echelle)
+        QObject.connect(self.ui.Bouton_Echelle,SIGNAL("clicked()"), self.demande_echelle)
         QObject.connect(self.ui.horizontalSlider,SIGNAL("valueChanged(int)"), self.affiche_image_slider)
         QObject.connect(self.ui.spinBox_image,SIGNAL("valueChanged(int)"),self.affiche_image_spinbox)
         QObject.connect(self.ui.Bouton_lance_capture,SIGNAL("clicked()"),self.debut_capture)
@@ -189,8 +232,18 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.button_video,SIGNAL("clicked()"),self.video)
         QObject.connect(self.ui.pushButton_select_all_table,SIGNAL("clicked()"),self.presse_papier)
         QObject.connect(self.ui.pushButton_reinit,SIGNAL("clicked()"),self.reinitialise_capture)
-        QObject.connect(self.ui.pushButton_revient,SIGNAL("clicked()"),self.efface_point_precedent)
+        QObject.connect(self.ui.pushButton_defait,SIGNAL("clicked()"),self.efface_point_precedent)
+        QObject.connect(self.ui.pushButton_refait,SIGNAL("clicked()"),self.refait_point_suivant)
 
+    def pointEnMetre(self,p):
+        """
+        renvoie un point, dont les coordonnées sont en mètre, dans un
+        référentiel "à l'endroit"
+        @ param point un point en "coordonnées d'écran"
+        """
+        return vecteur(float(p.x())*self.echelle_image.mParPx(),
+                       float(480-p.y())*self.echelle_image.mParPx())
+    
     def presse_papier(self):
       
       table = ""
@@ -209,11 +262,9 @@ class StartQT4(QMainWindow):
 
 
               for p in donnee[1:]:
-                  a+= ("%5f\t"
-%(float(p.x())*self.echelle_image.mParPx())).replace(".", sep_decimal)
-                  a+= ("%5f\t"
-%(float(480-p.y())*self.echelle_image.mParPx())).replace(".", sep_decimal)
-
+                  pm=self.pointEnMetre(p)
+                  a+= ("%5f\t" %(pm.x())).replace(".", sep_decimal)
+                  a+= ("%5f\t" %(pm.y())).replace(".", sep_decimal)
               a+="\n"
           table = table + a
 
@@ -263,8 +314,8 @@ class StartQT4(QMainWindow):
                 status,output=commands.getstatusoutput(copy_commands)
             os.chdir(self.cwd)
 
-        #icone = QIcon.addPixmap(QPixmap(str(self._dir("icones")+"/"+"fleche.png")))
-        self.ui.pushButton_revient.setIcon(QIcon(self._dir("icones")+"/"+"fleche.png"))
+        self.ui.pushButton_defait.setIcon(QIcon(self._dir("icones")+"/"+"undo.png"))
+        self.ui.pushButton_refait.setIcon(QIcon(self._dir("icones")+"/"+"redo.png"))
 
     def rouvre_ui(self):
         os.chdir(self._dir("home"))
@@ -294,13 +345,12 @@ class StartQT4(QMainWindow):
         self.dbg.p(2,"chemin vers les modules : %s" %sys.path)
         self.loads(dd)
         self.openTheFile(self.filename)
-        epxParM=self.echelle_image.longueur_pixel_etalon/self.echelle_image.longueur_reelle_etalon
-        self.ui.echelleEdit.setText("%.1f" %epxParM)
+        self.affiche_echelle()
         n=len(self.points.keys())
         self.nb_image_deja_analysees = n
         self.ui.horizontalSlider.setValue(n+self.premiere_image)
         self.ui.spinBox_image.setValue(n+self.premiere_image)
-        self.ui.spinBox_nb_de_points.setValue(self.nb_de_points)
+        self.affiche_nb_points(self.nb_de_points)
         self.affiche_image()
         self.debut_capture()
 
@@ -352,8 +402,9 @@ class StartQT4(QMainWindow):
                     t=float(donnee[0])
                     a = ("\n%.2f\t" %t).replace(".", sep_decimal)
                     for p in donnee[1:]:
-                        a+= ("%5f\t" %(float(p.x())*self.echelle_image.mParPx())).replace(".", sep_decimal)
-                        a+= ("%5f\t" %(float(480-p.y())*self.echelle_image.mParPx())).replace(".", sep_decimal)
+                        pm=self.pointEnMetre(p)
+                        a+= ("%5f\t" %(pm.x())).replace(".", sep_decimal)
+                        a+= ("%5f\t" %(pm.y())).replace(".", sep_decimal)
                     file.write(a)
             finally:
                 file.close()
@@ -371,13 +422,12 @@ class StartQT4(QMainWindow):
         """permet de mettre en place le nombre de point à acquérir"""
         
         self.nb_de_points = self.ui.spinBox_nb_de_points.value()
-        self.ui.spinBox_nb_de_points.setEnabled(0)
-        self.ui.Bouton_lance_capture.setEnabled(0)
+        self.affiche_nb_points(False)
+        self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
         self.premiere_image=self.ui.horizontalSlider.value()
         #self.affiche_image()
         self.label_video.zoom_croix.hide()
-        self.encore_a_cliquer = self.nb_de_points
         self.affiche_point_attendu(1)
         self.lance_capture = True
         self.label_video.setCursor(Qt.CrossCursor)
@@ -392,9 +442,17 @@ class StartQT4(QMainWindow):
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points) :
             self.ui.comboBox_referentiel.insertItem(-1, QString(u"point N° "+str(i+1)))
+        self.cree_tableau()
 
-
-        #met en place le tableau des coordonnées
+    def cree_tableau(self):
+        """
+        Crée un tableau de coordonnées neuf dans l'onglet idoine.
+        """
+        try: # efface tout tableau existant préalablement
+            self.table_widget.hide()
+            self.table_widget.close()
+        except AttributeError:
+            pass
         from table import standardDragTable
         self.table_widget=standardDragTable(self.ui.tab_coord)
         self.ui.tab_coord.setEnabled(1)
@@ -526,39 +584,29 @@ class StartQT4(QMainWindow):
         if not show:
             self.label_trajectoire.update()
     def efface_point_precedent(self):
-        """revient au point précédent :
-           efface le point actuel
-           décrémente d'une image
-           enlève une ligne au tableau"""
-        print self.pX, self.pY
-        for index in self.trajectoire.keys():
-            
-            if str(index.split("_")[1].split("-")[1])==str(int(self.nb_image_deja_analysees)-1):
-                print self.trajectoire[index]
-                if index[:6]=="point-":
-                    [p,point] = self.trajectoire[index]
-                    print p, point
-                    point.hide()
-                    for index_ in self.pX :
-                        if self.pX[index_] == point : 
-                            del self.pX[point]
-                    for index_ in self.pY :
-                        if self.pY[index_] == point :
-                            del self.pY[point]
-                    del point
-                    del p
-                    del self.trajectoire[index]
+        """revient au point précédent
+        """
+        self.tousLesClics.decPtr()
+        self.repasseTousLesClics()
 
-                del self.points[int(self.nb_image_deja_analysees)-1]
-        if self.nb_image_deja_analysees > 0 :
-            self.table_widget.removeRow(self.nb_image_deja_analysees-1)
-            self.nb_image_deja_analysees -= 1
-            self.label_video.liste_points=[]
-            self.index_de_l_image -= 1
-            self.affiche_image()
-            self.tracer_trajectoires("absolu")
-        else :
-            self.ui.pushButton_revient.setEnabled(0)
+    def refait_point_suivant(self):
+        """rétablit le point suivant après un effacement
+        """
+        self.tousLesClics.incPtr()
+        self.repasseTousLesClics()
+
+    def repasseTousLesClics(self):
+        """
+        repasse en mode non-interactif toute la liste des clics
+        sur l'image, jusqu'au pointeur courant de cette liste pointée.
+        """
+        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics)
+        self.affiche_echelle()
+        self.affiche_nb_points()
+        for clics in self.tousLesClics:
+            self.clic_sur_label_video(liste_points=clics, interactif=False)
+        self.clic_sur_label_video_ajuste_ui(1)
+
 
     def retientPoint(self,n,ref,i,p,point):
         """
@@ -676,38 +724,64 @@ class StartQT4(QMainWindow):
         """
         self.mets_a_jour_label_infos(u"Cliquer sur le point N°%d" %n)
 
-    def clic_sur_label_video(self):
-        self.ui.pushButton_revient.setEnabled(1)
-        self.encore_a_cliquer -= 1
-        if self.encore_a_cliquer > 0 :
-            self.affiche_point_attendu(1+self.nb_de_points-self.encore_a_cliquer)
-        elif self.encore_a_cliquer == 0:
-            self.encore_a_cliquer = self.nb_de_points
-            self.affiche_point_attendu(1)
-            self.stock_coordonnees_image(self.nb_image_deja_analysees,self.label_video.liste_points)
+
+    def clic_sur_label_video(self, liste_points=None, interactif=True):
+        if liste_points==None:
+            liste_points = self.label_video.liste_points
+        if self.nb_de_points > len(liste_points) :
+            point_attendu=1+len(liste_points)
+        else: 
+            point_attendu=1
+            self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
             self.nb_image_deja_analysees += 1
-            self.label_video.liste_points=[]
             self.index_de_l_image += 1
+        if interactif: self.clic_sur_label_video_ajuste_ui(point_attendu)
+        
+    def clic_sur_label_video_ajuste_ui(self,point_attendu):
+        """
+        Ajuste l'interface utilisateur pour attendre un nouveau clic
+        @param point_attendu le numéro du point qui est à cliquer
+        """
+        self.affiche_point_attendu(point_attendu)
+        if len(self.tousLesClics) > 0:
+            self.ui.pushButton_defait.setEnabled(1)
+        else:
+            self.ui.pushButton_defait.setEnabled(0)
+        if self.tousLesClics.nextCount() > 0:
+            self.ui.pushButton_refait.setEnabled(1)
+        else:
+            self.ui.pushButton_refait.setEnabled(0)
+
+        if point_attendu==1 : # pour une acquisition sur une nouvelle image
+            if len(self.label_video.liste_points) > 0:
+                self.tousLesClics.append(self.label_video.liste_points)
+            self.label_video.liste_points=[]
             self.affiche_image()
             self.tracer_trajectoires("absolu")
             
-    def stock_coordonnees_image(self, ligne, liste_points):
-        """ """
-        t = ligne*self.deltaT
-        liste_points.insert(0,"%4f" % t)
-        self.points[ligne]=liste_points
+    def stock_coordonnees_image(self, ligne, liste_points, interactif=True):
+        """
+        place les données dans le tableau.
+        @param ligne le numérode la ligne où placer les données (commence à 0)
+        @param liste_points la liste des points cliqués sur l'image courante
+        @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
+        """
+        t = "%4f" %(ligne*self.deltaT)
+        self.points[ligne]=[t]+liste_points
         #rentre le temps dans la première colonne
         self.table_widget.insertRow(ligne)
-        self.table_widget.setItem(ligne,0,QTableWidgetItem(str(liste_points[0])))
-        i=1
+        self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
         
-        #Pour chaque point dans liste_points, insère les vlauer dans la ligne
-        for point in liste_points[1:] :
-            self.table_widget.setItem(ligne,2*i-1,QTableWidgetItem(str(point.x()*self.echelle_image.mParPx())))
-            self.table_widget.setItem(ligne,2*i,QTableWidgetItem(str((480-point.y())*self.echelle_image.mParPx())))
-            i+=1
+        i=0
+        #Pour chaque point dans liste_points, insère les valeur dans la ligne
+        for point in liste_points :
+            pm=self.pointEnMetre(point)
+            self.table_widget.setItem(ligne,i+1,QTableWidgetItem(str(pm.x())))
+            self.table_widget.setItem(ligne,i+2,QTableWidgetItem(str(pm.y())))
+            i+=2
         #print liste_points[0]
-        self.table_widget.show()
+        if interactif:
+            self.table_widget.show()
         #enlève la ligne supplémentaire, une fois qu'une ligne a été remplie
         if ligne == 0 :
             self.table_widget.removeRow(1)
@@ -732,17 +806,17 @@ class StartQT4(QMainWindow):
         self.ui.spinBox_image.setValue(self.index_de_l_image)
         
     def recommence_echelle(self):
-        self.ui.Bouton_Echelle.setEnabled(1)
-        self.ui.tab_acq.echelle_definie=False
+        self.echelle_image=echelle()
+        self.affiche_echelle()
         self.job.dialog.close()
         self.job.close()
-        self.echelle()
+        self.demande_echelle()
         
     def affiche_image_slider(self):
         self.index_de_l_image = self.ui.horizontalSlider.value()
         self.affiche_image()
 
-    def echelle(self):
+    def demande_echelle(self):
         
         echelle_result_raw = QInputDialog.getText(self, u"Définir une échelle", u"Quelle est la longueur en mètre de votre étalon sur l'image ?"
 ,QLineEdit.Normal, QString("1.0"))
@@ -759,7 +833,7 @@ class StartQT4(QMainWindow):
                 self.job.show()
         except ValueError :
             self.mets_a_jour_label_infos(u" Merci d'indiquer une échelle valable")
-            self.echelle()
+            self.demande_echelle()
 
     def feedbackEchelle(self, p1, p2):
         """
@@ -853,13 +927,13 @@ class StartQT4(QMainWindow):
         self.trajectoire = {}
         self.ui.spinBox_image.setMinimum(1)
         self.defini_barre_avancement()
-        self.ui.Bouton_Echelle.setEnabled(1)
+        self.echelle_image=echelle()
+        self.affiche_echelle()
         self.ui.tab_traj.setEnabled(0)
         self.ui.spinBox_image.setEnabled(1)
         self.a_une_image = True
         self.reinitialise_environnement() 
         self.affiche_image()
-        self.Bouton_lance_capture=False
         
             
     def defini_barre_avancement(self):

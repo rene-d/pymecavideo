@@ -31,6 +31,13 @@ class echelle(QObject):
         self.longueur_reelle_etalon = 1
         self.longueur_pixel_etalon = 1
     
+    def isUndef(self):
+        """
+        Vrai si l'échelle n'est pas définie, c'est à dire si
+        p1 et p2 sont confondus.
+        """
+        return (self.p1 - self.p2).norme() == 0
+    
     def calcul_longueur_pixels(self, p1, p2):
         v=p1-p2
         return  v.norme()
@@ -97,11 +104,10 @@ class Label_Echelle(QLabel):
         self.app.p2=self.p2.copy()
         self.app.echelle_image.longueur_pixel_etalon = self.app.echelle_image.calcul_longueur_pixels(self.p1, self.p2)
         epxParM=self.app.echelle_image.longueur_pixel_etalon/self.app.echelle_image.longueur_reelle_etalon
-        self.app.ui.echelleEdit.setText("%.1f" %epxParM)
-        self.parent.echelle_definie=True
-        self.app.ui.spinBox_nb_de_points.setEnabled(1)
-        self.app.mets_a_jour_label_infos(u"""Choisir le nombre de points puis "Démarrer l'acquisition" """)
-        self.app.ui.Bouton_lance_capture.setEnabled(1)
+        self.app.affiche_echelle()
+        self.app.affiche_nb_points(True)
+        self.app.mets_a_jour_label_infos(u"""Choisir le nombre de points puis "Démarrer l'acquisition" """) #'
+        self.app.affiche_lance_capture(True)
         self.app.feedbackEchelle(self.p1, self.p2)
             
         self.close()

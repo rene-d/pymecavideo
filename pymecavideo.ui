@@ -13,6 +13,14 @@
    <string>PyMecaVideo, analyse mécanique des vidéos</string>
   </property>
   <widget class="QWidget" name="centralwidget" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>22</y>
+     <width>673</width>
+     <height>631</height>
+    </rect>
+   </property>
    <layout class="QHBoxLayout" >
     <item>
      <widget class="QTabWidget" name="tabWidget" >
@@ -23,6 +31,14 @@
        <number>0</number>
       </property>
       <widget class="QWidget" name="tab_acq" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>651</width>
+         <height>589</height>
+        </rect>
+       </property>
        <attribute name="title" >
         <string>Acquisition des données</string>
        </attribute>
@@ -145,6 +161,9 @@
         </property>
        </widget>
        <widget class="QPushButton" name="Bouton_Echelle" >
+        <property name="enabled" >
+         <bool>false</bool>
+        </property>
         <property name="geometry" >
          <rect>
           <x>140</x>
@@ -355,10 +374,13 @@
          <string>Tout réinitialiser</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_revient" >
+       <widget class="QPushButton" name="pushButton_defait" >
+        <property name="enabled" >
+         <bool>false</bool>
+        </property>
         <property name="geometry" >
          <rect>
-          <x>420</x>
+          <x>400</x>
           <y>60</y>
           <width>31</width>
           <height>25</height>
@@ -371,8 +393,35 @@
          <string/>
         </property>
        </widget>
+       <widget class="QPushButton" name="pushButton_refait" >
+        <property name="enabled" >
+         <bool>false</bool>
+        </property>
+        <property name="geometry" >
+         <rect>
+          <x>430</x>
+          <y>60</y>
+          <width>31</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="toolTip" >
+         <string>rétablit le point suivant</string>
+        </property>
+        <property name="text" >
+         <string/>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_traj" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>512</width>
+         <height>307</height>
+        </rect>
+       </property>
        <attribute name="title" >
         <string>trajectoires et mesures</string>
        </attribute>
@@ -590,6 +639,14 @@
        </widget>
       </widget>
       <widget class="QWidget" name="tab_coord" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>512</width>
+         <height>307</height>
+        </rect>
+       </property>
        <attribute name="title" >
         <string>Coordonnées</string>
        </attribute>
@@ -617,7 +674,7 @@
      <x>0</x>
      <y>0</y>
      <width>673</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier" >
@@ -651,7 +708,16 @@
    <addaction name="menu_dition" />
    <addaction name="menuAide" />
   </widget>
-  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QStatusBar" name="statusbar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>653</y>
+     <width>673</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
   <action name="actionOuvrir_un_fichier" >
    <property name="text" >
     <string>Ouvrir une vidéo</string>
