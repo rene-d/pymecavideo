@@ -55,13 +55,17 @@ mobile dans le cadre des images. Les données pointées sont ensuite exploitable
 <title>Téléchargement et installation</title>
 
 <para>
-<ulink url="http://lucette-serveur.hd.free.fr/trac/pymecavideo">
+<ulink url="http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo">
 <medialabel><inlinemediaobject><imageobject> <imagedata fileref="snap2-mini.png" align="left"></imagedata></imageobject></inlinemediaobject></medialabel>
-</ulink>  Les sources de <symbol> pyMecaVideo</symbol> sont disponibles sur
-<ulink url="http://lucette-serveur.hd.free.fr/trac/pymecavideo">
-le site &laquo;&nbsp;trac&nbsp;&raquo;</ulink>. Pour l'installation sous
-<productname> Linux</productname>, décomprimer l'archive, entrer dans le
-répertoire <computeroutput>pymecavideo/</computeroutput>, et taper la
+</ulink>  Les sources de <symbol> pyMecaVideo</symbol> sont disponibles parmi
+<ulink url="http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo">
+les &laquo;&nbsp;Outils Physiques Pour Linux&nbsp;&raquo; hébergés sur le
+site <emphasis>tuxfamily.org</emphasis></ulink>. Pour l'installation sous
+<productname> Linux</productname>, récupérer l'arbre des sources comme
+expliqué à 
+<ulink url="http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo">
+la page d'accueil du projet</ulink>, entrer dans le
+répertoire <computeroutput>pymecavideo/trunk</computeroutput>, et taper la
 commande suivante : <computeroutput>python setup.py install</computeroutput>.
 Cela met en place les modules nécessaires pour python. 
 Activer l'attribut exécutable du fichier 
@@ -74,9 +78,13 @@ obtenue en tapant <computeroutput>echo $PATH</computeroutput>.
 <para>
 Il est possible aussi d'obtenir des fichiers binaires, qui sont pris en charge
 par le gestionnaire de paquets de votre distribution préférée. Actuellement
-on trouve des paquets RPM et Debian, voir 
-<ulink url="http://lucette-serveur.hd.free.fr/trac/pymecavideo">
-le site &laquo;&nbsp;trac&nbsp;&raquo;</ulink>.
+on trouve des paquets RPM et DEB.
+</para>
+<para>Les paquets pour Debian et Ubuntu sont maintenus dans le 
+<ulink url="http://debian.ofset.org">dépôt debian</ulink>
+de l'association <ulink url="http://www.ofset.org">OFSET</ulink>.
+Les instructions de téléchargement sont expliquées dans la 
+<ulink url="http://debian.ofset.org">page d'accueil du dépôt</ulink>.
 </para>
 </sect1>
 <sect1>
@@ -185,22 +193,30 @@ faut connaître sa longueur en mètre.
 </para>
 <para>
 On clique alors sur ce bouton, on renseigne la longueur de l'objet-étalon
-dans le dialogue qui surgit (on utilise la virgule comme séparateur décimal,
+dans le dialogue qui surgit (on utilise la virgule ou le point 
+comme séparateur décimal, idifféremment&nbsp;:
 par exemple 0,60 m pour signifier 60 cm), on valide, puis lorsque
 le curseur de la souris devient une crois de Malte, on réalise un tirer-glisser
-d'une extrémité à l'autre de l'objet-étalon. Il est possible de recommencer
-l'étalonnage tant qu'on n'appuie pas sur le bouton 
-&laquo;&nbsp;GO&nbsp;!&nbsp;&raquo; qui est activé dès la première 
-définition de l'échelle.
+d'une extrémité à l'autre de l'objet-étalon. 
+</para>
+<mediaobject><imageobject><imagedata fileref="snap7.png" align="left"></imagedata></imageobject></mediaobject>
+<para>
+Quand l'échelle est définie, c'est pour toute l'acquisition de données.
+En cas d'erreur, on peut tout réinitialiser à l'aide du bouton
+&laquo;&nbsp;Tout réinitialiser&nbsp;&raquo;
 </para>
 </sect2>
-<sect2><title>Utiliser éventuellement un autre référentiel</title>
-<mediaobject><imageobject><imagedata fileref="snap5.png" align="left"></imagedata></imageobject></mediaobject>
-<para> Il est possible de déclarer qu'on pointera les positions d'un référentiel
-mobile d'une image à l'autre. Pour cela, passer la valeur de 0 à 1 pour le 
-champ des autres référentiels. Ce réglage ne peut pas être retouché après qu'on
-ait commencé les pointages par appui sur le bouton 
-&laquo;&nbsp;GO&nbsp;!&nbsp;&raquo;, il faut donc y penser avant.
+<sect2><title>Choix du nombre de points à étudier</title>
+<para>Par défaut, on étudie le mouvement d'un seul point, le référentiel
+étant celui de la caméra.
+</para>
+<mediaobject><imageobject><imagedata fileref="snap8.png" align="left"></imagedata></imageobject></mediaobject>
+<para>Il est possible de faire porter l'étude sur deux points ou plus.
+Un des points de la série pourra plus tard être utilisé comme nouvelle origine
+du référentiel à volonté.
+</para>
+<para>Pour étudier plus d'un point, il faut modifier la valeur affichée dans
+la boîte intitulée &laquo;&nbsp;Nombre de points à étudier&nbsp;&raquo;
 </para>
 </sect2>
 <sect2><title>Pointer les positions</title>
@@ -210,24 +226,32 @@ ait commencé les pointages par appui sur le bouton
   Dans ce cas, il faut choisir manuellement l'image initiale à l'aide du 
   curseur en haut à gauche, ou du champ de sélection de numéro d'image.
   Le pointage commence quand on clique sur le bouton
-  &laquo;&nbsp;GO&nbsp;!&nbsp;&raquo;. Deux cas se présentent&nbsp;
-  <itemizedlist>
-    <listitem><para>
-      Il n'y a pas de référentiel supplémentaire. Dans ce cas l'origine du
-      référentiel par défaut est en bas à gauche de la série d'images.
-      Il suffit alors de cliquer les positions successives du point étudié
-      et ses coordonnées en pixel s'inscrivent automatiquement dans le
-      tableau à droite de la fenêtre.
-    </para></listitem>
-    <listitem><para>
-      On a déclaré un référentiel supplémentaire. Dans ce cas, on clique
-      à chaque image sur deux positions&nbsp;: d'abord sur l'origine du 
-      référentiel supplémentaire, ensuite sur le point étudié.
-    </para></listitem>
-  </itemizedlist>
+  &laquo;&nbsp;Démarrer l'acquisition&nbsp;&raquo;. 
+</para>
+<mediaobject><imageobject><imagedata fileref="snap9.png" align="left"></imagedata></imageobject></mediaobject>
+<para>Quand l'acquisition est en cours, une petite phrase au-dessus de la 
+vidéo rappelle le numéro du point qu'on est censé cliquer en suivant. Les traces
+des points cliqués dans les images précédentes de la vidéo apparaissent en 
+couleurs. Les couleurs doivent se suivre sans discontinuité, sinon c'est la
+marque d'une faute de pointage.
+</para>
+<sect3><title>Défaire et refaire</title>
+<mediaobject><imageobject><imagedata fileref="snap10.png" align="left"></imagedata></imageobject></mediaobject>
+<para>Les icônes  &laquo;&nbsp;défaire&nbsp;&raquo; et 
+&laquo;&nbsp;refaire&nbsp;&raquo; permettent éventuellement de rattraper
+une faute de pointage quand celle-ci est reconnue.
+</para>
+<para>Il n'est possible de refaire des pointages antérieurs que tant qu'on n'a
+apporté aucune modification aux pointages précédemment défaits. Dès qu'un
+des pointages est corrigé à l'aide de la souris sur la vidéo, les pointages
+suivants disparaissent de la liste à refaire, et le bouton 
+&laquo;&nbsp;refaire&nbsp;&raquo; est aussitôt inactivé (grisé).
+</para>
+<para>
   Il est possible d'arrêter le pointage à tout moment, éventuellement avant 
   la fin de la séquence vidéo.
 </para>
+</sect3>
 </sect2>
 <sect2><title>Enregistrer le travail</title>
 <para>
@@ -269,7 +293,125 @@ Voici les caractéristiques de ces deux fichiers&nbsp;:
 </para>
 </sect2>
 <sect2><title>Le volet des trajectoires</title>
-<para>
+<mediaobject><imageobject><imagedata fileref="snap12.png" align="left"></imagedata></imageobject></mediaobject>
+<para>Quand les pointages sont faits, il est intéressant d'activer le 
+volet des trajectoires. Celui-ci permet d'attirer l'attention plus précisément
+sur le mouvement et la vitesse des objets étudiés, en faisant apparaître 
+ceux-ci sans la vidéo où on les avait capturés.
+</para>
+<sect3><title>Représentation absolue ou relative</title>
+<mediaobject><imageobject><imagedata fileref="snap11.png" align="left"></imagedata></imageobject></mediaobject>
+<para>Sitôt que plus d'un point fait partie de l'étude, il est possible de
+faire afficher les positions et les vitesses de plusieurs façons&nbsp;:
+soit les positions et les vitesses &laquo;&nbsp;absolues&nbsp;&raquo;, 
+c'est-à-dire relatives au référentiel de la caméra, soit les positions 
+et les vitesses &laquo;&nbsp;relatives&nbsp;&raquo; par rapport à un 
+des points étudiés, choisi comme origine d'un nouveau référentiel.
+</para>
+</sect3>
+<sect3><title>L'échelle pour les vecteurs vitesse</title>
+<mediaobject><imageobject><imagedata fileref="snap13.png" align="left"></imagedata></imageobject></mediaobject>
+<para>L'échelle des vecteurs vitesse se règle à l'aide d'une zone de saisie
+intitulée &laquo;&nbsp;Échelle de vitesses&nbsp;&raquo;. Modifiez sa valeur
+et appuyez sur la touche Entrée pour obtenir une autre taille des vecteurs
+vitesse.
+</para>
+</sect3>
+</sect2>
+<sect2><title>Les préférences de PyMecavideo</title>
+<mediaobject><imageobject><imagedata fileref="snap14.png" align="left"></imagedata></imageobject></mediaobject>
+<para>Par le menu &laquo;&nbsp;Édition -&gt; Préférences&nbsp;&raquo; ont
+fait apparaître un menu pour les valeurs préférées, qui seront réutilisées
+lors de lancements successifs de PyMecavideo. Parmi ces préférences figurent
+<itemizedlist>
+<listitem><para>L'échelle des vitesses&nbsp;;
+</para></listitem>
+<listitem><para>La façon d'afficher les vecteurs vitesse&nbsp;: soit partout,
+soit au voisinage du pointeur de soutris quand on l'approche des points&nbsp;;
+</para></listitem>
+<listitem><para>L'afficheur vidéo à utiliser pour visualiser les vidéos de
+synthèse&nbsp;: vlc, xine ou mplayer ... tous des visionneurs que 
+PymMcavideo peut
+contrôler par une ligne de commande&nbsp;;
+</para></listitem>
+<listitem><para>Le niveau de verbosité pour le débogage&nbsp; si un comportement
+anormal de PyMecavideo vous gène, augmenter la valeur de ce niveau permet 
+éventuellement d'intercepter des messages informatifs au sujet du déroulement 
+du programme. Ces messages peuvent éventuellement servir pour prendre
+contact utilement avec les auteurs de PyMecavideo et signaler un 
+dysfonctionnement.
+</para></listitem>
+</itemizedlist>
+</para>
+</sect2>
+<sect2><title>Créer une vidéo de synthèse</title>
+<mediaobject><imageobject><imagedata fileref="snap15.png" align="left"></imagedata></imageobject></mediaobject>
+<para>Dans le volet des trajectoire, on trouve deux boutons commandant
+la fabrication d'une vidéo &laquo;&nbsp;de synthèse&nbsp;&raquo;, qui
+permet de revoir le film tel qu'il aurait été si la caméra avait été
+solidaire du point sélectionné comme origine du référentiel.
+</para>
+<para>Le bouton du dessous (Vidéo normale .. par défaut) sert à spécifier
+un déroulement normal pour la vidéo de synthèse, ou un ralenti par un facteur
+numérique de 2, 4 ou 8. Le bouton du dessus 
+&laquo;&nbsp;Vidéo calculée&nbsp;&raquo;
+déclenche un calcul assez long,
+la génération de la vidéo de synthèse. Dès que cette vidéo est calculée, on
+la voit apparaître en boucle dans une nouvelle fenêtre. Le logiciel utilisé
+pour afficher cette vidéo est vlc, xine ou mplayer selon le choix réalisé dans
+les préférences de PyMecavideo.
+</para>
+<sect3><title>Exemple de vidéo de synthèse</title>
+<para>Les vidéos de synthèse sont intéressantes quand on choisit comme 
+origine de référentiel un point qui se déplace en ligne droite à 
+vitesse constante.
+</para>
+<para>Par exemple, on peut étudier simultanément deux points, dans une vidéo
+d'un cycliste laissant tomber un objet&nbsp;: un point du cadre du vélo
+(P<subscript>1</subscript>) et un point de l'objet qui tombe 
+(P<subscript>2</subscript>). Dans le référentiel terrestre, celui de la caméra
+si on est en plan fixe, la trajectoire de P<subscript>2</subscript> est une
+parabole. Mais dans le référentiel galiléen d'origine P<subscript>1</subscript>,
+le point P<subscript>2</subscript> est en chute libre sans vitesse intiale.
+</para>
+<para>Dans ces circonstances, la vidéo de synthèse obtenue après avoir choisi 
+de représenter le volet des trajectoires à partir de l'origine 
+P<subscript>1</subscript> montre bien une chute libre.
+</para>
+<para><emphasis>N.B.</emphasis>&nbsp;: quand on choisit de réaliser une vidéo
+de synthèse, il faut garder présent à l'esprit que les images seront en fait
+découpées à l'intérieur des images déjà existantes. Il faut donc éviter de
+traiter des images où le point qui utilisé comme origine se trouve 
+trop près d'un bord de l'image, parce que ça diminue la taille du 
+gabarit de découpe utilisé pour produire la vidéo de
+synthèse.
+</para>
+<!-- ATTENTION : IL FAUDRAIT ILLUSTRER ÇA AVEC DES IMAGES !!! -->
+</sect3>
+</sect2>
+<sect2><title>Le volet des coordonnées</title>
+<mediaobject><imageobject><imagedata fileref="snap16.png" align="left"></imagedata></imageobject></mediaobject>
+<para>Le troisième et dernier volet de PyMecavideo est le volet des
+coordonnées. Il présente un tableau dont la première colonne représente des
+dates en seconde, et les suivantes des coordonnées en mètre des points étudiés.
+Ce tableau est juste là pour démystifier le fonctionnement de PyMecavideo,
+montrer qu'il ne s'agit que de traitement numérique.
+</para>
+<para>Cependant, ce volet des coordonnées est le lieu utile pour envoyer les
+données de PyMecavideo vers d'autres applications qui serviront à les analyser.
+</para>
+</sect2>
+<sect2><title>Exporter des données vers d'autres applications</title>
+<mediaobject><imageobject><imagedata fileref="snap17.png" align="left"></imagedata></imageobject></mediaobject>
+<para>Le bouton 
+&laquo;&nbsp;Copier les données vers le presse-papier&nbsp;&raquo; permet
+d'exporter la totalité du tableau vers le presse-papier. De même, il suffit de
+sélectionner (de mettre en surbrillance) une partie du tableau pour que 
+cette partie soit automatiquement copiée vers le presse-papier. La partie
+sélectionnée peut aussi être tirée-glissée vers d'autres applications. Si
+ces applications sont capables de récupérer les données et d'en faire usage,
+elles accepteront l'exportation. C'est le cas des traitements de texte et
+des tableurs les plus courants.
 </para>
 </sect2>
 </sect1>
