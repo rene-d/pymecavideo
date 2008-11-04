@@ -257,35 +257,16 @@ class StartQT4(QMainWindow):
                        float(480-p.y())*self.echelle_image.mParPx())
     
     def presse_papier(self):
-      
-      table = ""
-      liste_des_cles = []
-      sep_decimal="."
-      try:
-          if locale.getdefaultlocale()[0][0:2]=='fr':
-              # en France, le séparateur décimal est la virgule
-              sep_decimal=","
-      except TypeError:
-          pass
-      for key in self.points:
-          liste_des_cles.append(key)
-          liste_des_cles.sort()
-          for cle in liste_des_cles:
-              donnee=self.points[cle]
-              t=float(donnee[0])
-              a = ("%.2f\t" %t).replace(".", sep_decimal)
-
-
-              for p in donnee[1:]:
-                  pm=self.pointEnMetre(p)
-                  a+= ("%5f\t" %(pm.x())).replace(".", sep_decimal)
-                  a+= ("%5f\t" %(pm.y())).replace(".", sep_decimal)
-              a+="\n"
-          table = table + a
-
-      self.clipboard = QApplication.clipboard()
-
-      self.clipboard.setText(table)
+        """Sélectionne la totalité du tableau de coordonnées
+        et l'exporte dans le presse-papier (l'exportation est implicitement
+        héritée de la classe utilisée pour faire le tableau). Les
+        séparateurs décimaux sont automatiquement remplacés par des virgules
+        si la locale est française.
+        """
+        trange=QTableWidgetSelectionRange(0,0,
+                                          self.table_widget.rowCount()-1,
+                                          self.table_widget.columnCount()-1)
+        self.table_widget.setRangeSelected(trange,True)
 
     def _dir(self,lequel=None):
         """renvoie les répertoires utiles.

@@ -22,6 +22,7 @@
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import locale
 
 class standardDragTable(QTableWidget):
     """Implémente une table qui exporte du drag'n drop avec un contenu
@@ -30,6 +31,14 @@ class standardDragTable(QTableWidget):
     def __init__(self,parent):
         QTableWidget.__init__(self,parent)
         QObject.connect(self,SIGNAL("itemSelectionChanged()"), self.selection)
+        self.sep_decimal="."
+        try:
+            if locale.getdefaultlocale()[0][0:2]=='fr':
+                # en France, le séparateur décimal est la virgule
+                self.sep_decimal=","
+        except TypeError:
+            pass
+        
     def htmlSelected(self):
         t="<table>"
         for l in range(self.rowCount()):
@@ -39,7 +48,7 @@ class standardDragTable(QTableWidget):
                 lig+="<td>"
                 i=self.item(l,c)
                 if i and i.isSelected(): # seulement les cases de la sélection
-                    lig += str(i.text())
+                    lig += str(i.text()).replace(".",self.sep_decimal)
                     ok=True # la ligne est non vide
                 lig+="</td>"
             lig += "</tr>"
@@ -56,7 +65,7 @@ class standardDragTable(QTableWidget):
                 lig+=""
                 i=self.item(l,c)
                 if i and i.isSelected(): # seulement les cases de la sélection
-                    lig += str(i.text())
+                    lig += str(i.text()).replace(".",self.sep_decimal)
                     ok=True # la ligne est non vide
                 lig+="\t"
             if ok: # on n'envoie que les lignes non vides
