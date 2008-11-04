@@ -35,35 +35,44 @@ class Label_Video(QtGui.QLabel):
         self.liste_points = []
         self.app=app
         self.setCursor(QtCore.Qt.ArrowCursor)
-        self.pos=vecteur(0,0)
+        self.pos=self.pos_avant=vecteur(0,0)
         self.zoom_croix=Zoom_Croix(self,app)
         self.zoom_croix.hide()
-        self.croixGeometry()
+        self.croixGeometry(self.pos)
         self.setMouseTracking(True)
-
-    def croixGeometry(self):
+    def reinit(self):
+        self.zoom_croix=Zoom_Croix(self,self.app)
+        self.croixGeometry(self.pos)
+        self.met_a_jour_crop()
+        self.setMouseTracking(True)
+        self.zoom_croix.show()
+    def croixGeometry(self, pos):
         """
         fixe dynamiquement la géométrie du widget
         """
-        r=QtCore.QRect(self.pos.x()+5,self.pos.y()+5,100,100)
+        r=QtCore.QRect(pos.x()+5,pos.y()+5,100,100)
         self.zoom_croix.setGeometry(r)
         
     def mouseReleaseEvent(self, event):
         self.liste_points.append(vecteur(event.x(), event.y()))
         self.zoom_croix.hide()
+        self.pos_avant=self.pos
         self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
 
-    def enterEvent(self, envent):
+    def enterEvent(self, event):
         if self.app.lance_capture==True:#ne se lance que si la capture est lancée
             self.zoom_croix.show()
-
+            self.setCursor(QtCore.Qt.CrossCursor)
+    def met_a_jour_crop(self):
+        self.zoom_croix.fait_crop(self.pos_avant)
+        self.croixGeometry(self.pos_avant)
     def leaveEvent(self, envent):
         if self.app.lance_capture==True:
             self.zoom_croix.hide()
     def mouseMoveEvent(self, event):
         if self.app.lance_capture==True:#ne se lance que si la capture est lancée
                 self.pos=vecteur(event.x(), event.y())
-                self.croixGeometry()
+                self.croixGeometry(self.pos)
                 self.zoom_croix.fait_crop(self.pos)
                 self.zoom_croix.show()
                 self.zoom_croix.update()

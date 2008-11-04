@@ -19,10 +19,11 @@ licence="""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt4.QtGui import QDialog
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 from Ui_preferences import Ui_Dialog
 from dbg import Dbg
-import vecteur
+import vecteur, commands
 import pickle, os, os.path
 
 class Preferences:
@@ -34,12 +35,30 @@ class Preferences:
         self.proximite=False
         self.lastVideo=""
         self.videoDir=os.getcwd()
-        self.videoPlayers={"xine":"xine -l %s",
-                           "vlc" :"vlc -L %s"}
-        self.videopref="xine"
+        self.detect_video_players()
         self.niveauDbg=0 # niveau d'importance des messages de débogage
         # récupère les valeurs enregistrées
         self.load()
+    def detect_video_players(self):
+        """détecte les players dispnibles sur le système"""
+        self.videoPlayers = {}
+        players = {"xine":"xine -l %s",
+                           "vlc" :"vlc -L %s", "mplayer" :"mplayer -loop 0 %s"}
+        for player in players :
+            status, output = commands.getstatusoutput("whereis "+player+"|grep bin")
+            if status== 0 :
+                self.videoPlayers[player]=players[player]
+                print players[player]
+        
+        if "xine" in self.videoPlayers.keys() :
+            self.videopref="xine"
+        elif "vlc" in self.videoPlayers.keys() :
+            self.videopref="vlc"
+        elif "mplayer" in self.videoPlayers.keys() :
+            self.videopref="mplayer"
+        else :
+            warning =QMessageBox.warning(None,u"ATTENTION : pas de lecteurs vidéos trouvés","Vous devez installer VLC, MPLAYER ou XINE",QMessageBox.Ok,QMessageBox.Ok)
+            self.app.connect(warning, SIGNAL("close()"), self.app, SLOT("quit()")) #fais une erreur...mais fais ce qu'on veut ;)
 
     def save(self):
         f=open(self.conffile,"w")
@@ -81,6 +100,7 @@ class Preferences:
         vp=self.videoPlayers.keys()
         for cmd in vp:
             p.addItem(cmd)
+        print self.videopref
         p.setCurrentIndex(vp.index(self.videopref))
         retval=d.exec_()
         if retval:

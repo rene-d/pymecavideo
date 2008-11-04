@@ -35,6 +35,11 @@ class Zoom_Croix(QWidget):
         self.setWindowFlags(Qt.SplashScreen)
         if self.app.lance_capture==True:
             self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
+        self.setMouseTracking(True)
+    def mouseMoveEvent(self, event):
+        event.ignore()
+    def mouseReleaseEvent(self, event):
+        event.ignore()
     def fait_crop(self, p):
         rect = QRect(p.x()-25,p.y()-25,50,50)
         crop = self.app.image_640_480.copy(rect)

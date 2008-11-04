@@ -603,10 +603,13 @@ class StartQT4(QMainWindow):
         self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics)
         self.affiche_echelle()
         self.affiche_nb_points()
+        self.ui.tab_traj.setEnabled(1)
+        self.label_video.setCursor(Qt.CrossCursor)
+        self.label_video.reinit()
+
         for clics in self.tousLesClics:
             self.clic_sur_label_video(liste_points=clics, interactif=False)
         self.clic_sur_label_video_ajuste_ui(1)
-
 
     def retientPoint(self,n,ref,i,p,point):
         """
@@ -705,7 +708,6 @@ class StartQT4(QMainWindow):
                               self.retientPoint(n,ref,i,p,point)
               
         else : #premier onglet
-              #self.label_video.zoom_croix.show()
               ref="camera"
               for n in range(self.nb_de_points):
                   couleur = self.couleurs[n]
@@ -758,7 +760,7 @@ class StartQT4(QMainWindow):
             self.label_video.liste_points=[]
             self.affiche_image()
             self.tracer_trajectoires("absolu")
-            
+        
     def stock_coordonnees_image(self, ligne, liste_points, interactif=True):
         """
         place les données dans le tableau.
@@ -779,7 +781,6 @@ class StartQT4(QMainWindow):
             self.table_widget.setItem(ligne,i+1,QTableWidgetItem(str(pm.x())))
             self.table_widget.setItem(ligne,i+2,QTableWidgetItem(str(pm.y())))
             i+=2
-        #print liste_points[0]
         if interactif:
             self.table_widget.show()
         #enlève la ligne supplémentaire, une fois qu'une ligne a été remplie
@@ -799,7 +800,7 @@ class StartQT4(QMainWindow):
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
         self.label_video.setMouseTracking(True)
         self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
-        
+        self.label_video.met_a_jour_crop()
         self.label_video.update()
         self.label_video.show()
         self.ui.horizontalSlider.setValue(self.index_de_l_image)
