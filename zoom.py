@@ -34,7 +34,10 @@ class Zoom_Croix(QWidget):
         self.cropX2=None
         self.setWindowFlags(Qt.SplashScreen)
         if self.app.lance_capture==True:
-            self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
+            try :
+                self.fait_crop()
+            except TypeError :
+                pass
         self.setMouseTracking(True)
     def mouseMoveEvent(self, event):
         event.ignore()
@@ -44,7 +47,11 @@ class Zoom_Croix(QWidget):
         rect = QRect(p.x()-25,p.y()-25,50,50)
         crop = self.app.image_640_480.copy(rect)
         self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
-    
+    def hideEvent(self, event):
+        self.setGeometry(-1000,-1000,100,100)
+        self.update()
+        #le bug vient du fait qu'il est caché..;mais pourquoi
+        
     def paintEvent(self, event):
         if self.app.lance_capture==True:
             if self.cropX2 != None :
