@@ -48,8 +48,8 @@ class Preferences:
             status, output = commands.getstatusoutput("whereis "+player+"|grep bin")
             if status== 0 :
                 self.videoPlayers[player]=players[player]
-                print players[player]
-        
+
+
         if "xine" in self.videoPlayers.keys() :
             self.videopref="xine"
         elif "vlc" in self.videoPlayers.keys() :
@@ -58,7 +58,8 @@ class Preferences:
             self.videopref="mplayer"
         else :
             warning =QMessageBox.warning(None,u"ATTENTION : pas de lecteurs vidéos trouvés","Vous devez installer VLC, MPLAYER ou XINE",QMessageBox.Ok,QMessageBox.Ok)
-            self.app.connect(warning, SIGNAL("close()"), self.app, SLOT("quit()")) #fais une erreur...mais fais ce qu'on veut ;)
+            import sys
+            sys.exit(-1)#fais une erreur...mais fais ce qu'on veut ;)
 
     def save(self):
         f=open(self.conffile,"w")

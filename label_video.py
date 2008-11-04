@@ -54,10 +54,11 @@ class Label_Video(QtGui.QLabel):
         self.zoom_croix.setGeometry(r)
         
     def mouseReleaseEvent(self, event):
-        self.liste_points.append(vecteur(event.x(), event.y()))
-        self.zoom_croix.hide()
-        self.pos_avant=self.pos
-        self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
+        if self.app.lance_capture==True:
+            self.liste_points.append(vecteur(event.x(), event.y()))
+            self.zoom_croix.hide()
+            self.pos_avant=self.pos
+            self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
 
     def enterEvent(self, event):
         if self.app.lance_capture==True:#ne se lance que si la capture est lancée
