@@ -1,8 +1,14 @@
 #-*- coding: utf-8 -*-
 
-licence="""
-    pymecavideo : a program to track moving points in a video frameset
-    Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
+licence={}
+licence['en']="""
+    pymecavideo version %s:
+
+    a program to track moving points in a video frameset
+    
+    Copyright (C) 2007-2008 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    
+    Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,9 +24,14 @@ licence="""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-licence_fr=u"""
-    pymecavideo : un programme pour tracer les trajectoires des points dans une vidéo.
-    Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
+licence['fr']=u"""
+    pymecavideo version %s :
+
+    un programme pour tracer les trajectoires des points dans une vidéo.
+    
+    Copyright (C) 2007-2008 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    
+    Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org>
     
     Ce projet est un logiciel libre : vous pouvez le redistribuer, le modifier selon les terme de la GPL (GNU Public License) dans les termes de la Free Software Foundation concernant la version 2 ou plus de la dite licence.
     
@@ -46,6 +57,7 @@ from cadreur import Cadreur
 from preferences import Preferences
 from dbg import Dbg
 from listes import listePointee
+from version import Version
 
 class StartQT4(QMainWindow):
     def __init__(self, parent, filename, opts):
@@ -249,9 +261,12 @@ class StartQT4(QMainWindow):
       table = ""
       liste_des_cles = []
       sep_decimal="."
-      if locale.getdefaultlocale()[0][0:2]=='fr':
-            # en France, le séparateur décimal est la virgule
-            sep_decimal=","
+      try:
+          if locale.getdefaultlocale()[0][0:2]=='fr':
+              # en France, le séparateur décimal est la virgule
+              sep_decimal=","
+      except TypeError:
+          pass
       for key in self.points:
           liste_des_cles.append(key)
           liste_des_cles.sort()
@@ -372,9 +387,12 @@ class StartQT4(QMainWindow):
         return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points)).replace("\n","\n#")
     def enregistre(self, fichier):
         sep_decimal="."
-        if locale.getdefaultlocale()[0][0:2]=='fr':
-            # en France, le séparateur décimal est la virgule
-            sep_decimal=","
+        try:
+            if locale.getdefaultlocale()[0][0:2]=='fr':
+                # en France, le séparateur décimal est la virgule
+                sep_decimal=","
+        except TypeError:
+            pass
         if fichier != "":
             file = open(fichier+".mecavideo", 'w')
             liste_des_cles = []
@@ -908,7 +926,15 @@ class StartQT4(QMainWindow):
             self.label_video.show()
 
     def propos(self):
-        QMessageBox.warning(None,"Licence",QString(licence_fr), QMessageBox.Ok,QMessageBox.Ok)
+        try:
+            loc = locale.getdefaultlocale()[0][0:2]
+        except TypeError:
+            loc=''
+        if loc in licence.keys():
+            licence_XX=licence[loc] %Version
+        else:
+            licence_XX=licence["en"] %Version
+        QMessageBox.warning(None,"Licence",QString(licence_XX), QMessageBox.Ok,QMessageBox.Ok)
         
     def aide(self):
         lang=locale.getdefaultlocale()[0][0:2]
