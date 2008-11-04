@@ -622,8 +622,8 @@ class StartQT4(QMainWindow):
         self.affiche_echelle()
         self.affiche_nb_points()
         self.ui.tab_traj.setEnabled(1)
-        self.label_video.setCursor(Qt.CrossCursor)
-        self.label_video.reinit()
+        #self.label_video.setCursor(Qt.CrossCursor)
+        #self.label_video.reinit()
 
         for clics in self.tousLesClics:
             self.clic_sur_label_video(liste_points=clics, interactif=False)
@@ -763,6 +763,7 @@ class StartQT4(QMainWindow):
         @param point_attendu le numéro du point qui est à cliquer
         """
         self.affiche_point_attendu(point_attendu)
+        self.lance_capture = True
         if len(self.tousLesClics) > 0:
             self.ui.pushButton_defait.setEnabled(1)
         else:
