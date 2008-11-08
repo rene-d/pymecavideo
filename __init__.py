@@ -136,7 +136,7 @@ class StartQT4(QMainWindow):
         
         self.ui.button_video.setEnabled(0)
         self.affiche_nb_points(False)
-
+        self.ui.Bouton_Echelle.setEnabled(False)
         self.ui.echelle_v.setDuplicatesEnabled(False)
         self.setEchelle_v()
         #création du label qui contiendra la vidéo.
@@ -904,6 +904,7 @@ class StartQT4(QMainWindow):
             self.prefs.save()
             self.init_image()
             self.mets_a_jour_label_infos(u" Veuillez choisir une image et définir l'échelle")
+            self.ui.Bouton_Echelle.setEnabled(True)
             self.ui.horizontalSlider.setEnabled(1)
             self.label_video.show()
 

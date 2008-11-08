@@ -39,6 +39,7 @@ class Zoom_Croix(QWidget):
             except TypeError :
                 pass
         self.setMouseTracking(True)
+        self.setEnabled(0)
     def mouseMoveEvent(self, event):
         event.ignore()
     def mouseReleaseEvent(self, event):
