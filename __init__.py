@@ -892,21 +892,31 @@ class StartQT4(QMainWindow):
     def openfile(self):
         dir=self._dir("cwd")
         filename=QFileDialog.getOpenFileName(self,u"Ouvrir une vidéo", dir,"*.avi")
-
+        print type(filename)
         self.openTheFile(filename)
-            
-            
+
+    def renomme_le_fichier(self):
+        renomme_fichier = QMessageBox.warning(self,"Nom de fichier non conforme",QString(u"Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer"), QMessageBox.Ok,QMessageBox.Ok)
+        filename=QFileDialog.getOpenFileName(self,u"Ouvrir une vidéo", self._dir("cwd"),"*.avi")
+        self.openTheFile(filename)
     def openTheFile(self,filename):
         if filename != "" : 
-            self.filename=filename
-            self.prefs.lastVideo=filename
-            self.prefs.videoDir=os.path.dirname(str(filename))
-            self.prefs.save()
-            self.init_image()
-            self.mets_a_jour_label_infos(u" Veuillez choisir une image et définir l'échelle")
-            self.ui.Bouton_Echelle.setEnabled(True)
-            self.ui.horizontalSlider.setEnabled(1)
-            self.label_video.show()
+            try :
+                str(filename)
+            except UnicodeEncodeError :
+                self.renomme_le_fichier()
+            if len(filename.split(" ")) > 2 :
+                self.renomme_le_fichier()
+            else :
+                self.filename=str(filename)
+                self.prefs.lastVideo=filename
+                self.prefs.videoDir=os.path.dirname(unicode(filename))
+                self.prefs.save()
+                self.init_image()
+                self.mets_a_jour_label_infos(u" Veuillez choisir une image et définir l'échelle")
+                self.ui.Bouton_Echelle.setEnabled(True)
+                self.ui.horizontalSlider.setEnabled(1)
+                self.label_video.show()
 
     def propos(self):
         try:
