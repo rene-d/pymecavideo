@@ -217,7 +217,7 @@ class StartQT4(QMainWindow):
         self.ui.horizontalSlider.setEnabled(1)
         self.ui.spinBox_image.setEnabled(1)
         self.ui.spinBox_image.setValue(1)
-        self.affiche_nb_points(1)
+        self.affiche_nb_points(0)
         if self.table_widget:
             self.table_widget.clear()
 
@@ -437,7 +437,7 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_select_all_table.setEnabled(1)
         
         self.label_trajectoire = Label_Trajectoire(self.ui.tab_traj,self)
-        
+        self.ui.comboBox_referentiel.clear()
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points) :
             self.ui.comboBox_referentiel.insertItem(-1, QString(u"point N° "+str(i+1)))
@@ -819,9 +819,10 @@ class StartQT4(QMainWindow):
 
     def demande_echelle(self):
         
-        echelle_result_raw = QInputDialog.getText(self, u"Définir une échelle", u"Quelle est la longueur en mètre de votre étalon sur l'image ?"
+        echelle_result_raw = QInputDialog.getText(None, u"Définir une échelle", u"Quelle est la longueur en mètre de votre étalon sur l'image ?"
 ,QLineEdit.Normal, QString("1.0"))
-
+        if echelle_result_raw[1] == False :
+            return None
         try :
             echelle_result = [float(echelle_result_raw[0].replace(",",".")), echelle_result_raw[1]]
 
@@ -932,6 +933,7 @@ class StartQT4(QMainWindow):
     def aide(self):
         lang=locale.getdefaultlocale()[0][0:2]
         helpfile="%s/help-%s.xhtml" %(self._dir("help"),lang)
+        print helpfile
         if os.path.exists(helpfile):
             command="firefox --new-window %s" %helpfile
             status,output=commands.getstatusoutput(command)
