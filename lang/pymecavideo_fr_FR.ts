@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1" language="fr">
-<defaultcodec></defaultcodec>
 <context encoding="UTF-8">
     <name>Dialog</name>
     <message encoding="UTF-8">
@@ -45,91 +44,96 @@
         <translation>indéf.</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="346"/>
+        <location filename="__init__.py" line="336"/>
         <source>chemin vers les modules : %s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="__init__.py" line="403"/>
+        <location filename="__init__.py" line="393"/>
         <source>temps en seconde, positions en m&#xc3;&#xa8;tre</source>
         <translation>temps en seconde, positions en mètre</translation>
     </message>
     <message>
         <location filename="__init__.py" line="448"/>
         <source>point N&#xc2;&#xb0; </source>
-        <translation>Point N° </translation>
+        <translation type="obsolete">Point N° </translation>
     </message>
     <message>
-        <location filename="__init__.py" line="731"/>
+        <location filename="__init__.py" line="722"/>
         <source>Cliquer sur le point N&#xc2;&#xb0;%d</source>
         <translation>Cliquer sur le point N° :</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="827"/>
+        <location filename="__init__.py" line="818"/>
         <source>D&#xc3;&#xa9;finir une &#xc3;&#xa9;chelle</source>
         <translation>Définir l&apos;échelle</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="828"/>
+        <location filename="__init__.py" line="819"/>
         <source>Quelle est la longueur en m&#xc3;&#xa8;tre de votre &#xc3;&#xa9;talon sur l&apos;image ?</source>
         <translation>Quelle est la longueur en mètres de votre étalon sur l&apos;image ?</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="842"/>
+        <location filename="__init__.py" line="833"/>
         <source> Merci d&apos;indiquer une &#xc3;&#xa9;chelle valable</source>
         <translation>Merci d&apos;indiquer une échelle valable</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="867"/>
+        <location filename="__init__.py" line="858"/>
         <source>Les donn&#xc3;&#xa9;es seront perdues</source>
         <translation>Les données seront perdues</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="867"/>
+        <location filename="__init__.py" line="858"/>
         <source>Votre travail n&apos;a pas &#xc3;&#xa9;t&#xc3;&#xa9; sauvegard&#xc3;&#xa9;
 Voulez-vous les sauvegarder ?</source>
         <translation>Votre travail n&apos;a pas été sauvegardéVoulez-vous les sauvegarder ?</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="886"/>
+        <location filename="__init__.py" line="877"/>
         <source>Vous avez atteint le d&#xc3;&#xa9;but de la vid&#xc3;&#xa9;o</source>
         <translation>Vous avez atteint le début de la vidéo</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="905"/>
+        <location filename="__init__.py" line="896"/>
         <source>Ouvrir une vid&#xc3;&#xa9;o</source>
         <translation>Ouvrir une vidéo</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="904"/>
+        <location filename="__init__.py" line="895"/>
         <source>Nom de fichier non conforme</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="__init__.py" line="904"/>
+        <location filename="__init__.py" line="895"/>
         <source>Le nom de votre fichier contient des caract&#xc3;&#xa8;res accentu&#xc3;&#xa9;s ou des espaces.
  Merci de bien vouloir le renommer avant de continuer</source>
         <translation>Le nom de votre fichier contient des caractères accentués ou des espaces.￼ Merci de bien vouloir le renommer avant de continuer</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="921"/>
+        <location filename="__init__.py" line="912"/>
         <source>Veuillez choisir une image et d&#xc3;&#xa9;finir l&apos;&#xc3;&#xa9;chelle</source>
         <translation>Veuillez choisir une image et définir l&apos;échelle</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="947"/>
+        <location filename="__init__.py" line="938"/>
         <source>D&#xc3;&#xa9;sol&#xc3;&#xa9; pas de fichier d&apos;aide pour ce langage %s.</source>
         <translation>Désolé. Pas de fichier d&apos;aide pour ce langage %s.</translation>
     </message>
     <message>
-        <location filename="__init__.py" line="1019"/>
+        <location filename="__init__.py" line="1010"/>
         <source>Impossible de lire %s</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="__init__.py" line="1038"/>
+        <location filename="__init__.py" line="1029"/>
         <source>Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier]</source>
         <translation></translation>
+    </message>
+    <message>
+        <location filename="__init__.py" line="438"/>
+        <source>point N&#xc2;&#xb0;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context encoding="UTF-8">
