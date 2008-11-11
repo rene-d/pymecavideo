@@ -57,7 +57,7 @@
     <message>
         <location filename="__init__.py" line="448"/>
         <source>point N&#xc2;&#xb0; </source>
-        <translation>Point N°</translation>
+        <translation>Point N° </translation>
     </message>
     <message>
         <location filename="__init__.py" line="731"/>

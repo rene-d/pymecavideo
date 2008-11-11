@@ -101,7 +101,7 @@ class Preferences:
         vp=self.videoPlayers.keys()
         for cmd in vp:
             p.addItem(cmd)
-        print self.videopref
+        #print self.videopref
         p.setCurrentIndex(vp.index(self.videopref))
         retval=d.exec_()
         if retval:

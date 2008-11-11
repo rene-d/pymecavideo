@@ -218,6 +218,8 @@ class StartQT4(QMainWindow):
         self.ui.horizontalSlider.setEnabled(1)
         self.ui.spinBox_image.setEnabled(1)
         self.ui.spinBox_image.setValue(1)
+        self.ui.pushButton_defait.setEnabled(0)
+        self.ui.pushButton_refait.setEnabled(0)
         self.affiche_nb_points(0)
         if self.table_widget:
             self.table_widget.clear()
@@ -301,27 +303,15 @@ class StartQT4(QMainWindow):
             self.pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
             sys.path.append(self.pymecavideo_rep_install) # pour pickle !
             self.cwd=os.getcwd()
-            os.chdir(home)
-            if os.path.exists(pymecavideo_rep):
-                pass
-            else:
-                os.mkdir(pymecavideo_rep)
-                os.mkdir(pymecavideo_rep_images)
-                os.mkdir(pymecavideo_rep_icones)
-                os.mkdir(pymecavideo_rep_langues)
-                copy_commands='cp -R '+self.pymecavideo_rep_install+'/icones/* '+pymecavideo_rep_icones
-                status,output=commands.getstatusoutput(copy_commands)
-                copy_commands_lang='cp -R '+self.pymecavideo_rep_install+'/lang/* '+pymecavideo_rep_langues
-                status,output=commands.getstatusoutput(copy_commands_lang)
-            os.chdir(self.cwd)
-
+ 
         self.ui.pushButton_defait.setIcon(QIcon(self._dir("icones")+"/"+"undo.png"))
         self.ui.pushButton_refait.setIcon(QIcon(self._dir("icones")+"/"+"redo.png"))
 
     def rouvre_ui(self):
         os.chdir(self._dir("home"))
         fichier = QFileDialog.getOpenFileName(self,"FileDialog", "","*.mecavideo")
-        self.rouvre(fichier)
+        if fichier != "":
+            self.rouvre(fichier)
 
     def loads(self,s):
         s=s[1:-1].replace("\n#","\n")
@@ -445,7 +435,7 @@ class StartQT4(QMainWindow):
         self.ui.comboBox_referentiel.clear()
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points) :
-            self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr("point N° ")+str(i+1)))
+            self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr("point N°")+" "+str(i+1)))
         self.cree_tableau()
 
     def cree_tableau(self):
@@ -677,7 +667,8 @@ class StartQT4(QMainWindow):
               if ref != "camera":
                   bc=self.mediane_trajectoires(int(ref)-1)
                   origine=vecteur(320,240)-bc
-                  self.ui.button_video.setEnabled(1)
+                  if len(self.points) > 1:
+                        self.ui.button_video.setEnabled(1)
               else:
                   # pas de vidéo si ref == "camera"
                   self.ui.button_video.setEnabled(0)
@@ -1058,10 +1049,28 @@ def run():
     if qtTranslator.load("qt_" + locale):
         app.installTranslator(qtTranslator)
     appTranslator = QTranslator()
-    #print windows._dir("langues")+"/pymecavideo_" + locale
+    
     home = os.getenv("HOME")
     pymecavideo_rep=home+"/.pymecavideo"
+    pymecavideo_rep_images=pymecavideo_rep + "/images_extraites"
+    pymecavideo_rep_icones=pymecavideo_rep + "/icones"
     pymecavideo_rep_langues=pymecavideo_rep + "/lang"
+
+    pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
+    os.chdir(home)
+    if os.path.exists(pymecavideo_rep):
+        pass
+    else:
+        os.mkdir(pymecavideo_rep)
+        os.mkdir(pymecavideo_rep_images)
+        os.mkdir(pymecavideo_rep_icones)
+        os.mkdir(pymecavideo_rep_langues)
+        copy_commands='cp -R '+pymecavideo_rep_install+'/icones/* '+pymecavideo_rep_icones
+        
+        status,output=commands.getstatusoutput(copy_commands)
+        copy_commands_lang='cp -R '+pymecavideo_rep_install+'/lang/* '+pymecavideo_rep_langues
+        status,output=commands.getstatusoutput(copy_commands_lang)
+        
     if appTranslator.load(pymecavideo_rep_langues+"/pymecavideo_" + locale):
         app.installTranslator(appTranslator)
     windows = StartQT4(None,os.path.abspath(filename),opts)
