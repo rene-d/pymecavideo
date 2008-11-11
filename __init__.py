@@ -73,7 +73,8 @@ class StartQT4(QMainWindow):
 
         ####intilise les répertoires
         self._dir()
-        
+
+
         #variables à initialiser
         self.init_variables(filename,opts)
         self.init_interface()
@@ -162,7 +163,7 @@ class StartQT4(QMainWindow):
         affiche l'échelle courante pour les distances sur l'image
         """
         if self.echelle_image.isUndef():
-            self.ui.echelleEdit.setText(u"indéf.")
+            self.ui.echelleEdit.setText(self.tr("indéf."))
             self.ui.Bouton_Echelle.setEnabled(True)
         else:
             epxParM=self.echelle_image.longueur_pixel_etalon/self.echelle_image.longueur_reelle_etalon
@@ -280,12 +281,13 @@ class StartQT4(QMainWindow):
         pymecavideo_rep=home+"/.pymecavideo"
         pymecavideo_rep_images=pymecavideo_rep + "/images_extraites"
         pymecavideo_rep_icones=pymecavideo_rep + "/icones"
-
+        pymecavideo_rep_langues=pymecavideo_rep + "/lang"
         if   lequel == "home": return home
         elif lequel == "cwd": return self.cwd
         elif lequel == "ressources": return pymecavideo_rep
         elif lequel == "images": return pymecavideo_rep_images
         elif lequel == "icones": return pymecavideo_rep_icones
+        elif lequel == "langues": return pymecavideo_rep_langues
         elif lequel == "share" : return self.pymecavideo_rep_install
         elif lequel == "help" : 
             if os.path.isdir("/usr/share/doc/python-mecavideo/html") :
@@ -306,8 +308,11 @@ class StartQT4(QMainWindow):
                 os.mkdir(pymecavideo_rep)
                 os.mkdir(pymecavideo_rep_images)
                 os.mkdir(pymecavideo_rep_icones)
+                os.mkdir(pymecavideo_rep_langues)
                 copy_commands='cp -R '+self.pymecavideo_rep_install+'/icones/* '+pymecavideo_rep_icones
                 status,output=commands.getstatusoutput(copy_commands)
+                copy_commands_lang='cp -R '+self.pymecavideo_rep_install+'/lang/* '+pymecavideo_rep_langues
+                status,output=commands.getstatusoutput(copy_commands_lang)
             os.chdir(self.cwd)
 
         self.ui.pushButton_defait.setIcon(QIcon(self._dir("icones")+"/"+"undo.png"))
@@ -338,7 +343,7 @@ class StartQT4(QMainWindow):
                     self.points[i].append(vecteur(d[j],d[j+1]))
                 i+=1
         self.echelle_image=echelle()
-        self.dbg.p(2,"chemin vers les modules : %s" %sys.path)
+        self.dbg.p(2,self.tr("chemin vers les modules : %s") %sys.path)
         self.loads(dd)
         self.openTheFile(self.filename)
         self.affiche_echelle()
@@ -395,7 +400,7 @@ class StartQT4(QMainWindow):
             ################# fin du fichier mecavideo ################
             file = codecs.open(fichier, 'w', 'utf8')
             try :
-                file.write(self.entete_fichier(u"temps en seconde, positions en mètre"))
+                file.write(self.entete_fichier(self.tr("temps en seconde, positions en mètre")))
                 for cle in liste_des_cles:
                     donnee=self.points[cle]
                     t=float(donnee[0])
@@ -440,7 +445,7 @@ class StartQT4(QMainWindow):
         self.ui.comboBox_referentiel.clear()
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points) :
-            self.ui.comboBox_referentiel.insertItem(-1, QString(u"point N° "+str(i+1)))
+            self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr("point N° ")+str(i+1)))
         self.cree_tableau()
 
     def cree_tableau(self):
@@ -723,7 +728,7 @@ class StartQT4(QMainWindow):
         """
         Renseigne sur le numéro du point attendu
         """
-        self.mets_a_jour_label_infos(u"Cliquer sur le point N°%d" %n)
+        self.mets_a_jour_label_infos(self.tr("Cliquer sur le point N°%d" %n))
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
@@ -819,7 +824,7 @@ class StartQT4(QMainWindow):
 
     def demande_echelle(self):
         
-        echelle_result_raw = QInputDialog.getText(None, u"Définir une échelle", u"Quelle est la longueur en mètre de votre étalon sur l'image ?"
+        echelle_result_raw = QInputDialog.getText(None, self.tr("Définir une échelle"), self.tr("Quelle est la longueur en mètre de votre étalon sur l'image ?")
 ,QLineEdit.Normal, QString("1.0"))
         if echelle_result_raw[1] == False :
             return None
@@ -827,14 +832,14 @@ class StartQT4(QMainWindow):
             echelle_result = [float(echelle_result_raw[0].replace(",",".")), echelle_result_raw[1]]
 
             if echelle_result[0] <= 0 or echelle_result[1] == False :
-                self.mets_a_jour_label_infos(u" Merci d'indiquer une échelle valable")
+                self.mets_a_jour_label_infos(self.tr(" Merci d'indiquer une échelle valable"))
             else :
                 self.echelle_image.longueur_reelle_etalon=float(echelle_result[0])
                 self.job = Label_Echelle(self.ui.tab_acq,self)
                 self.job.setPixmap(QPixmap(self.chemin_image))
                 self.job.show()
         except ValueError :
-            self.mets_a_jour_label_infos(u" Merci d'indiquer une échelle valable")
+            self.mets_a_jour_label_infos(self.tr(" Merci d'indiquer une échelle valable"))
             self.demande_echelle()
 
     def feedbackEchelle(self, p1, p2):
@@ -859,7 +864,7 @@ class StartQT4(QMainWindow):
 
     def verifie_donnees_sauvegardees(self):
         if self.modifie:
-            retour = QMessageBox.warning(self,QString(u"Les données seront perdues"),QString(u"Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?"),QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel )
+            retour = QMessageBox.warning(self,QString(self.tr("Les données seront perdues")),QString(self.tr("Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?")),QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel )
             if retour == QMessageBox.Yes :
                 self.enregistre_ui()
                 return True
@@ -878,7 +883,7 @@ class StartQT4(QMainWindow):
             
         elif self.index_de_l_image==0 : 
             self.index_de_l_image=1
-            self.mets_a_jour_label_infos("Vous avez atteint le début de la vidéo")
+            self.mets_a_jour_label_infos(self.tr("Vous avez atteint le début de la vidéo"))
             self.affiche_image()
     
     def mets_a_jour_label_infos(self, message):
@@ -887,18 +892,17 @@ class StartQT4(QMainWindow):
     def openexample(self):
         dir="%s/video" %(self._dir("share"))
         self.reinitialise_tout()
-        filename=QFileDialog.getOpenFileName(self,u"Ouvrir une vidéo", dir,"*.avi")
+        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), dir,"*.avi")
         self.openTheFile(filename)
         
     def openfile(self):
         dir=self._dir("cwd")
-        filename=QFileDialog.getOpenFileName(self,u"Ouvrir une vidéo", dir,"*.avi")
-        print type(filename)
+        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), dir,"*.avi")
         self.openTheFile(filename)
 
     def renomme_le_fichier(self):
-        renomme_fichier = QMessageBox.warning(self,"Nom de fichier non conforme",QString(u"Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer"), QMessageBox.Ok,QMessageBox.Ok)
-        filename=QFileDialog.getOpenFileName(self,u"Ouvrir une vidéo", self._dir("cwd"),"*.avi")
+        renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr("Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer")), QMessageBox.Ok,QMessageBox.Ok)
+        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), self._dir("cwd"),"*.avi")
         self.openTheFile(filename)
     def openTheFile(self,filename):
         if filename != "" : 
@@ -914,7 +918,7 @@ class StartQT4(QMainWindow):
                 self.prefs.videoDir=os.path.dirname(unicode(filename))
                 self.prefs.save()
                 self.init_image()
-                self.mets_a_jour_label_infos(u" Veuillez choisir une image et définir l'échelle")
+                self.mets_a_jour_label_infos(self.tr("Veuillez choisir une image et définir l'échelle"))
                 self.ui.Bouton_Echelle.setEnabled(True)
                 self.ui.horizontalSlider.setEnabled(1)
                 self.label_video.show()
@@ -933,7 +937,6 @@ class StartQT4(QMainWindow):
     def aide(self):
         lang=locale.getdefaultlocale()[0][0:2]
         helpfile="%s/help-%s.xhtml" %(self._dir("help"),lang)
-        print helpfile
         if os.path.exists(helpfile):
             command="firefox --new-window %s" %helpfile
             status,output=commands.getstatusoutput(command)
@@ -941,7 +944,7 @@ class StartQT4(QMainWindow):
                 command="x-www-browser %s" %helpfile
                 status,output=commands.getstatusoutput(command)
         else:
-            QMessageBox.warning(None,"Aide",QString("Sorry, no help file for the language %s." %lang))
+            QMessageBox.warning(None,"Aide",QString(self.tr("Désolé pas de fichier d'aide pour ce langage %s.") %lang))
         
     def init_image(self):
         """intialise certaines variables lors le la mise en place d'une nouvelle image"""
@@ -1013,7 +1016,7 @@ class StartQT4(QMainWindow):
             nb_images = self.construit_entier(fsock.read(4))
             fsock.close()
         except IOError:
-            self.dbg.p(0, "Impossible de lire %s" %fileName)
+            self.dbg.p(0, self.tr("Impossible de lire %s") %fileName)
 
         return framerate,nb_images
 
@@ -1030,22 +1033,11 @@ class StartQT4(QMainWindow):
                 self.rouvre(val)
         
 def usage():
-    print "Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier]"
+    print self.tr("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier]")
 
 def run():
     app = QApplication(sys.argv)
     
-    #translation
-    #locale = QLocale.system().name()
-
-    #qtTranslator = QTranslator()
-    #if qtTranslator.load("qt_" + locale):
-    #    app.installTranslator(qtTranslator)
-    #appTranslator = QTranslator()
-        
-   # if appTranslator.load("lang/pyfocus_" + locale):
-        #app.installTranslator(appTranslator)
-
     args=sys.argv[1:]
     try:                                
         opts, args = getopt.getopt(args, "f:", ["fichier_mecavideo="])
@@ -1056,9 +1048,24 @@ def run():
     filename=""
     if len(args)>0:
         filename=args[-1]# passe le dernier paramètre
+        locale = QLocale.system().name()
 
     # ainsi pickle peut trouver le module "vecteur"
+
+    ###translation##
+    locale = QLocale.system().name()
+    qtTranslator = QTranslator()
+    if qtTranslator.load("qt_" + locale):
+        app.installTranslator(qtTranslator)
+    appTranslator = QTranslator()
+    #print windows._dir("langues")+"/pymecavideo_" + locale
+    home = os.getenv("HOME")
+    pymecavideo_rep=home+"/.pymecavideo"
+    pymecavideo_rep_langues=pymecavideo_rep + "/lang"
+    if appTranslator.load(pymecavideo_rep_langues+"/pymecavideo_" + locale):
+        app.installTranslator(appTranslator)
     windows = StartQT4(None,os.path.abspath(filename),opts)
+
     windows.show()
     sys.exit(app.exec_())
 
