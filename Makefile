@@ -38,4 +38,15 @@ install-for-debian: all
 	install -m 0644 pymecavideo.svg icones/pymecavideo.png \
 	  $(DESTDIR)/usr/share/icons
 
-.PHONY = clean all install-for-debian helpfiles
+install-ordinaire: all
+	python setup.py install
+	install -m 755 pymecavideo $(DESTDIR)/usr/bin
+	mkdir -p $(DESTDIR)/usr/share/man/man1
+	gzip -c9 pymecavideo.1 > $(DESTDIR)/usr/share/man/man1/pymecavideo.1.gz
+	install -m 0644 icones/pymecavideo.xpm icones/pymecavideo-64x64.xpm \
+	  $(DESTDIR)/usr/share/pixmaps
+	install -m 0644 pymecavideo.desktop $(DESTDIR)/usr/share/applications
+	install -m 0644 pymecavideo.svg icones/pymecavideo.png \
+	  $(DESTDIR)/usr/share/icons
+
+.PHONY = clean all install-for-debian install-ordinaire helpfiles
