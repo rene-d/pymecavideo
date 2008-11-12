@@ -11,6 +11,6 @@ setup (name='pymecavideo',
       license='GPLv3',
       packages=['pymecavideo'],
       package_dir={'pymecavideo': '.'},
-      package_data={'pymecavideo': ['icones/*', 'video/*.avi']}#, 'help/*']},
+      package_data={'pymecavideo': ['icones/*', 'video/*.avi', 'lang/*.ts', 'lang/*.qm']}#, 'help/*']},
       #data_files=[('share/pymecavideo', ['test.html'])]
 )
