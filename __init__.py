@@ -1045,8 +1045,8 @@ def run():
 
     ###translation##
     locale = QLocale.system().name()
-    locale = QString("en_EN")
-    print locale, type(locale)
+    #locale = QString("en_EN")
+    
     qtTranslator = QTranslator()
     if qtTranslator.load("qt_" + locale):
         app.installTranslator(qtTranslator)
@@ -1074,8 +1074,8 @@ def run():
         status,output=commands.getstatusoutput(copy_commands_lang)
         
     if appTranslator.load(pymecavideo_rep_langues+"/pymecavideo_" + locale):
-        app.installTranslator(appTranslator)
-        print "ok"
+        b = app.installTranslator(appTranslator)
+        
     windows = StartQT4(None,os.path.abspath(filename),opts)
 
     windows.show()
