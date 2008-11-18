@@ -987,13 +987,16 @@ class StartQT4(QMainWindow):
             i=1
             cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
             status, output = commands.getstatusoutput(cmd)
-            while not os.path.exists(imfilename) and i<index:
-                i+=1
-                imfilename="video_%06d.jpg" %(index-i+1)
-                cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
-                status, output = commands.getstatusoutput(cmd)
-            self.chemin_image = imfilename
-            
+            if status==0:
+                while not os.path.exists(imfilename) and i<index:
+                    i+=1
+                    imfilename="video_%06d.jpg" %(index-i+1)
+                    cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
+                    status, output = commands.getstatusoutput(cmd)
+                self.chemin_image = imfilename
+            else :
+                pas_ffmpeg = QMessageBox.warning(self,self.tr("FFmpeg n'est pas présent"),QString(self.tr("le logiciel ffmpeg n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre")), QMessageBox.Ok,QMessageBox.Ok)
+                self.close()
     def recupere_avi_infos(self, fileName):
         "Ouvre une vidéo AVI et retourne son framerate ainsi que le nombre d'images de la vidéo."
         framerate = 0
