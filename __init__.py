@@ -63,7 +63,6 @@ class StartQT4(QMainWindow):
     def __init__(self, parent, filename, opts):
         #Données principales du logiciel : 
         #self.index_de_l_image : la position de l'image actuellement affichée
-        #self.index_de_l_image_du_pointk : le nombre de click fait sur l'image. ceci signifie donc que c'est le nombre de lignes dans le tableau. démarre à zéro
         
         ######QT
         QMainWindow.__init__(self)
@@ -764,8 +763,10 @@ class StartQT4(QMainWindow):
         @param liste_points la liste des points cliqués sur l'image courante
         @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
         """
-        t = "%4f" %(ligne*self.deltaT)
+        
+        t = "%4f" %((self.index_de_l_image-self.premiere_image)*self.deltaT)
         self.points[ligne]=[t]+liste_points
+        print self.deltaT, (self.index_de_l_image-self.premiere_image)*self.deltaT,ligne,ligne*self.deltaT
         #rentre le temps dans la première colonne
         self.table_widget.insertRow(ligne)
         self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
