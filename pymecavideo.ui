@@ -6,21 +6,13 @@
     <x>0</x>
     <y>0</y>
     <width>673</width>
-    <height>675</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>PyMecaVideo, analyse mécanique des vidéos</string>
   </property>
   <widget class="QWidget" name="centralwidget" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>22</y>
-     <width>673</width>
-     <height>631</height>
-    </rect>
-   </property>
    <layout class="QHBoxLayout" >
     <item>
      <widget class="QTabWidget" name="tabWidget" >
@@ -31,14 +23,6 @@
        <number>0</number>
       </property>
       <widget class="QWidget" name="tab_acq" >
-       <property name="geometry" >
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>651</width>
-         <height>589</height>
-        </rect>
-       </property>
        <attribute name="title" >
         <string>Acquisition des données</string>
        </attribute>
@@ -49,7 +33,7 @@
         <property name="geometry" >
          <rect>
           <x>10</x>
-          <y>100</y>
+          <y>110</y>
           <width>640</width>
           <height>480</height>
          </rect>
@@ -134,7 +118,7 @@
        <widget class="QLabel" name="label_infos_image" >
         <property name="geometry" >
          <rect>
-          <x>0</x>
+          <x>90</x>
           <y>70</y>
           <width>341</width>
           <height>20</height>
@@ -150,7 +134,7 @@
        <widget class="QSlider" name="horizontalSlider" >
         <property name="geometry" >
          <rect>
-          <x>10</x>
+          <x>130</x>
           <y>50</y>
           <width>281</width>
           <height>16</height>
@@ -166,7 +150,7 @@
         </property>
         <property name="geometry" >
          <rect>
-          <x>140</x>
+          <x>190</x>
           <y>20</y>
           <width>101</width>
           <height>26</height>
@@ -179,8 +163,8 @@
        <widget class="QSpinBox" name="spinBox_image" >
         <property name="geometry" >
          <rect>
-          <x>69</x>
-          <y>21</y>
+          <x>130</x>
+          <y>20</y>
           <width>51</width>
           <height>26</height>
          </rect>
@@ -198,8 +182,8 @@
        <widget class="QLabel" name="label_numero_image" >
         <property name="geometry" >
          <rect>
-          <x>11</x>
-          <y>21</y>
+          <x>130</x>
+          <y>0</y>
           <width>52</width>
           <height>26</height>
          </rect>
@@ -217,8 +201,8 @@
        <widget class="QSpinBox" name="spinBox_nb_de_points" >
         <property name="geometry" >
          <rect>
-          <x>404</x>
-          <y>24</y>
+          <x>430</x>
+          <y>30</y>
           <width>51</width>
           <height>26</height>
          </rect>
@@ -236,8 +220,8 @@
        <widget class="QLabel" name="label_2" >
         <property name="geometry" >
          <rect>
-          <x>351</x>
-          <y>1</y>
+          <x>380</x>
+          <y>0</y>
           <width>157</width>
           <height>16</height>
          </rect>
@@ -249,8 +233,8 @@
        <widget class="QLineEdit" name="echelleEdit" >
         <property name="geometry" >
          <rect>
-          <x>251</x>
-          <y>21</y>
+          <x>290</x>
+          <y>20</y>
           <width>55</width>
           <height>26</height>
          </rect>
@@ -274,8 +258,8 @@
        <widget class="QLabel" name="label_4" >
         <property name="geometry" >
          <rect>
-          <x>312</x>
-          <y>21</y>
+          <x>350</x>
+          <y>20</y>
           <width>28</width>
           <height>26</height>
          </rect>
@@ -380,7 +364,7 @@
         </property>
         <property name="geometry" >
          <rect>
-          <x>400</x>
+          <x>420</x>
           <y>60</y>
           <width>31</width>
           <height>25</height>
@@ -399,7 +383,7 @@
         </property>
         <property name="geometry" >
          <rect>
-          <x>430</x>
+          <x>460</x>
           <y>60</y>
           <width>31</width>
           <height>25</height>
@@ -412,18 +396,29 @@
          <string/>
         </property>
        </widget>
+       <widget class="QLabel" name="label_zoom" >
+        <property name="enabled" >
+         <bool>true</bool>
+        </property>
+        <property name="geometry" >
+         <rect>
+          <x>10</x>
+          <y>0</y>
+          <width>100</width>
+          <height>100</height>
+         </rect>
+        </property>
+        <property name="autoFillBackground" >
+         <bool>true</bool>
+        </property>
+        <property name="text" >
+         <string/>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_traj" >
-       <property name="geometry" >
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>512</width>
-         <height>307</height>
-        </rect>
-       </property>
        <attribute name="title" >
-        <string>trajectoires et mesures</string>
+        <string>trajectoires</string>
        </attribute>
        <widget class="QLabel" name="label_3" >
         <property name="geometry" >
@@ -639,14 +634,6 @@
        </widget>
       </widget>
       <widget class="QWidget" name="tab_coord" >
-       <property name="geometry" >
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>512</width>
-         <height>307</height>
-        </rect>
-       </property>
        <attribute name="title" >
         <string>Coordonnées</string>
        </attribute>
@@ -674,7 +661,7 @@
      <x>0</x>
      <y>0</y>
      <width>673</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier" >
@@ -708,16 +695,7 @@
    <addaction name="menu_dition" />
    <addaction name="menuAide" />
   </widget>
-  <widget class="QStatusBar" name="statusbar" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>653</y>
-     <width>673</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="actionOuvrir_un_fichier" >
    <property name="text" >
     <string>Ouvrir une vidéo</string>

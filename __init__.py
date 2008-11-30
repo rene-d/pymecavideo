@@ -420,7 +420,7 @@ class StartQT4(QMainWindow):
         self.ui.horizontalSlider.setEnabled(0)
         self.premiere_image=self.ui.horizontalSlider.value()
         #self.affiche_image()
-        self.label_video.zoom_croix.hide()
+        #self.label_video.zoom_croix.hide()
         self.affiche_point_attendu(1)
         self.lance_capture = True
         self.label_video.setCursor(Qt.CrossCursor)
@@ -766,7 +766,7 @@ class StartQT4(QMainWindow):
         
         t = "%4f" %((self.index_de_l_image-self.premiere_image)*self.deltaT)
         self.points[ligne]=[t]+liste_points
-        print self.deltaT, (self.index_de_l_image-self.premiere_image)*self.deltaT,ligne,ligne*self.deltaT
+        #print self.deltaT, (self.index_de_l_image-self.premiere_image)*self.deltaT,ligne,ligne*self.deltaT
         #rentre le temps dans la première colonne
         self.table_widget.insertRow(ligne)
         self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
