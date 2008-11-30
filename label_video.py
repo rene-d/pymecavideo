@@ -51,14 +51,6 @@ class Label_Video(QtGui.QLabel):
 
         self.met_a_jour_crop()
         self.setMouseTracking(True)
-        #self.zoom_croix.show()
-    #def croixGeometry(self):
-        #"""
-        #fixe dynamiquement la géométrie du widget
-        #"""
-        ##r=QtCore.QRect(pos.x()+5,pos.y()+5,100,100)
-       
-        #self.zoom_croix.setGeometry(QtCore.QRect(self.app.geometry().x()+20,self.app.geometry().y()+65,100,100))
         
     def mouseReleaseEvent(self, event):
         if self.app.lance_capture==True:
@@ -66,12 +58,10 @@ class Label_Video(QtGui.QLabel):
             #self.zoom_croix.hide()
             self.pos_avant=self.pos
             self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
-            #self.zoom_croix=Zoom_Croix(self,self.app)
-            #print self.zoom_croix.geometry()          
+
             self.met_a_jour_crop()
     def enterEvent(self, event):
         if self.app.lance_capture==True:#ne se lance que si la capture est lancée
-            #self.zoom_croix.show()
             self.setCursor(QtCore.Qt.CrossCursor)
     def met_a_jour_crop(self):
         self.fait_crop(self.pos_avant)
@@ -82,7 +72,6 @@ class Label_Video(QtGui.QLabel):
         if self.app.lance_capture==True:#ne se lance que si la capture est lancée
                 self.zoom_croix.show()
                 self.pos=vecteur(event.x(), event.y())
-                #self.croixGeometry()
                 self.fait_crop(self.pos)
                 self.app.ui.label_zoom.setPixmap(self.cropX2)
                 
@@ -94,14 +83,3 @@ class Label_Video(QtGui.QLabel):
         rect = QRect(p.x()-25,p.y()-25,50,50)
         crop = self.app.image_640_480.copy(rect)
         self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
-
-    #def paintEvent(self, event):
-        #painter = QPainter()
-        #painter.begin(self)
-        #painter.drawPixmap(0,0,QPixmap.fromImage(self.app.image_640_480))
-        #if self.app.lance_capture==True:
-            #if self.cropX2 != None :
-
-                #painter.setPen(Qt.red)
-                #painter.drawLine(50, -100, 50, 0)
-                #painter.drawLine(0, -50, 100, -50)

@@ -34,22 +34,7 @@ class Zoom_Croix(QWidget):
         self.setGeometry(QRect(0, 0, 100, 100))
         self.setAutoFillBackground(False)
         
-    #def mouseMoveEvent(self, event):
-        #event.ignore()
-    #def mouseReleaseEvent(self, event):
-        #event.ignore()
-    #def fait_crop(self, p):
-        #rect = QRect(p.x()-25,p.y()-25,50,50)
-        #crop = self.app.image_640_480.copy(rect)
-        #self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
-    #def hideEvent(self, event):
-        #self.setGeometry(-1000,-1000,100,100)
-        #self.update()
-        #le bug vient du fait qu'il est caché..;mais pourquoi
-        
     def paintEvent(self, event):
-        #if self.app.lance_capture==True:
-            #if self.cropX2 != None :
                 painter = QPainter()
                 painter.begin(self)
                 painter.setPen(Qt.red)
