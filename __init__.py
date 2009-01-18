@@ -116,7 +116,7 @@ class StartQT4(QMainWindow):
         self.premiere_image = 1      # n° de la première image cliquée
         self.index_de_l_image = 1    # image à afficher
         self.prefs=Preferences(self)
-        self.echelle_v = 1
+        self.echelle_v = 0
         self.filename=filename
         self.opts=opts
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
@@ -986,8 +986,10 @@ class StartQT4(QMainWindow):
             #attention au cas de la dernière image.
             cmd0="ffmpeg -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg %s"
             i=1
-            cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
-            status, output = commands.getstatusoutput(cmd)
+            imfilename=imfilename.replace(" ","\ ")
+	    cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
+            
+	    status, output = commands.getstatusoutput(cmd)
             if status==0:
                 while not os.path.exists(imfilename) and i<index:
                     i+=1
@@ -995,7 +997,9 @@ class StartQT4(QMainWindow):
                     cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
                     status, output = commands.getstatusoutput(cmd)
                 self.chemin_image = imfilename
-            else :
+	    elif status==256: 
+		    mauvaisevideo = QMessageBox.warning(self,self.tr("La video que vous tentez d'ouvrir n'est pas dans un format lisible."), QString(self.tr(" Merci d'en ouvrir une autre ou de l'encoder autrement")), QMessageBox.Ok,QMessageBox.Ok)
+            elif status > 256 :		    
                 pas_ffmpeg = QMessageBox.warning(self,self.tr("FFmpeg n'est pas présent"),QString(self.tr("le logiciel ffmpeg n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre")), QMessageBox.Ok,QMessageBox.Ok)
                 self.close()
     def recupere_avi_infos(self, fileName):
