@@ -34,22 +34,11 @@ class Label_Video(QtGui.QLabel):
         QtGui.QLabel.__init__(self,parent)
         self.setGeometry(QtCore.QRect(0,0,640,480))
         self.parent=parent
-        self.liste_points = []
-        self.app=app
-        self.cropX2=None
-        self.setCursor(QtCore.Qt.ArrowCursor)
+        self.app=parent
+        self.setCursor(QtCore.Qt.CrossCursor)
         self.pos=self.pos_avant=vecteur(0,0)
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom)
         self.zoom_croix.hide()
-        self.setMouseTracking(True)
-    def reinit(self):
-        try :
-            del self.zoom_croix
-            
-        except :
-            pass
-
-        self.met_a_jour_crop()
         self.setMouseTracking(True)
         
     def mouseReleaseEvent(self, event):
@@ -58,7 +47,6 @@ class Label_Video(QtGui.QLabel):
             #self.zoom_croix.hide()
             self.pos_avant=self.pos
             self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
-
             self.met_a_jour_crop()
     def enterEvent(self, event):
         if self.app.lance_capture==True:#ne se lance que si la capture est lancée
@@ -66,15 +54,14 @@ class Label_Video(QtGui.QLabel):
     def met_a_jour_crop(self):
         self.fait_crop(self.pos_avant)
     def leaveEvent(self, envent):
-        if self.app.lance_capture==True:
-            self.cache_zoom()
+        self.cache_zoom()
     def mouseMoveEvent(self, event):
-        if self.app.lance_capture==True:#ne se lance que si la capture est lancée
-                self.zoom_croix.show()
-                self.pos=vecteur(event.x(), event.y())
-                self.fait_crop(self.pos)
-                self.app.ui.label_zoom.setPixmap(self.cropX2)
-                
+
+        self.zoom_croix.show()
+        self.pos=vecteur(event.x(), event.y())
+        self.fait_crop(self.pos)
+        self.app.ui.label_zoom.setPixmap(self.cropX2)
+        
     def cache_zoom(self):
         pass
 

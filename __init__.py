@@ -997,9 +997,9 @@ class StartQT4(QMainWindow):
                     cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
                     status, output = commands.getstatusoutput(cmd)
                 self.chemin_image = imfilename
-	    elif status==256: 
-		    mauvaisevideo = QMessageBox.warning(self,self.tr("La video que vous tentez d'ouvrir n'est pas dans un format lisible."), QString(self.tr(" Merci d'en ouvrir une autre ou de l'encoder autrement")), QMessageBox.Ok,QMessageBox.Ok)
-            elif status > 256 :		    
+	    elif status<32512:
+		    mauvaisevideo = QMessageBox.warning(self,self.tr("La video que vous tentez d'ouvrir n'est pas dans un format lisible, ou FFMPEG est mal installé"), QString(self.tr(" Merci d'en ouvrir une autre ou de l'encoder autrement")), QMessageBox.Ok,QMessageBox.Ok)
+            elif status ==32512 :
                 pas_ffmpeg = QMessageBox.warning(self,self.tr("FFmpeg n'est pas présent"),QString(self.tr("le logiciel ffmpeg n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre")), QMessageBox.Ok,QMessageBox.Ok)
                 self.close()
     def recupere_avi_infos(self, fileName):
