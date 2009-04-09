@@ -53,6 +53,7 @@ from math import sqrt
 from label_video import Label_Video
 from point import Point, Repere
 from label_trajectoire import Label_Trajectoire
+from label_origine import Label_Origine
 from cadreur import Cadreur
 from preferences import Preferences
 from dbg import Dbg
@@ -100,6 +101,9 @@ class StartQT4(QMainWindow):
         
 
     def init_variables(self, filename, opts):
+        self.sens_X=1
+        self.sens_Y=1
+        self.origine = vecteur(0,0)
         self.dbg=Dbg(0)
         self.deltaT = 0.04       #durée 40 ms par défaut : 25 images/s
         self.lance_capture = False
@@ -141,6 +145,11 @@ class StartQT4(QMainWindow):
         self.setEchelle_v()
         #création du label qui contiendra la vidéo.
         self.label_video = Label_Video(parent=self.ui.label, app=self)
+        self.ui.label_axe.hide()
+        self.ui.pushButton_origine.hide()
+        self.ui.checkBox_abscisses.hide()
+        self.ui.checkBox_ordonnees.hide()
+
 
     def affiche_lance_capture (self,active=False):
         """
@@ -248,6 +257,55 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_reinit,SIGNAL("clicked()"),self.reinitialise_capture)
         QObject.connect(self.ui.pushButton_defait,SIGNAL("clicked()"),self.efface_point_precedent)
         QObject.connect(self.ui.pushButton_refait,SIGNAL("clicked()"),self.refait_point_suivant)
+        QObject.connect(self.ui.checkBox_avancees,SIGNAL("stateChanged(int)"),self.affiche_fonctionnalites_avancees)
+        QObject.connect(self.ui.pushButton_origine,SIGNAL("clicked()"),self.choisi_nouvelle_origine)
+        QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.        change_sens_X )
+        QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
+        QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_origine)
+
+    def choisi_nouvelle_origine(self):
+        nvl_origine=QMessageBox.information(self,QString("NOUVELLE ORIGINE"),\
+QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle origine"))
+        label = Label_Origine(parent=self.ui.label, app=self)
+        label.show()
+        
+    def change_axe_origine(self):
+        print "changement d'axe ou origine"
+        for key in self.points:
+            liste_des_cles.append(key)
+        try :
+            liste_des_cles.sort()
+            for cle in liste_des_cles:
+                donnee=self.points[cle]
+        except NameError:
+            pass
+    def change_sens_X(self):
+        if self.ui.checkBox_abscisses.isChecked():
+            self.sens_X = -1
+        else :
+            self.sens_X = 1
+        self.emit(SIGNAL('change_axe_origine()'))
+
+    def change_sens_Y(self):
+        if self.ui.checkBox_ordonnees.isChecked():
+            self.sens_Y = -1
+        else :
+            self.sens_Y = 1
+        self.emit(SIGNAL('change_axe_origine()'))
+
+    def affiche_fonctionnalites_avancees(self):
+
+        if self.ui.checkBox_avancees.isChecked() :
+            self.ui.label_axe.show()
+            self.ui.pushButton_origine.show()
+            self.ui.checkBox_abscisses.show()
+            self.ui.checkBox_ordonnees.show()
+        else :
+            self.ui.label_axe.hide()
+            self.ui.pushButton_origine.hide()
+            self.ui.checkBox_abscisses.hide()
+            self.ui.checkBox_ordonnees.hide()
+
 
     def pointEnMetre(self,p):
         """
@@ -259,7 +317,7 @@ class StartQT4(QMainWindow):
                        float(480-p.y())*self.echelle_image.mParPx())
     
     def presse_papier(self):
-        """Sélectionne la totalité du tableau de coordonnées
+        """Sélectionne la totalité du eau de coordonnées
         et l'exporte dans le presse-papier (l'exportation est implicitement
         héritée de la classe utilisée pour faire le tableau). Les
         séparateurs décimaux sont automatiquement remplacés par des virgules
@@ -413,7 +471,15 @@ class StartQT4(QMainWindow):
 
     def debut_capture(self):
         """permet de mettre en place le nombre de point à acquérir"""
-        
+        #self.label_video.
+        #self.label_echelle_trace.lower()
+
+        #self.ui.label.lower()
+        self.label_echelle_trace.hide()
+        self.label_video.setVisible(True)
+        self.label_video.setFocus()
+        self.label_video.activateWindow()
+
         self.nb_de_points = self.ui.spinBox_nb_de_points.value()
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
@@ -608,6 +674,7 @@ class StartQT4(QMainWindow):
         """
         mémorise un point visible à l'écran, dans plusieurs dictionnaires
         """
+
         self.trajectoire["point-%s_%s-%s" %(n,ref,i)] = [p, point]
         x=p.x(); y=p.y()
         if x in self.pX.keys():
@@ -676,30 +743,30 @@ class StartQT4(QMainWindow):
                   ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
                   for i in self.points.keys():
                       if ref == "camera":
-                          p = self.points[i][1+n]
+                          p = self.points[i][1+n]+self.origine
                       else:
                           ref=int(ref)
-                          p = self.points[i][1+n]-self.points[i][ref]+origine
+                          p = self.points[i][1+n]-self.points[i][ref]+origine+self.origine
                       if ref != "camera" and n == ref-1:
                           # on a affaire au tracé du repère du référentiel :
                           # une seule instance suffira, vu qu'il ne bouge pas.
                           if newValue!="absolu":
                               if i == self.points.keys()[0]:
-                                  point = Repere(self.label_trajectoire, p, couleur, 0, self)
+                                  point = Repere(self.label_trajectoire, p+self.origine, couleur, 0, self)
                                   point.show()
-                                  self.retientPoint(n,ref,i,p,point)
+                                  self.retientPoint(n,ref,i,p+self.origine,point)
                       else:
                           if newValue!="absolu":
-                              point = Point(self.label_trajectoire, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
+                              point = Point(self.label_trajectoire, p+self.origine, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent si existe
                               ancienPoint=point
                               point.show()
-                              self.retientPoint(n,ref,i,p,point)
+                              self.retientPoint(n,ref,i,p+self.origine,point)
                           else: #newValue=="absolu"
-                              point = Point(self.label_video, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
+                              point = Point(self.label_video, p+self.origine, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
                               ancienPoint=point
                               point.montre_vitesse(False)
                               point.show()
-                              self.retientPoint(n,ref,i,p,point)
+                              self.retientPoint(n,ref,i,p+self.origine,point)
               
         else : #premier onglet
               ref="camera"
@@ -765,6 +832,12 @@ class StartQT4(QMainWindow):
         """
         
         t = "%4f" %((self.index_de_l_image-self.premiere_image)*self.deltaT)
+        #prise en compte des origines et des axes
+        liste_provisoire = []
+        for point in liste_points :
+            liste_provisoire.append(vecteur(self.sens_X*(point.x()-self.origine.x()),
+self.sens_Y*(point.y()-self.origine.y())))
+        liste_points = liste_provisoire
         self.points[ligne]=[t]+liste_points
         #print self.deltaT, (self.index_de_l_image-self.premiere_image)*self.deltaT,ligne,ligne*self.deltaT
         #rentre le temps dans la première colonne
@@ -796,7 +869,7 @@ class StartQT4(QMainWindow):
         image=QImage(self.chemin_image)
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
         self.label_video.setMouseTracking(True)
-        self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
+        self.ui.label.setPixmap(QPixmap.fromImage(self.image_640_480))
         self.label_video.met_a_jour_crop()
         self.label_video.update()
         self.label_video.show()
@@ -827,7 +900,7 @@ class StartQT4(QMainWindow):
                 self.mets_a_jour_label_infos(self.tr(" Merci d'indiquer une échelle valable"))
             else :
                 self.echelle_image.longueur_reelle_etalon=float(echelle_result[0])
-                self.job = Label_Echelle(self.ui.tab_acq,self)
+                self.job = Label_Echelle(self.ui.label,self)
                 self.job.setPixmap(QPixmap(self.chemin_image))
                 self.job.show()
         except ValueError :
@@ -840,7 +913,7 @@ class StartQT4(QMainWindow):
         retenues pour l'échelle
         """
         from echelle import Label_Echelle_Trace
-        self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1,p2)
+        self.label_echelle_trace = Label_Echelle_Trace(self.ui.label, p1,p2)
         self.label_echelle_trace.show()
         
     def reinitialise_environnement(self):

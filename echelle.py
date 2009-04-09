@@ -60,7 +60,7 @@ class Label_Echelle(QLabel):
     def __init__(self, parent,app):
         QLabel.__init__(self, parent)
         self.parent = parent
-        self.setGeometry(QRect(10,60,640,480))
+        self.setGeometry(QRect(0,0,640,480))
         self.setAutoFillBackground(False)
         self.p1=vecteur()
         self.p2=vecteur()
@@ -131,6 +131,6 @@ class Label_Echelle_Trace(QLabel):
         painter.begin(self)
         #painter.drawPixmap(0,0,self.pix)
         painter.setPen(Qt.green)
-        painter.drawLine(self.p1.x(), self.p1.y()-40, self.p2.x(), self.p2.y()-40)
+        painter.drawLine(self.p1.x(), self.p1.y(), self.p2.x(), self.p2.y())
         painter.end()
 

@@ -83,3 +83,14 @@ class Label_Video(QtGui.QLabel):
         rect = QRect(p.x()-25,p.y()-25,50,50)
         crop = self.app.image_640_480.copy(rect)
         self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
+
+    def paintEvent(self, event):
+        print self.app.echelle_image.isUndef()
+        if not self.app.echelle_image.isUndef():
+            painter = QPainter()
+            painter.begin(self)
+            
+            #painter.drawPixmap(QPixmap.fromImage(self.app.image_640_480))
+            painter.setPen(Qt.green)
+            painter.drawLine(self.app.echelle_image.p1.x(), self.app.echelle_image.p1.y(), self.app.echelle_image.p2.x(), self.app.echelle_image.p2.y())
+            painter.end()
