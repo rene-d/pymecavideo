@@ -734,7 +734,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         trace les trajectoires en fonction du référentiel choisi.
         Pour le moment l'origine a pour coordonéees QT -> (320,240).
         """
-
+        self.points_ecran_copie = self.points_ecran
         self.origine_qt=vecteur(320,240)
         if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
             self.label_video.zoom_croix.hide()
@@ -749,7 +749,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 bc=self.mediane_trajectoires(int(ref)-1)
                 self.origine_qt=vecteur(320,240)-bc
                 
-                if len(self.points) > 1:
+                if self.nb_de_points > 1:
                     self.ui.button_video.setEnabled(1)
             else:
                     # pas de vidéo si ref == "camera"
@@ -777,7 +777,15 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 self.couleurs[position-1],serie+1,self)
                     point_label_trajectoire.show()
                     self.points_ecran[key][0]=point_label_trajectoire
-                
+            else :
+                for key in self.points_ecran:
+                    point_label_trajectoire =self.points_ecran[key][0]
+                    serie,position = self.couleur_et_numero(self.points_ecran[key][2])
+                    point_label_trajectoire.hide()
+                    del point_label_trajectoire
+                    point_label_trajectoire = Point(self.label_trajectoire,self.points_ecran[key][3] ,self.couleurs[position-1],serie+1,self)
+                    point_label_trajectoire.show()
+                    self.points_ecran[key][0]=point_label_trajectoire
 
             
     def affiche_point_attendu(self,n):
