@@ -101,9 +101,10 @@ class StartQT4(QMainWindow):
         
 
     def init_variables(self, filename, opts):
+        self.index_max = 1
         self.sens_X=1
         self.sens_Y=1
-        self.origine = vecteur(0,0)
+        self.origine = vecteur(240,320)
         self.dbg=Dbg(0)
         self.deltaT = 0.04       #durée 40 ms par défaut : 25 images/s
         self.lance_capture = False
@@ -176,6 +177,7 @@ class StartQT4(QMainWindow):
             self.ui.echelleEdit.setText(self.tr("indéf."))
             self.ui.Bouton_Echelle.setEnabled(True)
         else:
+            self.epxParM=self.echelle_image.longueur_pixel_etalon/self.echelle_image.longueur_reelle_etalon
             epxParM=self.echelle_image.longueur_pixel_etalon/self.echelle_image.longueur_reelle_etalon
             self.ui.echelleEdit.setText("%.1f" %epxParM)
             self.ui.Bouton_Echelle.setEnabled(False)
@@ -191,7 +193,7 @@ class StartQT4(QMainWindow):
         @param tousLesClics permet de conserver une liste de poinst à refaire
         """
         self.montre_vitesses(False)
-        self.oubliePoints()
+        #self.oubliePoints()
         self.label_trajectoire.update()
         self.ui.label.update()
         self.label_video.update()
@@ -209,7 +211,7 @@ class StartQT4(QMainWindow):
 
     def reinitialise_capture(self):
         self.montre_vitesses(False)
-        self.oubliePoints()
+        #self.oubliePoints()
         self.label_trajectoire.update()
         self.ui.label.update()
         self.label_video.update()
@@ -270,17 +272,26 @@ class StartQT4(QMainWindow):
 QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle origine"))
         label = Label_Origine(parent=self.ui.label, app=self)
         label.show()
+        self.emit(SIGNAL('change_axe_origine()'))
         
     def change_axe_origine(self):
-        print "changement d'axe ou origine"
-        for key in self.points:
-            liste_des_cles.append(key)
-        try :
-            liste_des_cles.sort()
-            for cle in liste_des_cles:
-                donnee=self.points[cle]
-        except NameError:
-            pass
+        """mets à jour le tableau de données"""
+        #construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
+        print "change axe ou origine"
+        if self.points_ecran != {}:
+            liste_clef=[]
+            donnees={}
+            for key in self.points_ecran:
+                donnees[self.points_ecran[key][2]]=self.points_ecran[key][3]
+                liste_clef.append(self.points_ecran[key][2])
+            liste_clef.sort()
+            print liste_clef
+            print donnees
+            print self.origine
+            for key in liste_clef :
+                serie,position=self.couleur_et_numero(int(key))
+                print serie,position,donnees[key]
+                self.rempli_tableau(serie,position,donnees[key],recalcul=True)
     def change_sens_X(self):
         if self.ui.checkBox_abscisses.isChecked():
             self.sens_X = -1
@@ -289,10 +300,13 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.emit(SIGNAL('change_axe_origine()'))
 
     def change_sens_Y(self):
+        #print "change Y"
         if self.ui.checkBox_ordonnees.isChecked():
             self.sens_Y = -1
+
         else :
             self.sens_Y = 1
+        #print self.sens_Y
         self.emit(SIGNAL('change_axe_origine()'))
 
     def affiche_fonctionnalites_avancees(self):
@@ -481,7 +495,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.label_video.setVisible(True)
         self.label_video.setFocus()
         self.label_video.activateWindow()
-        self.index_max = 1
+        
         self.nb_de_points = self.ui.spinBox_nb_de_points.value()
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
@@ -678,35 +692,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             self.clic_sur_label_video(liste_points=clics, interactif=False)
         self.clic_sur_label_video_ajuste_ui(1)
 
-    def retientPoint(self,n,ref,i,p,point):
-        """
-        mémorise un point visible à l'écran, dans plusieurs dictionnaires
-        """
-
-        self.trajectoire["point-%s_%s-%s" %(n,ref,i)] = [p, point]
-        x=p.x(); y=p.y()
-        if x in self.pX.keys():
-            self.pX[x].append(point)
-        else:
-            self.pX[x]=[point]
-        if y in self.pY.keys():
-            self.pY[y].append(point)
-        else:
-            self.pY[y]=[point]
-
-    def oubliePoints(self):
-        """
-        vide la mémoire des points visibles à l'écran
-        """
-        self.pX={}
-        self.pY={}
-        for index in self.trajectoire.keys():
-            if index[:6]=="point-":
-                [p,point] = self.trajectoire[index]
-                point.hide()
-                del point
-                del p
-        self.trajectoire={}
 
     def video(self):
         ralenti=[1,2,4,8][self.ui.comboBox_fps.currentIndex()]
@@ -732,7 +717,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
         if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
               self.label_video.zoom_croix.hide()
-              self.oubliePoints()
+              #self.oubliePoints()
               if newValue=="absolu":
                   ref="camera"
               else:
@@ -820,14 +805,14 @@ points, psition 2."""
         "affiche la liste des points dans les labels trajectoire et label_video"
         #crée le label contenant le point, dans les 2 labels
         p = self.label_video.liste_points_QT[-1]
-        print len(self.label_video.liste_points_QT),p
+        #print len(self.label_video.liste_points_QT),p
         (serie,position) = self.couleur_et_numero(len(self.label_video.liste_points_QT))
-        print (serie,position)
+        #print (serie,position)
         point_label_trajectoire = Point(self.label_trajectoire, p, self.couleurs[position-1],position+1,self)
         point_label_trajectoire.show()
         point_label_video = Point(self.label_video, p, self.couleurs[position-1],position+1,self)
         point_label_video.show()
-        self.points_ecran[(self.index_de_l_image,position)]=(point_label_trajectoire,point_label_video,self.point_ID)
+        self.points_ecran[(self.index_de_l_image,position)]=(point_label_trajectoire,point_label_video,self.point_ID,p)
 
         self.ui.pushButton_defait.setEnabled(1)
 
@@ -839,6 +824,24 @@ points, psition 2."""
         
 
         self.affiche_image()
+        
+        self.rempli_tableau(serie,position,p)
+
+    def rempli_tableau(self,serie,position,coordonnees,recalcul=None):
+        """rempli le tableau avec les coordoonées d'un point)"""
+        if not recalcul :
+            t = "%4f" %((self.index_de_l_image-self.premiere_image)*self.deltaT)
+        x = (self.sens_X*(coordonnees.x()-self.origine.x()))/float(self.epxParM)
+        #print self.sens_Y
+        y = (self.sens_Y*(self.origine.y()-coordonnees.y()))/float(self.epxParM)
+        if not recalcul :
+            if position ==0:
+                self.table_widget.insertRow(serie)
+                self.table_widget.setItem(serie,0,QTableWidgetItem(t))
+        self.table_widget.setItem(serie,2*position+1,QTableWidgetItem(str(x)))
+        self.table_widget.setItem(serie,2*position+2,QTableWidgetItem(str(y)))
+        print x,y
+
     def stock_coordonnees_image(self, ligne, liste_points, interactif=True):
         """
         place les données dans le tableau.

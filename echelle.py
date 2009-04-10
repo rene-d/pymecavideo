@@ -103,7 +103,7 @@ class Label_Echelle(QLabel):
         self.app.p1=self.p1.copy()
         self.app.p2=self.p2.copy()
         self.app.echelle_image.longueur_pixel_etalon = self.app.echelle_image.calcul_longueur_pixels(self.p1, self.p2)
-        epxParM=self.app.echelle_image.longueur_pixel_etalon/self.app.echelle_image.longueur_reelle_etalon
+        self.epxParM=self.app.echelle_image.longueur_pixel_etalon/self.app.echelle_image.longueur_reelle_etalon
         self.app.affiche_echelle()
         self.app.affiche_nb_points(True)
         self.app.mets_a_jour_label_infos(self.tr("""Choisir le nombre de points puis "Démarrer l'acquisition" """)) #'

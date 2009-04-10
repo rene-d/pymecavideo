@@ -18,5 +18,5 @@ class Label_Origine(QLabel):
     def mouseReleaseEvent(self, event):
         self.app.origine = vecteur(event.x() + 1, event.y() + 1)
         
-        print self.app.origine
+        #print self.app.origine
         self.close()
