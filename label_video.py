@@ -34,7 +34,7 @@ class Label_Video(QtGui.QLabel):
         QtGui.QLabel.__init__(self,parent)
         self.setGeometry(QtCore.QRect(0,0,640,480))
         self.parent=parent
-        self.liste_points = []
+        self.liste_points_QT = []
         self.app=app
         self.cropX2=None
         self.setCursor(QtCore.Qt.ArrowCursor)
@@ -54,7 +54,7 @@ class Label_Video(QtGui.QLabel):
         
     def mouseReleaseEvent(self, event):
         if self.app.lance_capture==True:
-            self.liste_points.append(vecteur(event.x(), event.y()))
+            self.liste_points_QT.append(vecteur(event.x(), event.y()))
             #self.zoom_croix.hide()
             self.pos_avant=self.pos
             self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
@@ -85,7 +85,7 @@ class Label_Video(QtGui.QLabel):
         self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
 
     def paintEvent(self, event):
-        print self.app.echelle_image.isUndef()
+        #print self.app.echelle_image.isUndef()
         if not self.app.echelle_image.isUndef():
             painter = QPainter()
             painter.begin(self)

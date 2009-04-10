@@ -372,7 +372,7 @@
          </rect>
         </property>
         <property name="toolTip">
-         <string>efface le point précédent</string>
+         <string>efface la série précédente</string>
         </property>
         <property name="text">
          <string/>

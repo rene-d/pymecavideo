@@ -110,9 +110,11 @@ class StartQT4(QMainWindow):
         self.modifie=False
         self.points={}        #dictionnaire des points cliqués, par n° d'image.
         self.trajectoire = {} #dictionnaire des points des trajectoires
+        self.points_ecran = {}     #dictionnaire des points apparaissant à l'écran, indexés par numéro
         self.pX={}            #points apparaissant à l'écran, indexés par X
         self.pY={}            #points apparaissant à l'écran, indexés par Y
         self.index_du_point = 0
+        self.point_ID=1        #index du point courant
         self.echelle_image = echelle() # objet gérant l'image
         self.nb_image_deja_analysees = 0 #indique le nombre d'images dont on a dejà fait l'étude, ce qui correspond aussi au nombre de lignes dans le tableau.
         self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green"] #correspond aux couleurs des points del a trajectoire
@@ -479,11 +481,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.label_video.setVisible(True)
         self.label_video.setFocus()
         self.label_video.activateWindow()
-
+        self.index_max = 1
         self.nb_de_points = self.ui.spinBox_nb_de_points.value()
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
-        self.ui.horizontalSlider.setEnabled(0)
+        self.ui.horizontalSlider.setEnabled(1)
         self.premiere_image=self.ui.horizontalSlider.value()
         #self.affiche_image()
         #self.label_video.zoom_croix.hide()
@@ -642,17 +644,23 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 point.montre_vitesse(show)
         if not show:
             self.label_trajectoire.update()
+
+    def refait_point_suivant(self):
+        a = self.ui.spinBox_image.value()
+        self.ui.spinBox_image.setValue(a+1)
+        self.affiche_image_spinbox()
+        
+        
     def efface_point_precedent(self):
         """revient au point précédent
         """
-        self.tousLesClics.decPtr()
-        self.repasseTousLesClics()
-
-    def refait_point_suivant(self):
-        """rétablit le point suivant après un effacement
-        """
-        self.tousLesClics.incPtr()
-        self.repasseTousLesClics()
+        
+        a = self.ui.spinBox_image.value()
+        self.ui.spinBox_image.setValue(a-1)
+        self.affiche_image_spinbox()
+        self.ui.pushButton_refait.setEnabled(1)
+        self.nb_image_deja_analysees -= 1
+        
 
     def repasseTousLesClics(self):
         """
@@ -787,42 +795,50 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         """
         self.mets_a_jour_label_infos(self.tr("Cliquer sur le point N°%d" %n))
 
+    def couleur_et_numero(self,point_ID):
+        """retourne la position du point sous forme d'un tuple. Exemple : le point numéro 17, avec des série de 3 points retourne : (5,2) cinquième série de
+points, psition 2."""
+        serie = int((point_ID-1)//self.nb_de_points)
+        position = point_ID-1-serie*self.nb_de_points
+        return (serie,position)
+        #Attention, ça démarre de 0
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
-        if liste_points==None:
-            liste_points = self.label_video.liste_points
-        if self.nb_de_points > len(liste_points) :
-            point_attendu=1+len(liste_points)
-        else: 
-            point_attendu=1
-            self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
-            self.nb_image_deja_analysees += 1
-            self.index_de_l_image += 1
-        if interactif: self.clic_sur_label_video_ajuste_ui(point_attendu)
+        #if liste_points==None:
+            #liste_points = self.label_video.liste_points
+        #if self.nb_de_points > len(liste_points) :
+            #point_attendu=1+len(liste_points)
+        #else:
+            #point_attendu=1
+            #self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
+        self.affiche_points()
         
-    def clic_sur_label_video_ajuste_ui(self,point_attendu):
-        """
-        Ajuste l'interface utilisateur pour attendre un nouveau clic
-        @param point_attendu le numéro du point qui est à cliquer
-        """
-        self.affiche_point_attendu(point_attendu)
-        self.lance_capture = True
-        if len(self.tousLesClics) > 0:
-            self.ui.pushButton_defait.setEnabled(1)
-        else:
-            self.ui.pushButton_defait.setEnabled(0)
-        if self.tousLesClics.nextCount() > 0:
-            self.ui.pushButton_refait.setEnabled(1)
-        else:
-            self.ui.pushButton_refait.setEnabled(0)
+        
+        self.point_ID += 1
+        
+    def affiche_points(self):
+        "affiche la liste des points dans les labels trajectoire et label_video"
+        #crée le label contenant le point, dans les 2 labels
+        p = self.label_video.liste_points_QT[-1]
+        print len(self.label_video.liste_points_QT),p
+        (serie,position) = self.couleur_et_numero(len(self.label_video.liste_points_QT))
+        print (serie,position)
+        point_label_trajectoire = Point(self.label_trajectoire, p, self.couleurs[position-1],position+1,self)
+        point_label_trajectoire.show()
+        point_label_video = Point(self.label_video, p, self.couleurs[position-1],position+1,self)
+        point_label_video.show()
+        self.points_ecran[(self.index_de_l_image,position)]=(point_label_trajectoire,point_label_video,self.point_ID)
 
-        if point_attendu==1 : # pour une acquisition sur une nouvelle image
-            if len(self.label_video.liste_points) > 0:
-                self.tousLesClics.append(self.label_video.liste_points)
-            self.label_video.liste_points=[]
-            self.affiche_image()
-            self.tracer_trajectoires("absolu")
+        self.ui.pushButton_defait.setEnabled(1)
+
+        if position==self.nb_de_points-1 :
+            if self.index_max <= self.index_de_l_image:
+                self.index_max=self.index_de_l_image
+            self.index_de_l_image += 1
+            
         
+
+        self.affiche_image()
     def stock_coordonnees_image(self, ligne, liste_points, interactif=True):
         """
         place les données dans le tableau.
@@ -862,8 +878,22 @@ self.sens_Y*(point.y()-self.origine.y())))
     
     def affiche_image_spinbox(self):
         self.index_de_l_image = self.ui.spinBox_image.value()
+        if self.index_de_l_image-1==self.index_max:
+            self.ui.pushButton_refait.setEnabled(0)
+        liste=[]
+        if self.lance_capture:
+            
+            for key in self.points_ecran:
+                a = self.points_ecran[key][0]
+                b = self.points_ecran[key][1]
+                if key[0] > self.index_de_l_image-1:
+                        b.hide()
+                        a.hide()
+                elif key[0]<self.index_de_l_image:
+                        a.show()
+                        b.show()
+
         self.affiche_image()
-    
     def affiche_image(self):
         self.extract_image(self.filename, self.index_de_l_image)
         image=QImage(self.chemin_image)

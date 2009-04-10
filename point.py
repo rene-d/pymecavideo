@@ -34,7 +34,7 @@ class label_numero(QLabel):
         event.ignore()
 
 class Point(QLabel):
-    def __init__(self, parent, point, color, numero, app, pred=None, show=True):
+    def __init__(self, parent, point, color, numero, app ):
         """
         Crée un point graphique. Paramètres :
         parent : widget parent
@@ -50,13 +50,10 @@ class Point(QLabel):
         self.point, self.color = point,color
         self.setGeometry(QRect(0,0,640,480))
         self.numero=label_numero("<font color='%s'>%s</font>" %(color,numero),self,point)
-        self.vitesse=None
-        self.succ=None     # le successeur
-        self.pred=pred
         self.setMouseTracking(True)
-        if pred != None:
-            pred.succ = self
-            pred.calcule_vitesse(self.app.ui.echelle_v.currentText(),show)
+        #if pred != None:
+            #pred.succ = self
+            #pred.calcule_vitesse(self.app.ui.echelle_v.currentText(),show)
 ########empeche le widget de capturer les signaux, que l'on récupère dans label_video
     def mouseMoveEvent(self, event):
         event.ignore()
@@ -66,34 +63,34 @@ class Point(QLabel):
         event.ignore()
 
 
-    def montre_vitesse(self, show):
-        """
-        montre ou cache la vitesse, selon le paramètre show
-        """
-        if self.vitesse != None:
-            if show:
-                self.vitesse.show()
-            else:
-                self.vitesse.hide()
+    #def montre_vitesse(self, show):
+        #"""
+        #montre ou cache la vitesse, selon le paramètre show
+        #"""
+        #if self.vitesse != None:
+            #if show:
+                #self.vitesse.show()
+            #else:
+                #self.vitesse.hide()
         
-    def calcule_vitesse(self, ech, show=True):
-        """
-        si self.pred et self.succ sont tous deux définis, le calcul de
-        vitesse est possible. Le vecteur vitesse précédent éventuel est effacé
-        et un nouveau est tracé.
-        Paramètres :
-        ech : l'échelle en px pour 1m/s, type chaîne de caractères
-        show : booléen, vrai si on doit montrer la vitesse tout de suite
-        """
-        if self.vitesse != None:
-            self.vitesse.hide()
-            del self.vitesse
-        if self.pred != None and self.succ != None:
-            deltaP = self.succ.point - self.pred.point
-            v=deltaP*(1/(2*self.app.deltaT))*self.app.echelle_image.mParPx()
-            self.vitesse=Vitesse(self,self.point,v, self.color, ech)
-            if show:
-                self.vitesse.show()
+    #def calcule_vitesse(self, ech, show=True):
+        #"""
+        #si self.pred et self.succ sont tous deux définis, le calcul de
+        #vitesse est possible. Le vecteur vitesse précédent éventuel est effacé
+        #et un nouveau est tracé.
+        #Paramètres :
+        #ech : l'échelle en px pour 1m/s, type chaîne de caractères
+        #show : booléen, vrai si on doit montrer la vitesse tout de suite
+        #"""
+        #if self.vitesse != None:
+            #self.vitesse.hide()
+            #del self.vitesse
+        #if self.pred != None and self.succ != None:
+            #deltaP = self.succ.point - self.pred.point
+            #v=deltaP*(1/(2*self.app.deltaT))*self.app.echelle_image.mParPx()
+            #self.vitesse=Vitesse(self,self.point,v, self.color, ech)
+            #if show:
+                #self.vitesse.show()
             
     def paintEvent(self,event):
         self.painter = QPainter()
@@ -103,10 +100,10 @@ class Point(QLabel):
         self.painter.drawLine(-2,0,2,0)
         self.painter.drawLine(0,-2,0,2)
         self.painter.end()
-    def showVec(self):
-        if self.app.prox and self.vitesse: self.vitesse.show()
-    def hideVec(self):
-        if self.app.prox and self.vitesse: self.vitesse.hide()
+    #def showVec(self):
+        #if self.app.prox and self.vitesse: self.vitesse.show()
+    #def hideVec(self):
+        #if self.app.prox and self.vitesse: self.vitesse.hide()
 
 
 class Repere(Point):
