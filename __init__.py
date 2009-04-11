@@ -613,7 +613,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         
         for key in self.points_ecran:
    
-            self.liste_points[self.points_ecran[key][2]-1]=self.points_ecran[key][3]
+            self.liste_points[self.points_ecran[key][2] - 1] = self.points_ecran[key][3]
         #print liste_clef
         #print liste_clef
         #print donnees
@@ -697,21 +697,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.nb_image_deja_analysees -= 1
         
 
-    def repasseTousLesClics(self):
-        """
-        repasse en mode non-interactif toute la liste des clics
-        sur l'image, jusqu'au pointeur courant de cette liste pointée.
-        """
-        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics)
-        self.affiche_echelle()
-        self.affiche_nb_points()
-        self.ui.tab_traj.setEnabled(1)
-        #self.label_video.setCursor(Qt.CrossCursor)
-        #self.label_video.reinit()
 
-        for clics in self.tousLesClics:
-            self.clic_sur_label_video(liste_points=clics, interactif=False)
-        self.clic_sur_label_video_ajuste_ui(1)
 
 
     def video(self):
@@ -812,7 +798,8 @@ points, psition 2."""
             #self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
         self.affiche_points()
         
-        
+        #si reotur en arrière
+        #if (self.point_ID + 1) < (self.index_de_l_image)
         self.point_ID += 1
         
     def affiche_points(self):
@@ -822,9 +809,9 @@ points, psition 2."""
         #print len(self.label_video.liste_points_QT),p
         (serie,position) = self.couleur_et_numero(len(self.label_video.liste_points_QT))
         #print (serie,position)
-        point_label_trajectoire = Point(self.label_trajectoire, p, self.couleurs[position-1],serie+1,self)
+        point_label_trajectoire = Point(self.label_trajectoire, p, self.couleurs[position-1],position+1,self)
         point_label_trajectoire.show()
-        point_label_video = Point(self.label_video, p, self.couleurs[position-1],serie+1,self)
+        point_label_video = Point(self.label_video, p, self.couleurs[position-1],position+1,self)
         point_label_video.show()
         self.points_ecran[(self.index_de_l_image,position)]=[point_label_trajectoire,point_label_video,self.point_ID,p]
 

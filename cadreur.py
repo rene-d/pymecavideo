@@ -46,8 +46,20 @@ class Cadreur:
         """
         dessus=480; dessous=480
         agauche=640; adroite=640
-        for i in self.app.points.keys():
-            p=self.app.points[i][self.numpoint]
+        #création du dictionnaire self.points
+
+        self.points={}
+        for key in self.app.points_ecran:
+            self.points[key[0]] = []
+
+        for key in self.app.points_ecran:
+            self.points[key[0]] = self.points[key[0]]+ [self.app.points_ecran[key][3]]
+            
+        #self.points a pour structure : self.points {1: [vecteur (193.000000, 392.000000), vecteur (63.000000, 102.000000)]
+        
+       
+        for i in self.points.keys():
+            p=self.points[i][self.numpoint-1]
             x=p.x(); y=p.y() # attention : axe y dirigé vers le bas
             if x < agauche: agauche=x
             if 640-x < adroite: adroite=640-x
@@ -66,14 +78,16 @@ class Cadreur:
         regexp_taille=re.compile(".*[^1-9]([1-9][0-9]*) x ([1-9][0-9]*).*")
         st,out = commands.getstatusoutput("file -L %s" %self.app.filename)
         m=regexp_taille.match(out)
+        print m
         if not m : return
         self.taille=vecteur(m.group(1),m.group(2))
         ech=self.taille.norme()/vecteur(640,480).norme()
         
         os.chdir(self.app._dir("images"))
         os.system("rm -f crop*.jpg")
-        for i in self.app.points.keys():
-            p=self.app.points[i][self.numpoint]
+        for i in self.points.keys():
+            p=self.points[i][self.numpoint-1]
+           
             # calcule les vecteurs des marges
             hautgauche=(p+self.decal-self.rayons)*ech
             basdroite=(vecteur(640,480)-(p+self.decal+self.rayons))*ech
@@ -86,11 +100,12 @@ class Cadreur:
             if hautgauche.y()%2==1 : hautgauche += vecteur(0,1)
             if basdroite.y()%2==1  : basdroite  += vecteur(0,1)
             cmd="ffmpeg -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg -cropleft %d -croptop %d -cropright %d -cropbottom %d crop%04d.jpg" %(self.app.filename,(i+self.app.premiere_image-1)*self.app.deltaT,hautgauche.x(),hautgauche.y(),basdroite.x(),basdroite.y(),i)
-            commands.getstatusoutput(cmd)
+            st,out = commands.getstatusoutput(cmd)
+            
         
     def creefilm(self, ralenti):
         i=0
-        for j in self.app.points.keys():
+        for j in self.points.keys():
             for k in range(ralenti):
                 # reproduit "ralenti" fois les trames
                 os.system("cp crop%04d.jpg crop-%04d.jpg" %(j,i))
