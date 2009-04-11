@@ -296,6 +296,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             del self.repere_camera
         except AttributeError:
             pass
+
     def change_sens_X(self):
         if self.ui.checkBox_abscisses.isChecked():
             self.sens_X = -1
@@ -843,42 +844,6 @@ points, psition 2."""
         self.table_widget.setItem(serie,2*position+2,QTableWidgetItem(str(y)))
         #print x,y
 
-    def stock_coordonnees_image(self, ligne, liste_points, interactif=True):
-        """
-        place les données dans le tableau.
-        @param ligne le numérode la ligne où placer les données (commence à 0)
-        @param liste_points la liste des points cliqués sur l'image courante
-        @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
-        """
-        
-        t = "%4f" %((self.index_de_l_image-self.premiere_image)*self.deltaT)
-        #prise en compte des origines et des axes
-        liste_provisoire = []
-        for point in liste_points :
-            liste_provisoire.append(vecteur(self.sens_X*(point.x()-self.origine.x()),
-self.sens_Y*(point.y()-self.origine.y())))
-        liste_points = liste_provisoire
-        self.points[ligne]=[t]+liste_points
-        #print self.deltaT, (self.index_de_l_image-self.premiere_image)*self.deltaT,ligne,ligne*self.deltaT
-        #rentre le temps dans la première colonne
-        self.table_widget.insertRow(ligne)
-        self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
-        
-        i=0
-        #Pour chaque point dans liste_points, insère les valeur dans la ligne
-        for point in liste_points :
-            pm=self.pointEnMetre(point)
-            self.table_widget.setItem(ligne,i+1,QTableWidgetItem(str(pm.x())))
-            self.table_widget.setItem(ligne,i+2,QTableWidgetItem(str(pm.y())))
-            i+=2
-        if interactif:
-            self.table_widget.show()
-        #enlève la ligne supplémentaire, une fois qu'une ligne a été remplie
-        if ligne == 0 :
-            self.table_widget.removeRow(1)
-
-    def transforme_index_en_temps(self, index):
-        return float(self.deltaT*(index))
     
     def affiche_image_spinbox(self):
         self.index_de_l_image = self.ui.spinBox_image.value()
@@ -898,6 +863,7 @@ self.sens_Y*(point.y()-self.origine.y())))
                         b.show()
 
         self.affiche_image()
+
     def affiche_image(self):
         self.extract_image(self.filename, self.index_de_l_image)
         image=QImage(self.chemin_image)
