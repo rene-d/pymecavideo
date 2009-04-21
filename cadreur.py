@@ -49,13 +49,15 @@ class Cadreur:
         #création du dictionnaire self.points
 
         self.points={}
-        for key in self.app.points_ecran:
+        for key in self.app.points_ecran.keys():
             self.points[key[0]] = []
+            # On crée une entrée par numéro d'image traitée
 
-        for key in self.app.points_ecran:
-            self.points[key[0]] = self.points[key[0]]+ [self.app.points_ecran[key][3]]
+        for key in self.app.points_ecran.keys():
+            self.points[key[0]] = self.points[key[0]]+ [self.app.points_ecran.pointP(key)]
             
         #self.points a pour structure : self.points {1: [vecteur (193.000000, 392.000000), vecteur (63.000000, 102.000000)]
+        #on accumule pour un seul numéro d'image les positions de tous les points qu'elle contient.
         
        
         for i in self.points.keys():

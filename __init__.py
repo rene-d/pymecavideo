@@ -58,6 +58,7 @@ from cadreur import Cadreur
 from preferences import Preferences
 from dbg import Dbg
 from listes import listePointee
+from points_ecran import PointEcran
 from version import Version
 
 class StartQT4(QMainWindow):
@@ -111,7 +112,7 @@ class StartQT4(QMainWindow):
         self.modifie=False
         self.points={}        #dictionnaire des points cliqués, par n° d'image.
         self.trajectoire = {} #dictionnaire des points des trajectoires
-        self.points_ecran = {}     #dictionnaire des points apparaissant à l'écran, indexés par numéro
+        self.points_ecran = PointEcran() #objet contenant les points apparaissant à l'écran, indexés par numéro
         self.pX={}            #points apparaissant à l'écran, indexés par X
         self.pY={}            #points apparaissant à l'écran, indexés par Y
         self.index_du_point = 0
@@ -278,11 +279,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         """mets à jour le tableau de données"""
         #construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
         #print "change axe ou origine"
-        if self.points_ecran != {}:
+        if not self.points_ecran.isEmpty():
             liste_clef=[]
             donnees={}
-            for key in self.points_ecran:
-                donnees[self.points_ecran[key][2]]=self.points_ecran[key][3]
+            for key in self.points_ecran.keys():
+                donnees[self.points_ecran.pointID(key)]=self.points_ecran.pointP(key)
                 liste_clef.append(self.points_ecran[key][2])
             liste_clef.sort()
             #print liste_clef
@@ -610,11 +611,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             ##if n==referentiel:
                 ##pass
             
-        self.liste_points=list(range(len(self.points_ecran)))
+        self.liste_points=list(range(self.points_ecran.length()))
         
-        for key in self.points_ecran:
+        for key in self.points_ecran.keys():
    
-            self.liste_points[self.points_ecran[key][2] - 1] = self.points_ecran[key][3]
+            self.liste_points[self.points_ecran.pointID(key) - 1] = self.points_ecran.pointP(key)
         #print liste_clef
         #print liste_clef
         #print donnees
@@ -721,7 +722,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         trace les trajectoires en fonction du référentiel choisi.
         Pour le moment l'origine a pour coordonéees QT -> (320,240).
         """
-        self.points_ecran_copie = self.points_ecran
         self.origine_qt=vecteur(320,240)
         if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
             self.label_video.zoom_croix.hide()
@@ -745,7 +745,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                     self.repere_camera.show()
 
             #effaçage des points dans label_trajectoire
-            #self.points_ecran[(self.index_de_l_image,position)]=(point_label_trajectoire,point_label_video,self.point_ID,p)
             if ref != "camera":
                 liste_coord_new_ref=[]
                 for i in range(len(self.liste_points)//self.nb_de_points) :
@@ -755,24 +754,24 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                         coord_point=self.liste_points[self.nb_de_points*i+n]
                         p = coord_point-coord_ref+self.origine_qt
                         liste_coord_new_ref.append(p)
-                for key in self.points_ecran:
-                    point_label_trajectoire =self.points_ecran[key][0]
-                    serie,position = self.couleur_et_numero(self.points_ecran[key][2])
+                for key in self.points_ecran.keys():
+                    point_label_trajectoire =self.points_ecran.pointTraj(key)
+                    serie,position = self.couleur_et_numero(self.points_ecran.pointID(key))
                     point_label_trajectoire.hide()
                     del point_label_trajectoire
-                    point_label_trajectoire = Point(self.label_trajectoire, liste_coord_new_ref[self.points_ecran[key][2]-1],
+                    point_label_trajectoire = Point(self.label_trajectoire, liste_coord_new_ref[self.points_ecran.pointID(key)-1],
 self.couleurs[position-1],serie+1,self)
                     point_label_trajectoire.show()
-                    self.points_ecran[key][0]=point_label_trajectoire
+                    self.points_ecran.pointTraj(key,point_label_trajectoire)
             else :
-                for key in self.points_ecran:
-                    point_label_trajectoire =self.points_ecran[key][0]
-                    serie,position = self.couleur_et_numero(self.points_ecran[key][2])
+                for key in self.points_ecran.keys():
+                    point_label_trajectoire =self.points_ecran.pointTraj(key)
+                    serie,position = self.couleur_et_numero(self.points_ecran.pointID(key))
                     point_label_trajectoire.hide()
                     del point_label_trajectoire
-                    point_label_trajectoire = Point(self.label_trajectoire,self.points_ecran[key][3] ,self.couleurs[position-1],serie+1,self)
+                    point_label_trajectoire = Point(self.label_trajectoire,self.points_ecran.pointP(key) ,self.couleurs[position-1],serie+1,self)
                     point_label_trajectoire.show()
-                    self.points_ecran[key][0]=point_label_trajectoire
+                    self.points_ecran.pointTraj(key, point_label_trajectoire)
 
             
     def affiche_point_attendu(self,n):
@@ -814,7 +813,7 @@ points, psition 2."""
         point_label_trajectoire.show()
         point_label_video = Point(self.label_video, p, self.couleurs[position-1],position+1,self)
         point_label_video.show()
-        self.points_ecran[(self.index_de_l_image,position)]=[point_label_trajectoire,point_label_video,self.point_ID,p]
+        self.points_ecran.addPoint((self.index_de_l_image,position), point_label_trajectoire,point_label_video,self.point_ID,p)
 
         self.ui.pushButton_defait.setEnabled(1)
 
@@ -852,9 +851,9 @@ points, psition 2."""
         liste=[]
         if self.lance_capture:
             
-            for key in self.points_ecran:
-                a = self.points_ecran[key][0]
-                b = self.points_ecran[key][1]
+            for key in self.points_ecran.keys():
+                a = self.points_ecran.pointTraj(key)
+                b = self.points_ecran.pointVid(key)
                 if key[0] > self.index_de_l_image-1:
                         b.hide()
                         a.hide()
