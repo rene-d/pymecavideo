@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=pyMecaVideo
-Comment=Interactive tool to track moving points in video framesets
-Comment[fr_FR.UTF-8]=Outil interactif pour le suivi de points dans des collections d'images vidéo
-Exec=pymecavideo
-Icon=pymecavideo
-Terminal=false
-Type=Application
-Categories=Video;Education;Science;
