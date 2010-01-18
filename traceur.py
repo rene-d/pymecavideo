@@ -24,7 +24,12 @@ import tempfile, os
 
 def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None):
     """
-    lancement de gnuplot puis d'autres programmes ensuite éventuellement
+    lancement de gnuplot puis d'un visionneur de postscript.
+    
+    Bug connu : si le visionneur met plus de 1 seconde pour démarrer,
+    le fichier à ouvrir est déjà effacé. En général la deuxième fois
+    le bug disparaît.
+    
     @param x liste d'abscisses de points
     @param y liste d'ordonnées de points
     @param xlabel label de l'axe des abscisses
@@ -86,7 +91,12 @@ plot "%s/data" title "%s" with linespoints ls 5
     gnuplotfile.write(script)
     gnuplotfile.close()
     os.system("gnuplot %s" %gptFileName)
-    os.system("xdg-open %s/plot.ps; rm -rf %s" %(tmpdir,tmpdir))
+    # xdg-open a tendance à rendre la main aussitôt
+    # donc on attend une seconde pour être sûr que les fichiers
+    # temporaires sont encore là quand l'application de lecture
+    # postscript est réellement lancée ! d'où la sleep 1
+    os.system("xdg-open %s/plot.ps; sleep 1" %(tmpdir))
+    # ensuite on fait le ménage dans les fichiers temporaires.
     if (os.path.exists(gptFileName)):
         os.system("rm -rf %s" %(tmpdir))
     
