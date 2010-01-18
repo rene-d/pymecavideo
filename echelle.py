@@ -29,7 +29,12 @@ class echelle(QObject):
     def __init__(self, p1=vecteur(0,0), p2=vecteur(0,0)):
         self.p1,self.p2 = p1, p2
         self.longueur_reelle_etalon = 1
-        self.longueur_pixel_etalon = 1
+
+    def __str__(self):
+        return "echelle(%s,%s,%s m)" %(self.p1, self.p2, self.longueur_reelle_etalon)
+
+    def longueur_pixel_etalon(self):
+        return (self.p1-self.p2).norme()
     
     def isUndef(self):
         """
@@ -38,13 +43,13 @@ class echelle(QObject):
         """
         return (self.p1 - self.p2).norme() == 0
     
-    def calcul_longueur_pixels(self, p1, p2):
-        v=p1-p2
-        return  v.norme()
-    
     def mParPx(self):
         """renvoie le nombre de mètre par pixel"""
-        return self.longueur_reelle_etalon/self.longueur_pixel_etalon
+        return self.longueur_reelle_etalon/self.longueur_pixel_etalon()
+    
+    def pxParM(self):
+        """renvoie le nombre de pixel par mètre"""
+        return self.longueur_pixel_etalon()/self.longueur_reelle_etalon
     
     def applique_echelle(self,pos):
         """
@@ -55,6 +60,14 @@ class echelle(QObject):
         for p in pos:
             result.append((vecteur(0,480) - p)*self.mParPx())
         return result
+    
+    def etalonneReel(self,l):
+        """
+        Définit la longueur en mètre de l'étalon
+        @param l longueur en mètre
+        """
+        self.longueur_reelle_etalon=float(l)
+
 
 class Label_Echelle(QLabel):
     def __init__(self, parent,app):
@@ -106,8 +119,7 @@ class Label_Echelle(QLabel):
         self.app.echelle_image.p2=self.p2.copy()
         self.app.p1=self.p1.copy()
         self.app.p2=self.p2.copy()
-        self.app.echelle_image.longueur_pixel_etalon = self.app.echelle_image.calcul_longueur_pixels(self.p1, self.p2)
-        epxParM=self.app.echelle_image.longueur_pixel_etalon/self.app.echelle_image.longueur_reelle_etalon
+        epxParM=self.app.echelle_image.pxParM()
         self.app.affiche_echelle()
         self.app.affiche_nb_points(True)
         self.app.mets_a_jour_label_infos(self.tr("""Choisir le nombre de points puis "Démarrer l'acquisition" """)) #'

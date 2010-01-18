@@ -183,7 +183,7 @@ class StartQT4(QMainWindow):
             self.ui.echelleEdit.setText(self.tr("indéf."))
             self.ui.Bouton_Echelle.setEnabled(True)
         else:
-            epxParM=self.echelle_image.longueur_pixel_etalon/self.echelle_image.longueur_reelle_etalon
+            epxParM=self.echelle_image.pxParM()
             self.ui.echelleEdit.setText("%.1f" %epxParM)
             self.ui.Bouton_Echelle.setEnabled(False)
         self.ui.echelleEdit.show()
@@ -395,7 +395,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def loads(self,s):
         s=s[1:-1].replace("\n#","\n")
-        (self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points) = pickle.loads(s)
+        self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points = pickle.loads(s)
 
     def rouvre(self,fichier):
         lignes=open(fichier,"r").readlines()
@@ -412,22 +412,35 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 for j in range(1,len(d),2):
                     self.points[i].append(vecteur(d[j],d[j+1]))
                 i+=1
-        self.echelle_image=echelle()
-        self.loads(dd)
-        p1=self.echelle_image.p1 # sauvegarde nécessaire car openTheFile
-        p2=self.echelle_image.p2 # modifie ces valeurs
-        # À FAIRE : voir les autres choses que openTheFile fait à tort
-        # pour les redresser ! ou alors faire moins que openTheFile.
-        self.openTheFile(self.filename)
-        self.feedbackEchelle(p1, p2)
-        self.affiche_echelle()
+        self.echelle_image=echelle() # on réinitialise l'échelle
+        self.loads(dd)               # on récupère les données importantes
+        # puis on trace le segment entre les points cliqués pour l'échelle
+        self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        self.affiche_echelle()       # on met à jour le widget d'échelle
         n=len(self.points.keys())
         self.nb_image_deja_analysees = n
         self.ui.horizontalSlider.setValue(n+self.premiere_image)
         self.ui.spinBox_image.setValue(n+self.premiere_image)
         self.affiche_nb_points(self.nb_de_points)
-        self.affiche_image()
-        self.debut_capture()
+        self.affiche_image() # on affiche l'image
+        self.debut_capture(departManuel=False)
+        # On regénère le tableau d'après les points déjà existants.
+        self.cree_tableau()
+        ligne=0
+        for k in self.points.keys():
+            data=self.points[k]
+            t="%4f" %(float(data[0]))
+            self.table_widget.insertRow(ligne)
+            self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
+            i=1
+            for vect in data[1:]:
+                vect=self.pointEnMetre(vect)
+                self.table_widget.setItem(ligne,i,QTableWidgetItem(str(vect.x())))
+                self.table_widget.setItem(ligne,i+1,QTableWidgetItem(str(vect.y())))
+                i+=2
+            ligne+=1
+        self.table_widget.show()
+        # attention à la fonction défaire/refaire : elle est mal initialisée !!!
 
 
                         
@@ -440,11 +453,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 #intervalle de temps : %f
 #suivi de %s point(s)
 #%s
-#""" %(self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points,msg)
+#""" %(self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon(),self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points,msg)
         return result
 
     def dumps(self):
-        return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points)).replace("\n","\n#")
+        return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points)).replace("\n","\n#")
     def enregistre(self, fichier):
         sep_decimal="."
         try:
@@ -454,7 +467,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         except TypeError:
             pass
         if fichier != "":
-            file = open(fichier+".mecavideo", 'w')
+            fichierMecavideo=""+fichier # on force une copie !
+            fichierMecavideo.replace(".csv",".mecavideo")
+            file = open(fichierMecavideo, 'w')
             liste_des_cles = []
             try :
                 file.write(self.dumps())
@@ -496,8 +511,12 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             fichier = QFileDialog.getSaveFileName(self,"FileDialog", "data.csv","*.csv *.txt *.asc *.dat")
             self.enregistre(fichier)
 
-    def debut_capture(self):
-        """permet de mettre en place le nombre de point à acquérir"""
+    def debut_capture(self, departManuel=True):
+        """
+        permet de mettre en place le nombre de point à acquérir
+        @param departManuel vrai si on a fixé à la main la première image.
+
+        """
         
         try :
             self.origine_trace.hide()
@@ -521,9 +540,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
-        self.premiere_image=self.ui.horizontalSlider.value()
-        #self.affiche_image()
-        #self.label_video.zoom_croix.hide()
+        if departManuel==True: # si on a mis la première image à la main
+            self.premiere_image=self.ui.horizontalSlider.value()
         self.affiche_point_attendu(1)
         self.lance_capture = True
         self.label_video.setCursor(Qt.CrossCursor)
@@ -822,7 +840,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                     for i in self.points.keys():
                         if ref == "camera":
                             p = self.points[i][1+n]
-
                         else:
                             ref=int(ref)
                             p = self.points[i][1+n]-self.points[i][ref]+origine
@@ -974,7 +991,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         
         t = "%4f" %((self.index_de_l_image-self.premiere_image)*self.deltaT)
         self.points[ligne]=[t]+liste_points
-        #print self.deltaT, (self.index_de_l_image-self.premiere_image)*self.deltaT,ligne,ligne*self.deltaT
         #rentre le temps dans la première colonne
         self.table_widget.insertRow(ligne)
         self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
@@ -1034,7 +1050,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             if echelle_result[0] <= 0 or echelle_result[1] == False :
                 self.mets_a_jour_label_infos(self.tr(" Merci d'indiquer une échelle valable"))
             else :
-                self.echelle_image.longueur_reelle_etalon=float(echelle_result[0])
+                self.echelle_image.etalonneReel(echelle_result[0])
                 self.job = Label_Echelle(self.label_video,self)
                 self.job.setPixmap(QPixmap(self.chemin_image))
                 self.job.show()
@@ -1168,7 +1184,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.reinitialise_environnement() 
         self.affiche_image()
         
-            
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
         
