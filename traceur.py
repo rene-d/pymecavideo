@@ -22,10 +22,46 @@
 
 import tempfile, os
 
-def traceur2d(x,y,xlabel="", ylabel="", titre=""):
+def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None):
     """
     lancement de gnuplot puis d'autres programmes ensuite éventuellement
+    @param x liste d'abscisses de points
+    @param y liste d'ordonnées de points
+    @param xlabel label de l'axe des abscisses
+    @param ylabel label de l'axe des ordonnées
+    @param titre le titre du graphique
+    @param style phrase de style. On peut y mettre des choses comme :
+      * [x1,y1,x2,y2] : une liste de 4 réels donne les dimensions de la fenêtre
+      * "zero" : le point (0,0) doit être visible dans le graphique
     """
+    autozoom=True # par défaut, gnuplot zoomera tout seul pour cadrer au mieux
+    if type(style)==type([]): # les dimensions de la fenêtre sont explicites
+        autozoom=False
+        xmin,ymin,xmax,ymax=style
+        if xmin>xmax: xmin,xmax=(xmax,xmin)
+        if ymin>ymax: ymin,ymax=(ymax,ymin)
+    if style=="zero": # on doit s'assurer que la fenêtre contient (0,0)
+        autozoom=False
+        xmin=x[0]; xmax=xmin; ymin=y[0]; ymax=ymin
+        for xtemp in x[1:]+[0]:
+            if xtemp<xmin: xmin=xtemp
+            if xtemp>xmax: xmax=xtemp
+        for ytemp in y[1:]+[0]:
+            if ytemp<ymin: ymin=ytemp
+            if ytemp>ymax: ymax=ytemp
+    if autozoom:
+        xyranges="# automatic zoom"
+    else:
+        # cas où un point est vraiment immobile, on élargit la fenêtre
+        if xmax==xmin: xmin=xmin-0.1; xmax=xmax+0.1
+        if ymax==ymin: ymin=ymin-0.1; ymax=ymax+0.1
+        # on élargit la fenêtre de 10 % ensuite
+        xspan=xmax-xmin; yspan=ymax-ymin
+        xmin -= 0.05*xspan; xmax += 0.05*xspan
+        ymin -= 0.05*yspan; ymax += 0.05*yspan
+        # on peut enfin fixer les paramètres définitifs de la fenêtre
+        xyranges="""set xrange [%s:%s]
+set yrange [%s:%s]""" %(xmin,xmax,ymin,ymax)
     tmpdir=tempfile.mkdtemp("_pymeca_plot")
     datafilename="%s/data" %tmpdir
     data=open(datafilename,"w")
@@ -34,15 +70,18 @@ def traceur2d(x,y,xlabel="", ylabel="", titre=""):
     data.close()
     gptFileName="%s/script.gpt" %tmpdir
     gnuplotfile=open(gptFileName,"w")
+    # pour les styles de gnuplot, voir http://gnuplot.info/docs/node62.html
     script="""
 set encoding iso_8859_1 
 set xlabel "%s"
 set ylabel "%s"
+%s
 set grid xtics ytics x2tics y2tics
 set terminal postscript portrait enhanced mono dashed lw 1 "Helvetica" 14
 set output "%s/plot.ps"
-plot "%s/data" title "%s"
-""" %(xlabel,ylabel,tmpdir,tmpdir,titre)
+set style line 5 lt rgb "red" lw 1 pt 1
+plot "%s/data" title "%s" with linespoints ls 5
+""" %(xlabel,ylabel,xyranges,tmpdir,tmpdir,titre)
     script=script.decode("utf-8").encode("iso-8859-15")
     gnuplotfile.write(script)
     gnuplotfile.close()

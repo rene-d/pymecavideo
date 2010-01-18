@@ -906,8 +906,17 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             labelAbscisse="t (s)"
             if typeDeCourbe != "v" : labelOrdonnee=typeDeCourbe+" (m)"
             else: labelOrdonnee=typeDeCourbe+" (m/s)"
+            # déterminer le style de tracé
+            styleTrace=None
+            if typeDeCourbe in ("x","y"):
+                if ref == "camera":
+                    styleTrace=[0,0,mpp*640,mpp*480]
+                else:
+                    styleTrace="zero"
+            else: # type de courbe "v""
+                styleTrace="zero"
             # le tracé est fait dans un nouveau thread
-            t=threading.Thread(target=traceur2d, args=(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre))
+            t=threading.Thread(target=traceur2d, args=(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace))
             t.setDaemon(True) # le tracé peut survivre à pymecavideo
             t.start()
         except:
