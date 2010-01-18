@@ -86,7 +86,7 @@ plot "%s/data" title "%s" with linespoints ls 5
     gnuplotfile.write(script)
     gnuplotfile.close()
     os.system("gnuplot %s" %gptFileName)
-    os.system("evince %s/plot.ps; rm -rf %s" %(tmpdir,tmpdir))
+    os.system("xdg-open %s/plot.ps; rm -rf %s" %(tmpdir,tmpdir))
     if (os.path.exists(gptFileName)):
         os.system("rm -rf %s" %(tmpdir))
     
