@@ -1,6 +1,6 @@
 DESTDIR = 
 HELPFILES = $(shell ls help | grep -E 'xhtml$$|css$$|png$$')
-LRELEASE = lrelease
+LRELEASE = lrelease-qt4
 
 all:	Ui_pymecavideo.py Ui_preferences.py  helpfiles languages
 
