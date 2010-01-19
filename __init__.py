@@ -1281,7 +1281,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     def close_Event(self, e):
         """Capture la fermeture de la fenêtre"""
         print "ça ferme !!!"
-        os.system("rm -rf %s" %(tmpdir))
+        from tempfile import gettempdir
+        tmpdir=gettempdir()+"/pymeca*"
+        os.system("rm -rf %s" %tmpdir)
         e.accept()
 
         
@@ -1339,7 +1341,7 @@ def run():
         b = app.installTranslator(appTranslator)
         
     windows = StartQT4(None,os.path.abspath(filename),opts)
-
+    windows.closeEvent = windows.close_Event
     windows.show()
     sys.exit(app.exec_())
 
