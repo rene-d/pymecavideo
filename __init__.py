@@ -901,20 +901,19 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             t=0
             ancienPoint=None
             ref=self.ui.comboBox_referentiel.currentText().split(" ")[-1]
-            mpp=self.echelle_image.mParPx()
             for i in self.points.keys():
                 if ref == "camera":
-                    p = self.points[i][1+numero]
+                    p = self.pointEnMetre(self.points[i][1+numero])
                 else:
                     ref=int(ref)
-                    p = self.points[i][1+numero]-self.points[i][ref]
-                if typeDeCourbe == "x": ordonnee.append(mpp*(p.x()-self.origine.x()))
-                if typeDeCourbe == "y": ordonnee.append(mpp*(p.y()-self.origine.y()))
+                    p = self.pointEnMetre(self.points[i][1+numero])-self.pointEnMetre(self.points[i][ref])
+                if typeDeCourbe == "x": ordonnee.append(p.x())
+                if typeDeCourbe == "y": ordonnee.append(p.y())
                 if typeDeCourbe == "v":
                     if ancienPoint != None:
                        abscisse.append(t)
                        v=(p-ancienPoint).norme()
-                       ordonnee.append(mpp*v)
+                       ordonnee.append(v)
                 else:
                     abscisse.append(t)
                 t+=self.deltaT
@@ -927,8 +926,14 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             styleTrace=None
             if typeDeCourbe in ("x","y"):
                 if ref == "camera":
-                    #styleTrace=[0,0,mpp*640,mpp*480]
-                    styleTrace=None #autozoom
+                    p1=self.pointEnMetre(vecteur(0,0))
+                    p2=self.pointEnMetre(vecteur(640,480))
+                    minx=p1.x(); maxx=p2.x()
+                    miny=p1.y(); maxy=p2.y()
+                    if typeDeCourbe=="x":
+                        styleTrace=[0,minx,t,maxx]
+                    if typeDeCourbe=="y":
+                        styleTrace=[0,miny,t,maxy]
                 else:
                     styleTrace="zero"
             else: # type de courbe "v""
