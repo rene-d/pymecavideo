@@ -908,8 +908,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 else:
                     ref=int(ref)
                     p = self.points[i][1+numero]-self.points[i][ref]
-                if typeDeCourbe == "x": ordonnee.append(mpp*p.x())
-                if typeDeCourbe == "y": ordonnee.append(mpp*p.y())
+                if typeDeCourbe == "x": ordonnee.append(mpp*(p.x()-self.origine.x()))
+                if typeDeCourbe == "y": ordonnee.append(mpp*(p.y()-self.origine.y()))
                 if typeDeCourbe == "v":
                     if ancienPoint != None:
                        abscisse.append(t)
@@ -927,7 +927,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             styleTrace=None
             if typeDeCourbe in ("x","y"):
                 if ref == "camera":
-                    styleTrace=[0,0,mpp*640,mpp*480]
+                    #styleTrace=[0,0,mpp*640,mpp*480]
+                    styleTrace=None #autozoom
                 else:
                     styleTrace="zero"
             else: # type de courbe "v""
@@ -1270,9 +1271,21 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
                 self.rouvre(val)
+
+
+    def close_Event(self, e):
+        """Capture la fermeture de la fenêtre"""
+        print "ça ferme !!!"
+        os.system("rm -rf %s" %(tmpdir))
+        e.accept()
+
         
 def usage():
     print self.tr("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier]")
+
+
+
+
 
 def run():
     app = QApplication(sys.argv)
@@ -1327,7 +1340,9 @@ def run():
     windows = StartQT4(None,os.path.abspath(filename),opts)
 
     windows.show()
+    
     sys.exit(app.exec_())
+    
 
 if __name__ == "__main__":
     run()

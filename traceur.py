@@ -67,7 +67,7 @@ def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None):
         # on peut enfin fixer les paramètres définitifs de la fenêtre
         xyranges="""set xrange [%s:%s]
 set yrange [%s:%s]""" %(xmin,xmax,ymin,ymax)
-    tmpdir=tempfile.mkdtemp("_pymeca_plot")
+    tmpdir=tempfile.mkdtemp(prefix="pymeca_plot_")
     datafilename="%s/data" %tmpdir
     data=open(datafilename,"w")
     for i in range(len(x)):
@@ -94,11 +94,12 @@ plot "%s/data" title "%s" with linespoints ls 5
     # xdg-open a tendance à rendre la main aussitôt
     # donc on attend une seconde pour être sûr que les fichiers
     # temporaires sont encore là quand l'application de lecture
-    # postscript est réellement lancée ! d'où la sleep 1
-    os.system("xdg-open %s/plot.ps; sleep 1" %(tmpdir))
+    # postscript est réellement lancée ! d'où la sleep 5. ce temps est grand pour les ordinateurs un peu lents.
+    #il serait préférable d'avoir un test sur l'ouverture effective du lecteur pour effacer les fichiers temporaires.
+    os.system("xdg-open %s/plot.ps; sleep 5" %(tmpdir))
     # ensuite on fait le ménage dans les fichiers temporaires.
-    if (os.path.exists(gptFileName)):
-        os.system("rm -rf %s" %(tmpdir))
+    #if (os.path.exists(gptFileName)):
+        #os.system("rm -rf %s" %(tmpdir))
     
     def __call__(x,y,xlabel="", ylabel="", titre=""):
         """

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pymecavideo.ui'
 #
-# Created: Sun Jan 10 10:10:18 2010
+# Created: Mon Jan 18 21:26:34 2010
 #      by: PyQt4 UI code generator 4.6.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -175,7 +175,7 @@ class Ui_pymecavideo(object):
         self.label_3.setAutoFillBackground(True)
         self.label_3.setObjectName("label_3")
         self.layoutWidget = QtGui.QWidget(self.tab_traj)
-        self.layoutWidget.setGeometry(QtCore.QRect(20, 10, 585, 60))
+        self.layoutWidget.setGeometry(QtCore.QRect(20, 10, 631, 95))
         self.layoutWidget.setObjectName("layoutWidget")
         self.hboxlayout1 = QtGui.QHBoxLayout(self.layoutWidget)
         self.hboxlayout1.setObjectName("hboxlayout1")
@@ -206,6 +206,19 @@ class Ui_pymecavideo(object):
         self.hboxlayout1.addLayout(self.vboxlayout1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.hboxlayout1.addItem(spacerItem1)
+        self.verticalLayout_2 = QtGui.QVBoxLayout()
+        self.verticalLayout_2.setContentsMargins(-1, -1, 0, -1)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.label_8 = QtGui.QLabel(self.layoutWidget)
+        self.label_8.setObjectName("label_8")
+        self.verticalLayout_2.addWidget(self.label_8)
+        self.comboBox_mode_tracer = QtGui.QComboBox(self.layoutWidget)
+        self.comboBox_mode_tracer.setObjectName("comboBox_mode_tracer")
+        self.comboBox_mode_tracer.addItem("")
+        self.verticalLayout_2.addWidget(self.comboBox_mode_tracer)
+        self.hboxlayout1.addLayout(self.verticalLayout_2)
+        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.hboxlayout1.addItem(spacerItem2)
         self.vboxlayout2 = QtGui.QVBoxLayout()
         self.vboxlayout2.setObjectName("vboxlayout2")
         self.label_5 = QtGui.QLabel(self.layoutWidget)
@@ -233,7 +246,7 @@ class Ui_pymecavideo(object):
         self.hboxlayout.addWidget(self.tabWidget)
         pymecavideo.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(pymecavideo)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 865, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 865, 23))
         self.menubar.setObjectName("menubar")
         self.menuFichier = QtGui.QMenu(self.menubar)
         self.menuFichier.setObjectName("menuFichier")
@@ -315,6 +328,8 @@ class Ui_pymecavideo(object):
         self.comboBox_fps.setItemText(1, QtGui.QApplication.translate("pymecavideo", "ralenti /2", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBox_fps.setItemText(2, QtGui.QApplication.translate("pymecavideo", "ralenti /4", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBox_fps.setItemText(3, QtGui.QApplication.translate("pymecavideo", "ralenti /8", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_8.setText(QtGui.QApplication.translate("pymecavideo", "Graphique :", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBox_mode_tracer.setItemText(0, QtGui.QApplication.translate("pymecavideo", "Choisir ...", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("pymecavideo", "Échelle de vitesses :", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("pymecavideo", "px pour 1 m/s", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_traj), QtGui.QApplication.translate("pymecavideo", "trajectoires", None, QtGui.QApplication.UnicodeUTF8))

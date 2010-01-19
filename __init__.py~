@@ -60,6 +60,8 @@ from listes import listePointee
 from version import Version
 from subprocess import *
 import re
+from traceur import traceur2d
+import threading
 
 class StartQT4(QMainWindow):
     def __init__(self, parent, filename, opts):
@@ -181,7 +183,7 @@ class StartQT4(QMainWindow):
             self.ui.echelleEdit.setText(self.tr("indéf."))
             self.ui.Bouton_Echelle.setEnabled(True)
         else:
-            epxParM=self.echelle_image.longueur_pixel_etalon/self.echelle_image.longueur_reelle_etalon
+            epxParM=self.echelle_image.pxParM()
             self.ui.echelleEdit.setText("%.1f" %epxParM)
             self.ui.Bouton_Echelle.setEnabled(False)
         self.ui.echelleEdit.show()
@@ -260,6 +262,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.Bouton_lance_capture,SIGNAL("clicked()"),self.debut_capture)
         QObject.connect(self,SIGNAL("clic_sur_video()"),self.clic_sur_label_video)
         QObject.connect(self.ui.comboBox_referentiel,SIGNAL("currentIndexChanged (int)"),self.tracer_trajectoires)
+        QObject.connect(self.ui.comboBox_mode_tracer,SIGNAL("currentIndexChanged (int)"),self.tracer_courbe)
         QObject.connect(self.ui.tabWidget,SIGNAL("currentChanged (int)"),self.tracer_trajectoires)
         QObject.connect(self.ui.echelle_v,SIGNAL("currentIndexChanged (int)"),self.refait_vitesses)
         QObject.connect(self.ui.echelle_v,SIGNAL("editTextChanged (int)"),self.refait_vitesses)
@@ -276,7 +279,6 @@ class StartQT4(QMainWindow):
     def choisi_nouvelle_origine(self):
         nvl_origine=QMessageBox.information(self,QString("NOUVELLE ORIGINE"),\
 QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle origine"))
-        #print "label_origine"
         label = Label_Origine(parent=self.ui.label, app=self)
         label.show()
 
@@ -285,7 +287,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     def change_axe_origine(self):
         """mets à jour le tableau de données"""
         #construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
-        #print "change axe ou origine"
         if self.points_ecran != {}:
             liste_clef=[]
             donnees={}
@@ -293,12 +294,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 donnees[self.points_ecran[key][2]]=self.points_ecran[key][3]
                 liste_clef.append(self.points_ecran[key][2])
             liste_clef.sort()
-            #print liste_clef
-            #print donnees
-            #print self.origine
             for key in liste_clef :
                 serie,position=self.couleur_et_numero(int(key))
-                #print serie,position,donnees[key]
                 self.rempli_tableau(serie,position,donnees[key],recalcul=True)
         try:
             del self.repere_camera
@@ -312,13 +309,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.emit(SIGNAL('change_axe_origine()'))
 
     def change_sens_Y(self):
-        #print "change Y"
         if self.ui.checkBox_ordonnees.isChecked():
             self.sens_Y = -1
 
         else :
             self.sens_Y = 1
-        #print self.sens_Y
         self.emit(SIGNAL('change_axe_origine()'))
 
     def affiche_fonctionnalites_avancees(self):
@@ -400,7 +395,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def loads(self,s):
         s=s[1:-1].replace("\n#","\n")
-        (self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points) = pickle.loads(s)
+        self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points = pickle.loads(s)
 
     def rouvre(self,fichier):
         lignes=open(fichier,"r").readlines()
@@ -417,18 +412,35 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 for j in range(1,len(d),2):
                     self.points[i].append(vecteur(d[j],d[j+1]))
                 i+=1
-        self.echelle_image=echelle()
-        self.dbg.p(2,self.tr("chemin vers les modules : %s") %sys.path)
-        self.loads(dd)
-        self.openTheFile(self.filename)
-        self.affiche_echelle()
+        self.echelle_image=echelle() # on réinitialise l'échelle
+        self.loads(dd)               # on récupère les données importantes
+        # puis on trace le segment entre les points cliqués pour l'échelle
+        self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        self.affiche_echelle()       # on met à jour le widget d'échelle
         n=len(self.points.keys())
         self.nb_image_deja_analysees = n
         self.ui.horizontalSlider.setValue(n+self.premiere_image)
         self.ui.spinBox_image.setValue(n+self.premiere_image)
         self.affiche_nb_points(self.nb_de_points)
-        self.affiche_image()
-        self.debut_capture()
+        self.affiche_image() # on affiche l'image
+        self.debut_capture(departManuel=False)
+        # On regénère le tableau d'après les points déjà existants.
+        self.cree_tableau()
+        ligne=0
+        for k in self.points.keys():
+            data=self.points[k]
+            t="%4f" %(float(data[0]))
+            self.table_widget.insertRow(ligne)
+            self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
+            i=1
+            for vect in data[1:]:
+                vect=self.pointEnMetre(vect)
+                self.table_widget.setItem(ligne,i,QTableWidgetItem(str(vect.x())))
+                self.table_widget.setItem(ligne,i+1,QTableWidgetItem(str(vect.y())))
+                i+=2
+            ligne+=1
+        self.table_widget.show()
+        # attention à la fonction défaire/refaire : elle est mal initialisée !!!
 
 
                         
@@ -441,11 +453,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 #intervalle de temps : %f
 #suivi de %s point(s)
 #%s
-#""" %(self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points,msg)
+#""" %(self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon(),self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points,msg)
         return result
 
     def dumps(self):
-        return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points)).replace("\n","\n#")
+        return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points)).replace("\n","\n#")
     def enregistre(self, fichier):
         sep_decimal="."
         try:
@@ -455,7 +467,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         except TypeError:
             pass
         if fichier != "":
-            file = open(fichier+".mecavideo", 'w')
+            fichierMecavideo=""+fichier # on force une copie !
+            fichierMecavideo.replace(".csv",".mecavideo")
+            file = open(fichierMecavideo, 'w')
             liste_des_cles = []
             try :
                 file.write(self.dumps())
@@ -497,8 +511,12 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             fichier = QFileDialog.getSaveFileName(self,"FileDialog", "data.csv","*.csv *.txt *.asc *.dat")
             self.enregistre(fichier)
 
-    def debut_capture(self):
-        """permet de mettre en place le nombre de point à acquérir"""
+    def debut_capture(self, departManuel=True):
+        """
+        permet de mettre en place le nombre de point à acquérir
+        @param departManuel vrai si on a fixé à la main la première image.
+
+        """
         
         try :
             self.origine_trace.hide()
@@ -522,9 +540,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
-        self.premiere_image=self.ui.horizontalSlider.value()
-        #self.affiche_image()
-        #self.label_video.zoom_croix.hide()
+        if departManuel==True: # si on a mis la première image à la main
+            self.premiere_image=self.ui.horizontalSlider.value()
         self.affiche_point_attendu(1)
         self.lance_capture = True
         self.label_video.setCursor(Qt.CrossCursor)
@@ -792,6 +809,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                     origine=vecteur(320,240)-bc
                     
                     if self.ui.comboBox_referentiel.count()>2 :
+                        # il y a plus d'un point étudié, on active le
+                        # bouton vidéo et on autorise de changer de référentiel
                         self.ui.button_video.setEnabled(1)
                         self.ui.comboBox_fps.setEnabled(1)
                         self.ui.comboBox_referentiel.setEnabled(1)
@@ -800,21 +819,27 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                         self.ui.comboBox_fps.setEnabled(0)
 
                 else:
-                    #print ref, "égal caméra"
-                    # pas de vidéo si ref == "camera"
                     self.ui.button_video.setEnabled(0)
                     self.ui.comboBox_fps.setEnabled(0)
                     if self.ui.comboBox_referentiel.count()>2 :
                         self.ui.comboBox_referentiel.setEnabled(1) #ne pas autoriser le changement de référentiel si il n'y a que 1 point.
 
 
+                # on fait la liste des courbes traçables
+                self.ui.comboBox_mode_tracer.clear()
+                self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
+                for i in range(self.nb_de_points) :
+                    self.ui.comboBox_mode_tracer.addItem(QString("x%d(t)" %(i+1)))
+                    self.ui.comboBox_mode_tracer.addItem(QString("y%d(t)" %(i+1)))
+                    self.ui.comboBox_mode_tracer.addItem(QString("v%d(t)" %(i+1)))
+
+                # on trace les points compte tenu du référentiel
                 for n in range(self.nb_de_points):
                     couleur = self.couleurs[n]
                     ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
                     for i in self.points.keys():
                         if ref == "camera":
                             p = self.points[i][1+n]
-
                         else:
                             ref=int(ref)
                             p = self.points[i][1+n]-self.points[i][ref]+origine
@@ -823,7 +848,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                             # une seule instance suffira, vu qu'il ne bouge pas.
                             if newValue!="absolu":
                                 if i == self.points.keys()[0]:
-                                    print "il fait point", ref
                                     point = Repere(self.label_trajectoire, p, couleur, 0, self)
                                     point.show()
                                     self.retientPoint(n,ref,i,p,point)
@@ -835,7 +859,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                                 point.show()
                                 self.retientPoint(n,ref,i,p,point)
                                 if i == self.points.keys()[0] and self.repere==0 and ref=="camera":
-                                        print "il fait point_", ref
                                         point_ = Repere(self.label_trajectoire, self.origine, couleur, 0, self)
                                         point_.show()
                                         self.retientPoint(n,ref,i,p,point_)
@@ -862,7 +885,61 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                         point.montre_vitesse(False) #ne montre pas les vitesses
                         point.show()
                         self.retientPoint(n,ref,i,p,point)
-            
+
+    def tracer_courbe(self,itemChoisi):
+        try:
+            self.ui.comboBox_mode_tracer.setCurrentIndex (0)
+            if itemChoisi == 0: return # c'est rien du tout.
+            numero=(itemChoisi-1)/3
+            typeDeCourbe=("x","y","v")[(itemChoisi-1)%3]
+            titre=(self.tr("Évolution de l'abscisse du point %1").arg(numero+1),
+                   self.tr("Évolution de l'ordonnée du point %1").arg(numero+1),
+                   self.tr("Évolution de la vitesse du point %1").arg(numero+1))[(itemChoisi-1)%3]
+            titre=titre.toAscii()
+            abscisse=[]
+            ordonnee=[]
+            t=0
+            ancienPoint=None
+            ref=self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+            mpp=self.echelle_image.mParPx()
+            for i in self.points.keys():
+                if ref == "camera":
+                    p = self.points[i][1+numero]
+                else:
+                    ref=int(ref)
+                    p = self.points[i][1+numero]-self.points[i][ref]
+                if typeDeCourbe == "x": ordonnee.append(mpp*(p.x()-self.origine.x()))
+                if typeDeCourbe == "y": ordonnee.append(mpp*(p.y()-self.origine.y()))
+                if typeDeCourbe == "v":
+                    if ancienPoint != None:
+                       abscisse.append(t)
+                       v=(p-ancienPoint).norme()
+                       ordonnee.append(mpp*v)
+                else:
+                    abscisse.append(t)
+                t+=self.deltaT
+                ancienPoint=p
+            # les abscisses et les ordonnées sont prêtes
+            labelAbscisse="t (s)"
+            if typeDeCourbe != "v" : labelOrdonnee=typeDeCourbe+" (m)"
+            else: labelOrdonnee=typeDeCourbe+" (m/s)"
+            # déterminer le style de tracé
+            styleTrace=None
+            if typeDeCourbe in ("x","y"):
+                if ref == "camera":
+                    #styleTrace=[0,0,mpp*640,mpp*480]
+                    styleTrace=None #autozoom
+                else:
+                    styleTrace="zero"
+            else: # type de courbe "v""
+                styleTrace="zero"
+            # le tracé est fait dans un nouveau thread
+            t=threading.Thread(target=traceur2d, args=(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace))
+            t.setDaemon(True) # le tracé peut survivre à pymecavideo
+            t.start()
+        except:
+            pass # il faut accepter que le combo soit vide à l'initialisation
+    
     def affiche_point_attendu(self,n):
         """
         Renseigne sur le numéro du point attendu
@@ -915,7 +992,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         
         t = "%4f" %((self.index_de_l_image-self.premiere_image)*self.deltaT)
         self.points[ligne]=[t]+liste_points
-        #print self.deltaT, (self.index_de_l_image-self.premiere_image)*self.deltaT,ligne,ligne*self.deltaT
         #rentre le temps dans la première colonne
         self.table_widget.insertRow(ligne)
         self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
@@ -975,7 +1051,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             if echelle_result[0] <= 0 or echelle_result[1] == False :
                 self.mets_a_jour_label_infos(self.tr(" Merci d'indiquer une échelle valable"))
             else :
-                self.echelle_image.longueur_reelle_etalon=float(echelle_result[0])
+                self.echelle_image.etalonneReel(echelle_result[0])
                 self.job = Label_Echelle(self.label_video,self)
                 self.job.setPixmap(QPixmap(self.chemin_image))
                 self.job.show()
@@ -988,11 +1064,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         affiche une trace au-dessus du self.job, qui reflète les positions
         retenues pour l'échelle
         """
-        #print p1,p2
         from echelle import Label_Echelle_Trace
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1,p2)
         self.label_echelle_trace.show()
-        #try :
         self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
         self.origine_trace.show()
         
@@ -1038,12 +1112,12 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     def openexample(self):
         dir="%s/video" %(self._dir("share"))
         self.reinitialise_tout()
-        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), dir,self.tr("fichiers vidéos ( *.avi *.ogv *.mpg *.mpeg *.ogg"))
+        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), dir,self.tr("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg"))
         self.openTheFile(filename)
         
     def openfile(self):
         dir=self._dir("cwd")
-        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), dir,self.tr("fichiers vidéos ( *.avi *.ogv *.mpg *.mpeg *.ogg"))
+        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), dir,self.tr("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg"))
         self.openTheFile(filename)
 
     def renomme_le_fichier(self):
@@ -1060,14 +1134,19 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 self.renomme_le_fichier()
             else :
                 self.filename=str(filename)
+                try:
+                    self.init_image()
+                    self.mets_a_jour_label_infos(self.tr("Veuillez choisir une image et définir l'échelle"))
+                    self.ui.Bouton_Echelle.setEnabled(True)
+                    self.ui.horizontalSlider.setEnabled(1)
+                    self.label_video.show()
+                except:
+                    return
+                # n'enregistre les préférence que quand la première image
+                # a été extraite avec succès !!
                 self.prefs.lastVideo=filename
                 self.prefs.videoDir=os.path.dirname(unicode(filename))
                 self.prefs.save()
-                self.init_image()
-                self.mets_a_jour_label_infos(self.tr("Veuillez choisir une image et définir l'échelle"))
-                self.ui.Bouton_Echelle.setEnabled(True)
-                self.ui.horizontalSlider.setEnabled(1)
-                self.label_video.show()
 
     def propos(self):
         try:
@@ -1106,7 +1185,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.reinitialise_environnement() 
         self.affiche_image()
         
-            
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
         
@@ -1162,7 +1240,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         duration=0
         try:
             videospec=Popen(["ffmpeg","-i",fileName], stderr=PIPE).communicate()
-            patternRate=re.compile(".*Video.* (\\d+) tbr.*")
+            patternRate=re.compile(".*Video.* ([.0-9]+) tbr.*")
             patternDuration=re.compile(".*Duration.* (\\d+):(\\d+):([.0-9]*),.*")
             for multiline in videospec:
                 if multiline:
@@ -1170,7 +1248,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                     for line in l:
                         m=patternRate.match(line)
                         if m:
-                            framerate=int(m.group(1))
+                            framerate=float(m.group(1))
                         m=patternDuration.match(line)
                         if m:
                             h=int(m.group(1))
@@ -1193,9 +1271,21 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
                 self.rouvre(val)
+
+
+    def close_Event(self, e):
+        """Capture la fermeture de la fenêtre"""
+        print "ça ferme !!!"
+        os.system("rm -rf %s" %(tmpdir))
+        e.accept()
+
         
 def usage():
     print self.tr("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier]")
+
+
+
+
 
 def run():
     app = QApplication(sys.argv)
@@ -1250,7 +1340,9 @@ def run():
     windows = StartQT4(None,os.path.abspath(filename),opts)
 
     windows.show()
+    
     sys.exit(app.exec_())
+    
 
 if __name__ == "__main__":
     run()
