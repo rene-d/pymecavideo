@@ -1280,7 +1280,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def close_Event(self, e):
         """Capture la fermeture de la fenêtre"""
-        print "ça ferme !!!"
         from tempfile import gettempdir
         tmpdir=gettempdir()+"/pymeca*"
         os.system("rm -rf %s" %tmpdir)
