@@ -5,7 +5,7 @@ LRELEASE = lrelease-qt4
 all:	Ui_pymecavideo.py Ui_preferences.py  helpfiles languages
 
 languages:
-	$(LRELEASE) lang/*.ts
+	$(LRELEASE) lang/*.ts 2>/dev/null || lrelease lang/*.ts
 
 helpfiles:
 	@$(MAKE) -C help
