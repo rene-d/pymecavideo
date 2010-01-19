@@ -912,7 +912,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 if typeDeCourbe == "v":
                     if ancienPoint != None:
                        abscisse.append(t)
-                       v=(p-ancienPoint).norme()
+                       v=(p-ancienPoint).norme()/self.deltaT
                        ordonnee.append(v)
                 else:
                     abscisse.append(t)
@@ -1288,10 +1288,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 def usage():
     print self.tr("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier]")
 
-
-
-
-
 def run():
     app = QApplication(sys.argv)
     
@@ -1345,9 +1341,7 @@ def run():
     windows = StartQT4(None,os.path.abspath(filename),opts)
 
     windows.show()
-    
     sys.exit(app.exec_())
-    
 
 if __name__ == "__main__":
     run()
