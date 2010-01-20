@@ -21,7 +21,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -756,12 +756,15 @@
          <rect>
           <x>40</x>
           <y>40</y>
-          <width>241</width>
+          <width>291</width>
           <height>25</height>
          </rect>
         </property>
         <property name="text">
          <string>Copier les mesures dans le presse papier</string>
+        </property>
+        <property name="autoDefault">
+         <bool>false</bool>
         </property>
        </widget>
       </widget>
@@ -775,7 +778,7 @@
      <x>0</x>
      <y>0</y>
      <width>865</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
