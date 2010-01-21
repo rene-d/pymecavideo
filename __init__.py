@@ -158,6 +158,7 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_origine.hide()
         self.ui.checkBox_abscisses.hide()
         self.ui.checkBox_ordonnees.hide()
+        self.ui.tabWidget.setCurrentIndex(0) # montre l'onglet video
 
 
     def affiche_lance_capture (self,active=False):
