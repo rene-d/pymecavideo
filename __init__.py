@@ -503,7 +503,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             finally:
                 file.close()
             ################# fin du fichier physique ################
-            #self.modifie=False
+            self.modifie=False
         
     def enregistre_ui(self):
         os.chdir(self._dir("home"))
@@ -713,12 +713,14 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         """
         self.tousLesClics.decPtr()
         self.repasseTousLesClics()
+        self.modifie=True
 
     def refait_point_suivant(self):
         """rétablit le point suivant après un effacement
         """
         self.tousLesClics.incPtr()
         self.repasseTousLesClics()
+        self.modifie=True
 
     def repasseTousLesClics(self):
         """
@@ -963,7 +965,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
             self.nb_image_deja_analysees += 1
             self.index_de_l_image += 1
-        if interactif: self.clic_sur_label_video_ajuste_ui(point_attendu)
+        if interactif:
+            self.clic_sur_label_video_ajuste_ui(point_attendu)
+            self.modifie=True
         
     def clic_sur_label_video_ajuste_ui(self,point_attendu):
         """
