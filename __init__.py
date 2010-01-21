@@ -1083,8 +1083,12 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 os.remove(filename)
         
     def closeEvent(self,event):
+        from tempfile import gettempdir
         if self.verifie_donnees_sauvegardees() :
             self.reinitialise_environnement()
+            tmpdir=gettempdir()+"/pymeca*"
+            os.system("rm -rf %s" %tmpdir)
+            event.accept()
         else :
             event.ignore()
 
@@ -1279,12 +1283,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 self.rouvre(val)
 
 
-    def close_Event(self, e):
-        """Capture la fermeture de la fenêtre"""
-        from tempfile import gettempdir
-        tmpdir=gettempdir()+"/pymeca*"
-        os.system("rm -rf %s" %tmpdir)
-        e.accept()
 
         
 def usage():
@@ -1331,8 +1329,7 @@ def run():
         os.mkdir(pymecavideo_rep_images)
         os.mkdir(pymecavideo_rep_icones)
         os.mkdir(pymecavideo_rep_langues)
-        copy_commands='cp -R '+pymecavideo_rep_install+'/icones/* '+pymecavideo_rep_icones
-        
+        copy_commands='cp -R /usr/share/python-mecavideo/icones/* '+pymecavideo_rep_icones
         status,output=commands.getstatusoutput(copy_commands)
         copy_commands_lang='cp -R '+pymecavideo_rep_install+'/lang/* '+pymecavideo_rep_langues
         status,output=commands.getstatusoutput(copy_commands_lang)
@@ -1341,7 +1338,6 @@ def run():
         b = app.installTranslator(appTranslator)
         
     windows = StartQT4(None,os.path.abspath(filename),opts)
-    windows.closeEvent = windows.close_Event
     windows.show()
     sys.exit(app.exec_())
 
