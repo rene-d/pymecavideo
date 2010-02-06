@@ -76,6 +76,11 @@ class StartQT4(QMainWindow):
 
         ####intilise les répertoires
         self._dir()
+        defait_icon=os.path.join(self._dir("icones"),"undo.png")
+        print defait_icon
+        self.ui.pushButton_defait.setIcon(QIcon(defait_icon))
+        refait_icon=os.path.join(self._dir("icones"),"redo.png")
+        self.ui.pushButton_refait.setIcon(QIcon(refait_icon))
 
 
         #variables à initialiser
@@ -352,25 +357,41 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                                           self.table_widget.columnCount()-1)
         self.table_widget.setRangeSelected(trange,True)
 
-    def _dir(self,lequel=None):
+    def _dir(lequel=None):
         """renvoie les répertoires utiles.
         paramètre lequel (chaîne) : peut prendre les valeurs utiles suivantes,
-        "cwd", "home", "ressources", "images", "icones"
+        "stockmovies", "home", "ressources", "images", "icones"
 
         quand le paramètre est absent, initialise les répertoires si nécessaire
         """
         
+        pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
+        sys.path.append(pymecavideo_rep_install) # pour pickle !
         home = os.getenv("HOME")
-        pymecavideo_rep=home+"/.pymecavideo"
-        pymecavideo_rep_images=pymecavideo_rep + "/images_extraites"
-        pymecavideo_rep_icones=pymecavideo_rep + "/icones"
-        pymecavideo_rep_langues=pymecavideo_rep + "/lang"
+        datalocation="%s" %QDesktopServices.storageLocation(QDesktopServices.DataLocation)
+        pymecavideo_rep=os.path.join(datalocation,"pymecavideo")
+        pymecavideo_rep_images=os.path.join(pymecavideo_rep,"images_extraites")
+        pymecavideo_rep_icones=os.path.join(pymecavideo_rep_install,"icones")
+        pymecavideo_rep_langues=os.path.join(pymecavideo_rep_install,"lang")
         if   lequel == "home": return home
-        elif lequel == "cwd": return self.cwd
+        elif lequel == "stockmovies":
+            for dir in (os.path.join(pymecavideo_rep_install, 'video'),
+                        '/usr/share/pymecavideo/video',
+                        '/usr/share/python-mecavideo/video'):
+                if os.path.exists(dir):
+                    return dir
         elif lequel == "ressources": return pymecavideo_rep
         elif lequel == "images": return pymecavideo_rep_images
-        elif lequel == "icones": return pymecavideo_rep_icones
-        elif lequel == "langues": return pymecavideo_rep_langues
+        elif lequel == "icones":
+            for dir in (pymecavideo_rep_icones,
+                        '/usr/share/python-mecavideo/icones'):
+                if os.path.exists(dir):
+                    return dir
+        elif lequel == "langues":
+            for dir in (pymecavideo_rep_langues,
+                        '/usr/share/pyshared/pymecavideo/lang'):
+                if os.path.exists(dir):
+                    return dir
         elif lequel == "share" : return self.pymecavideo_rep_install
         elif lequel == "help" : 
             if os.path.isdir("/usr/share/doc/python-mecavideo/html") :
@@ -381,12 +402,14 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             self.dbg.p(1,"erreur, appel de _dir() avec le paramètre inconnu %s" %lequel)
             self.close()
         else:
-            self.pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
-            sys.path.append(self.pymecavideo_rep_install) # pour pickle !
-            self.cwd=os.getcwd()
+            # vérifie/crée les repertoires
+            for d in ("stockmovies", "home", "ressources", "images", "icones"):
+                d=StartQT4._dir(d)
+                if not os.path.exists(d):
+                    os.mkdir(d)
  
-        self.ui.pushButton_defait.setIcon(QIcon(self._dir("icones")+"/"+"undo.png"))
-        self.ui.pushButton_refait.setIcon(QIcon(self._dir("icones")+"/"+"redo.png"))
+
+    _dir=staticmethod(_dir)
 
     def rouvre_ui(self):
         os.chdir(self._dir("home"))
@@ -1130,13 +1153,13 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.openTheFile(filename)
         
     def openfile(self):
-        dir=self._dir("cwd")
+        dir=self._dir("stockmovies")
         filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), dir,self.tr("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg"))
         self.openTheFile(filename)
 
     def renomme_le_fichier(self):
         renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr("Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer")), QMessageBox.Ok,QMessageBox.Ok)
-        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), self._dir("cwd"),"*.avi")
+        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), self._dir("stockmovies"),"*.avi")
         self.openTheFile(filename)
     def openTheFile(self,filename):
         if filename != "" : 
@@ -1310,36 +1333,19 @@ def run():
     # ainsi pickle peut trouver le module "vecteur"
 
     ###translation##
-    locale = QLocale.system().name()
-    #locale = QString("en_EN")
+    locale = "%s" %QLocale.system().name()
+    #locale = "%s" %QString("en_EN")
     
     qtTranslator = QTranslator()
     if qtTranslator.load("qt_" + locale):
         app.installTranslator(qtTranslator)
     appTranslator = QTranslator()
-    
-    home = os.getenv("HOME")
-    pymecavideo_rep=home+"/.pymecavideo"
-    pymecavideo_rep_images=pymecavideo_rep + "/images_extraites"
-    pymecavideo_rep_icones=pymecavideo_rep + "/icones"
-    pymecavideo_rep_langues=pymecavideo_rep + "/lang"
-
-    pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
-    os.chdir(home)
-    if os.path.exists(pymecavideo_rep):
-        pass
-    else:
-        os.mkdir(pymecavideo_rep)
-        os.mkdir(pymecavideo_rep_images)
-        os.mkdir(pymecavideo_rep_icones)
-        os.mkdir(pymecavideo_rep_langues)
-        copy_commands='cp -R /usr/share/python-mecavideo/icones/* '+pymecavideo_rep_icones
-        status,output=commands.getstatusoutput(copy_commands)
-        copy_commands_lang='cp -R '+pymecavideo_rep_install+'/lang/* '+pymecavideo_rep_langues
-        status,output=commands.getstatusoutput(copy_commands_lang)
-        
-    if appTranslator.load(pymecavideo_rep_langues+"/pymecavideo_" + locale):
+    langdir=os.path.join(StartQT4._dir("langues"),
+                         "pymecavideo_"+locale)
+    if appTranslator.load(langdir):
         b = app.installTranslator(appTranslator)
+    
+    pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
         
     windows = StartQT4(None,os.path.abspath(filename),opts)
     windows.show()
