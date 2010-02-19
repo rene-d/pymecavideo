@@ -373,6 +373,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         pymecavideo_rep_images=os.path.join(pymecavideo_rep,"images_extraites")
         pymecavideo_rep_icones=os.path.join(pymecavideo_rep_install,"icones")
         pymecavideo_rep_langues=os.path.join(pymecavideo_rep_install,"lang")
+        liste_rep = [pymecavideo_rep, pymecavideo_rep_images, pymecavideo_rep_icones, pymecavideo_rep_langues]
+        for rep in liste_rep:
+            if not os.path.exists(rep):
+                os.makedirs(rep)
+                    
         if   lequel == "home": return home
         elif lequel == "stockmovies":
             for dir in (os.path.join(pymecavideo_rep_install, 'video'),
