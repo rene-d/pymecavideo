@@ -1,0 +1,17 @@
+#pymecavideo
+#video = /home/jb/Compil/pymecavideo/trunk/video/g1.avi
+#index de depart = 3
+#echelle 1.000000 m pour 215.371772 pixel
+#echelle pointee en (428.000000, 118.000000) (480.000000, 327.000000)
+#intervalle de temps : 0.040000
+#suivi de 1 point(s)
+#temps en seconde, positions en mètre
+#
+0,00	0,529317	1,708673	
+0,04	0,663968	1,652956	
+0,08	0,770760	1,587952	
+0,12	0,896125	1,509019	
+0,16	1,007560	1,425442	
+0,32	1,188642	1,351152	
+0,44	1,397583	1,230431	
+0,48	1,592595	1,049348	
