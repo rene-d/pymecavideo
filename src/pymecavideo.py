@@ -165,11 +165,13 @@ class StartQT4(QMainWindow):
         self.setEchelle_v()
         #création du label qui contiendra la vidéo.
         self.label_video = Label_Video(parent=self.ui.label, app=self)
+        #self.ui.label_axe.hide()
+        ### Cacher uniquement le groupBox qui contient les widgets pushButton_origine, checkBox_abscisses, checkBox_ordonnees ###
+        self.ui.groupBox_2.hide()
+        #self.ui.pushButton_origine.hide()
+        #self.ui.checkBox_abscisses.hide()
+        #self.ui.checkBox_ordonnees.hide()
 
-        self.ui.label_axe.hide()
-        self.ui.pushButton_origine.hide()
-        self.ui.checkBox_abscisses.hide()
-        self.ui.checkBox_ordonnees.hide()
         self.ui.tabWidget.setCurrentIndex(0) # montre l'onglet video
 
 
@@ -255,6 +257,10 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_defait.setEnabled(0)
         self.ui.pushButton_refait.setEnabled(0)
         self.affiche_nb_points(0)
+        ### Réactiver checkBox_avancees après réinitialisation ###
+        self.ui.checkBox_avancees.setEnabled(1)
+
+
         if self.table_widget:
             self.table_widget.clear()
 
@@ -331,16 +337,20 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def affiche_fonctionnalites_avancees(self):
 
+    ### Monter/cacher le groupBox_2 au lieu de chaque widget indépendamment ###
         if self.ui.checkBox_avancees.isChecked() :
-            self.ui.label_axe.show()
-            self.ui.pushButton_origine.show()
-            self.ui.checkBox_abscisses.show()
-            self.ui.checkBox_ordonnees.show()
+
+            self.ui.groupBox_2.show()
+            #self.ui.label_axe.show()
+            #self.ui.pushButton_origine.show()
+            #self.ui.checkBox_abscisses.show()
+            #self.ui.checkBox_ordonnees.show()
         else :
-            self.ui.label_axe.hide()
-            self.ui.pushButton_origine.hide()
-            self.ui.checkBox_abscisses.hide()
-            self.ui.checkBox_ordonnees.hide()
+            self.ui.groupBox_2.hide()
+            #self.ui.label_axe.hide()
+            #self.ui.pushButton_origine.hide()
+            #self.ui.checkBox_abscisses.hide()
+            #self.ui.checkBox_ordonnees.hide()
 
 
     def pointEnMetre(self,p):
@@ -591,6 +601,12 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.ui.pushButton_select_all_table.setEnabled(1)
 
         self.ui.checkBox_avancees.setEnabled(0)
+        ### On ne fait que cacher le groupBox_2 au lieu de désactiver chaque widget###
+        self.ui.groupBox_2.hide()
+        #self.ui.pushButton_origine.setEnabled(0)
+        #self.ui.checkBox_abscisses.setEnabled(0)
+        #self.ui.checkBox_ordonnees.setEnabled(0)
+
         self.ui.pushButton_origine.setEnabled(0)
         self.ui.checkBox_abscisses.setEnabled(0)
         self.ui.checkBox_ordonnees.setEnabled(0)
@@ -623,7 +639,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             y="Y%d (m)" %(1+i)
             self.table_widget.setHorizontalHeaderItem(1+2*i,QTableWidgetItem(x))
             self.table_widget.setHorizontalHeaderItem(2+2*i,QTableWidgetItem(y))
-        self.table_widget.setGeometry(QRect(10, 100, 640, 480))
+        ### On remonte un peu le table_widget ###
+        self.table_widget.setGeometry(QRect(10, 40, 640, 480))
         self.table_widget.setDragEnabled(True)
 
     def traiteSouris(self,p):
@@ -990,7 +1007,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         """
         Renseigne sur le numéro du point attendu
         """
-        self.mets_a_jour_label_infos(self.tr("Cliquer sur le point N°%d" %n))
+        ### Transformer en unicode pour éviter le proclème du caractère ° qui ne s'affiche pas correctement ###
+        self.mets_a_jour_label_infos(self.tr(unicode("Cliquer sur le point N°%d" %n,"utf8")))
+
+
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
@@ -1161,7 +1181,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             self.affiche_image()
     
     def mets_a_jour_label_infos(self, message):
-        self.ui.label_infos_image.setText(message)
+    ### On utilise la barre de status pour afficher les messages : permet de ganager un la place en envelant le label_infos_image ###
+        self.statusBar().showMessage(message)
+
 
     def openexample(self):
         dir_="%s/video" %(self._dir("share"))
