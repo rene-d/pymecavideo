@@ -232,19 +232,6 @@
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
-        <widget class="QLabel" name="label_2">
-         <property name="geometry">
-          <rect>
-           <x>470</x>
-           <y>0</y>
-           <width>101</width>
-           <height>41</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Points à étudier:</string>
-         </property>
-        </widget>
        </widget>
        <widget class="QGroupBox" name="groupBox_2">
         <property name="enabled">

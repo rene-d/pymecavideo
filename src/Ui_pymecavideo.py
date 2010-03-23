@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pymecavideo.ui'
 #
-# Created: Tue Mar 23 15:52:46 2010
+# Created: Tue Mar 23 16:04:52 2010
 #      by: PyQt4 UI code generator 4.6.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -88,9 +88,6 @@ class Ui_pymecavideo(object):
         self.spinBox_image.setMinimumSize(QtCore.QSize(51, 26))
         self.spinBox_image.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.spinBox_image.setObjectName("spinBox_image")
-        self.label_2 = QtGui.QLabel(self.frame)
-        self.label_2.setGeometry(QtCore.QRect(470, 0, 101, 41))
-        self.label_2.setObjectName("label_2")
         self.groupBox_2 = QtGui.QGroupBox(self.tab_acq)
         self.groupBox_2.setEnabled(True)
         self.groupBox_2.setGeometry(QtCore.QRect(1, 365, 150, 150))
@@ -353,7 +350,6 @@ class Ui_pymecavideo(object):
         pymecavideo.setWindowTitle(QtGui.QApplication.translate("pymecavideo", "PyMecaVideo, analyse mécanique des vidéos", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("pymecavideo", "Pas de vidéos chargées", None, QtGui.QApplication.UnicodeUTF8))
         self.label_numero_image.setText(QtGui.QApplication.translate("pymecavideo", "Image n°", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("pymecavideo", "Points à étudier:", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_2.setTitle(QtGui.QApplication.translate("pymecavideo", "Changer de repère", None, QtGui.QApplication.UnicodeUTF8))
         self.checkBox_abscisses.setText(QtGui.QApplication.translate("pymecavideo", "Abscisses \n"
 "vers la gauche", None, QtGui.QApplication.UnicodeUTF8))
