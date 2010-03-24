@@ -72,7 +72,12 @@ class StartQT4(QMainWindow):
         ######QT
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
-        self.ui = Ui_pymecavideo()
+        height,width =  QDesktopWidget().screenGeometry().height(), QDesktopWidget().screenGeometry().width()
+        if height >= 1024 and width >= 768 : 
+            self.ui = Ui_pymecavideo()
+        else :
+            self.ui = Ui_pymecavideo()   #changer ici le pichier adéquat pour les petites résolutions.
+
         self.ui.setupUi(self)
 
         ####intilise les répertoires
@@ -86,6 +91,8 @@ class StartQT4(QMainWindow):
 
         #variables à initialiser
         self.init_variables(filename,opts)
+
+
         self.init_interface()
 
         #connections internes
