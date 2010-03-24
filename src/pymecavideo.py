@@ -47,6 +47,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from glob import glob
 from Ui_pymecavideo  import Ui_pymecavideo
+from Ui_pymecavideo_mini  import Ui_pymecavideo_mini
 from echelle import Label_Echelle, echelle
 from math import sqrt
 from label_video import Label_Video
@@ -76,7 +77,7 @@ class StartQT4(QMainWindow):
         if height >= 1024 and width >= 768 : 
             self.ui = Ui_pymecavideo()
         else :
-            self.ui = Ui_pymecavideo()   #changer ici le pichier adéquat pour les petites résolutions.
+            self.ui = Ui_pymecavideo_mini()   #changer ici le pichier adéquat pour les petites résolutions.
 
         self.ui.setupUi(self)
 
