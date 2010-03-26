@@ -1331,9 +1331,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         "Ouvre une vidéo AVI et retourne son framerate ainsi que le nombre d'images de la vidéo."
         framerate = 25
         duration=0
-        
+        cmd= self.ffmpeg+" -y -i "+fileName+" "+os.path.join(self._dir("images"),"out.avi")
         try:
-            cmd= self.ffmpeg+" -y -i "+fileName+" out.avi"
+
             videospec=Popen(cmd, shell=True, stderr=PIPE).communicate()
             patternRate=re.compile(".*Video.* ([.0-9]+) tbr.*")
             patternDuration=re.compile(".*Duration.* (\\d+):(\\d+):([.0-9]*),.*")
