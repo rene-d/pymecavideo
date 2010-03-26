@@ -1289,16 +1289,19 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
               os.remove("video_000001.jpg")
         except OSError:
               pass
-    def extract_image(self, video, index):
+    def extract_image(self, video, index,force=False, sortie=False):
         """
         extrait l'image d'index "index" de la video à l'aide de ffmpeg
-        et l'enregistre sur le disque
+        et l'enregistre sur le disque.
+        "force" permet de spécifier si on veut obliger l'écriture d'une image même si elle existe
+        "sortie" spécifie si on a besoin de la sortie standard. 
         """
         os.chdir(self._dir("images"))
         output = ""
-
+        sortie=True
+        force=True
         imfilename="video_%06d.jpg" % index
-        if os.path.isfile(imfilename): #si elle existe déjà et , ne fait rien
+        if os.path.isfile(imfilename) and force==False: #si elle existe déjà et , ne fait rien
             self.chemin_image = imfilename
         else : #sinon, extrait depuis la video
             #attention au cas de la dernière image.
@@ -1311,9 +1314,13 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
             cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
             cmd = cmd.replace('\\','/')
-            cmd0_ = subprocess.Popen(args=cmd, shell=True)
+            cmd0_ = subprocess.Popen(args=cmd, shell=True, stderr=PIPE)
+
             cmd0_.wait()
             cmd0_.poll()
+            if sortie :
+                sortie_ = cmd0_.communicate()
+
             returncode =  cmd0_.returncode
             if returncode==0:
                 while not os.path.exists(imfilename) and i<index:
@@ -1327,33 +1334,37 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             elif status > 256 :
                 pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("FFmpeg n'est pas présent","utf8")),QString(self.tr(unicode("le logiciel ffmpeg n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
                 self.close()
+            if sortie:
+                return sortie_
+          
     def recupere_avi_infos(self, fileName):
         "Ouvre une vidéo AVI et retourne son framerate ainsi que le nombre d'images de la vidéo."
         framerate = 25
         duration=0
-        cmd= self.ffmpeg+" -y -i "+fileName+" "+os.path.join(self._dir("images"),"out.avi")
+        #cmd= self.ffmpeg+" -y -i "+fileName+" "+os.path.join(self._dir("images"),"out.avi")
+        videospec=self.extract_image(self.filename,1,True,True)[1]
+        print "VVVVVVVVVVVVVVVVV",videospec
         try:
-
-            videospec=Popen(cmd, shell=True, stderr=PIPE).communicate()
             patternRate=re.compile(".*Video.* ([.0-9]+) tbr.*")
             patternDuration=re.compile(".*Duration.* (\\d+):(\\d+):([.0-9]*),.*")
-            for multiline in videospec:
-                if multiline:
-                    l=multiline.split("\n")
-                    for line in l:
-                        m=patternRate.match(line)
-                        if m:
-                            framerate=float(m.group(1))
-                        m=patternDuration.match(line)
-                        if m:
-                            h=int(m.group(1))
-                            min=int(m.group(2))
-                            s=float(m.group(3))
-                            duration=3600*h+60*min+s
+            
+
+
+            l=videospec.split("\n")
+            for line in l:
+                m=patternRate.match(line)
+                if m:
+                    framerate=float(m.group(1))
+                m=patternDuration.match(line)
+                if m:
+                    h=int(m.group(1))
+                    min=int(m.group(2))
+                    s=float(m.group(3))
+                    duration=3600*h+60*min+s
         except:
             self.dbg.p(0, self.tr("Impossible de lire %s" %fileName))
         nb_images=int(duration*framerate)
-        
+        print framerate,nb_images
         return framerate,nb_images
 
     def construit_entier(self,bytes):
