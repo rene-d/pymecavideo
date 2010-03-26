@@ -47,7 +47,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from glob import glob
 from Ui_pymecavideo  import Ui_pymecavideo
-from Ui_pymecavideo_mini  import Ui_pymecavideo_mini
+from Ui_pymecavideo_mini  import Ui_pymecavideo
 from echelle import Label_Echelle, echelle
 from math import sqrt
 from label_video import Label_Video
@@ -77,7 +77,7 @@ class StartQT4(QMainWindow):
         if height >= 1024 and width >= 768 : 
             self.ui = Ui_pymecavideo()
         else :
-            self.ui = Ui_pymecavideo_mini()   #changer ici le pichier adéquat pour les petites résolutions.
+            self.ui = Ui_pymecavideo()   #changer ici le pichier adéquat pour les petites résolutions.
 
         self.ui.setupUi(self)
 
@@ -106,7 +106,8 @@ class StartQT4(QMainWindow):
         
         #chargement d'un éventuel premier fichier
         self.splashVideo()
-            
+
+        
     def splashVideo(self):
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
@@ -119,7 +120,6 @@ class StartQT4(QMainWindow):
 
     def init_variables(self, filename, opts):
         self.platform = platform.system()
-        print self.platform
         if self.platform.lower()=="windows":
             self.ffmpeg = "ffmpeg.exe"
         elif self.platform.lower()=="linux":
@@ -157,13 +157,16 @@ class StartQT4(QMainWindow):
         self.cree_tableau()
         self.label_trajectoire=Label_Trajectoire(self.ui.label_3, self)
         self.ui.horizontalSlider.setEnabled(0)
+
         self.ui.echelleEdit.setEnabled(0)
+        self.ui.echelleEdit.setText(self.tr(unicode("indéf","utf8")))
         self.affiche_echelle()
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
         self.ui.spinBox_image.setEnabled(0)
         self.affiche_lance_capture(False)
+        self.ui.horizontalSlider.setValue(1)
         
         self.ui.button_video.setEnabled(0)
         self.ui.comboBox_fps.setEnabled(0)
@@ -203,7 +206,7 @@ class StartQT4(QMainWindow):
         affiche l'échelle courante pour les distances sur l'image
         """
         if self.echelle_image.isUndef():
-            self.ui.echelleEdit.setText(self.tr("indéf."))
+            self.ui.echelleEdit.setText(self.tr(unicode("indéf.","utf8")))
             self.ui.Bouton_Echelle.setEnabled(True)
         else:
             epxParM=self.echelle_image.pxParM()
@@ -397,7 +400,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         pymecavideo_rep=os.path.join(datalocation,"pymecavideo")
         pymecavideo_rep_images=os.path.join(pymecavideo_rep,"images_extraites")
         pymecavideo_rep_icones=os.path.join(pymecavideo_rep_install,"..","data","icones")
-        print pymecavideo_rep_icones, pymecavideo_rep_images
         pymecavideo_rep_langues=os.path.join(pymecavideo_rep_install,"..","data","lang")
         liste_rep = [pymecavideo_rep, pymecavideo_rep_images, pymecavideo_rep_icones, pymecavideo_rep_langues]
         for rep in liste_rep:
@@ -1117,7 +1119,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def demande_echelle(self):
         
-        echelle_result_raw = QInputDialog.getText(None, self.tr("Définir une échelle"), self.tr("Quelle est la longueur en mètre de votre étalon sur l'image ?")
+        echelle_result_raw = QInputDialog.getText(None, self.tr(unicode("Définir une échelle","utf8")), self.tr(unicode("Quelle est la longueur en mètre de votre étalon sur l'image ?","utf8"))
 ,QLineEdit.Normal, QString("1.0"))
         if echelle_result_raw[1] == False :
             return None
@@ -1125,14 +1127,14 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             echelle_result = [float(echelle_result_raw[0].replace(",",".")), echelle_result_raw[1]]
 
             if echelle_result[0] <= 0 or echelle_result[1] == False :
-                self.mets_a_jour_label_infos(self.tr(" Merci d'indiquer une échelle valable"))
+                self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable"),"utf8"))
             else :
                 self.echelle_image.etalonneReel(echelle_result[0])
                 self.job = Label_Echelle(self.label_video,self)
                 self.job.setPixmap(QPixmap(self.chemin_image))
                 self.job.show()
         except ValueError :
-            self.mets_a_jour_label_infos(self.tr(" Merci d'indiquer une échelle valable"))
+            self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable"),"utf8"))
             self.demande_echelle()
 
     def feedbackEchelle(self, p1, p2):
@@ -1166,7 +1168,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def verifie_donnees_sauvegardees(self):
         if self.modifie:
-            retour = QMessageBox.warning(self,QString(self.tr("Les données seront perdues")),QString(self.tr("Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?")),QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel )
+            retour = QMessageBox.warning(self,QString(self.tr(unicode("Les données seront perdues","utf8"))),QString(self.tr(unicode("Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?","utf8"))),QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel )
             if retour == QMessageBox.Yes :
                 self.enregistre_ui()
                 return True
@@ -1185,7 +1187,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             
         elif self.index_de_l_image==0 : 
             self.index_de_l_image=1
-            self.mets_a_jour_label_infos(self.tr("Vous avez atteint le début de la vidéo"))
+            self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint le début de la vidéo","utf8")))
             self.affiche_image()
     
     def mets_a_jour_label_infos(self, message):
@@ -1196,18 +1198,17 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     def openexample(self):
         dir_="%s/video" %(self._dir("share"))
         self.reinitialise_tout()
-        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), dir_,self.tr(u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)"))
+        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)","utf8")))
         self.openTheFile(filename)
         
     def openfile(self):
         dir_=self._dir("stockmovies")
-        print type(dir_), dir_
-        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), dir_,self.tr(u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)"))
+        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)","utf8")))
         self.openTheFile(filename)
 
     def renomme_le_fichier(self):
-        renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr("Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer")), QMessageBox.Ok,QMessageBox.Ok)
-        filename=QFileDialog.getOpenFileName(self,self.tr("Ouvrir une vidéo"), self._dir("stockmovies"),"*.avi")
+        renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr(unicode("Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
+        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), self._dir("stockmovies"),"*.avi")
         self.openTheFile(filename)
     def openTheFile(self,filename):
         if filename != "" : 
@@ -1221,7 +1222,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 self.filename=str(filename)
                 try:
                     self.init_image()
-                    self.mets_a_jour_label_infos(self.tr("Veuillez choisir une image et définir l'échelle"))
+                    self.mets_a_jour_label_infos(self.tr(unicode("Veuillez choisir une image et définir l'échelle","utf8")))
                     self.ui.Bouton_Echelle.setEnabled(True)
                     self.ui.horizontalSlider.setEnabled(1)
                     self.label_video.show()
@@ -1254,7 +1255,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 command="x-www-browser %s" %helpfile
                 status,output=commands.getstatusoutput(command)
         else:
-            QMessageBox.warning(None,"Aide",QString(self.tr("Désolé pas de fichier d'aide pour ce langage %s.") %lang))
+            QMessageBox.warning(None,"Aide",QString(self.tr(unicode("Désolé pas de fichier d'aide pour ce langage %s.","utf8")) %lang))
         
     def init_image(self):
         """intialise certaines variables lors le la mise en place d'une nouvelle image"""
@@ -1267,15 +1268,15 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.ui.tab_traj.setEnabled(0)
         self.ui.spinBox_image.setEnabled(1)
         self.a_une_image = True
-        self.reinitialise_environnement() 
         self.affiche_image()
+        self.reinitialise_environnement()
+        
         
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
-        
         framerate, self.image_max = self.recupere_avi_infos(self.filename)
         self.deltaT = float(1.0/framerate)
-        self.ui.horizontalSlider.setMinimum(0)
+        self.ui.horizontalSlider.setMinimum(1)
         
         self.ui.horizontalSlider.setMaximum(int(self.image_max))
         self.ui.spinBox_image.setMaximum(int(self.image_max))
@@ -1294,32 +1295,26 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         et l'enregistre sur le disque
         """
         os.chdir(self._dir("images"))
-        print self._dir("images")
         output = ""
 
         imfilename="video_%06d.jpg" % index
-        print imfilename
         if os.path.isfile(imfilename): #si elle existe déjà et , ne fait rien
             self.chemin_image = imfilename
         else : #sinon, extrait depuis la video
-            print "else"
             #attention au cas de la dernière image.
             ffmpeg_dir=self._dir("ressources")
             cmd0=self.ffmpeg+" -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg %s"
-            print cmd0
+
             i=1
             if self.platform.lower()=="linux":
                 imfilename=imfilename.replace(" ","\ ")
 
             cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
-            print cmd
             cmd = cmd.replace('\\','/')
-            print cmd
-            cmd0_ = subprocess.Popen(args=cmd,shell=True)
+            cmd0_ = subprocess.Popen(args=cmd, shell=True)
             cmd0_.wait()
             cmd0_.poll()
             returncode =  cmd0_.returncode
-            print "image extraite", cmd0_.returncode
             if returncode==0:
                 while not os.path.exists(imfilename) and i<index:
                     i+=1
@@ -1328,16 +1323,18 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                     status, output = commands.getstatusoutput(cmd)
                 self.chemin_image = imfilename
             elif status==256:
-              mauvaisevideo = QMessageBox.warning(self,self.tr("La video que vous tentez d'ouvrir n'est pas dans un format lisible."), QString(self.tr(" Merci d'en ouvrir une autre ou de l'encoder autrement")), QMessageBox.Ok,QMessageBox.Ok)
+              mauvaisevideo = QMessageBox.warning(self,self.tr(unicode("La video que vous tentez d'ouvrir n'est pas dans un format lisible.","utf8")), QString(self.tr(unicode(" Merci d'en ouvrir une autre ou de l'encoder autrement","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
             elif status > 256 :
-                pas_ffmpeg = QMessageBox.warning(self,self.tr("FFmpeg n'est pas présent"),QString(self.tr("le logiciel ffmpeg n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre")), QMessageBox.Ok,QMessageBox.Ok)
+                pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("FFmpeg n'est pas présent","utf8")),QString(self.tr(unicode("le logiciel ffmpeg n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
                 self.close()
     def recupere_avi_infos(self, fileName):
         "Ouvre une vidéo AVI et retourne son framerate ainsi que le nombre d'images de la vidéo."
         framerate = 25
         duration=0
+        
         try:
-            videospec=Popen([self.ffmpeg,"-i",fileName], shell=True, stderr=PIPE).communicate()
+            cmd= self.ffmpeg+" -y -i "+fileName+" out.avi"
+            videospec=Popen(cmd, shell=True, stderr=PIPE).communicate()
             patternRate=re.compile(".*Video.* ([.0-9]+) tbr.*")
             patternDuration=re.compile(".*Duration.* (\\d+):(\\d+):([.0-9]*),.*")
             for multiline in videospec:
@@ -1356,6 +1353,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         except:
             self.dbg.p(0, self.tr("Impossible de lire %s" %fileName))
         nb_images=int(duration*framerate)
+        
         return framerate,nb_images
 
     def construit_entier(self,bytes):

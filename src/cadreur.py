@@ -90,7 +90,7 @@ class Cadreur:
             if hautgauche.y()%2==1 : hautgauche += vecteur(0,1)
             if basdroite.y()%2==1  : basdroite  += vecteur(0,1)
             cmd=self.app.ffmpeg+" -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg -cropleft %d -croptop %d -cropright %d -cropbottom %d crop%04d.jpg" %(self.app.filename,(i+self.app.premiere_image-1)*self.app.deltaT,hautgauche.x(),hautgauche.y(),basdroite.x(),basdroite.y(),i)
-            print "1", cmd, os.getcwd()
+            #print "1", cmd, os.getcwd()
 
             crop = subprocess.Popen(cmd)
             crop.wait()
@@ -101,7 +101,7 @@ class Cadreur:
         for j in self.app.points.keys():
             for k in range(ralenti):
                 # reproduit "ralenti" fois les trames
-                print i,j
+                #print i,j
                 fichier1, fichier2 = "crop%04d.jpg"%j,"crop-%04d.jpg" % i
                 shutil.copy(fichier1,fichier2)
                 i+=1
@@ -109,15 +109,14 @@ class Cadreur:
             os.remove("out.avi")
         except WindowsError :
             pass
-        print "2", cmd
         cmd= self.app.ffmpeg+" -r 25 -f image2 -i crop-%04d.jpg -r 25 -f avi -vcodec mpeg1video -b 800k out.avi"
         crop = subprocess.Popen(cmd, shell=True)
         crop.wait()
 
     def montrefilm(self):
         file="out.avi"
-        print self.app.prefs.videoPlayerCmd()
+        #print self.app.prefs.videoPlayerCmd()
         cmd="ffplay.exe out.avi"
-        self.app.dbg.p(2,"%s" %(cmd))
+        #self.app.dbg.p(2,"%s" %(cmd))
         montre = subprocess.Popen(cmd)
         montre.wait()
