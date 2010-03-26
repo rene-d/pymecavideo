@@ -1343,13 +1343,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         duration=0
         #cmd= self.ffmpeg+" -y -i "+fileName+" "+os.path.join(self._dir("images"),"out.avi")
         videospec=self.extract_image(self.filename,1,True,True)[1]
-        print "VVVVVVVVVVVVVVVVV",videospec
         try:
             patternRate=re.compile(".*Video.* ([.0-9]+) tbr.*")
             patternDuration=re.compile(".*Duration.* (\\d+):(\\d+):([.0-9]*),.*")
-            
-
-
             l=videospec.split("\n")
             for line in l:
                 m=patternRate.match(line)
