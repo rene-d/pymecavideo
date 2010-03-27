@@ -122,8 +122,10 @@ class StartQT4(QMainWindow):
         self.platform = platform.system()
         if self.platform.lower()=="windows":
             self.ffmpeg = "ffmpeg.exe"
+            self.ffplay = "ffplay.exe"
         elif self.platform.lower()=="linux":
             self.ffmpeg = "ffmpeg"
+            self.ffplay = "ffplay"
         self.points_ecran={}
         self.index_max = 1
         self.sens_X=1
@@ -284,8 +286,8 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.actionPreferences,SIGNAL("triggered()"), self.prefs.setFromDialog)
         QObject.connect(self.ui.actionQuitter,SIGNAL("triggered()"), self.close)
         QObject.connect(self.ui.actionSaveData,SIGNAL("triggered()"), self.enregistre_ui)
-	QObject.connect(self.ui.actionCopier_dans_le_presse_papier,SIGNAL("triggered()"), self.presse_papier)
-	QObject.connect(self.ui.actionRouvrirMecavideo,SIGNAL("triggered()"), self.rouvre_ui)
+        QObject.connect(self.ui.actionCopier_dans_le_presse_papier,SIGNAL("triggered()"), self.presse_papier)
+        QObject.connect(self.ui.actionRouvrirMecavideo,SIGNAL("triggered()"), self.rouvre_ui)
         QObject.connect(self.ui.Bouton_Echelle,SIGNAL("clicked()"), self.demande_echelle)
         QObject.connect(self.ui.horizontalSlider,SIGNAL("valueChanged(int)"), self.affiche_image_slider)
         QObject.connect(self.ui.spinBox_image,SIGNAL("valueChanged(int)"),self.affiche_image_spinbox)
@@ -385,37 +387,56 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                                           self.table_widget.columnCount()-1)
         self.table_widget.setRangeSelected(trange,True)
 
-    def _dir(lequel=None):
+    def _dir(lequel=None,install=None):
         """renvoie les répertoires utiles.
         paramètre lequel (chaîne) : peut prendre les valeurs utiles suivantes,
-        "stockmovies", "home", "ressources", "images", "icones"
+        "stockmovies", "home", "conf", "images", "icones"
 
         quand le paramètre est absent, initialise les répertoires si nécessaire
         """
-        
-        pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
-        sys.path.append(pymecavideo_rep_install) # pour pickle !
+        try:
+            pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
+            sys.path.append(pymecavideo_rep_install) # pour pickle !
+        except :
+            pass
         home = QDesktopServices.storageLocation(8)
-        datalocation="%s" %QDesktopServices.storageLocation(QDesktopServices.DataLocation)
-        pymecavideo_rep=os.path.join(datalocation,"pymecavideo")
+        ####vérifie si on est dans le cadre d'une installation systeme (rpm, deb, etc) ou locale
+        try :
+            if "share" in pymecavideo_rep_install or "Program" in pymecavideo_rep_install : #on est dans le cadre d'une install système on utilise donc le répertoire générique)
+                datalocation="%s" %QDesktopServices.storageLocation(QDesktopServices.DataLocation)
+                pymecavideo_rep=os.path.join(datalocation,"pymecavideo")
+            else : #installation locale, a priori pour les gens qui connaissent)
+                datalocation = os.path.join(pymecavideo_rep_install,"..") #on lance depuis src
+                pymecavideo_rep=datalocation
+        except :
+            pass
+
+        ###########pymecavideo_rep est le répertoire de travail de pymecavideo. il dépose ici les images.
         pymecavideo_rep_images=os.path.join(pymecavideo_rep,"images_extraites")
-        pymecavideo_rep_icones=os.path.join(pymecavideo_rep_install,"..","data","icones")
-        pymecavideo_rep_langues=os.path.join(pymecavideo_rep_install,"..","data","lang")
-        liste_rep = [pymecavideo_rep, pymecavideo_rep_images, pymecavideo_rep_icones, pymecavideo_rep_langues]
+
+        ###########Les données -vidéos, icones etc.- sont dans le répertoire qui est lié à l'éxécutable. pymecavideo_exe
+        pymecavideo_exe = pymecavideo_rep_install
+        pymecavideo_rep_icones=os.path.join(pymecavideo_exe,"..","data","icones")
+        pymecavideo_rep_langues=os.path.join(pymecavideo_exe,"..","data","lang")
+        pymecavideo_rep_videos=os.path.join(pymecavideo_exe,"..","data","video")
+        
+        liste_rep = [pymecavideo_rep, pymecavideo_rep_images, pymecavideo_rep_icones, pymecavideo_rep_langues, pymecavideo_rep_videos]
+
+        #print liste_rep
         for rep in liste_rep:
             if not os.path.exists(rep):
                 os.makedirs(rep)
                     
         if   lequel == "home": return home
         elif lequel == "stockmovies":
-            for dir in (os.path.join(pymecavideo_rep_install,"..","data",'video'),
+            for dir in (pymecavideo_rep_videos,
                         '/usr/share/pymecavideo/video',
                         '/usr/share/python-mecavideo/video'):
                 if os.path.exists(dir):
                     return dir
                 else:
                     return pymecavideo_rep_install
-        elif lequel == "ressources": return pymecavideo_rep
+        elif lequel == "conf": return pymecavideo_rep
         elif lequel == "images": return pymecavideo_rep_images
         elif lequel == "icones":
             for dir in (pymecavideo_rep_icones,
@@ -427,7 +448,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                         '/usr/share/pyshared/pymecavideo/lang'):
                 if os.path.exists(dir):
                     return dir
-        elif lequel == "share" : return self.pymecavideo_rep_install
+        elif lequel == "share" : return os.path.join(pymecavideo_rep_install,"..","data")
         elif lequel == "help" : 
             if os.path.isdir("/usr/share/doc/python-mecavideo/html") :
                 return "/usr/share/doc/python-mecavideo/html"
@@ -438,11 +459,13 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             self.close()
         else:
             # vérifie/crée les repertoires
-            for d in ("stockmovies", "home", "ressources", "images", "icones"):
+            for d in ("stockmovies", "home", "conf", "images", "icones"):
                 dd=StartQT4._dir(str(d))
                 if not os.path.exists(dd):
                     os.mkdir(dd)
- 
+        #if install : #install les fichiers nécessaires au bon fonctionnement de pymecavideo_rep
+            
+            
 
     _dir=staticmethod(_dir)
 
@@ -612,7 +635,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
         self.ui.checkBox_avancees.setEnabled(0)
         ### On ne fait que cacher le groupBox_2 au lieu de désactiver chaque widget###
-        self.ui.groupBox_2.hide()
+        self.ui.groupBox_2.setEnabled(0)
         #self.ui.pushButton_origine.setEnabled(0)
         #self.ui.checkBox_abscisses.setEnabled(0)
         #self.ui.checkBox_ordonnees.setEnabled(0)
@@ -1161,7 +1184,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             liste_fichiers = os.listdir(gettempdir())
             for fichier in liste_fichiers :
                 if "pymeca" in fichier :
-                    os.remove(fichier)
+                    try :
+                        os.remove(fichier)
+                    except OSError:
+                        pass
             event.accept()
         else :
             event.ignore()
@@ -1305,7 +1331,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             self.chemin_image = imfilename
         else : #sinon, extrait depuis la video
             #attention au cas de la dernière image.
-            ffmpeg_dir=self._dir("ressources")
+            ffmpeg_dir=self._dir("conf")
             cmd0=self.ffmpeg+" -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg %s"
 
             i=1
@@ -1360,15 +1386,15 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         except:
             self.dbg.p(0, self.tr("Impossible de lire %s" %fileName))
         nb_images=int(duration*framerate)
-        print framerate,nb_images
+        #print framerate,nb_images
         return framerate,nb_images
 
-    def construit_entier(self,bytes):
-        if len(bytes) != 4:
-            return -1
-        else:
-            return ord(bytes[0]) | ord(bytes[1]) << 8  | \
-                    ord(bytes[2]) << 16 | ord(bytes[3]) << 24
+    #def construit_entier(self,bytes):
+        #if len(bytes) != 4:
+            #return -1
+        #else:
+            #return ord(bytes[0]) | ord(bytes[1]) << 8  | \
+                    #ord(bytes[2]) << 16 | ord(bytes[3]) << 24
         
     def traiteOptions(self):
         for opt,val in self.opts:
@@ -1411,7 +1437,8 @@ def run():
     if appTranslator.load(langdir):
         b = app.installTranslator(appTranslator)
     
-    pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
+    #pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
+    #print pymecavideo_rep_install
         
     windows = StartQT4(None,os.path.abspath(filename),opts)
     windows.show()

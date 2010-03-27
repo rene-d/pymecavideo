@@ -29,9 +29,8 @@ import pickle, os, os.path
 class Preferences:
     def __init__(self, parent):
         self.app=parent
-        self.conffile=self.app._dir("ressources")+"/"+"pymecavideo.conf"
+        self.conffile=os.path.join(self.app._dir("conf"),"pymecavideo.conf")
         # ajuste les valeurs par défaut
-        self.echelle_v=1.0
         self.proximite=False
         self.lastVideo=""
         self.videoDir=os.getcwd()
@@ -70,14 +69,14 @@ class Preferences:
 
     def save(self):
         f=open(self.conffile,"w")
-        pickle.dump((self.echelle_v,self.proximite,self.lastVideo,self.videoDir,self.videopref,self.niveauDbg),f)
+        pickle.dump((self.proximite,self.lastVideo,self.videoDir,self.videopref,self.niveauDbg),f)
         f.close()
         
     def load(self):
         if os.path.exists(self.conffile):
             try:
                 f=open(self.conffile,"r")
-                (self.echelle_v,self.proximite,self.lastVideo,self.videoDir,self.videopref,self.niveauDbg) = pickle.load(f)
+                (self.proximite,self.lastVideo,self.videoDir,self.videopref,self.niveauDbg) = pickle.load(f)
                 f.close()
             except:
                 self.app.dbg.p(2,"erreur en lisant %s" %self.conffile)
@@ -95,7 +94,6 @@ class Preferences:
         #########################################################
         # envoie les valeurs courantes dans le dialogue
         #########################################################
-        ui.echelle_vEdit.setText(str(self.app.echelle_v))
         ui.spinBoxDbg.setValue(self.niveauDbg)
         p=ui.comboBoxProximite
         p.addItem(u"Visibles partout")
@@ -115,9 +113,6 @@ class Preferences:
             ######################################################
             # prend les valeurs depuis le dialogue
             ######################################################
-            self.app.echelle_v=float(ui.echelle_vEdit.text())
-            self.app.setEchelle_v()
-
             self.niveauDbg=ui.spinBoxDbg.value()
             self.app.dbg=Dbg(self.niveauDbg)
             

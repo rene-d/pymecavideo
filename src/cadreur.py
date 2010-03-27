@@ -92,7 +92,7 @@ class Cadreur:
             cmd=self.app.ffmpeg+" -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg -cropleft %d -croptop %d -cropright %d -cropbottom %d crop%04d.jpg" %(self.app.filename,(i+self.app.premiere_image-1)*self.app.deltaT,hautgauche.x(),hautgauche.y(),basdroite.x(),basdroite.y(),i)
             #print "1", cmd, os.getcwd()
 
-            crop = subprocess.Popen(cmd)
+            crop = subprocess.Popen(cmd,shell=True)
             crop.wait()
             
         
@@ -116,7 +116,7 @@ class Cadreur:
     def montrefilm(self):
         file="out.avi"
         #print self.app.prefs.videoPlayerCmd()
-        cmd="ffplay.exe out.avi"
+        cmd=self.app.ffplay+" out.avi"
         #self.app.dbg.p(2,"%s" %(cmd))
-        montre = subprocess.Popen(cmd)
+        montre = subprocess.Popen(cmd,shell=True)
         montre.wait()
