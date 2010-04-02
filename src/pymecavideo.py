@@ -46,8 +46,6 @@ import locale, getopt, pickle
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from glob import glob
-from Ui_pymecavideo  import Ui_pymecavideo
-from Ui_pymecavideo_mini  import Ui_pymecavideo
 from echelle import Label_Echelle, echelle
 from math import sqrt
 from label_video import Label_Video
@@ -69,16 +67,35 @@ class StartQT4(QMainWindow):
     def __init__(self, parent, filename, opts):
         #Données principales du logiciel : 
         #self.index_de_l_image : la position de l'image actuellement affichée
-        
+        #print "opts", opts
+        if "mini" in str(opts) :
+            self.mini=True
+        else :
+            self.mini=False
         ######QT
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
+        
+        #### Mode plein écran
+        self.plein_ecran = False
+        QShortcut(QKeySequence(Qt.Key_F11),self, self.basculer_plein_ecran )
+        
         height,width =  QDesktopWidget().screenGeometry().height(), QDesktopWidget().screenGeometry().width()
-        if height >= 1024 and width >= 768 : 
-            self.ui = Ui_pymecavideo()
+        #print height, width
+        if height >= 768 and width >= 1024 and self.mini==False:
+        # Importation de l'interface ici car l'import de l'interface "mini" écrase l'interface "standard"
+            from Ui_pymecavideo  import Ui_pymecavideo
+        
+            
         else :
-            self.ui = Ui_pymecavideo()   #changer ici le pichier adéquat pour les petites résolutions.
-
+            from Ui_pymecavideo_mini  import Ui_pymecavideo
+            message = QMessageBox(self)
+            message.setText(self.trUtf8("Pymecavideo utilise l'interface mini.\nAppuyez sur la touche F11 pour passer en mode plein écran"))
+            message.setWindowTitle(self.trUtf8("Faible résolution"))
+            message.exec_()	    
+            self.basculer_plein_ecran
+        #changer ici le pichier adéquat pour les petites résolutions.
+        self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
 
         ####intilise les répertoires
@@ -93,20 +110,26 @@ class StartQT4(QMainWindow):
         #variables à initialiser
         self.init_variables(filename,opts)
 
-
         self.init_interface()
 
         #connections internes
         self.ui_connections()
-        
-
 
         #prise en compte d'options de la ligne de commande
         self.traiteOptions()
         
         #chargement d'un éventuel premier fichier
         self.splashVideo()
-
+        
+        
+    # Basculer en mode plein écran / mode fenétré    
+    def basculer_plein_ecran(self):
+        if not self.plein_ecran :
+            self.showFullScreen()
+        else:
+            self.showNormal()            
+        self.plein_ecran = not (self.plein_ecran)
+        
         
     def splashVideo(self):
         for opt,val in self.opts:
@@ -1281,7 +1304,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 command="x-www-browser %s" %helpfile
                 status,output=commands.getstatusoutput(command)
         else:
-            QMessageBox.warning(None,"Aide",QString(self.tr(unicode("Désolé pas de fichier d'aide pour ce langage %s.","utf8")) %lang))
+            QMessageBox.warning(None,"Aide",self.trUtf8("Désolé pas de fichier d'aide pour le langage %1.").arg(lang))
+	    #Utilisation de Qstring.arg à cause d'une incompatibilité entre %s (string) et l'unicode Qt 
+        
         
     def init_image(self):
         """intialise certaines variables lors le la mise en place d'une nouvelle image"""
@@ -1405,14 +1430,15 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
         
 def usage():
-    print self.tr("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier]")
+    print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--mini]")
 
 def run():
     app = QApplication(sys.argv)
     
     args=sys.argv[1:]
+    #print args
     try:                                
-        opts, args = getopt.getopt(args, "f:", ["fichier_mecavideo="])
+        opts, args = getopt.getopt(args, "f:m:", ["fichier_mecavideo=","mini"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
