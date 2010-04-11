@@ -132,6 +132,7 @@ class StartQT4(QMainWindow):
         
         
     def splashVideo(self):
+        #print "###########", self.filename, self.prefs.lastVideo
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
                 return
@@ -1259,29 +1260,26 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr(unicode("Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
         filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), self._dir("stockmovies"),"*.avi")
         self.openTheFile(filename)
+
     def openTheFile(self,filename):
         if filename != "" : 
-            try :
-                str(filename)
-            except UnicodeEncodeError :
-                self.renomme_le_fichier()
-            if len(filename.split(" ")) > 2 :
-                self.renomme_le_fichier()
-            else :
-                self.filename=str(filename)
-                try:
-                    self.init_image()
-                    self.mets_a_jour_label_infos(self.tr(unicode("Veuillez choisir une image et définir l'échelle","utf8")))
-                    self.ui.Bouton_Echelle.setEnabled(True)
-                    self.ui.horizontalSlider.setEnabled(1)
-                    self.label_video.show()
-                except:
-                    return
+            filename = QString(filename)
+            filename = filename.toUtf8()
+            data = filename.data()
+            self.filename = data.decode('utf-8')
+            #print filename, self.filename
+            self.prefs.lastVideo=unicode(filename,"utf8")
+            self.prefs.videoDir=os.path.dirname(self.filename)
+            self.prefs.save()
+            self.init_image()
+            self.mets_a_jour_label_infos(self.tr("Veuillez choisir une image et définir l'échelle"))
+            self.ui.Bouton_Echelle.setEnabled(True)
+            self.ui.horizontalSlider.setEnabled(1)
+            self.label_video.show()
                 # n'enregistre les préférence que quand la première image
                 # a été extraite avec succès !!
-                self.prefs.lastVideo=filename
-                self.prefs.videoDir=os.path.dirname(unicode(filename))
-                self.prefs.save()
+            self.prefs.videoDir=os.path.dirname(self.filename)
+            self.prefs.save()
 
     def propos(self):
         try:
@@ -1356,23 +1354,17 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             self.chemin_image = imfilename
         else : #sinon, extrait depuis la video
             #attention au cas de la dernière image.
-            ffmpeg_dir=self._dir("conf")
-            cmd0=self.ffmpeg+" -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg %s"
-
             i=1
-            if self.platform.lower()=="linux":
-                imfilename=imfilename.replace(" ","\ ")
-
-            cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
-            cmd = cmd.replace('\\','/')
-            cmd0_ = subprocess.Popen(args=cmd, shell=True, stderr=PIPE)
-
+            #print "video", video, type(video)
+            ffmpeg_dir=self._dir("conf")
+            #print [self.ffmpeg,"""-i""", video,"""-ss""",str((index-i)*self.deltaT),"""-vframes""",str(1),"""-f""","""image2""","""-vcodec""","""mjpeg""",imfilename]
+            cmd0_ = subprocess.Popen(args=[self.ffmpeg,"""-i""", video,"""-ss""",str((index-i)*self.deltaT),"""-vframes""",str(1),"""-f""","""image2""","""-vcodec""","""mjpeg""",imfilename], stderr=PIPE)
             cmd0_.wait()
             cmd0_.poll()
             if sortie :
                 sortie_ = cmd0_.communicate()
-
             returncode =  cmd0_.returncode
+            #print returncode, sortie_
             if returncode==0:
                 while not os.path.exists(imfilename) and i<index:
                     i+=1
@@ -1380,9 +1372,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                     cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
                     status, output = commands.getstatusoutput(cmd)
                 self.chemin_image = imfilename
-            elif status==256:
-              mauvaisevideo = QMessageBox.warning(self,self.tr(unicode("La video que vous tentez d'ouvrir n'est pas dans un format lisible.","utf8")), QString(self.tr(unicode(" Merci d'en ouvrir une autre ou de l'encoder autrement","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
-            elif status > 256 :
+            elif returncode==1:
+              mauvaisevideo = QMessageBox.warning(self,self.tr(unicode("ERREUR","utf8")), QString(self.tr(unicode("La video que vous tentez d'ouvrir n'est pas dans un format lisible.\n Merci d'en ouvrir une autre ou de l'encoder autrement","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
+            elif returncode > 256 :
                 pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("FFmpeg n'est pas présent","utf8")),QString(self.tr(unicode("le logiciel ffmpeg n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
                 self.close()
             if sortie:
@@ -1393,6 +1385,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         framerate = 25
         duration=0
         #cmd= self.ffmpeg+" -y -i "+fileName+" "+os.path.join(self._dir("images"),"out.avi")
+        #print self.filename
         videospec=self.extract_image(self.filename,1,True,True)[1]
         try:
             patternRate=re.compile(".*Video.* ([.0-9]+) tbr.*")
@@ -1465,8 +1458,8 @@ def run():
     
     #pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
     #print pymecavideo_rep_install
-        
-    windows = StartQT4(None,os.path.abspath(filename),opts)
+    #print filename
+    windows = StartQT4(None,os.path.abspath(unicode(filename,"utf8")),opts)
     windows.show()
     sys.exit(app.exec_())
 
