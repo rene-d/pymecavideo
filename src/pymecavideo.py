@@ -110,7 +110,7 @@ class StartQT4(QMainWindow):
         #variables à initialiser
         self.init_variables(filename,opts)
 
-        self.init_interface()
+
 
         #connections internes
         self.ui_connections()
@@ -150,6 +150,8 @@ class StartQT4(QMainWindow):
         elif self.platform.lower()=="linux":
             self.ffmpeg = "ffmpeg"
             self.ffplay = "ffplay"
+          
+        self.logiciel_acquisition = False
         self.points_ecran={}
         self.index_max = 1
         self.sens_X=1
@@ -178,12 +180,32 @@ class StartQT4(QMainWindow):
         self.opts=opts
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
         self.init_interface()
+
+        ######vérification de la présence de fmmpeg et ffplay dans le path.
+        if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
+            self.ffmpeg = False
+        if not(any(os.access(os.path.join(p,self.ffplay), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
+            self.ffplay = False
+        if self.ffplay== False or self.ffmpeg == False :
+            pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel ffmpeg ainsi que ffplay n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
+            self.close()
+        ######vérification de la présence d'un logiciel connu de capture dans le path
+        for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture']:
+            if  any(os.access(os.path.join(p,logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
+                self.logiciel_acquisition = logiciel
+                print logiciel
+                self.ui.pushButton_video.setEnabled(1)
+            
+                
+
         
     def init_interface(self):
         self.cree_tableau()
         self.label_trajectoire=Label_Trajectoire(self.ui.label_3, self)
         self.ui.horizontalSlider.setEnabled(0)
 
+        self.ui.pushButton_video.setEnabled(0)
+        
         self.ui.echelleEdit.setEnabled(0)
         self.ui.echelleEdit.setText(self.tr(unicode("indéf","utf8")))
         self.affiche_echelle()
@@ -329,9 +351,11 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_refait,SIGNAL("clicked()"),self.refait_point_suivant)
         QObject.connect(self.ui.checkBox_avancees,SIGNAL("stateChanged(int)"),self.affiche_fonctionnalites_avancees)
         QObject.connect(self.ui.pushButton_origine,SIGNAL("clicked()"),self.choisi_nouvelle_origine)
+        QObject.connect(self.ui.pushButton_video,SIGNAL("clicked()"),self.lance_logiciel_video)
         QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.        change_sens_X )
         QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
         QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_origine)
+
     def choisi_nouvelle_origine(self):
         nvl_origine=QMessageBox.information(self,QString("NOUVELLE ORIGINE"),\
 QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle origine"))
@@ -339,6 +363,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         label.show()
 
         self.emit(SIGNAL('change_axe_origine()'))
+
+    def lance_logiciel_video(self):
+        #lance un logiciel externe de capture vidéo. Par défaut, qastrocam-g2, possibiltié de changer dans les préférences.
+        lance_logiciel = subprocess.Popen(args=[self.logiciel_acquisition], stderr=PIPE)
 
     def change_axe_origine(self):
         """mets à jour le tableau de données"""
@@ -1347,8 +1375,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         """
         os.chdir(self._dir("images"))
         output = ""
-        sortie=True
-        force=True
+        #sortie=True
+        #force=True
         imfilename="video_%06d.jpg" % index
         if os.path.isfile(imfilename) and force==False: #si elle existe déjà et , ne fait rien
             self.chemin_image = imfilename
@@ -1364,19 +1392,24 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             if sortie :
                 sortie_ = cmd0_.communicate()
             returncode =  cmd0_.returncode
-            #print returncode, sortie_
+            cmd0=self.ffmpeg+" -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg %s"
+            #print "######### returncode", returncode
             if returncode==0:
-                while not os.path.exists(imfilename) and i<index:
-                    i+=1
-                    imfilename="video_%06d.jpg" %(index-i+1)
-                    cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
-                    status, output = commands.getstatusoutput(cmd)
+                #print "OK"
+                #while not os.path.exists(imfilename) and i<index:
+                    #print "NOK"
+                    #i+=1
+                    #imfilename="video_%06d.jpg" %(index-i+1)
+                    #cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
+                    #status, output = commands.getstatusoutput(cmd)
                 self.chemin_image = imfilename
-            elif returncode==1:
+            elif returncode==1 and self.prefs.lastVideo != "":
               mauvaisevideo = QMessageBox.warning(self,self.tr(unicode("ERREUR","utf8")), QString(self.tr(unicode("La video que vous tentez d'ouvrir n'est pas dans un format lisible.\n Merci d'en ouvrir une autre ou de l'encoder autrement","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
-            elif returncode > 256 :
-                pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("FFmpeg n'est pas présent","utf8")),QString(self.tr(unicode("le logiciel ffmpeg n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
-                self.close()
+              self.prefs.lastVideo = ""
+              self.close()
+              
+            #elif returncode > 256 :
+
             if sortie:
                 return sortie_
           
@@ -1406,21 +1439,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         nb_images=int(duration*framerate)
         #print framerate,nb_images
         return framerate,nb_images
-
-    #def construit_entier(self,bytes):
-        #if len(bytes) != 4:
-            #return -1
-        #else:
-            #return ord(bytes[0]) | ord(bytes[1]) << 8  | \
-                    #ord(bytes[2]) << 16 | ord(bytes[3]) << 24
         
     def traiteOptions(self):
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
                 self.rouvre(val)
-
-
-
         
 def usage():
     print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--mini]")
