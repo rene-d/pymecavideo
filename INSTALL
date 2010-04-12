@@ -10,13 +10,14 @@ svn co svn://svn.tuxfamily.org/svnroot/oppl/pymecavideo
 puis vérifiez que soit installés :
 -> python-qt4-devel
 -> make
--> vlc
+(-> vlc)
 -> ffmpeg
 
 aller dans la version que vous voulez (4.0, trunk, detect..)
+cd src
 make
 puis
-python __init__.py
+python pymecavideo.py
 
 Si vous voulez installer sur le système :
 en root :

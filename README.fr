@@ -6,8 +6,8 @@ l'export des positions (temporelles et spatiales) des points choisis.
 Installation : 
     Pymecavideo nécessite 3 dépendances :
         PyQT4 : python-qt4  (-devel si vous utilisez le svn)
-        ffmpeg
-        vlc
+        ffmpeg et ffplay
+        vlc (ou clvc)
         
 
 Contribuer :
