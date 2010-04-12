@@ -263,13 +263,14 @@ class StartQT4(QMainWindow):
         self.ui.echelleEdit.show()
         self.ui.Bouton_Echelle.show()
  
-    def reinitialise_tout(self, echelle_image=None, nb_de_points=None, tousLesClics=None):
+    def reinitialise_tout(self, echelle_image=None, nb_de_points=None, tousLesClics=None,index_point_actuel=None):
         """
         Réinitialise complètement l'interface de saisie. On peut quand même
         passer quelques paramètres à conserver :
         @param echelle_image évite de ressaisir l'échelle de l'image
         @param nb_de_points évite de ressaisir le nombre de points à suivre
         @param tousLesClics permet de conserver une liste de poinst à refaire
+        @param index_point_actuel permet de réinitialiser à partir de l'image de départ.
         """
         self.montre_vitesses(False)
         self.oubliePoints()
@@ -280,7 +281,16 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_origine.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
+        #############si il existe un point actuel, cela signifie qu'on réinitlise tout amis qu'on doit garder la position de départ. Cas quand on revient en arrière d'un cran ou que l'on refait le point.
+        if index_point_actuel :
+           index = self.premiere_image
         self.init_variables(self.filename,None)
+
+        ############ permet de récupérer les 2 valeurs souhaitées
+        self.premiere_image = index
+        self.index_de_l_image = index
+        ############
+  
         self.init_interface()
         for enfant in self.label_video.children():
               enfant.hide()      
@@ -674,6 +684,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
+        self.ui.spinBox_image.setEnabled(0)
+
         if departManuel==True: # si on a mis la première image à la main
             self.premiere_image=self.ui.horizontalSlider.value()
         self.affiche_point_attendu(1)
@@ -853,6 +865,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         """revient au point précédent
         """
         self.tousLesClics.decPtr()
+        print self.index_de_l_image, self.index_du_point, self.tousLesClics, self.premiere_image
+        
+        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics,self.index_de_l_image-1)
         self.repasseTousLesClics()
         self.modifie=True
 
@@ -860,6 +875,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         """rétablit le point suivant après un effacement
         """
         self.tousLesClics.incPtr()
+        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics,self.index_de_l_image-1)
         self.repasseTousLesClics()
         self.modifie=True
 
@@ -868,12 +884,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         repasse en mode non-interactif toute la liste des clics
         sur l'image, jusqu'au pointeur courant de cette liste pointée.
         """
-        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics)
+
         self.affiche_echelle()
         self.affiche_nb_points()
         self.ui.tab_traj.setEnabled(1)
-        #self.label_video.setCursor(Qt.CrossCursor)
-        #self.label_video.reinit()
+        
 
         for clics in self.tousLesClics:
             self.clic_sur_label_video(liste_points=clics, interactif=False)
@@ -1183,13 +1198,16 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.extract_image(self.filename, self.index_de_l_image)
         image=QImage(self.chemin_image)
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
-        self.label_video.setMouseTracking(True)
-        self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
-        self.label_video.met_a_jour_crop()
-        self.label_video.update()
-        self.label_video.show()
-        self.ui.horizontalSlider.setValue(self.index_de_l_image)
-        self.ui.spinBox_image.setValue(self.index_de_l_image)
+        try :
+            self.label_video.setMouseTracking(True)
+            self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
+            self.label_video.met_a_jour_crop()
+            self.label_video.update()
+            self.label_video.show()
+            self.ui.horizontalSlider.setValue(self.index_de_l_image)
+            self.ui.spinBox_image.setValue(self.index_de_l_image)
+        except AttributeError:
+            pass
         
     def recommence_echelle(self):
         self.echelle_image=echelle()
