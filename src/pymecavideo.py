@@ -283,13 +283,17 @@ class StartQT4(QMainWindow):
         self.ui.checkBox_ordonnees.setEnabled(1)
         #############si il existe un point actuel, cela signifie qu'on réinitlise tout amis qu'on doit garder la position de départ. Cas quand on revient en arrière d'un cran ou que l'on refait le point.
         if index_point_actuel :
-           index = self.premiere_image
-        self.init_variables(self.filename,None)
+            print index_point_actuel
+            index = self.premiere_image
+            self.init_variables(self.filename,None)
 
-        ############ permet de récupérer les 2 valeurs souhaitées
-        self.premiere_image = index
-        self.index_de_l_image = index
-        ############
+            ############ permet de récupérer les 2 valeurs souhaitées
+            self.premiere_image = index
+            self.index_de_l_image = index
+            ############
+        else :
+            self.init_variables(self.filename,None)
+
   
         self.init_interface()
         for enfant in self.label_video.children():
@@ -365,6 +369,20 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.        change_sens_X )
         QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
         QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_origine)
+        QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
+
+    def refait_echelle(self):
+        #"""Permet de retracer une échelle et de recalculer les points"""
+        #self.recommence_echelle()
+
+        
+        self.cree_tableau()
+        index=0
+        for point in  self.tousLesClics:
+            print "#######", point
+            self.stock_coordonnees_image(index,point)
+            index+=1
+
 
     def choisi_nouvelle_origine(self):
         nvl_origine=QMessageBox.information(self,QString("NOUVELLE ORIGINE"),\
@@ -865,7 +883,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         """revient au point précédent
         """
         self.tousLesClics.decPtr()
-        print self.index_de_l_image, self.index_du_point, self.tousLesClics, self.premiere_image
+        #print self.index_de_l_image, self.index_du_point, self.tousLesClics, self.premiere_image
         
         self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics,self.index_de_l_image-1)
         self.repasseTousLesClics()
@@ -952,98 +970,102 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
        
         """
 
+        try : 
+            if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
+                    self.ui.comboBox_referentiel.setEnabled(0)
+                    self.label_video.zoom_croix.hide()
+                    self.oubliePoints()
+                    if newValue=="absolu":
+                        ref="camera"
+                    else:
+                        ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
 
-        if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
-                self.ui.comboBox_referentiel.setEnabled(0)
-                self.label_video.zoom_croix.hide()
-                self.oubliePoints()
-                if newValue=="absolu":
-                    ref="camera"
-                else:
-                    ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+                    if len(ref)==0 : return
+                    if ref != "camera":
+                        bc=self.mediane_trajectoires(int(ref)-1)
+                        origine=vecteur(320,240)-bc
 
-                if len(ref)==0 : return
-                if ref != "camera":
-                    bc=self.mediane_trajectoires(int(ref)-1)
-                    origine=vecteur(320,240)-bc
-                    
-                    if self.ui.comboBox_referentiel.count()>2 :
-                        # il y a plus d'un point étudié, on active le
-                        # bouton vidéo et on autorise de changer de référentiel
-                        self.ui.button_video.setEnabled(1)
-                        self.ui.comboBox_fps.setEnabled(1)
-                        self.ui.comboBox_referentiel.setEnabled(1)
-                    else :
+                        if self.ui.comboBox_referentiel.count()>2 :
+                            # il y a plus d'un point étudié, on active le
+                            # bouton vidéo et on autorise de changer de référentiel
+                            self.ui.button_video.setEnabled(1)
+                            self.ui.comboBox_fps.setEnabled(1)
+                            self.ui.comboBox_referentiel.setEnabled(1)
+                        else :
+                            self.ui.button_video.setEnabled(0)
+                            self.ui.comboBox_fps.setEnabled(0)
+
+                    else:
                         self.ui.button_video.setEnabled(0)
                         self.ui.comboBox_fps.setEnabled(0)
+                        if self.ui.comboBox_referentiel.count()>2 :
+                            self.ui.comboBox_referentiel.setEnabled(1) #ne pas autoriser le changement de référentiel si il n'y a que 1 point.
+                    if self.platform.lower()=="windows":
+                        self.ui.comboBox_mode_tracer.setEnabled(0)
+                    # on fait la liste des courbes traçables
+                    self.ui.comboBox_mode_tracer.clear()
+                    self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
+                    for i in range(self.nb_de_points) :
+                        self.ui.comboBox_mode_tracer.addItem(QString("x%d(t)" %(i+1)))
+                        self.ui.comboBox_mode_tracer.addItem(QString("y%d(t)" %(i+1)))
+                        self.ui.comboBox_mode_tracer.addItem(QString("v%d(t)" %(i+1)))
 
-                else:
-                    self.ui.button_video.setEnabled(0)
-                    self.ui.comboBox_fps.setEnabled(0)
-                    if self.ui.comboBox_referentiel.count()>2 :
-                        self.ui.comboBox_referentiel.setEnabled(1) #ne pas autoriser le changement de référentiel si il n'y a que 1 point.
-                if self.platform.lower()=="windows":
-                    self.ui.comboBox_mode_tracer.setEnabled(0)
-                # on fait la liste des courbes traçables
-                self.ui.comboBox_mode_tracer.clear()
-                self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
-                for i in range(self.nb_de_points) :
-                    self.ui.comboBox_mode_tracer.addItem(QString("x%d(t)" %(i+1)))
-                    self.ui.comboBox_mode_tracer.addItem(QString("y%d(t)" %(i+1)))
-                    self.ui.comboBox_mode_tracer.addItem(QString("v%d(t)" %(i+1)))
-
-                # on trace les points compte tenu du référentiel
-                for n in range(self.nb_de_points):
-                    couleur = self.couleurs[n]
-                    ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
-                    for i in self.points.keys():
-                        if ref == "camera":
-                            p = self.points[i][1+n]
-                        else:
-                            ref=int(ref)
-                            p = self.points[i][1+n]-self.points[i][ref]+origine
-                        if ref != "camera" and n == ref-1:
-                            # on a affaire au tracé du repère du référentiel :
-                            # une seule instance suffira, vu qu'il ne bouge pas.
-                            if newValue!="absolu":
-                                if i == self.points.keys()[0]:
-                                    point = Repere(self.label_trajectoire, p, couleur, 0, self)
+                    # on trace les points compte tenu du référentiel
+                    for n in range(self.nb_de_points):
+                        couleur = self.couleurs[n]
+                        ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
+                        for i in self.points.keys():
+                            if ref == "camera":
+                                #print len(self.points), i, n
+                                #print self.points
+                                p = self.points[i][1+n]
+                            else:
+                                ref=int(ref)
+                                p = self.points[i][1+n]-self.points[i][ref]+origine
+                            if ref != "camera" and n == ref-1:
+                                # on a affaire au tracé du repère du référentiel :
+                                # une seule instance suffira, vu qu'il ne bouge pas.
+                                if newValue!="absolu":
+                                    if i == self.points.keys()[0]:
+                                        point = Repere(self.label_trajectoire, p, couleur, 0, self)
+                                        point.show()
+                                        self.retientPoint(n,ref,i,p,point)
+                                        self.repere=1 #permet de voir si un repère a déjà été dessiné
+                            else:
+                                if newValue!="absolu":
+                                    point = Point(self.label_trajectoire, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
+                                    ancienPoint=point
                                     point.show()
                                     self.retientPoint(n,ref,i,p,point)
-                                    self.repere=1 #permet de voir si un repère a déjà été dessiné
-                        else:
-                            if newValue!="absolu":
-                                point = Point(self.label_trajectoire, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
-                                ancienPoint=point
-                                point.show()
-                                self.retientPoint(n,ref,i,p,point)
-                                if i == self.points.keys()[0] and self.repere==0 and ref=="camera":
-                                        point_ = Repere(self.label_trajectoire, self.origine, couleur, 0, self)
-                                        point_.show()
-                                        self.retientPoint(n,ref,i,p,point_)
-                                        self.repere=1
+                                    if i == self.points.keys()[0] and self.repere==0 and ref=="camera":
+                                            point_ = Repere(self.label_trajectoire, self.origine, couleur, 0, self)
+                                            point_.show()
+                                            self.retientPoint(n,ref,i,p,point_)
+                                            self.repere=1
 
-                            else: #newValue=="absolu"
-                                point = Point(self.label_video, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
-                                ancienPoint=point
-                                point.montre_vitesse(False)
-                                point.show()
-                                self.retientPoint(n,ref,i,p,point)
+                                else: #newValue=="absolu"
+                                    point = Point(self.label_video, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
+                                    ancienPoint=point
+                                    point.montre_vitesse(False)
+                                    point.show()
+                                    self.retientPoint(n,ref,i,p,point)
 
-                    
-        else : #premier onglet
-              ref="camera"
-              #self.oubliePoints()
-              for n in range(self.nb_de_points):
-                  couleur = self.couleurs[n]
-                  ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
-                  for i in self.points.keys():
-                        p = self.points[i][1+n]
-                        point = Point(self.label_video, p, couleur, i+1, self,ancienPoint, show=False) # le point est chaîné au précédent s'il existe.
-                        ancienPoint=point
-                        point.montre_vitesse(False) #ne montre pas les vitesses
-                        point.show()
-                        self.retientPoint(n,ref,i,p,point)
+
+            else : #premier onglet
+                  ref="camera"
+                  #self.oubliePoints()
+                  for n in range(self.nb_de_points):
+                      couleur = self.couleurs[n]
+                      ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
+                      for i in self.points.keys():
+                            p = self.points[i][1+n]
+                            point = Point(self.label_video, p, couleur, i+1, self,ancienPoint, show=False) # le point est chaîné au précédent s'il existe.
+                            ancienPoint=point
+                            point.montre_vitesse(False) #ne montre pas les vitesses
+                            point.show()
+                            self.retientPoint(n,ref,i,p,point)
+        except ZeroDivisionError:
+            print "pb self.tracer_trajectoires"
 
     def tracer_courbe(self,itemChoisi):
         try:
@@ -1126,16 +1148,16 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
                 self.nb_image_deja_analysees += 1
                 self.index_de_l_image += 1
-                print "ok"
+                #print "ok"
                 if interactif:
                     self.clic_sur_label_video_ajuste_ui(point_attendu)
                     self.modifie=True
             else :
-                print "NOK"
+                #print "NOK"
                 self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint la fin de la vidéo","utf8")))
                 
 
-        print self.index_de_l_image
+        #print self.index_de_l_image
         
     def clic_sur_label_video_ajuste_ui(self,point_attendu):
         """
@@ -1160,15 +1182,18 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             self.affiche_image()
             self.tracer_trajectoires("absolu")
         
-    def stock_coordonnees_image(self, ligne, liste_points, interactif=True):
+    def stock_coordonnees_image(self, ligne, liste_points, interactif=True, index_image = False):
         """
         place les données dans le tableau.
         @param ligne le numérode la ligne où placer les données (commence à 0)
         @param liste_points la liste des points cliqués sur l'image courante
         @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
         """
-        
-        t = "%4f" %((self.index_de_l_image-self.premiere_image)*self.deltaT)
+        #print ligne, index_image, self.index_de_l_image, self.premiere_image
+        if not index_image :
+            index_image = self.index_de_l_image
+        t = "%4f" %((ligne)*self.deltaT)
+        print liste_points
         self.points[ligne]=[t]+liste_points
         #rentre le temps dans la première colonne
         self.table_widget.insertRow(ligne)
@@ -1210,10 +1235,16 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             pass
         
     def recommence_echelle(self):
+        self.ui.tabWidget.setCurrentIndex(0)
         self.echelle_image=echelle()
         self.affiche_echelle()
-        self.job.dialog.close()
-        self.job.close()
+        try:
+            self.job.dialog.close()
+            self.job.close()
+        except AttributeError:
+            pass
+
+
         self.demande_echelle()
         
     def affiche_image_slider(self):
@@ -1230,16 +1261,17 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             echelle_result = [float(echelle_result_raw[0].replace(",",".")), echelle_result_raw[1]]
 
             if echelle_result[0] <= 0 or echelle_result[1] == False :
-                self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable"),"utf8"))
+                self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable","utf8")))
             else :
                 self.echelle_image.etalonneReel(echelle_result[0])
                 self.job = Label_Echelle(self.label_video,self)
                 self.job.setPixmap(QPixmap(self.chemin_image))
                 self.job.show()
         except ValueError :
-            self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable"),"utf8"))
+            self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable","utf8")))
             self.demande_echelle()
         self.ui.pushButton_video.setEnabled(0)
+
     def feedbackEchelle(self, p1, p2):
         """
         affiche une trace au-dessus du self.job, qui reflète les positions

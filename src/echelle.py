@@ -140,9 +140,15 @@ class Label_Echelle(QLabel):
         epxParM=self.app.echelle_image.pxParM()
         self.app.affiche_echelle()
         self.app.affiche_nb_points(True)
-        self.app.mets_a_jour_label_infos(self.tr(unicode("""Choisir le nombre de points puis "Démarrer l'acquisition" ""","utf8"))) 
+        self.app.mets_a_jour_label_infos(self.tr(unicode("""Choisir le nombre de points puis "Démarrer l'acquisition" ""","utf8")))
+
         self.app.affiche_lance_capture(True)
         self.app.feedbackEchelle(self.p1, self.p2)
+        if len(self.app.tousLesClics)>0 : #si on appelle l'échelle après avoir déjà pointé
+            self.app.mets_a_jour_label_infos(self.tr(unicode("""Vous pouvez continuer votre acquisition" ""","utf8")))
+            self.app.affiche_nb_points(False)
+            self.app.refait_echelle()
+            
             
         self.close()
     

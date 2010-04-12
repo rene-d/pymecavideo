@@ -44,7 +44,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -985,6 +985,19 @@ vers le bas</string>
         </property>
         <property name="text">
          <string>Copier les mesures dans le presse papier</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_nvl_echelle">
+        <property name="geometry">
+         <rect>
+          <x>520</x>
+          <y>10</y>
+          <width>181</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Refaire l'échelle ?</string>
         </property>
        </widget>
       </widget>
