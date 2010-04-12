@@ -38,6 +38,7 @@ class Preferences:
         self.niveauDbg=0 # niveau d'importance des messages de débogage
         # récupère les valeurs enregistrées
         self.load()
+
     def detect_video_players(self):
         """détecte les players dispnibles sur le système"""
         self.videoPlayers = {}
@@ -63,10 +64,10 @@ class Preferences:
         elif "mplayer" in self.videoPlayers.keys() :
             self.videopref="mplayer"
         else :
-            warning =QMessageBox.warning(None,u"ATTENTION : pas de lecteurs vidéos trouvés","Vous devez installer VLC, -ou MPLAYER ou XINE si vous êtes sous linux-",QMessageBox.Ok,QMessageBox.Ok)
+            warning =QMessageBox.warning(None,u"ATTENTION : pas de lecteurs vidéos trouvés","Vous devez installer VLC, fflpay, -ou MPLAYER ou XINE si vous êtes sous linux-",QMessageBox.Ok,QMessageBox.Ok)
             import sys
             sys.exit(-1)#fais une erreur...mais fais ce qu'on veut ;)
-
+        self.app.player = self.videopref
     def save(self):
         f=open(self.conffile,"w")
         pickle.dump((self.proximite,self.lastVideo,self.videoDir,self.videopref,self.niveauDbg),f)

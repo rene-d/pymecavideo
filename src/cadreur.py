@@ -116,7 +116,7 @@ class Cadreur:
     def montrefilm(self):
         file="out.avi"
         #print self.app.prefs.videoPlayerCmd()
-        cmd=self.app.player+" out.avi"
+        print self.app.player
         #self.app.dbg.p(2,"%s" %(cmd))
-        montre = subprocess.Popen(cmd,shell=True)
+        montre = subprocess.Popen([self.app.player,"out.avi"])
         montre.wait()
