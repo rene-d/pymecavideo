@@ -64,7 +64,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -258,7 +258,7 @@
            <x>10</x>
            <y>0</y>
            <width>161</width>
-           <height>26</height>
+           <height>31</height>
           </rect>
          </property>
          <property name="text">

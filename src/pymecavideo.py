@@ -193,8 +193,16 @@ class StartQT4(QMainWindow):
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture']:
             if  any(os.access(os.path.join(p,logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
                 self.logiciel_acquisition = logiciel
-                print logiciel
+                #print logiciel
                 self.ui.pushButton_video.setEnabled(1)
+                break
+        if self.logiciel_acquisition :
+            self.ui.pushButton_video.setText(self.tr(unicode("Lancer "+self.logiciel_acquisition+"\n pour capturer une vidéo","utf8")))
+        else :
+            self.ui.pushButton_video.setEnabled(0)
+            self.ui.pushButton_video.hide()
+        
+             
 
         ######vérification de la présencde gnuplot
         if  any(os.access(os.path.join(p,"gnuplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
