@@ -1104,14 +1104,23 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             liste_points = self.label_video.liste_points
         if self.nb_de_points > len(liste_points) :
             point_attendu=1+len(liste_points)
-        else: 
+        else:
             point_attendu=1
-            self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
-            self.nb_image_deja_analysees += 1
-            self.index_de_l_image += 1
-        if interactif:
-            self.clic_sur_label_video_ajuste_ui(point_attendu)
-            self.modifie=True
+            if self.index_de_l_image<self.image_max : ##si on atteint la fin de la vidéo
+                
+                self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
+                self.nb_image_deja_analysees += 1
+                self.index_de_l_image += 1
+                print "ok"
+                if interactif:
+                    self.clic_sur_label_video_ajuste_ui(point_attendu)
+                    self.modifie=True
+            else :
+                print "NOK"
+                self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint la fin de la vidéo","utf8")))
+                
+
+        print self.index_de_l_image
         
     def clic_sur_label_video_ajuste_ui(self,point_attendu):
         """
