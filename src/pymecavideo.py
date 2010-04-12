@@ -189,12 +189,23 @@ class StartQT4(QMainWindow):
         if self.player== False or self.ffmpeg == False :
             pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel ffmpeg ainsi que ffplay n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
             self.close()
-        ######vérification de la présence d'un logiciel connu de capture dans le path
+        ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture']:
             if  any(os.access(os.path.join(p,logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
                 self.logiciel_acquisition = logiciel
                 print logiciel
                 self.ui.pushButton_video.setEnabled(1)
+
+        ######vérification de la présencde gnuplot
+        if  any(os.access(os.path.join(p,"gnuplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
+            pass
+            #print "gnuplot OK"
+        else :
+            #print "gnuplot NOK"
+            self.ui.label_graphiques.setText(QString(self.tr("Manque Gnuplot")))
+            self.ui.comboBox_mode_tracer.hide()
+            self.ui.groupBox_7.setEnabled(0)
+
             
                 
 
@@ -283,7 +294,7 @@ class StartQT4(QMainWindow):
         self.ui.checkBox_ordonnees.setEnabled(1)
         #############si il existe un point actuel, cela signifie qu'on réinitlise tout amis qu'on doit garder la position de départ. Cas quand on revient en arrière d'un cran ou que l'on refait le point.
         if index_point_actuel :
-            print index_point_actuel
+            #print index_point_actuel
             index = self.premiere_image
             self.init_variables(self.filename,None)
 
@@ -379,7 +390,7 @@ class StartQT4(QMainWindow):
         self.cree_tableau()
         index=0
         for point in  self.tousLesClics:
-            print "#######", point
+            #print "#######", point
             self.stock_coordonnees_image(index,point)
             index+=1
 
@@ -1068,63 +1079,64 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             print "pb self.tracer_trajectoires"
 
     def tracer_courbe(self,itemChoisi):
-        try:
-            self.ui.comboBox_mode_tracer.setCurrentIndex (0)
-            if itemChoisi == 0: return # c'est rien du tout.
-            numero=(itemChoisi-1)/3
-            typeDeCourbe=("x","y","v")[(itemChoisi-1)%3]
-            titre=(self.tr("Évolution de l'abscisse du point %1").arg(numero+1),
-                   self.tr("Évolution de l'ordonnée du point %1").arg(numero+1),
-                   self.tr("Évolution de la vitesse du point %1").arg(numero+1))[(itemChoisi-1)%3]
-            titre=titre.toAscii()
-            abscisse=[]
-            ordonnee=[]
-            t=0
-            ancienPoint=None
-            ref=self.ui.comboBox_referentiel.currentText().split(" ")[-1]
-            for i in self.points.keys():
-                if ref == "camera":
-                    p = self.pointEnMetre(self.points[i][1+numero])
-                else:
-                    ref=int(ref)
-                    p = self.pointEnMetre(self.points[i][1+numero])-self.pointEnMetre(self.points[i][ref])
-                if typeDeCourbe == "x": ordonnee.append(p.x())
-                if typeDeCourbe == "y": ordonnee.append(p.y())
-                if typeDeCourbe == "v":
-                    if ancienPoint != None:
-                       abscisse.append(t)
-                       v=(p-ancienPoint).norme()/self.deltaT
-                       ordonnee.append(v)
-                else:
-                    abscisse.append(t)
-                t+=self.deltaT
-                ancienPoint=p
-            # les abscisses et les ordonnées sont prêtes
-            labelAbscisse="t (s)"
-            if typeDeCourbe != "v" : labelOrdonnee=typeDeCourbe+" (m)"
-            else: labelOrdonnee=typeDeCourbe+" (m/s)"
-            # déterminer le style de tracé
-            styleTrace=None
-            if typeDeCourbe in ("x","y"):
-                if ref == "camera":
-                    p1=self.pointEnMetre(vecteur(0,0))
-                    p2=self.pointEnMetre(vecteur(640,480))
-                    minx=p1.x(); maxx=p2.x()
-                    miny=p1.y(); maxy=p2.y()
-                    if typeDeCourbe=="x":
-                        styleTrace=[0,minx,t,maxx]
-                    if typeDeCourbe=="y":
-                        styleTrace=[0,miny,t,maxy]
-                else:
+        if self.ui.comboBox_mode_tracer.isEnabled():
+            try:
+                self.ui.comboBox_mode_tracer.setCurrentIndex (0)
+                if itemChoisi == 0: return # c'est rien du tout.
+                numero=(itemChoisi-1)/3
+                typeDeCourbe=("x","y","v")[(itemChoisi-1)%3]
+                titre=(self.tr("Évolution de l'abscisse du point %1").arg(numero+1),
+                      self.tr("Évolution de l'ordonnée du point %1").arg(numero+1),
+                      self.tr("Évolution de la vitesse du point %1").arg(numero+1))[(itemChoisi-1)%3]
+                titre=titre.toAscii()
+                abscisse=[]
+                ordonnee=[]
+                t=0
+                ancienPoint=None
+                ref=self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+                for i in self.points.keys():
+                    if ref == "camera":
+                        p = self.pointEnMetre(self.points[i][1+numero])
+                    else:
+                        ref=int(ref)
+                        p = self.pointEnMetre(self.points[i][1+numero])-self.pointEnMetre(self.points[i][ref])
+                    if typeDeCourbe == "x": ordonnee.append(p.x())
+                    if typeDeCourbe == "y": ordonnee.append(p.y())
+                    if typeDeCourbe == "v":
+                        if ancienPoint != None:
+                          abscisse.append(t)
+                          v=(p-ancienPoint).norme()/self.deltaT
+                          ordonnee.append(v)
+                    else:
+                        abscisse.append(t)
+                    t+=self.deltaT
+                    ancienPoint=p
+                # les abscisses et les ordonnées sont prêtes
+                labelAbscisse="t (s)"
+                if typeDeCourbe != "v" : labelOrdonnee=typeDeCourbe+" (m)"
+                else: labelOrdonnee=typeDeCourbe+" (m/s)"
+                # déterminer le style de tracé
+                styleTrace=None
+                if typeDeCourbe in ("x","y"):
+                    if ref == "camera":
+                        p1=self.pointEnMetre(vecteur(0,0))
+                        p2=self.pointEnMetre(vecteur(640,480))
+                        minx=p1.x(); maxx=p2.x()
+                        miny=p1.y(); maxy=p2.y()
+                        if typeDeCourbe=="x":
+                            styleTrace=[0,minx,t,maxx]
+                        if typeDeCourbe=="y":
+                            styleTrace=[0,miny,t,maxy]
+                    else:
+                        styleTrace="zero"
+                else: # type de courbe "v""
                     styleTrace="zero"
-            else: # type de courbe "v""
-                styleTrace="zero"
-            # le tracé est fait dans un nouveau thread
-            t=threading.Thread(target=traceur2d, args=(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace))
-            t.setDaemon(True) # le tracé peut survivre à pymecavideo
-            t.start()
-        except:
-            pass # il faut accepter que le combo soit vide à l'initialisation
+                # le tracé est fait dans un nouveau thread
+                t=threading.Thread(target=traceur2d, args=(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace))
+                t.setDaemon(True) # le tracé peut survivre à pymecavideo
+                t.start()
+            except:
+                pass # il faut accepter que le combo soit vide à l'initialisation
     
     def affiche_point_attendu(self,n):
         """
@@ -1193,7 +1205,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         if not index_image :
             index_image = self.index_de_l_image
         t = "%4f" %((ligne)*self.deltaT)
-        print liste_points
+        #print liste_points
         self.points[ligne]=[t]+liste_points
         #rentre le temps dans la première colonne
         self.table_widget.insertRow(ligne)

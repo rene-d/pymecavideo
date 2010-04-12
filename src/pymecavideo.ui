@@ -44,7 +44,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -968,6 +968,25 @@ vers le bas</string>
           </property>
          </item>
         </widget>
+        <widget class="QLabel" name="label_graphiques">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>121</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
        </widget>
       </widget>
       <widget class="QWidget" name="tab_coord">
@@ -990,14 +1009,14 @@ vers le bas</string>
        <widget class="QPushButton" name="pushButton_nvl_echelle">
         <property name="geometry">
          <rect>
-          <x>520</x>
+          <x>460</x>
           <y>10</y>
           <width>181</width>
           <height>26</height>
          </rect>
         </property>
         <property name="text">
-         <string>Refaire l'échelle ?</string>
+         <string>changer d'échelle ?</string>
         </property>
        </widget>
       </widget>
