@@ -146,10 +146,10 @@ class StartQT4(QMainWindow):
         self.platform = platform.system()
         if self.platform.lower()=="windows":
             self.ffmpeg = "ffmpeg.exe"
-            self.ffplay = "ffplay.exe"
+            self.player = "ffplay.exe"
         elif self.platform.lower()=="linux":
             self.ffmpeg = "ffmpeg"
-            self.ffplay = "ffplay"
+            self.player = "cvlc"
           
         self.logiciel_acquisition = False
         self.points_ecran={}
@@ -184,9 +184,9 @@ class StartQT4(QMainWindow):
         ######vérification de la présence de fmmpeg et ffplay dans le path.
         if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
             self.ffmpeg = False
-        if not(any(os.access(os.path.join(p,self.ffplay), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
-            self.ffplay = False
-        if self.ffplay== False or self.ffmpeg == False :
+        if not(any(os.access(os.path.join(p,self.player), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
+            self.player = False
+        if self.player== False or self.ffmpeg == False :
             pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel ffmpeg ainsi que ffplay n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
             self.close()
         ######vérification de la présence d'un logiciel connu de capture dans le path
@@ -686,6 +686,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.ui.pushButton_select_all_table.setEnabled(1)
 
         self.ui.checkBox_avancees.setEnabled(0)
+        
         ### On ne fait que cacher le groupBox_2 au lieu de désactiver chaque widget###
         self.ui.groupBox_2.setEnabled(0)
         #self.ui.pushButton_origine.setEnabled(0)
@@ -1211,7 +1212,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         except ValueError :
             self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable"),"utf8"))
             self.demande_echelle()
-
+        self.ui.pushButton_video.setEnabled(0)
     def feedbackEchelle(self, p1, p2):
         """
         affiche une trace au-dessus du self.job, qui reflète les positions

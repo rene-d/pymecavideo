@@ -24,6 +24,7 @@ from vecteur import vecteur
 from math import sqrt
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from zoom import Zoom_Croix
 
 class echelle(QObject):
     def __init__(self, p1=vecteur(0,0), p2=vecteur(0,0)):
@@ -79,6 +80,11 @@ class Label_Echelle(QLabel):
         self.p2=vecteur()
         self.app = app
         self.setCursor(Qt.CrossCursor)
+        self.cropX2=None
+        self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom)
+        self.zoom_croix.hide()
+        self.setMouseTracking(True)
+        self.pressed=False
         try :
             self.app.origine_trace.lower() #origine definition is optionnal but hide scale if defined first
         except AttributeError:
@@ -93,6 +99,7 @@ class Label_Echelle(QLabel):
             self.p1=vecteur(-1,-1)
             self.close()
         self.p1 = vecteur(event.x(),event.y())
+        self.pressed=True
     
     def paintEvent(self, event):
         painter = QPainter()
@@ -104,15 +111,26 @@ class Label_Echelle(QLabel):
         painter.end()
     
     def mouseMoveEvent(self, event):
-        self.p2 = vecteur(event.x() + 1, event.y() + 1)
-        self.update()
-        
-        
+        self.zoom_croix.show()
+        self.pos=vecteur(event.x(), event.y())
+        self.fait_crop(self.pos)
+        self.app.ui.label_zoom.setPixmap(self.cropX2)
+
+        if self.pressed : 
+            self.p2 = vecteur(event.x() + 1, event.y() + 1)
+            self.update()
+
+
+    def fait_crop(self, p):   
+        rect = QRect(p.x()-25,p.y()-25,50,50)
+        crop = self.app.image_640_480.copy(rect)
+        self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
     def mouseReleaseEvent(self, event):
         if event.button() == 1 and self.p1.x() >= 0:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
-        
-        
+        self.zoom_croix.hide()
+        self.app.ui.label_zoom.setPixmap(QPixmap(None))
+        del self.zoom_croix
         self.parent.index_du_point=0
         
         self.app.echelle_image.p1=self.p1.copy()

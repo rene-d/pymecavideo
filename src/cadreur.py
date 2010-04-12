@@ -107,7 +107,7 @@ class Cadreur:
                 i+=1
         try :
             os.remove("out.avi")
-        except WindowsError :
+        except OSError :
             pass
         cmd= self.app.ffmpeg+" -r 25 -f image2 -i crop-%04d.jpg -r 25 -f avi -vcodec mpeg1video -b 800k out.avi"
         crop = subprocess.Popen(cmd, shell=True)
@@ -116,7 +116,7 @@ class Cadreur:
     def montrefilm(self):
         file="out.avi"
         #print self.app.prefs.videoPlayerCmd()
-        cmd=self.app.ffplay+" out.avi"
+        cmd=self.app.player+" out.avi"
         #self.app.dbg.p(2,"%s" %(cmd))
         montre = subprocess.Popen(cmd,shell=True)
         montre.wait()
