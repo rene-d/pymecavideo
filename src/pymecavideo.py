@@ -57,6 +57,7 @@ from preferences import Preferences
 from dbg import Dbg
 from listes import listePointee
 from version import Version
+import oooexport
 from subprocess import *
 import re
 from traceur import traceur2d
@@ -397,6 +398,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.        change_sens_X )
         QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
         QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_origine)
+        QObject.connect(self.ui.calcButton,SIGNAL("clicked()"),self.oooCalc)
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
 
     def refait_echelle(self):
@@ -494,6 +496,13 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                                           self.table_widget.rowCount()-1,
                                           self.table_widget.columnCount()-1)
         self.table_widget.setRangeSelected(trange,True)
+
+    def oooCalc(self):
+        """
+        Exporte directement les données vers OpenOffice.org Calc
+        """
+        calc=oooexport.Calc()
+        calc.importPymeca(self)
 
     def _dir(lequel=None,install=None):
         """renvoie les répertoires utiles.

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>820</width>
-    <height>607</height>
+    <height>611</height>
    </rect>
   </property>
   <property name="font">
@@ -38,7 +38,7 @@
     </size>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="0">
+    <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="autoFillBackground">
        <bool>true</bool>
@@ -1009,7 +1009,7 @@ vers le bas</string>
        <widget class="QPushButton" name="pushButton_nvl_echelle">
         <property name="geometry">
          <rect>
-          <x>460</x>
+          <x>580</x>
           <y>10</y>
           <width>181</width>
           <height>26</height>
@@ -1017,6 +1017,32 @@ vers le bas</string>
         </property>
         <property name="text">
          <string>changer d'échelle ?</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="calcButton">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>10</y>
+          <width>91</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Calc</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="qtiplotButton">
+        <property name="geometry">
+         <rect>
+          <x>450</x>
+          <y>10</y>
+          <width>91</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Qtiplot</string>
         </property>
        </widget>
       </widget>
@@ -1030,7 +1056,7 @@ vers le bas</string>
      <x>0</x>
      <y>0</y>
      <width>820</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
