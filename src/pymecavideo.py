@@ -284,13 +284,15 @@ class StartQT4(QMainWindow):
  
     def reinitialise_tout(self, echelle_image=None, nb_de_points=None, tousLesClics=None,index_point_actuel=None):
         """
-        Réinitialise complètement l'interface de saisie. On peut quand même
-        passer quelques paramètres à conserver :
+        Réinitialise l'interface de saisie, mais pas l'échelle. On
+        peut quand même passer quelques paramètres à conserver, ce qui
+        permet le défaire/refaire :
         @param echelle_image évite de ressaisir l'échelle de l'image
         @param nb_de_points évite de ressaisir le nombre de points à suivre
         @param tousLesClics permet de conserver une liste de poinst à refaire
         @param index_point_actuel permet de réinitialiser à partir de l'image de départ.
         """
+        self.dbg.p(2,"Dans reinitialise_tout: echelle_image=%s, nb_de_points=None%s, tousLesClics=%s,index_point_actuel=%s" %(echelle_image, nb_de_points, tousLesClics,index_point_actuel))
         self.montre_vitesses(False)
         self.oubliePoints()
         self.label_trajectoire.update()
@@ -326,6 +328,10 @@ class StartQT4(QMainWindow):
             self.tousLesClics=tousLesClics
 
     def reinitialise_capture(self):
+        """
+        Efface toutes les données de la capture en cours et prépare une nouvelle
+        session de capture.
+        """
         self.montre_vitesses(False)
         self.oubliePoints()
         self.label_trajectoire.update()
@@ -1360,10 +1366,14 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.openTheFile(filename)
         
     def openfile(self):
+        """
+        Ouvre un dialogue pour choisir un fichier vidéo puis le charge
+        """
         dir_=self._dir("stockmovies")
         filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)","utf8")))
         self.openTheFile(filename)
-
+        self.reinitialise_capture()
+        
     def renomme_le_fichier(self):
         renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr(unicode("Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
         filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), self._dir("stockmovies"),"*.avi")
