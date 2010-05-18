@@ -21,13 +21,19 @@
 """
 
 class Dbg:
-    def __init__(self,niveau):
-        self.niveau=niveau
+    def __init__(self,verbosite):
+        self.verbosite=verbosite
         
     def p(self,niveau,msg):
         """
-        affiche un message si le niveau de débogage est suffisant
+        affiche un message si la rebosité est suffisante
         """
-        if niveau>=self.niveau:
+        if niveau<=self.verbosite:
             print msg
+
+    def __str__(self):
+        """
+        Renvoie une chaîne lisible pour les humains.
+        """
+        return "objet debogueur de verbosite %s" %self.verbosite
     

@@ -39,6 +39,17 @@ class Preferences:
         # récupère les valeurs enregistrées
         self.load()
 
+    def __str__(self):
+        """
+        Renvoie une chaîne représentant les préférences, lisible par un humain
+        """
+        result="Proximite de la souris %s" %self.proximite
+        result +="; derniere video %s" %self.lastVideo
+        result +="; videoDir %s" %self.videoDir
+        result +="; niveau courant de debogage %s" %self.niveauDbg
+        result +="; dictionnaire des lecteurs video %s" %self.videoPlayers
+        return result
+
     def detect_video_players(self):
         """détecte les players dispnibles sur le système"""
         self.videoPlayers = {}
@@ -69,7 +80,12 @@ class Preferences:
             sys.exit(-1)#fais une erreur...mais fais ce qu'on veut ;)
         self.app.player = self.videopref
     def save(self):
+        """
+        Sauvegarde des préférences dans le fichier de configuration.
+        """
         f=open(self.conffile,"w")
+        self.app.dbg.p(9,"sauvegarde des preferences dans  %s" %self.conffile)
+        self.app.dbg.p(9, "%s" %self)
         pickle.dump((self.proximite,self.lastVideo,self.videoDir,self.videopref,self.niveauDbg),f)
         f.close()
         
@@ -79,6 +95,7 @@ class Preferences:
                 f=open(self.conffile,"r")
                 (self.proximite,self.lastVideo,self.videoDir,self.videopref,self.niveauDbg) = pickle.load(f)
                 f.close()
+                self.app.dbg=Dbg(self.niveauDbg)
             except:
                 self.app.dbg.p(2,"erreur en lisant %s" %self.conffile)
                 pass
@@ -88,6 +105,10 @@ class Preferences:
         return cmd
 
     def setFromDialog(self):
+        """
+        Règle les préférences à l'aide d'un dialogue
+        """
+        self.app.dbg.p(2,"appel du dialogue des preferences")
         import Ui_preferences
         d=QDialog()
         ui=Ui_Dialog()
@@ -107,7 +128,6 @@ class Preferences:
         vp=self.videoPlayers.keys()
         for cmd in vp:
             p.addItem(cmd)
-        #print self.videopref
         p.setCurrentIndex(vp.index(self.videopref))
         retval=d.exec_()
         if retval:
