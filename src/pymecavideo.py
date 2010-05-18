@@ -108,6 +108,7 @@ class StartQT4(QMainWindow):
         if self.platform.lower()=="windows":
             self.ffmpeg = "ffmpeg.exe"
             self.player = "ffplay.exe"
+
         elif self.platform.lower()=="linux":
             self.ffmpeg = "ffmpeg"
             self.player = "cvlc"
@@ -120,6 +121,7 @@ class StartQT4(QMainWindow):
         refait_icon=os.path.join(self._dir("icones"),"redo.png")
         self.ui.pushButton_refait.setIcon(QIcon(refait_icon))
 
+        #Openoffice.org Import
         try :
             import oooexport
             self.pyuno=True
@@ -128,10 +130,13 @@ class StartQT4(QMainWindow):
             self.dbg.p(2,"In init_variables no pyuno package")
             self.pyuno=False
         #variables à initialiser
+
+        if  any(os.access(os.path.join(p,"qtiplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
+            self.qtiplot_present=True
+        else :
+            self.qtiplot_present=False
+
         self.init_variables(filename,opts)
-
-        #Openoffice.org Import
-
 
         #connections internes
         self.ui_connections()
@@ -260,6 +265,10 @@ class StartQT4(QMainWindow):
             self.ui.calcButton.setEnabled(0)
         elif self.pyuno==True :
             self.ui.calcButton.setEnabled(1)
+        if self.qtiplot_present==False :
+            self.ui.qtiplotButton.setEnabled(0)
+        elif self.qtiplot_present==True :
+            self.ui.qtiplotButton.setEnabled(1)
 
         #création du label qui contiendra la vidéo.
         self.label_video = Label_Video(parent=self.ui.label, app=self)
