@@ -12,6 +12,9 @@ puis vérifiez que soit installés :
 -> make
 (-> vlc)
 -> ffmpeg
+optionnels mais utiles: 
+gnuplot, pyuno (si vous voulez utiliser les fonctions d'import pour Ooo)
+ffplay, mplayer
 
 aller dans la version que vous voulez (4.0, trunk, detect..)
 cd src
