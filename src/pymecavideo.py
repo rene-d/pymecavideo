@@ -58,12 +58,13 @@ from dbg import Dbg
 from listes import listePointee
 from version import Version
 
-
+import qtiplotexport
 from subprocess import *
 import re
 from traceur import traceur2d
 import threading
 import platform, subprocess
+import tempfile
 
 class StartQT4(QMainWindow):
     def __init__(self, parent, filename, opts):
@@ -415,6 +416,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
         QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_origine)
         QObject.connect(self.ui.calcButton,SIGNAL("clicked()"),self.oooCalc)
+        QObject.connect(self.ui.qtiplotButton,SIGNAL("clicked()"),self.qtiplot)
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
 
     def refait_echelle(self):
@@ -521,6 +523,20 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             import oooexport
         calc=oooexport.Calc()
         calc.importPymeca(self)
+
+    def qtiplot(self):
+        """
+        Exporte directement les données vers Qtiplot
+        """
+        plot=qtiplotexport.Qtiplot(self)
+        f=tempfile.NamedTemporaryFile(prefix='pymecaTmp-',suffix=".qti")
+        fname=f.name
+        f.close()
+        f=open(fname,"w")
+        plot.saveToFile(f)
+        f.close()
+        # utiliser plutôt un thread !!!
+        os.system("qtiplot %s" %fname)
 
     def _dir(lequel=None,install=None):
         """renvoie les répertoires utiles.
