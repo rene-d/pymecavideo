@@ -57,7 +57,8 @@ from preferences import Preferences
 from dbg import Dbg
 from listes import listePointee
 from version import Version
-import oooexport
+
+
 from subprocess import *
 import re
 from traceur import traceur2d
@@ -73,6 +74,7 @@ class StartQT4(QMainWindow):
             self.mini=True
         else :
             self.mini=False
+
         ######QT
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
@@ -117,10 +119,17 @@ class StartQT4(QMainWindow):
         refait_icon=os.path.join(self._dir("icones"),"redo.png")
         self.ui.pushButton_refait.setIcon(QIcon(refait_icon))
 
-
+        try :
+            import oooexport
+            self.pyuno=True
+            self.dbg.p(2,"In init_variables pyuno package found")
+        except ImportError :
+            self.dbg.p(2,"In init_variables no pyuno package")
+            self.pyuno=False
         #variables à initialiser
         self.init_variables(filename,opts)
 
+        #Openoffice.org Import
 
 
         #connections internes
@@ -155,7 +164,7 @@ class StartQT4(QMainWindow):
 
     def init_variables(self, filename, opts):
 
-          
+
         self.logiciel_acquisition = False
         self.points_ecran={}
         self.index_max = 1
@@ -245,9 +254,16 @@ class StartQT4(QMainWindow):
         self.ui.Bouton_Echelle.setEnabled(False)
         self.ui.echelle_v.setDuplicatesEnabled(False)
         self.setEchelle_v()
+
+        if self.pyuno==False :
+            self.ui.calcButton.setEnabled(0)
+        elif self.pyuno==True :
+            self.ui.calcButton.setEnabled(1)
+
         #création du label qui contiendra la vidéo.
         self.label_video = Label_Video(parent=self.ui.label, app=self)
-        #self.ui.label_axe.hide()
+
+
         ### Cacher uniquement le groupBox qui contient les widgets pushButton_origine, checkBox_abscisses, checkBox_ordonnees ###
         self.ui.groupBox_2.hide()
         #self.ui.pushButton_origine.hide()
@@ -501,6 +517,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         """
         Exporte directement les données vers OpenOffice.org Calc
         """
+        if self.pyuno==True :
+            import oooexport
         calc=oooexport.Calc()
         calc.importPymeca(self)
 
