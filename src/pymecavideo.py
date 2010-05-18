@@ -98,6 +98,16 @@ class StartQT4(QMainWindow):
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
 
+
+
+        self.platform = platform.system()
+        if self.platform.lower()=="windows":
+            self.ffmpeg = "ffmpeg.exe"
+            self.player = "ffplay.exe"
+        elif self.platform.lower()=="linux":
+            self.ffmpeg = "ffmpeg"
+            self.player = "cvlc"
+        self.prefs=Preferences(self)
         ####intilise les répertoires
         self._dir()
         defait_icon=os.path.join(self._dir("icones"),"undo.png")
@@ -143,13 +153,7 @@ class StartQT4(QMainWindow):
         
 
     def init_variables(self, filename, opts):
-        self.platform = platform.system()
-        if self.platform.lower()=="windows":
-            self.ffmpeg = "ffmpeg.exe"
-            self.player = "ffplay.exe"
-        elif self.platform.lower()=="linux":
-            self.ffmpeg = "ffmpeg"
-            self.player = "cvlc"
+
           
         self.logiciel_acquisition = False
         self.points_ecran={}
@@ -174,7 +178,6 @@ class StartQT4(QMainWindow):
         self.nb_de_points = 1        # nombre de points suivis
         self.premiere_image = 1      # n° de la première image cliquée
         self.index_de_l_image = 1    # image à afficher
-        self.prefs=Preferences(self)
         self.echelle_v = 0
         self.filename=filename
         self.opts=opts
