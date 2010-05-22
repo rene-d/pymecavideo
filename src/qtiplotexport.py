@@ -24,7 +24,7 @@ from string import Template
 import time
 
 qtiFileTemplate=Template("""\
-QtiPlot 0.9.7 project file
+QtiPlot 0.9.0 project file
 <scripting-lang>	muParser
 <windows>	1
 $table
