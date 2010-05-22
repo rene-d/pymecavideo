@@ -121,7 +121,7 @@ class StartQT4(QMainWindow):
         refait_icon=os.path.join(self._dir("icones"),"redo.png")
         self.ui.pushButton_refait.setIcon(QIcon(refait_icon))
 
-        #Openoffice.org Import
+        #Openoffice.org export
         try :
             import oooexport
             self.pyuno=True
@@ -130,6 +130,9 @@ class StartQT4(QMainWindow):
             self.dbg.p(2,"In init_variables no pyuno package")
             self.pyuno=False
         #variables à initialiser
+
+        # sciDAVis export
+        self.scidavis_present = os.path.exists("/usr/bin/scidavis")
 
         if  any(os.access(os.path.join(p,"qtiplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
             self.qtiplot_present=True
@@ -261,14 +264,12 @@ class StartQT4(QMainWindow):
         self.ui.echelle_v.setDuplicatesEnabled(False)
         self.setEchelle_v()
 
-        if self.pyuno==False :
-            self.ui.calcButton.setEnabled(0)
-        elif self.pyuno==True :
-            self.ui.calcButton.setEnabled(1)
-        if self.qtiplot_present==False :
-            self.ui.qtiplotButton.setEnabled(0)
-        elif self.qtiplot_present==True :
-            self.ui.qtiplotButton.setEnabled(1)
+        if not self.pyuno :
+            self.desactiveExport("Oo.o Calc")
+        if not self.qtiplot_present :
+            self.desactiveExport("Qtiplot")
+        if not self.scidavis_present :
+            self.desactiveExport("SciDAVis")
 
         #création du label qui contiendra la vidéo.
         self.label_video = Label_Video(parent=self.ui.label, app=self)
@@ -283,6 +284,16 @@ class StartQT4(QMainWindow):
         self.ui.tabWidget.setCurrentIndex(0) # montre l'onglet video
 
 
+    def desactiveExport(self,text):
+        """
+        Désactive la possibilité d'exportation, pour l'application dénotée par
+        text.
+        @param text le texte exact dans l'exportCombo qu'il faut inactiver
+        """
+        index=self.ui.exportCombo.findText(text)
+        if index > 0:
+            self.ui.exportCombo.setItemText(index,QString(u"NON INSTALLÉ : "+text))
+        return
     def affiche_lance_capture (self,active=False):
         """
         Met à jour l'affichage du bouton pour lancer la capture
@@ -424,8 +435,10 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.        change_sens_X )
         QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
         QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_origine)
-        QObject.connect(self.ui.calcButton,SIGNAL("clicked()"),self.oooCalc)
-        QObject.connect(self.ui.qtiplotButton,SIGNAL("clicked()"),self.qtiplot)
+        ## QObject.connect(self.ui.calcButton,SIGNAL("clicked()"),self.oooCalc)
+        ## QObject.connect(self.ui.qtiplotButton,SIGNAL("clicked()"),self.qtiplot)
+        QObject.connect(self.ui.exportCombo,SIGNAL("currentIndexChanged(int)"),self.export)
+        #### il faut connecter le combo exportCombo ####
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
 
     def refait_echelle(self):
@@ -524,6 +537,19 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                                           self.table_widget.columnCount()-1)
         self.table_widget.setRangeSelected(trange,True)
 
+    def export(self):
+        """
+        Traite le signal venu de exportCombo, puis remet l'index de ce
+        combo à zéro.
+        """
+        if self.ui.exportCombo.currentIndex()>0:
+            option=self.ui.exportCombo.currentText()
+            if option=="Oo.o Calc" : self.oooCalc()
+            elif option=="Qtiplot" : self.qtiplot()
+            elif option=="SciDAVis" : self.scidavis()
+            self.ui.exportCombo.setCurrentIndex(0)
+        return
+
     def oooCalc(self):
         """
         Exporte directement les données vers OpenOffice.org Calc
@@ -544,8 +570,24 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         f=open(fname,"w")
         plot.saveToFile(f)
         f.close()
-        # utiliser plutôt un thread !!!
-        os.system("qtiplot %s" %fname)
+        t=threading.Thread(target=lanceQtiplot, args=(fname,))
+        t.setDaemon(True) # Qtiplot peut survivre à pymecavideo
+        t.start()
+        
+    def scidavis(self):
+        """
+        Exporte directement les données vers SciDAVis
+        """
+        plot=qtiplotexport.Qtiplot(self)
+        f=tempfile.NamedTemporaryFile(prefix='pymecaTmp-',suffix=".qti")
+        fname=f.name
+        f.close()
+        f=open(fname,"w")
+        plot.saveToFile(f)
+        f.close()
+        t=threading.Thread(target=lanceSciDAVis, args=(fname,))
+        t.setDaemon(True) # Scidavis peut survivre à pymecavideo
+        t.start()
 
     def _dir(lequel=None,install=None):
         """renvoie les répertoires utiles.
@@ -1631,5 +1673,19 @@ def run():
     windows.show()
     sys.exit(app.exec_())
 
+def lanceQtiplot(fichier):
+    """
+    lanceur pour Qtiplot, dans un thread
+    param @fichier le fichier de projet
+    """
+    os.system("qtiplot %s" %fichier)
+
+def lanceSciDAVis(fichier):
+    """
+    lanceur pour SciDAVis, dans un thread
+    param @fichier le fichier de projet
+    """
+    os.system("scidavis %s" %fichier)
+    
 if __name__ == "__main__":
     run()
