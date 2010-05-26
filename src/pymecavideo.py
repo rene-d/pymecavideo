@@ -131,13 +131,24 @@ class StartQT4(QMainWindow):
             self.pyuno=False
         #variables à initialiser
 
-        # sciDAVis export
-        self.scidavis_present = os.path.exists("/usr/bin/scidavis")
+        #Ooo export
+        self.exe_ooo = False
+        for exe_ooo in ["soffice","ooffice3.2"]:
+            if  any(os.access(os.path.join(p,exe_ooo), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
+                self.exe_ooo = exe_ooo
+            
 
+        # sciDAVis export
+        self.scidavis_present = False
+        if  any(os.access(os.path.join(p,"scidavis"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
+            self.scidavis_present = "scidavis"
+        
+        #qtiplot export    
+        self.qtiplot_present=False
         if  any(os.access(os.path.join(p,"qtiplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
-            self.qtiplot_present=True
-        else :
-            self.qtiplot_present=False
+            self.qtiplot_present="qtiplot"
+       
+            
 
         self.init_variables(filename,opts)
 
@@ -292,7 +303,7 @@ class StartQT4(QMainWindow):
         """
         index=self.ui.exportCombo.findText(text)
         if index > 0:
-            self.ui.exportCombo.setItemText(index,QString(u"NON INSTALLÉ : "+text))
+            self.ui.exportCombo.setItemText(index,QString(u"NON DISPO : "+text))
         return
     def affiche_lance_capture (self,active=False):
         """

@@ -20,7 +20,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os, time
+import os, time, subprocess
 import oootools
 
 class Calc:
@@ -29,10 +29,20 @@ class Calc:
     des données, et fournit des méthodes pour y envoyer des données.
     """
     def __init__(self,Hidden=False, HOST = 'localhost', PORT = 11111):
-        #print "lanching an OOo server ...",
-        os.system('soffice -nodefault -accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager"' %(HOST, PORT))
-        #time.sleep(2)
-        #print "Done."
+        #find which is the soffice excutable on system. Depends on System.
+        for exe_ooo in ["soffice","ooffice3.2"]:
+            if  any(os.access(os.path.join(p,exe_ooo), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
+                self.exe_ooo = exe_ooo
+        #print "lanching an OOo server ..."
+        
+        ####try with subprocess  :
+        #serv = subprocess.Popen(['ooffice3.2','-nodefault','-accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager'%(HOST, PORT)] )
+        #serv.wait()
+        ####### but issue in timeout. More portable btw..
+        
+        #print self.exe_ooo+' -nodefault -accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager"' %(HOST, PORT)
+        os.system(self.exe_ooo+' -nodefault -accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager"' %(HOST, PORT))
+        time.sleep(2)
         self.ooo = oootools.OOoTools(HOST, PORT)
         self.ctx = self.ooo.ctx
         self.desktop = self.ooo.desktop
