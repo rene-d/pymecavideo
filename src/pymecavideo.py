@@ -57,6 +57,8 @@ from preferences import Preferences
 from dbg import Dbg
 from listes import listePointee
 from version import Version
+from label_auto import Label_Auto
+from detect import filter_picture
 
 import qtiplotexport
 from subprocess import *
@@ -65,6 +67,27 @@ from traceur import traceur2d
 import threading
 import platform, subprocess
 import tempfile
+
+class MonThreadDeCalcul(QThread):
+    """mon Thread"""
+    def __init__(self,parent,motif,image):
+        QThread.__init__(self)
+        self.parent=parent
+        self.motif = motif
+        self.image = image
+
+    def run(self):
+        point = filter_picture(self.motif,self.image)
+        #if self.parent.centre_ref.x()-self.parent.carre/2-point[0] == 0 and  self.parent.centre_ref.y()-self.parent.carre/2-point[1] == 0 :#fonctionne sur l'image numéro 1
+        ##itère d'un cran et lance la détection
+        self.parent.label_video.liste_points.append(vecteur(point[0], point[1]))
+        self.parent.label_video.pos_avant=self.parent.label_video.pos
+        self.parent.emit(SIGNAL('clic_sur_video()'))
+
+        #else :
+            #retour = QMessageBox.critical(self.parent,QString(self.parent.tr("Impossible de corréler")),QString(self.parent.tr("Veuillez prendre une image plus contrastée.\nle logiciel n'arrive
+#pas à retrouver l'objet")),QMessageBox.Ok )
+
 
 class StartQT4(QMainWindow):
     def __init__(self, parent, filename, opts):
@@ -192,7 +215,7 @@ class StartQT4(QMainWindow):
         self.sens_Y=1
         self.repere=0
         self.origine = vecteur(320,240)
-
+        self.auto=False
         self.dbg=Dbg(0)
         self.deltaT = 0.04       #durée 40 ms par défaut : 25 images/s
         self.lance_capture = False
@@ -303,7 +326,9 @@ class StartQT4(QMainWindow):
         """
         index=self.ui.exportCombo.findText(text)
         if index > 0:
-            self.ui.exportCombo.setItemText(index,QString(u"NON DISPO : "+text))
+            self.ui.exportCombo.setItemData(index,Qt.blue,Qt.BackgroundRole)
+            self.ui.exportCombo.setItemText(index,QString(self.tr(u"NON DISPO : "+text)))
+            self.ui.exportCombo.setItemData(index,Qt.blue,Qt.BackgroundRole)
         return
     def affiche_lance_capture (self,active=False):
         """
@@ -443,14 +468,19 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.checkBox_avancees,SIGNAL("stateChanged(int)"),self.affiche_fonctionnalites_avancees)
         QObject.connect(self.ui.pushButton_origine,SIGNAL("clicked()"),self.choisi_nouvelle_origine)
         QObject.connect(self.ui.pushButton_video,SIGNAL("clicked()"),self.lance_logiciel_video)
-        QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.        change_sens_X )
+        QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.change_sens_X )
         QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
         QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_origine)
+        QObject.connect(self,SIGNAL('selection_done()'),self.picture_detect)
         ## QObject.connect(self.ui.calcButton,SIGNAL("clicked()"),self.oooCalc)
         ## QObject.connect(self.ui.qtiplotButton,SIGNAL("clicked()"),self.qtiplot)
         QObject.connect(self.ui.exportCombo,SIGNAL("currentIndexChanged(int)"),self.export)
         #### il faut connecter le combo exportCombo ####
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
+        
+    def picture_detect(self):
+        self.calcul=MonThreadDeCalcul(self, self.motif,self.image_640_480)
+        self.calcul.start()
 
     def refait_echelle(self):
         #"""Permet de retracer une échelle et de recalculer les points"""
@@ -738,7 +768,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         # attention à la fonction défaire/refaire : elle est mal initialisée !!!
 
 
-                        
+
     def entete_fichier(self, msg=""):
         result=u"""#pymecavideo
 #video = %s
@@ -812,7 +842,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         @param departManuel vrai si on a fixé à la main la première image.
 
         """
-        
         try :
             self.origine_trace.hide()
             del self.origine_trace
@@ -856,9 +885,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         #self.ui.checkBox_abscisses.setEnabled(0)
         #self.ui.checkBox_ordonnees.setEnabled(0)
 
-        self.ui.pushButton_origine.setEnabled(0)
-        self.ui.checkBox_abscisses.setEnabled(0)
-        self.ui.checkBox_ordonnees.setEnabled(0)
+        #self.ui.pushButton_origine.setEnabled(0)
+        #self.ui.checkBox_abscisses.setEnabled(0)
+        #self.ui.checkBox_ordonnees.setEnabled(0)
         
         self.label_trajectoire = Label_Trajectoire(self.ui.label_3,self)
         self.ui.comboBox_referentiel.clear()
@@ -866,6 +895,15 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         for i in range(self.nb_de_points) :
             self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr("point N°")+" "+str(i+1)))
         self.cree_tableau()
+        if self.ui.checkBox_auto.isChecked():
+            #print "OK"
+            self.auto=True
+            reponse=QMessageBox.warning(None,"Capture Automatique",QString("Vous êtes sur le point de lancer une capture automatique\nCelle-ci ne peut se faire qu'avec un seul point."),
+            QMessageBox.Ok,QMessageBox.Cancel)
+            if reponse==QMessageBox.Ok:
+                reponse==QMessageBox.warning(None,"Capture Automatique",QString("Veuillez sélectionner l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
+                self.label_auto = Label_Auto(self.label_video,self)
+                self.label_auto.show()
 
     def cree_tableau(self):
         """
@@ -1282,14 +1320,14 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
                 self.nb_image_deja_analysees += 1
                 self.index_de_l_image += 1
-                #print "ok"
                 if interactif:
                     self.clic_sur_label_video_ajuste_ui(point_attendu)
                     self.modifie=True
+                if self.auto:
+                    self.emit(SIGNAL('selection_done()'))
             else :
                 #print "NOK"
                 self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint la fin de la vidéo","utf8")))
-                
 
         #print self.index_de_l_image
         

@@ -53,8 +53,8 @@ class Label_Video(QtGui.QLabel):
         self.setMouseTracking(True)
         
     def mouseReleaseEvent(self, event):
-        #print "recu"
-        if self.app.lance_capture==True:
+        
+        if self.app.lance_capture==True and self.app.auto==False:
             self.liste_points.append(vecteur(event.x(), event.y()))
             #self.zoom_croix.hide()
             self.pos_avant=self.pos
@@ -62,15 +62,17 @@ class Label_Video(QtGui.QLabel):
 
             self.met_a_jour_crop()
     def enterEvent(self, event):
-        if self.app.lance_capture==True:#ne se lance que si la capture est lancée
+        if self.app.lance_capture==True and self.app.auto==False:#ne se lance que si la capture est lancée
             self.setCursor(QtCore.Qt.CrossCursor)
+        else :
+            self.setCursor(QtCore.Qt.ArrowCursor)
     def met_a_jour_crop(self):
         self.fait_crop(self.pos_avant)
     def leaveEvent(self, envent):
         if self.app.lance_capture==True:
             self.cache_zoom()
     def mouseMoveEvent(self, event):
-        if self.app.lance_capture==True:#ne se lance que si la capture est lancée
+        if self.app.lance_capture==True and self.app.auto==False:#ne se lance que si la capture est lancée
                 self.zoom_croix.show()
                 self.pos=vecteur(event.x(), event.y())
                 self.fait_crop(self.pos)
