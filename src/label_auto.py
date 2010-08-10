@@ -61,13 +61,23 @@ class Label_Auto(QLabel):
         self.app.label_video.fait_crop(self.pos)
         self.app.ui.label_zoom.setPixmap(self.app.label_video.cropX2)
         self.update()
+        
     def mouseReleaseEvent(self,event):
         self.app.zoom = True
-        rectangle = QRect(self.x_1,self.y_1,self.x_2-self.x_1,self.y_2-self.y_1)
-        self.app.motif = self.app.image_640_480.copy(rectangle)
+        self.app.motif = self.getMotif()
         self.app.emit(QtCore.SIGNAL('selection_done()'))
-
         self.hide()
+
+    def getMotif(self):
+        """
+        récupère le motif qui servira à la reconnaissance automatique
+        sur les images successives.
+        @result une QImage représentant le motif.
+        """
+        #dimension_motif=20
+        #rectangle = QRect((self.x_1+self.x_2-dimension_motif)/2,(self.y_1+self.y_2-dimension_motif)/2,dimension_motif,dimension_motif)
+        rectangle = QRect(self.x_1,self.y_1,self.x_2-self.x_1,self.y_2-self.y_1)
+        return self.app.image_640_480.copy(rectangle)
 
         
             

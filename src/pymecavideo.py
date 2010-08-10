@@ -479,6 +479,14 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
         
     def picture_detect(self):
+        ## point = filter_picture(self.motif,self.image_640_480)
+        ## self.label_video.liste_points.append(vecteur(point[0], point[1]))
+        ## self.label_video.pos_avant=self.label_video.pos
+        ## self.emit(SIGNAL('clic_sur_video()'))
+        # le problème c'est que le signal ci-dessus provoque une procédure
+        # qui elle-même rappelle picrute_detect grâce à l'émission d'un autre
+        # signal. Le fait de créer un Thread évite que ça soit circulaire
+        # mais ça empile autant de threads qu'il y a d'images !
         self.calcul=MonThreadDeCalcul(self, self.motif,self.image_640_480)
         self.calcul.start()
 
