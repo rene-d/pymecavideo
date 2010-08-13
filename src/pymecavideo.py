@@ -81,8 +81,10 @@ class MonThreadDeCalcul(QThread):
         #if self.parent.centre_ref.x()-self.parent.carre/2-point[0] == 0 and  self.parent.centre_ref.y()-self.parent.carre/2-point[1] == 0 :#fonctionne sur l'image numéro 1
         ##itère d'un cran et lance la détection
         self.parent.label_video.liste_points.append(vecteur(point[0], point[1]))
-        self.parent.label_video.pos_avant=self.parent.label_video.pos
-        self.parent.emit(SIGNAL('clic_sur_video()'))
+        if self.parent.index_de_l_image<self.parent.image_max:
+            self.parent.label_video.pos_avant=self.parent.label_video.pos
+
+            self.parent.emit(SIGNAL('clic_sur_video()'))
 
         #else :
             #retour = QMessageBox.critical(self.parent,QString(self.parent.tr("Impossible de corréler")),QString(self.parent.tr("Veuillez prendre une image plus contrastée.\nle logiciel n'arrive
@@ -1333,8 +1335,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                     self.modifie=True
                 if self.auto:
                     self.emit(SIGNAL('selection_done()'))
-            else :
+            elif self.index_de_l_image==self.image_max :
                 #print "NOK"
+                if self.auto:
+                    self.emit(SIGNAL('selection_done()'))
                 self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint la fin de la vidéo","utf8")))
 
         #print self.index_de_l_image

@@ -41,6 +41,13 @@ class standardDragTable(QTableWidget):
         
     def htmlSelected(self):
         t="<table>"
+        lig_debut="<tr>"
+        for c in range(self.columnCount()):
+            lig_debut+="<td>"
+            i = self.horizontalHeaderItem(c)
+            lig_debut+=str(i.text())
+            lig_debut+="</td>"
+        t+=lig_debut+"</tr>"
         for l in range(self.rowCount()):
             lig="<tr>"
             ok=False # a priori la ligne pourrait être vide
@@ -58,6 +65,11 @@ class standardDragTable(QTableWidget):
         return t
     def textSelected(self):
         t=""
+        lig_debut=""
+        for c in range(self.columnCount()):
+            i = self.horizontalHeaderItem(c)
+            lig_debut+=str(i.text())
+        t+=lig_debut+"\n"
         for l in range(self.rowCount()):
             lig=""
             ok=False # a priori la ligne pourrait être vide
