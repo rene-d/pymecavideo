@@ -116,6 +116,20 @@ class Points:
             result +="\n"
         return result
         
+    def voisins(self,trame, index=0):
+        """Retourne les points voisins du point demandé, identifié par la trame et le numéro de l'objet suivi.
+        Retourne le point précédent puis le point suivant.
+        None si pas de point suivant ou précédent"""
+        if trame == self.nbTrames-1:#fin de série
+            pt_apres = None
+        else :
+            pt_apres = self.__getitem__((trame+1,index))
+        if trame == 0 :
+            pt_avant = None
+        else :
+            pt_avant = self.__getitem__((trame-1,index))
+        return pt_avant, pt_apres
+        
         
 if __name__ =="__main__":
     print "coucou"
@@ -128,7 +142,11 @@ if __name__ =="__main__":
         print "pts[5]", pts[5]
         print "pts[6,1]", pts[6,1]
         print "pts[7,1]", pts[7,1]
+        print "voisins du dernier, le point 7",pts.voisins(7)
+        print "voisins du premier, le point 0",pts.voisins(0)
+        print "voisins du point 4", pts.voisins(4)
         print "pts[15]", pts[15]
+        
     except IndexError, (message):
         print "erreur d'index :", message
     print pts
