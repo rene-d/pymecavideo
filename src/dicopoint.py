@@ -90,9 +90,15 @@ class Points:
         """
         Renvoie un point du dictionnaire
         @param cle une paire (trame,index) ; trame est la trame dans la vidéo, index est l'index parmi la séquence d'objets suivis. Si cle est juste un entier on considère que c'est la trame et que l'index est nul
+        @return le point du dictionnaire correspondant au doublet trame, index
+        @return une erreur si on demande un point après la vidéo
+        @return une erreur si on demande un objet qui n'existe pas
+        @return une erreur si on demande un point sans préciser l'objet alors qu'il y a en a plusieurs.
         """
         if type(cle) == type(0):
             trame=cle; index=0
+            if index != self.nbObj:
+                raise IndexError ("numéro d'objet non précisé")
         else:
             trame,index=cle
         if index < self.nbObj:
@@ -118,8 +124,9 @@ class Points:
         
     def voisins(self,trame, index=0):
         """Retourne les points voisins du point demandé, identifié par la trame et le numéro de l'objet suivi.
-        Retourne le point précédent puis le point suivant.
-        None si pas de point suivant ou précédent"""
+        @param trame : numero de l'image, index : index de l'objet suivi
+        @return Retourne le point précédent puis le point suivant.
+        @return None si pas de point suivant ou précédent"""
         if trame == self.nbTrames-1:#fin de série
             pt_apres = None
         else :
@@ -139,15 +146,19 @@ if __name__ =="__main__":
         pts[5]=p
         p=Point(30,40,Point.openCv)
         pts[6,1]=p
-        print "pts[5]", pts[5]
         print "pts[6,1]", pts[6,1]
         print "pts[7,1]", pts[7,1]
         print "voisins du dernier, le point 7",pts.voisins(7)
         print "voisins du premier, le point 0",pts.voisins(0)
-        print "voisins du point 4", pts.voisins(4)
-        print "pts[15]", pts[15]
-        
+        print "voisins du point 5, objet 0", pts.voisins(5,0)
+        print "voisins du point 5, objet 1", pts.voisins(5,1)
+        print "pts[15,1]", pts[15,1]
+
     except IndexError, (message):
         print "erreur d'index :", message
+    try :
+        print "pts[5]", pts[5]
+    except IndexError, (message):
+        print "erreur d'index :", message   
     print pts
         
