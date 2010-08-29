@@ -137,8 +137,11 @@ class Points:
                 for trame in range(self.nbTrames):
                     if  vecteur == (self.__getitem__((trame,index))[0],self.__getitem__((trame,index))[1]):
                         liste.append((vecteur,trame,index))
-            if len(liste) == 1 :
-                return self.voisins(liste[0][1], liste[0][2])
+            if len(liste)>=1 :
+                liste_point = []
+                for i in range(len(liste)):
+                    liste_point.append(self.voisins(liste[0][1], liste[0][2]))
+                return liste_point
             else :
                 raise NameError ("vecteur non trouvé")
         else : 
