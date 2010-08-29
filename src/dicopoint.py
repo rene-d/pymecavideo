@@ -122,11 +122,15 @@ class Points:
             result +="\n"
         return result
         
-    def voisins(self,trame, index=0):
+    def voisins(self,trame, index=-1):
         """Retourne les points voisins du point demandé, identifié par la trame et le numéro de l'objet suivi.
         @param trame : numero de l'image, index : index de l'objet suivi
         @return Retourne le point précédent puis le point suivant.
         @return None si pas de point suivant ou précédent"""
+        if index==-1 and 0!=self.nbObj:
+            raise IndexError ("numéro d'objet non précisé")
+        elif index==-1:
+            index=0
         if trame == self.nbTrames-1:#fin de série
             pt_apres = None
         else :
@@ -146,10 +150,12 @@ if __name__ =="__main__":
         pts[5]=p
         p=Point(30,40,Point.openCv)
         pts[6,1]=p
+        pts[7,1]=p
         print "pts[6,1]", pts[6,1]
         print "pts[7,1]", pts[7,1]
-        print "voisins du dernier, le point 7",pts.voisins(7)
-        print "voisins du premier, le point 0",pts.voisins(0)
+        print "voisins du dernier, le point 7, objet 0",pts.voisins(7,0)
+        print "voisins du dernier, le point 7, objet 1",pts.voisins(7,1)
+        print "voisins du premier, le point 0",pts.voisins(0,1)
         print "voisins du point 5, objet 0", pts.voisins(5,0)
         print "voisins du point 5, objet 1", pts.voisins(5,1)
         print "pts[15,1]", pts[15,1]
