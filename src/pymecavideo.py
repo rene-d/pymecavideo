@@ -126,6 +126,7 @@ class StartQT4(QMainWindow):
         #changer ici le pichier adéquat pour les petites résolutions.
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
+        self.dbg=Dbg(0)
 
 
 
@@ -218,7 +219,7 @@ class StartQT4(QMainWindow):
         self.repere=0
         self.origine = vecteur(320,240)
         self.auto=False
-        self.dbg=Dbg(0)
+
         self.deltaT = 0.04       #durée 40 ms par défaut : 25 images/s
         self.lance_capture = False
         self.modifie=False
@@ -655,7 +656,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         home = QDesktopServices.storageLocation(8)
         ####vérifie si on est dans le cadre d'une installation systeme (rpm, deb, etc) ou locale
         try :
-            if "share" in pymecavideo_rep_install or "Program" in pymecavideo_rep_install : #on est dans le cadre d'une install système on utilise donc le répertoire générique)
+            if "share" in pymecavideo_rep_install or "usr" in pymecavideo_rep_install  or "Program" in pymecavideo_rep_install : #on est dans le cadre d'une install système on utilise donc le répertoire générique)
                 datalocation="%s" %QDesktopServices.storageLocation(QDesktopServices.DataLocation)
                 pymecavideo_rep=os.path.join(datalocation,"pymecavideo")
             else : #installation locale, a priori pour les gens qui connaissent)
