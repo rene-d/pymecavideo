@@ -98,7 +98,6 @@ class standardDragTable(QTableWidget):
         drag.setMimeData(mime)
         drag.start(Qt.CopyAction)
     def  selection(self):
-        print "selection,"
         clip=QApplication.clipboard()
         mime=self.mimeSelected()
         clip.setMimeData(mime)
