@@ -557,7 +557,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     ### Monter/cacher le groupBox_2 au lieu de chaque widget indépendamment ###
         if self.ui.checkBox_avancees.isChecked() :
-
+            self.ui.groupBox_2.setEnabled(1)
             self.ui.groupBox_2.show()
             #self.ui.label_axe.show()
             #self.ui.pushButton_origine.show()
