@@ -591,6 +591,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                                           self.table_widget.rowCount()-1,
                                           self.table_widget.columnCount()-1)
         self.table_widget.setRangeSelected(trange,True)
+        self.table_widget.selection()
 
     def export(self):
         """
