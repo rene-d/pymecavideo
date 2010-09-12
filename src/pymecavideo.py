@@ -378,10 +378,7 @@ class StartQT4(QMainWindow):
         self.label_trajectoire.update()
         self.ui.label.update()
         self.label_video.update()
-        self.ui.checkBox_avancees.setEnabled(1)
-        self.ui.pushButton_origine.setEnabled(1)
-        self.ui.checkBox_abscisses.setEnabled(1)
-        self.ui.checkBox_ordonnees.setEnabled(1)
+
         #############si il existe un point actuel, cela signifie qu'on réinitlise tout amis qu'on doit garder la position de départ. Cas quand on revient en arrière d'un cran ou que l'on refait le point.
         if index_point_actuel :
             #print index_point_actuel
@@ -397,6 +394,12 @@ class StartQT4(QMainWindow):
 
   
         self.init_interface()
+        self.ui.checkBox_avancees.setEnabled(1)
+        self.ui.groupBox_2.show()
+        self.ui.groupBox_2.setEnabled(1)
+        self.ui.pushButton_origine.setEnabled(1)
+        self.ui.checkBox_abscisses.setEnabled(1)
+        self.ui.checkBox_ordonnees.setEnabled(1)
         for enfant in self.label_video.children():
               enfant.hide()      
               del enfant
@@ -909,10 +912,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         if self.ui.checkBox_auto.isChecked():
             #print "OK"
             self.auto=True
-            reponse=QMessageBox.warning(None,"Capture Automatique",QString("Vous êtes sur le point de lancer une capture automatique\nCelle-ci ne peut se faire qu'avec un seul point."),
+            reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Vous êtes sur le point de lancer une capture automatique\nCelle-ci ne peut se faire qu'avec un seul point."),
             QMessageBox.Ok,QMessageBox.Cancel)
             if reponse==QMessageBox.Ok:
-                reponse==QMessageBox.warning(None,"Capture Automatique",QString("Veuillez sélectionner l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
+                reponse==QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
                 self.label_auto = Label_Auto(self.label_video,self)
                 self.label_auto.show()
 
