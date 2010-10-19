@@ -30,18 +30,18 @@ class Preferences:
     def __init__(self, parent):
         self.app=parent
         self.conffile=os.path.join(self.app._dir("conf"),"pymecavideo.conf")
-        # ajuste les valeurs par défaut
+        # ajuste les valeurs par dÃ©faut
         self.proximite=False
         self.lastVideo=""
         self.videoDir=os.getcwd()
         self.detect_video_players()
-        self.niveauDbg=0 # niveau d'importance des messages de débogage
-        # récupère les valeurs enregistrées
+        self.niveauDbg=0 # niveau d'importance des messages de dÃ©bogage
+        # rÃ©cupÃ¨re les valeurs enregistrÃ©es
         self.load()
 
     def __str__(self):
         """
-        Renvoie une chaîne représentant les préférences, lisible par un humain
+        Renvoie une chaÃ®ne reprÃ©sentant les prÃ©fÃ©rences, lisible par un humain
         """
         result="Proximite de la souris %s" %self.proximite
         result +="; derniere video %s" %self.lastVideo
@@ -51,10 +51,12 @@ class Preferences:
         return result
 
     def detect_video_players(self):
-        """détecte les players dispnibles sur le système"""
+        """dÃ©tecte les players dispnibles sur le systÃ¨me"""
+        
         self.videoPlayers = {}
         players = {"xine":"xine -l %s",
                            "vlc" :"vlc -L %s", "mplayer" :"mplayer -loop 0 %s"}
+        
         if self.app.platform.lower()=="linux":
             for player in players :
                 # si linux/unix
@@ -63,10 +65,10 @@ class Preferences:
                     self.videoPlayers[player]=players[player]
         # si windows on regarde Vlc
         elif self.app.platform.lower()=="windows":
-            if os.path.exists("C:/Program Files/VideoLAN/VLC/vlc.exe") :
-                self.videoPlayers["vlc"]="C:/Program Files/VideoLAN/VLC/vlc.exe -L %s"
-            
-
+            pf_path = os.environ["PROGRAMFILES"]
+            vlc_path = os.path.join(pf_path, "VideoLAN", "VLC", "vlc.exe")
+            if os.path.exists(vlc_path) :
+                self.videoPlayers["vlc"] = vlc_path + "-L %s"
 
         if "xine" in self.videoPlayers.keys() :
             self.videopref="xine"
@@ -75,13 +77,18 @@ class Preferences:
         elif "mplayer" in self.videoPlayers.keys() :
             self.videopref="mplayer"
         else :
-            warning =QMessageBox.warning(None,u"ATTENTION : pas de lecteurs vidéos trouvés","Vous devez installer VLC, fflpay, -ou MPLAYER ou XINE si vous êtes sous linux-",QMessageBox.Ok,QMessageBox.Ok)
+            warning =QMessageBox.warning(None,u"ATTENTION : pas de lecteurs vidÃ©os trouvÃ©s","Vous devez installer VLC, fflpay, -ou MPLAYER ou XINE si vous Ãªtes sous linux-",QMessageBox.Ok,QMessageBox.Ok)
             import sys
             sys.exit(-1)#fais une erreur...mais fais ce qu'on veut ;)
-        self.app.player = self.videopref
+        self.app.player = self.videoPlayers[self.videopref]
+        
+        
+        
+        
+        
     def save(self):
         """
-        Sauvegarde des préférences dans le fichier de configuration.
+        Sauvegarde des prÃ©fÃ©rences dans le fichier de configuration.
         """
         f=open(self.conffile,"w")
         self.app.dbg.p(9,"sauvegarde des preferences dans  %s" %self.conffile)
@@ -106,7 +113,7 @@ class Preferences:
 
     def setFromDialog(self):
         """
-        Règle les préférences à l'aide d'un dialogue
+        RÃ¨gle les prÃ©fÃ©rences Ã  l'aide d'un dialogue
         """
         self.app.dbg.p(2,"appel du dialogue des preferences")
         import Ui_preferences
@@ -119,7 +126,7 @@ class Preferences:
         ui.spinBoxDbg.setValue(self.niveauDbg)
         p=ui.comboBoxProximite
         p.addItem(u"Visibles partout")
-        p.addItem(u"Visible près de la souris")
+        p.addItem(u"Visible prÃ¨s de la souris")
         if self.proximite:
             p.setCurrentIndex(1)
         else:

@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 licence={}
 licence['en']="""
@@ -27,7 +27,7 @@ licence['en']="""
 licence['fr']=u"""
     pymecavideo version %s :
 
-    un programme pour tracer les trajectoires des points dans une vidéo.
+    un programme pour tracer les trajectoires des points dans une vidￃﾩo.
     
     Copyright (C) 2007-2008 Jean-Baptiste Butet <ashashiwa@gmail.com>
     
@@ -35,7 +35,7 @@ licence['fr']=u"""
     
     Ce projet est un logiciel libre : vous pouvez le redistribuer, le modifier selon les terme de la GPL (GNU Public License) dans les termes de la Free Software Foundation concernant la version 2 ou plus de la dite licence.
     
-    Ce programme est fait avec l'espoir qu'il sera utile mais SANS AUCUNE GARANTIE. Lisez la licence pour plus de détails.
+    Ce programme est fait avec l'espoir qu'il sera utile mais SANS AUCUNE GARANTIE. Lisez la licence pour plus de dￃﾩtails.
     
     <http://www.gnu.org/licenses/>.
 """
@@ -58,7 +58,7 @@ from dbg import Dbg
 from listes import listePointee
 from version import Version
 from label_auto import Label_Auto
-from detect import filter_picture
+#from detect import filter_picture
 
 import qtiplotexport
 from subprocess import *
@@ -67,6 +67,41 @@ from traceur import traceur2d
 import threading
 import platform, subprocess
 import tempfile
+
+EXT_IMG = '.jpg'
+
+if sys.platform == 'win32':
+    #
+    # Les deuxlignes suivantes permettent de lancer le script pymecavideo.py depuis n'importe
+    # quel rￃﾩpertoire  sans que l'utilisation de chemins
+    # relatifs ne soit perturbￃﾩe
+    #
+    PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
+    PATH = os.path.split(PATH)[0]
+    os.chdir(PATH)
+    sys.path.append(PATH)
+    
+    #On rￃﾩcupￃﾨre lￃﾠ le dossier "Application data" 
+    #oￃﾹ devra ￃﾪtre enregistrￃﾩ les fichier "images_extraites"
+    
+    # On lit la clef de registre indiquant le type d'installation
+    import win32api, win32con
+    try:
+        regkey = win32api.RegOpenKeyEx( win32con.HKEY_LOCAL_MACHINE, 'SOFTWARE\\pymecavideo', 0, win32con.KEY_READ )
+        (value,keytype) = win32api.RegQueryValueEx(regkey, 'DataFolder' ) 
+        APP_DATA_PATH = value
+        if not os.path.exists(APP_DATA_PATH):
+            os.mkdir(APP_DATA_PATH)
+    except:
+        APP_DATA_PATH = PATH
+        
+        
+    sys.path.append(os.path.join(PATH, 'bin'))
+    
+print "Dossier pymecavideo.exe", PATH
+print "Dossier data", APP_DATA_PATH
+
+from detect import filter_picture
 
 class MonThreadDeCalcul(QThread):
     """mon Thread"""
@@ -78,8 +113,8 @@ class MonThreadDeCalcul(QThread):
 
     def run(self):
         point = filter_picture(self.motif,self.image)
-        #if self.parent.centre_ref.x()-self.parent.carre/2-point[0] == 0 and  self.parent.centre_ref.y()-self.parent.carre/2-point[1] == 0 :#fonctionne sur l'image numéro 1
-        ##itère d'un cran et lance la détection
+        #if self.parent.centre_ref.x()-self.parent.carre/2-point[0] == 0 and  self.parent.centre_ref.y()-self.parent.carre/2-point[1] == 0 :#fonctionne sur l'image numￃﾩro 1
+        ##itￃﾨre d'un cran et lance la dￃﾩtection
         self.parent.label_video.liste_points.append(vecteur(point[0], point[1]))
         if self.parent.index_de_l_image<self.parent.image_max:
             self.parent.label_video.pos_avant=self.parent.label_video.pos
@@ -87,14 +122,14 @@ class MonThreadDeCalcul(QThread):
             self.parent.emit(SIGNAL('clic_sur_video()'))
 
         #else :
-            #retour = QMessageBox.critical(self.parent,QString(self.parent.tr("Impossible de corréler")),QString(self.parent.tr("Veuillez prendre une image plus contrastée.\nle logiciel n'arrive
-#pas à retrouver l'objet")),QMessageBox.Ok )
+            #retour = QMessageBox.critical(self.parent,QString(self.parent.tr("Impossible de corrￃﾩler")),QString(self.parent.tr("Veuillez prendre une image plus contrastￃﾩe.\nle logiciel n'arrive
+#pas ￃﾠ retrouver l'objet")),QMessageBox.Ok )
 
 
 class StartQT4(QMainWindow):
     def __init__(self, parent, filename, opts):
-        #Données principales du logiciel : 
-        #self.index_de_l_image : la position de l'image actuellement affichée
+        #Donnￃﾩes principales du logiciel : 
+        #self.index_de_l_image : la position de l'image actuellement affichￃﾩe
         #print "opts", opts
         if "mini" in str(opts) :
             self.mini=True
@@ -105,25 +140,25 @@ class StartQT4(QMainWindow):
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
         
-        #### Mode plein écran
+        #### Mode plein ￃﾩcran
         self.plein_ecran = False
         QShortcut(QKeySequence(Qt.Key_F11),self, self.basculer_plein_ecran )
         
         height,width =  QDesktopWidget().screenGeometry().height(), QDesktopWidget().screenGeometry().width()
         #print height, width
         if height >= 768 and width >= 1024 and self.mini==False:
-        # Importation de l'interface ici car l'import de l'interface "mini" écrase l'interface "standard"
+        # Importation de l'interface ici car l'import de l'interface "mini" ￃﾩcrase l'interface "standard"
             from Ui_pymecavideo  import Ui_pymecavideo
         
             
         else :
             from Ui_pymecavideo_mini  import Ui_pymecavideo
             message = QMessageBox(self)
-            message.setText(self.trUtf8("Pymecavideo utilise l'interface mini.\nAppuyez sur la touche F11 pour passer en mode plein écran"))
-            message.setWindowTitle(self.trUtf8("Faible résolution"))
-            message.exec_()	    
+            message.setText(self.trUtf8("Pymecavideo utilise l'interface mini.\nAppuyez sur la touche F11 pour passer en mode plein ￃﾩcran"))
+            message.setWindowTitle(self.trUtf8("Faible rￃﾩsolution"))
+            message.exec_()        
             self.basculer_plein_ecran
-        #changer ici le pichier adéquat pour les petites résolutions.
+        #changer ici le pichier adￃﾩquat pour les petites rￃﾩsolutions.
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
         self.dbg=Dbg(0)
@@ -139,7 +174,7 @@ class StartQT4(QMainWindow):
             self.ffmpeg = "ffmpeg"
             self.player = "cvlc"
         self.prefs=Preferences(self)
-        ####intilise les répertoires
+        ####intilise les rￃﾩpertoires
         self._dir()
         defait_icon=os.path.join(self._dir("icones"),"undo.png")
         
@@ -155,7 +190,7 @@ class StartQT4(QMainWindow):
         except ImportError :
             self.dbg.p(2,"In init_variables no pyuno package")
             self.pyuno=False
-        #variables à initialiser
+        #variables ￃﾠ initialiser
 
         #Ooo export
         self.exe_ooo = False
@@ -184,11 +219,11 @@ class StartQT4(QMainWindow):
         #prise en compte d'options de la ligne de commande
         self.traiteOptions()
         
-        #chargement d'un éventuel premier fichier
+        #chargement d'un ￃﾩventuel premier fichier
         self.splashVideo()
         
         
-    # Basculer en mode plein écran / mode fenétré    
+    # Basculer en mode plein ￃﾩcran / mode fenￃﾩtrￃﾩ    
     def basculer_plein_ecran(self):
         if not self.plein_ecran :
             self.showFullScreen()
@@ -220,35 +255,44 @@ class StartQT4(QMainWindow):
         self.origine = vecteur(320,240)
         self.auto=False
 
-        self.deltaT = 0.04       #durée 40 ms par défaut : 25 images/s
+        self.deltaT = 0.04       #durￃﾩe 40 ms par dￃﾩfaut : 25 images/s
         self.lance_capture = False
         self.modifie=False
-        self.points={}        #dictionnaire des points cliqués, par n° d'image.
+        self.points={}        #dictionnaire des points cliquￃﾩs, par nￂﾰ d'image.
         self.trajectoire = {} #dictionnaire des points des trajectoires
-        self.pX={}            #points apparaissant à l'écran, indexés par X
-        self.pY={}            #points apparaissant à l'écran, indexés par Y
+        self.pX={}            #points apparaissant ￃﾠ l'ￃﾩcran, indexￃﾩs par X
+        self.pY={}            #points apparaissant ￃﾠ l'ￃﾩcran, indexￃﾩs par Y
         self.index_du_point = 0
-        self.echelle_image = echelle() # objet gérant l'image
-        self.nb_image_deja_analysees = 0 #indique le nombre d'images dont on a dejà fait l'étude, ce qui correspond aussi au nombre de lignes dans le tableau.
+        self.echelle_image = echelle() # objet gￃﾩrant l'image
+        self.nb_image_deja_analysees = 0 #indique le nombre d'images dont on a dejￃﾠ fait l'ￃﾩtude, ce qui correspond aussi au nombre de lignes dans le tableau.
         self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green"] #correspond aux couleurs des points del a trajectoire
         self.nb_de_points = 1        # nombre de points suivis
-        self.premiere_image = 1      # n° de la première image cliquée
-        self.index_de_l_image = 1    # image à afficher
+        self.premiere_image = 1      # nￂﾰ de la premiￃﾨre image cliquￃﾩe
+        self.index_de_l_image = 1    # image ￃﾠ afficher
         self.echelle_v = 0
         self.filename=filename
         self.opts=opts
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
         self.init_interface()
 
-        ######vérification de la présence de fmmpeg et ffplay dans le path.
-        if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
-            self.ffmpeg = False
-        if not(any(os.access(os.path.join(p,self.player), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
-            self.player = False
+        ######vￃﾩrification de la prￃﾩsence de fmmpeg et ffplay dans le path.
+        if sys.platform == 'win32':
+            paths = os.environ['PATH'].split(os.pathsep)
+            paths.append(PATH)
+            print "paths", paths
+            if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in paths)) :
+                self.ffmpeg = False
+#            if not(any(os.access(os.path.join(p,self.player), os.X_OK) for p in paths)) :
+#                self.player = False
+        else:
+            if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
+                self.ffmpeg = False
+            if not(any(os.access(os.path.join(p,self.player), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
+                self.player = False
         if self.player== False or self.ffmpeg == False :
-            pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel ffmpeg ainsi que ffplay n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
+            pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel ffmpeg ainsi que ffplay n'a pas ￃﾩtￃﾩ trouvￃﾩ sur votre systￃﾨme. Merci de bien vouloir l'installer avant de poursuivre","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
             self.close()
-        ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
+        ######vￃﾩrification de la prￃﾩsence d'un logiciel connu de capture vidￃﾩo dans le path
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture']:
             if  any(os.access(os.path.join(p,logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
                 self.logiciel_acquisition = logiciel
@@ -256,14 +300,14 @@ class StartQT4(QMainWindow):
                 self.ui.pushButton_video.setEnabled(1)
                 break
         if self.logiciel_acquisition :
-            self.ui.pushButton_video.setText(self.tr(unicode("Lancer "+self.logiciel_acquisition+"\n pour capturer une vidéo","utf8")))
+            self.ui.pushButton_video.setText(self.tr(unicode("Lancer "+self.logiciel_acquisition+"\n pour capturer une vidￃﾩo","utf8")))
         else :
             self.ui.pushButton_video.setEnabled(0)
             self.ui.pushButton_video.hide()
         
              
 
-        ######vérification de la présencde gnuplot
+        ######vￃﾩrification de la prￃﾩsencde gnuplot
         if  any(os.access(os.path.join(p,"gnuplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
             pass
             #print "gnuplot OK"
@@ -285,7 +329,7 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_video.setEnabled(0)
         
         self.ui.echelleEdit.setEnabled(0)
-        self.ui.echelleEdit.setText(self.tr(unicode("indéf","utf8")))
+        self.ui.echelleEdit.setText(self.tr(unicode("indￃﾩf","utf8")))
         self.affiche_echelle()
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
@@ -308,7 +352,7 @@ class StartQT4(QMainWindow):
         if not self.scidavis_present :
             self.desactiveExport("SciDAVis")
 
-        #création du label qui contiendra la vidéo.
+        #crￃﾩation du label qui contiendra la vidￃﾩo.
         self.label_video = Label_Video(parent=self.ui.label, app=self)
 
 
@@ -323,7 +367,7 @@ class StartQT4(QMainWindow):
 
     def desactiveExport(self,text):
         """
-        Désactive la possibilité d'exportation, pour l'application dénotée par
+        Dￃﾩsactive la possibilitￃﾩ d'exportation, pour l'application dￃﾩnotￃﾩe par
         text.
         @param text le texte exact dans l'exportCombo qu'il faut inactiver
         """
@@ -335,14 +379,14 @@ class StartQT4(QMainWindow):
         return
     def affiche_lance_capture (self,active=False):
         """
-        Met à jour l'affichage du bouton pour lancer la capture
-        @param active vrai si le bouton doit être activé
+        Met ￃﾠ jour l'affichage du bouton pour lancer la capture
+        @param active vrai si le bouton doit ￃﾪtre activￃﾩ
         """
         self.ui.Bouton_lance_capture.setEnabled(active)
         
     def affiche_nb_points(self, active=False):
         """
-        Met à jour l'afficheur de nombre de points à saisir
+        Met ￃﾠ jour l'afficheur de nombre de points ￃﾠ saisir
         @param active vrai si on doit permettre la saisie du nombre de points
         """
         self.ui.spinBox_nb_de_points.setEnabled(active)
@@ -350,10 +394,10 @@ class StartQT4(QMainWindow):
         
     def affiche_echelle(self):
         """
-        affiche l'échelle courante pour les distances sur l'image
+        affiche l'ￃﾩchelle courante pour les distances sur l'image
         """
         if self.echelle_image.isUndef():
-            self.ui.echelleEdit.setText(self.tr(unicode("indéf.","utf8")))
+            self.ui.echelleEdit.setText(self.tr(unicode("indￃﾩf.","utf8")))
             self.ui.Bouton_Echelle.setEnabled(True)
         else:
             epxParM=self.echelle_image.pxParM()
@@ -364,13 +408,13 @@ class StartQT4(QMainWindow):
  
     def reinitialise_tout(self, echelle_image=None, nb_de_points=None, tousLesClics=None,index_point_actuel=None):
         """
-        Réinitialise l'interface de saisie, mais pas l'échelle. On
-        peut quand même passer quelques paramètres à conserver, ce qui
-        permet le défaire/refaire :
-        @param echelle_image évite de ressaisir l'échelle de l'image
-        @param nb_de_points évite de ressaisir le nombre de points à suivre
-        @param tousLesClics permet de conserver une liste de poinst à refaire
-        @param index_point_actuel permet de réinitialiser à partir de l'image de départ.
+        Rￃﾩinitialise l'interface de saisie, mais pas l'ￃﾩchelle. On
+        peut quand mￃﾪme passer quelques paramￃﾨtres ￃﾠ conserver, ce qui
+        permet le dￃﾩfaire/refaire :
+        @param echelle_image ￃﾩvite de ressaisir l'ￃﾩchelle de l'image
+        @param nb_de_points ￃﾩvite de ressaisir le nombre de points ￃﾠ suivre
+        @param tousLesClics permet de conserver une liste de poinst ￃﾠ refaire
+        @param index_point_actuel permet de rￃﾩinitialiser ￃﾠ partir de l'image de dￃﾩpart.
         """
         self.dbg.p(2,"Dans reinitialise_tout: echelle_image=%s, nb_de_points=None%s, tousLesClics=%s,index_point_actuel=%s" %(echelle_image, nb_de_points, tousLesClics,index_point_actuel))
         self.montre_vitesses(False)
@@ -379,13 +423,13 @@ class StartQT4(QMainWindow):
         self.ui.label.update()
         self.label_video.update()
 
-        #############si il existe un point actuel, cela signifie qu'on réinitlise tout amis qu'on doit garder la position de départ. Cas quand on revient en arrière d'un cran ou que l'on refait le point.
+        #############si il existe un point actuel, cela signifie qu'on rￃﾩinitlise tout amis qu'on doit garder la position de dￃﾩpart. Cas quand on revient en arriￃﾨre d'un cran ou que l'on refait le point.
         if index_point_actuel :
             #print index_point_actuel
             index = self.premiere_image
             self.init_variables(self.filename,None)
 
-            ############ permet de récupérer les 2 valeurs souhaitées
+            ############ permet de rￃﾩcupￃﾩrer les 2 valeurs souhaitￃﾩes
             self.premiere_image = index
             self.index_de_l_image = index
             ############
@@ -412,7 +456,7 @@ class StartQT4(QMainWindow):
 
     def reinitialise_capture(self):
         """
-        Efface toutes les données de la capture en cours et prépare une nouvelle
+        Efface toutes les donnￃﾩes de la capture en cours et prￃﾩpare une nouvelle
         session de capture.
         """
         self.montre_vitesses(False)
@@ -438,7 +482,7 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_defait.setEnabled(0)
         self.ui.pushButton_refait.setEnabled(0)
         self.affiche_nb_points(0)
-        ### Réactiver checkBox_avancees après réinitialisation ###
+        ### Rￃﾩactiver checkBox_avancees aprￃﾨs rￃﾩinitialisation ###
         self.ui.checkBox_avancees.setEnabled(1)
 
 
@@ -489,15 +533,15 @@ class StartQT4(QMainWindow):
         ## self.label_video.liste_points.append(vecteur(point[0], point[1]))
         ## self.label_video.pos_avant=self.label_video.pos
         ## self.emit(SIGNAL('clic_sur_video()'))
-        # le problème c'est que le signal ci-dessus provoque une procédure
-        # qui elle-même rappelle picrute_detect grâce à l'émission d'un autre
-        # signal. Le fait de créer un Thread évite que ça soit circulaire
-        # mais ça empile autant de threads qu'il y a d'images !
+        # le problￃﾨme c'est que le signal ci-dessus provoque une procￃﾩdure
+        # qui elle-mￃﾪme rappelle picrute_detect grￃﾢce ￃﾠ l'ￃﾩmission d'un autre
+        # signal. Le fait de crￃﾩer un Thread ￃﾩvite que ￃﾧa soit circulaire
+        # mais ￃﾧa empile autant de threads qu'il y a d'images !
         self.calcul=MonThreadDeCalcul(self, self.motif,self.image_640_480)
         self.calcul.start()
 
     def refait_echelle(self):
-        #"""Permet de retracer une échelle et de recalculer les points"""
+        #"""Permet de retracer une ￃﾩchelle et de recalculer les points"""
         #self.recommence_echelle()
 
         
@@ -518,12 +562,12 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.emit(SIGNAL('change_axe_origine()'))
 
     def lance_logiciel_video(self):
-        #lance un logiciel externe de capture vidéo. Par défaut, qastrocam-g2, possibiltié de changer dans les préférences.
+        #lance un logiciel externe de capture vidￃﾩo. Par dￃﾩfaut, qastrocam-g2, possibiltiￃﾩ de changer dans les prￃﾩfￃﾩrences.
         lance_logiciel = subprocess.Popen(args=[self.logiciel_acquisition], stderr=PIPE)
 
     def change_axe_origine(self):
-        """mets à jour le tableau de données"""
-        #construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
+        """mets ￃﾠ jour le tableau de donnￃﾩes"""
+        #construit un dico plus simple ￃﾠ manier, dont la clef est point_ID et qui contient les coordoonￃﾩes
         if self.points_ecran != {}:
             liste_clef=[]
             donnees={}
@@ -555,7 +599,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def affiche_fonctionnalites_avancees(self):
 
-    ### Monter/cacher le groupBox_2 au lieu de chaque widget indépendamment ###
+    ### Monter/cacher le groupBox_2 au lieu de chaque widget indￃﾩpendamment ###
         if self.ui.checkBox_avancees.isChecked() :
             self.ui.groupBox_2.setEnabled(1)
             self.ui.groupBox_2.show()
@@ -573,19 +617,19 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def pointEnMetre(self,p):
         """
-        renvoie un point, dont les coordonnées sont en mètre, dans un
-        référentiel "à l'endroit"
-        @ param point un point en "coordonnées d'écran"
+        renvoie un point, dont les coordonnￃﾩes sont en mￃﾨtre, dans un
+        rￃﾩfￃﾩrentiel "ￃﾠ l'endroit"
+        @ param point un point en "coordonnￃﾩes d'ￃﾩcran"
         """
         return vecteur(self.sens_X*(float(p.x()-self.origine.x())*self.echelle_image.mParPx()),self.sens_Y*
                        float(self.origine.y()-p.y())*self.echelle_image.mParPx())
     
     def presse_papier(self):
-        """Sélectionne la totalité du tableau de coordonnées
+        """Sￃﾩlectionne la totalitￃﾩ du tableau de coordonnￃﾩes
         et l'exporte dans le presse-papier (l'exportation est implicitement
-        héritée de la classe utilisée pour faire le tableau). Les
-        séparateurs décimaux sont automatiquement remplacés par des virgules
-        si la locale est française.
+        hￃﾩritￃﾩe de la classe utilisￃﾩe pour faire le tableau). Les
+        sￃﾩparateurs dￃﾩcimaux sont automatiquement remplacￃﾩs par des virgules
+        si la locale est franￃﾧaise.
         """
         trange=QTableWidgetSelectionRange(0,0,
                                           self.table_widget.rowCount()-1,
@@ -596,7 +640,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     def export(self):
         """
         Traite le signal venu de exportCombo, puis remet l'index de ce
-        combo à zéro.
+        combo ￃﾠ zￃﾩro.
         """
         if self.ui.exportCombo.currentIndex()>0:
             option=self.ui.exportCombo.currentText()
@@ -608,7 +652,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def oooCalc(self):
         """
-        Exporte directement les données vers OpenOffice.org Calc
+        Exporte directement les donnￃﾩes vers OpenOffice.org Calc
         """
         if self.pyuno==True :
             import oooexport
@@ -617,7 +661,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def qtiplot(self):
         """
-        Exporte directement les données vers Qtiplot
+        Exporte directement les donnￃﾩes vers Qtiplot
         """
         plot=qtiplotexport.Qtiplot(self)
         f=tempfile.NamedTemporaryFile(prefix='pymecaTmp-',suffix=".qti")
@@ -627,12 +671,12 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         plot.saveToFile(f)
         f.close()
         t=threading.Thread(target=lanceQtiplot, args=(fname,))
-        t.setDaemon(True) # Qtiplot peut survivre à pymecavideo
+        t.setDaemon(True) # Qtiplot peut survivre ￃﾠ pymecavideo
         t.start()
         
     def scidavis(self):
         """
-        Exporte directement les données vers SciDAVis
+        Exporte directement les donnￃﾩes vers SciDAVis
         """
         plot=qtiplotexport.Qtiplot(self)
         f=tempfile.NamedTemporaryFile(prefix='pymecaTmp-',suffix=".qti")
@@ -642,41 +686,59 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         plot.saveToFile(f)
         f.close()
         t=threading.Thread(target=lanceSciDAVis, args=(fname,))
-        t.setDaemon(True) # Scidavis peut survivre à pymecavideo
+        t.setDaemon(True) # Scidavis peut survivre ￃﾠ pymecavideo
         t.start()
 
+    
+    
+    
     def _dir(lequel=None,install=None):
-        """renvoie les répertoires utiles.
-        paramètre lequel (chaîne) : peut prendre les valeurs utiles suivantes,
+        """renvoie les rￃﾩpertoires utiles.
+        paramￃﾨtre lequel (chaￃﾮne) : peut prendre les valeurs utiles suivantes,
         "stockmovies", "home", "conf", "images", "icones"
 
-        quand le paramètre est absent, initialise les répertoires si nécessaire
+        quand le paramￃﾨtre est absent, initialise les rￃﾩpertoires si nￃﾩcessaire
         """
-        try:
-            pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
-            sys.path.append(pymecavideo_rep_install) # pour pickle !
-        except :
-            pass
-        home = QDesktopServices.storageLocation(8)
-        ####vérifie si on est dans le cadre d'une installation systeme (rpm, deb, etc) ou locale
-        try :
-            if "share" in pymecavideo_rep_install or "usr" in pymecavideo_rep_install  or "Program" in pymecavideo_rep_install : #on est dans le cadre d'une install système on utilise donc le répertoire générique)
-                datalocation="%s" %QDesktopServices.storageLocation(QDesktopServices.DataLocation)
-                pymecavideo_rep=os.path.join(datalocation,"pymecavideo")
-            else : #installation locale, a priori pour les gens qui connaissent)
-                datalocation = os.path.join(pymecavideo_rep_install,"..") #on lance depuis src
-                pymecavideo_rep=datalocation
-        except :
-            pass
+        
+        if sys.platform == 'win32':
+            pymecavideo_rep_install = PATH
+        else:
+            try:
+                pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
+                sys.path.append(pymecavideo_rep_install) # pour pickle !
+            except :
+                pass
+            
+        home = unicode(QDesktopServices.storageLocation(8), 'iso-8859-1')
+#        home = u""+home
+#        print "home" , home
+        if sys.platform == 'win32':
+            pymecavideo_rep = APP_DATA_PATH
+        else:
+            ####vￃﾩrifie si on est dans le cadre d'une installation systeme (rpm, deb, etc) ou locale
+            try :
+                if "share" in pymecavideo_rep_install or "usr" in pymecavideo_rep_install  or "Program" in pymecavideo_rep_install : #on est dans le cadre d'une install systￃﾨme on utilise donc le rￃﾩpertoire gￃﾩnￃﾩrique)
+                    datalocation="%s" %QDesktopServices.storageLocation(QDesktopServices.DataLocation)
+                    pymecavideo_rep=os.path.join(datalocation,"pymecavideo")
+                else : #installation locale, a priori pour les gens qui connaissent)
+                    datalocation = os.path.join(pymecavideo_rep_install,"..") #on lance depuis src
+                    pymecavideo_rep=datalocation
+            except :
+                pass
 
-        ###########pymecavideo_rep est le répertoire de travail de pymecavideo. il dépose ici les images.
+        ###########pymecavideo_rep est le rￃﾩpertoire de travail de pymecavideo. il dￃﾩpose ici les images.
         pymecavideo_rep_images=os.path.join(pymecavideo_rep,"images_extraites")
 
-        ###########Les données -vidéos, icones etc.- sont dans le répertoire qui est lié à l'éxécutable. pymecavideo_exe
+        ###########Les donnￃﾩes -vidￃﾩos, icones etc.- sont dans le rￃﾩpertoire qui est liￃﾩ ￃﾠ l'ￃﾩxￃﾩcutable. pymecavideo_exe
         pymecavideo_exe = pymecavideo_rep_install
-        pymecavideo_rep_icones=os.path.join(pymecavideo_exe,"..","data","icones")
-        pymecavideo_rep_langues=os.path.join(pymecavideo_exe,"..","data","lang")
-        pymecavideo_rep_videos=os.path.join(pymecavideo_exe,"..","data","video")
+        if sys.platform == 'win32':
+            pymecavideo_rep_icones=os.path.join(pymecavideo_exe,"data","icones")
+            pymecavideo_rep_langues=os.path.join(pymecavideo_exe,"data","lang")
+            pymecavideo_rep_videos=os.path.join(pymecavideo_exe,"data","video")
+        else:
+            pymecavideo_rep_icones=os.path.join(pymecavideo_exe,"..","data","icones")
+            pymecavideo_rep_langues=os.path.join(pymecavideo_exe,"..","data","lang")
+            pymecavideo_rep_videos=os.path.join(pymecavideo_exe,"..","data","video")
         
         liste_rep = [pymecavideo_rep, pymecavideo_rep_images, pymecavideo_rep_icones, pymecavideo_rep_langues, pymecavideo_rep_videos]
 
@@ -713,22 +775,26 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             elif os.path.isdir("/usr/share/doc/HTML/fr/pymecavideo") :
                 return "/usr/share/doc/HTML/fr/pymecavideo"
         elif type(lequel) == type(""):
-            self.dbg.p(1,"erreur, appel de _dir() avec le paramètre inconnu %s" %lequel)
+            self.dbg.p(1,"erreur, appel de _dir() avec le paramￃﾨtre inconnu %s" %lequel)
             self.close()
         else:
-            # vérifie/crée les repertoires
+            # vￃﾩrifie/crￃﾩe les repertoires
             for d in ("stockmovies", "home", "conf", "images", "icones"):
                 dd=StartQT4._dir(str(d))
                 if not os.path.exists(dd):
                     os.mkdir(dd)
-        #if install : #install les fichiers nécessaires au bon fonctionnement de pymecavideo_rep
+        #if install : #install les fichiers nￃﾩcessaires au bon fonctionnement de pymecavideo_rep
             
             
 
     _dir=staticmethod(_dir)
 
     def rouvre_ui(self):
-        os.chdir(self._dir("home"))
+        if sys.platform == 'win32':
+            pass
+        else:
+            os.chdir(self._dir("home"))
+            
         fichier = QFileDialog.getOpenFileName(self,"FileDialog", "","*.mecavideo")
         if fichier != "":
             self.rouvre(fichier)
@@ -752,11 +818,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 for j in range(1,len(d),2):
                     self.points[i].append(vecteur(d[j],d[j+1]))
                 i+=1
-        self.echelle_image=echelle() # on réinitialise l'échelle
-        self.loads(dd)               # on récupère les données importantes
-        # puis on trace le segment entre les points cliqués pour l'échelle
+        self.echelle_image=echelle() # on rￃﾩinitialise l'ￃﾩchelle
+        self.loads(dd)               # on rￃﾩcupￃﾨre les donnￃﾩes importantes
+        # puis on trace le segment entre les points cliquￃﾩs pour l'ￃﾩchelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        self.affiche_echelle()       # on met à jour le widget d'échelle
+        self.affiche_echelle()       # on met ￃﾠ jour le widget d'ￃﾩchelle
         n=len(self.points.keys())
         self.nb_image_deja_analysees = n
         self.ui.horizontalSlider.setValue(n+self.premiere_image)
@@ -764,7 +830,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.affiche_nb_points(self.nb_de_points)
         self.affiche_image() # on affiche l'image
         self.debut_capture(departManuel=False)
-        # On regénère le tableau d'après les points déjà existants.
+        # On regￃﾩnￃﾨre le tableau d'aprￃﾨs les points dￃﾩjￃﾠ existants.
         self.cree_tableau()
         ligne=0
         for k in self.points.keys():
@@ -780,7 +846,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 i+=2
             ligne+=1
         self.table_widget.show()
-        # attention à la fonction défaire/refaire : elle est mal initialisée !!!
+        # attention ￃﾠ la fonction dￃﾩfaire/refaire : elle est mal initialisￃﾩe !!!
 
 
 
@@ -802,7 +868,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         sep_decimal="."
         try:
             if locale.getdefaultlocale()[0][0:2]=='fr':
-                # en France, le séparateur décimal est la virgule
+                # en France, le sￃﾩparateur dￃﾩcimal est la virgule
                 sep_decimal=","
         except TypeError:
             pass
@@ -829,7 +895,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             ################# fin du fichier mecavideo ################
             file = codecs.open(fichier, 'w', 'utf8')
             try :
-                file.write(self.entete_fichier(self.tr("temps en seconde, positions en mètre")))
+                file.write(self.entete_fichier(self.tr("temps en seconde, positions en mￃﾨtre")))
                 for cle in liste_des_cles:
                     donnee=self.points[cle]
                     t=float(donnee[0])
@@ -845,7 +911,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             self.modifie=False
         
     def enregistre_ui(self):
-        os.chdir(self._dir("home"))
+        if sys.platform == 'win32':
+            pass
+        else:
+            os.chdir(self._dir("home"))
         
         if self.points!={}:
             fichier = QFileDialog.getSaveFileName(self,"FileDialog", "data.csv","*.csv *.txt *.asc *.dat")
@@ -853,8 +922,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def debut_capture(self, departManuel=True):
         """
-        permet de mettre en place le nombre de point à acquérir
-        @param departManuel vrai si on a fixé à la main la première image.
+        permet de mettre en place le nombre de point ￃﾠ acquￃﾩrir
+        @param departManuel vrai si on a fixￃﾩ ￃﾠ la main la premiￃﾨre image.
 
         """
         try :
@@ -872,7 +941,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
         #self.origine_trace.show()
 
-        self.label_echelle_trace.lower()  #nécessaire sinon, label_video n'est pas actif.
+        self.label_echelle_trace.lower()  #nￃﾩcessaire sinon, label_video n'est pas actif.
         self.origine_trace.lower() 
 
         self.nb_de_points = self.ui.spinBox_nb_de_points.value()
@@ -881,7 +950,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.ui.horizontalSlider.setEnabled(0)
         self.ui.spinBox_image.setEnabled(0)
 
-        if departManuel==True: # si on a mis la première image à la main
+        if departManuel==True: # si on a mis la premiￃﾨre image ￃﾠ la main
             self.premiere_image=self.ui.horizontalSlider.value()
         self.affiche_point_attendu(1)
         self.lance_capture = True
@@ -894,7 +963,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
         self.ui.checkBox_avancees.setEnabled(0)
         
-        ### On ne fait que cacher le groupBox_2 au lieu de désactiver chaque widget###
+        ### On ne fait que cacher le groupBox_2 au lieu de dￃﾩsactiver chaque widget###
         self.ui.groupBox_2.setEnabled(0)
         #self.ui.pushButton_origine.setEnabled(0)
         #self.ui.checkBox_abscisses.setEnabled(0)
@@ -908,23 +977,23 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.ui.comboBox_referentiel.clear()
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points) :
-            self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr("point N°")+" "+str(i+1)))
+            self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr("point Nￂﾰ")+" "+str(i+1)))
         self.cree_tableau()
         if self.ui.checkBox_auto.isChecked():
             #print "OK"
             self.auto=True
-            reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Vous êtes sur le point de lancer une capture automatique\nCelle-ci ne peut se faire qu'avec un seul point."),
+            reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Vous ￃﾪtes sur le point de lancer une capture automatique\nCelle-ci ne peut se faire qu'avec un seul point."),
             QMessageBox.Ok,QMessageBox.Cancel)
             if reponse==QMessageBox.Ok:
-                reponse==QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
+                reponse==QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sￃﾩlectionner un cadre autour de l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
                 self.label_auto = Label_Auto(self.label_video,self)
                 self.label_auto.show()
 
     def cree_tableau(self):
         """
-        Crée un tableau de coordonnées neuf dans l'onglet idoine.
+        Crￃﾩe un tableau de coordonnￃﾩes neuf dans l'onglet idoine.
         """
-        try: # efface tout tableau existant préalablement
+        try: # efface tout tableau existant prￃﾩalablement
             self.table_widget.hide()
             self.table_widget.close()
         except AttributeError:
@@ -947,7 +1016,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def traiteSouris(self,p):
         """
-        cette fonction est rappelée par label_trajectoire quand la souris
+        cette fonction est rappelￃﾩe par label_trajectoire quand la souris
         bouge au-dessus : p est un vecteur.
         """
         if not self.prefs.proximite: return
@@ -971,8 +1040,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 for a in self.pY[y]: a.montre_vitesse(False)
         intersection=list(pX & pY)
         if intersection:
-            # précaution au cas où on a plus d'un point dans l'intersection
-            # définie par la variable portee
+            # prￃﾩcaution au cas oￃﾹ on a plus d'un point dans l'intersection
+            # dￃﾩfinie par la variable portee
             min=1000 # plus que la dimension du widget
             index=0
             for i in range(len(intersection)):
@@ -988,7 +1057,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     def barycentre_trajectoires(self,referentiel):
         """
         calcule le barycentre de tous les points constituant les trajectoires
-        rapportées à un référentiel.
+        rapportￃﾩes ￃﾠ un rￃﾩfￃﾩrentiel.
         """
         bc=vecteur(0,0)
         compte=0
@@ -1004,7 +1073,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     def mediane_trajectoires(self,referentiel):
         """
         calcule le barycentre de tous les points constituant les trajectoires
-        rapportées à un référentiel.
+        rapportￃﾩes ￃﾠ un rￃﾩfￃﾩrentiel.
         """
         min=None
         max=None
@@ -1022,7 +1091,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def refait_vitesses(self, newText=""):
         """
-        recalcule les vitesses de tous les points tracés.
+        recalcule les vitesses de tous les points tracￃﾩs.
         """
         for index in self.trajectoire.keys():
             if index[:6]=="point-":
@@ -1042,10 +1111,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         
     def visibilite_vitesses(self):
         """
-        change le critère de visibilité des vitesses selon self.prefs
+        change le critￃﾨre de visibilitￃﾩ des vitesses selon self.prefs
         """
         if not self.prefs.proximite:
-            #choix par défaut
+            #choix par dￃﾩfaut
             self.label_trajectoire.setMouseTracking(0)
             self.montre_vitesses(True)
         else:
@@ -1057,7 +1126,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 
     def montre_vitesses(self, show=True):
         """
-        montre ou cache les vitesses, selon le paramètre show
+        montre ou cache les vitesses, selon le paramￃﾨtre show
         """
         for index in self.trajectoire.keys():
             if index[:6]=="point-":
@@ -1066,7 +1135,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         if not show:
             self.label_trajectoire.update()
     def efface_point_precedent(self):
-        """revient au point précédent
+        """revient au point prￃﾩcￃﾩdent
         """
         self.tousLesClics.decPtr()
         #print self.index_de_l_image, self.index_du_point, self.tousLesClics, self.premiere_image
@@ -1076,7 +1145,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.modifie=True
 
     def refait_point_suivant(self):
-        """rétablit le point suivant après un effacement
+        """rￃﾩtablit le point suivant aprￃﾨs un effacement
         """
         self.tousLesClics.incPtr()
         self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics,self.index_de_l_image-1)
@@ -1086,7 +1155,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     def repasseTousLesClics(self):
         """
         repasse en mode non-interactif toute la liste des clics
-        sur l'image, jusqu'au pointeur courant de cette liste pointée.
+        sur l'image, jusqu'au pointeur courant de cette liste pointￃﾩe.
         """
 
         self.affiche_echelle()
@@ -1100,7 +1169,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def retientPoint(self,n,ref,i,p,point):
         """
-        mémorise un point visible à l'écran, dans plusieurs dictionnaires
+        mￃﾩmorise un point visible ￃﾠ l'ￃﾩcran, dans plusieurs dictionnaires
         """
         self.trajectoire["point-%s_%s-%s" %(n,ref,i)] = [p, point]
         x=p.x(); y=p.y()
@@ -1115,7 +1184,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def oubliePoints(self):
         """
-        vide la mémoire des points visibles à l'écran
+        vide la mￃﾩmoire des points visibles ￃﾠ l'ￃﾩcran
         """
         self.pX={}
         self.pY={}
@@ -1147,12 +1216,12 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         
     def tracer_trajectoires(self, newValue):
         """
-        traite les signaux émis par le changement d'onglet, ou
-        par le changement de référentiel dans l'onglet des trajectoires.
+        traite les signaux ￃﾩmis par le changement d'onglet, ou
+        par le changement de rￃﾩfￃﾩrentiel dans l'onglet des trajectoires.
         On peut aussi appeler cette fonction directement, auquel cas on
-        donne la valeur "absolu" à newValue pour reconnaître ce cas.
+        donne la valeur "absolu" ￃﾠ newValue pour reconnaￃﾮtre ce cas.
         efface les trajectoires anciennes, puis
-        trace les trajectoires en fonction du référentiel choisi.
+        trace les trajectoires en fonction du rￃﾩfￃﾩrentiel choisi.
        
         """
 
@@ -1172,8 +1241,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                         origine=vecteur(320,240)-bc
 
                         if self.ui.comboBox_referentiel.count()>2 :
-                            # il y a plus d'un point étudié, on active le
-                            # bouton vidéo et on autorise de changer de référentiel
+                            # il y a plus d'un point ￃﾩtudiￃﾩ, on active le
+                            # bouton vidￃﾩo et on autorise de changer de rￃﾩfￃﾩrentiel
                             self.ui.button_video.setEnabled(1)
                             self.ui.comboBox_fps.setEnabled(1)
                             self.ui.comboBox_referentiel.setEnabled(1)
@@ -1185,10 +1254,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                         self.ui.button_video.setEnabled(0)
                         self.ui.comboBox_fps.setEnabled(0)
                         if self.ui.comboBox_referentiel.count()>2 :
-                            self.ui.comboBox_referentiel.setEnabled(1) #ne pas autoriser le changement de référentiel si il n'y a que 1 point.
+                            self.ui.comboBox_referentiel.setEnabled(1) #ne pas autoriser le changement de rￃﾩfￃﾩrentiel si il n'y a que 1 point.
                     if self.platform.lower()=="windows":
                         self.ui.comboBox_mode_tracer.setEnabled(0)
-                    # on fait la liste des courbes traçables
+                    # on fait la liste des courbes traￃﾧables
                     self.ui.comboBox_mode_tracer.clear()
                     self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
                     for i in range(self.nb_de_points) :
@@ -1196,10 +1265,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                         self.ui.comboBox_mode_tracer.addItem(QString("y%d(t)" %(i+1)))
                         self.ui.comboBox_mode_tracer.addItem(QString("v%d(t)" %(i+1)))
 
-                    # on trace les points compte tenu du référentiel
+                    # on trace les points compte tenu du rￃﾩfￃﾩrentiel
                     for n in range(self.nb_de_points):
                         couleur = self.couleurs[n]
-                        ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
+                        ancienPoint=None #ancienPoint sert ￃﾠ chaￃﾮner les points consￃﾩcutifs
                         for i in self.points.keys():
                             if ref == "camera":
                                 #print len(self.points), i, n
@@ -1209,17 +1278,17 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                                 ref=int(ref)
                                 p = self.points[i][1+n]-self.points[i][ref]+origine
                             if ref != "camera" and n == ref-1:
-                                # on a affaire au tracé du repère du référentiel :
+                                # on a affaire au tracￃﾩ du repￃﾨre du rￃﾩfￃﾩrentiel :
                                 # une seule instance suffira, vu qu'il ne bouge pas.
                                 if newValue!="absolu":
                                     if i == self.points.keys()[0]:
                                         point = Repere(self.label_trajectoire, p, couleur, 0, self)
                                         point.show()
                                         self.retientPoint(n,ref,i,p,point)
-                                        self.repere=1 #permet de voir si un repère a déjà été dessiné
+                                        self.repere=1 #permet de voir si un repￃﾨre a dￃﾩjￃﾠ ￃﾩtￃﾩ dessinￃﾩ
                             else:
                                 if newValue!="absolu":
-                                    point = Point(self.label_trajectoire, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
+                                    point = Point(self.label_trajectoire, p, couleur, i+1, self,ancienPoint) # le point est chaￃﾮnￃﾩ au prￃﾩcￃﾩdent s'il existe.
                                     ancienPoint=point
                                     point.show()
                                     self.retientPoint(n,ref,i,p,point)
@@ -1230,7 +1299,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                                             self.repere=1
 
                                 else: #newValue=="absolu"
-                                    point = Point(self.label_video, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
+                                    point = Point(self.label_video, p, couleur, i+1, self,ancienPoint) # le point est chaￃﾮnￃﾩ au prￃﾩcￃﾩdent s'il existe.
                                     ancienPoint=point
                                     point.montre_vitesse(False)
                                     point.show()
@@ -1242,10 +1311,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                   #self.oubliePoints()
                   for n in range(self.nb_de_points):
                       couleur = self.couleurs[n]
-                      ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
+                      ancienPoint=None #ancienPoint sert ￃﾠ chaￃﾮner les points consￃﾩcutifs
                       for i in self.points.keys():
                             p = self.points[i][1+n]
-                            point = Point(self.label_video, p, couleur, i+1, self,ancienPoint, show=False) # le point est chaîné au précédent s'il existe.
+                            point = Point(self.label_video, p, couleur, i+1, self,ancienPoint, show=False) # le point est chaￃﾮnￃﾩ au prￃﾩcￃﾩdent s'il existe.
                             ancienPoint=point
                             point.montre_vitesse(False) #ne montre pas les vitesses
                             point.show()
@@ -1260,9 +1329,9 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 if itemChoisi == 0: return # c'est rien du tout.
                 numero=(itemChoisi-1)/3
                 typeDeCourbe=("x","y","v")[(itemChoisi-1)%3]
-                titre=(self.tr("Évolution de l'abscisse du point %1").arg(numero+1),
-                      self.tr("Évolution de l'ordonnée du point %1").arg(numero+1),
-                      self.tr("Évolution de la vitesse du point %1").arg(numero+1))[(itemChoisi-1)%3]
+                titre=(self.tr("ￃﾉvolution de l'abscisse du point %1").arg(numero+1),
+                      self.tr("ￃﾉvolution de l'ordonnￃﾩe du point %1").arg(numero+1),
+                      self.tr("ￃﾉvolution de la vitesse du point %1").arg(numero+1))[(itemChoisi-1)%3]
                 titre=titre.toAscii()
                 abscisse=[]
                 ordonnee=[]
@@ -1286,11 +1355,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                         abscisse.append(t)
                     t+=self.deltaT
                     ancienPoint=p
-                # les abscisses et les ordonnées sont prêtes
+                # les abscisses et les ordonnￃﾩes sont prￃﾪtes
                 labelAbscisse="t (s)"
                 if typeDeCourbe != "v" : labelOrdonnee=typeDeCourbe+" (m)"
                 else: labelOrdonnee=typeDeCourbe+" (m/s)"
-                # déterminer le style de tracé
+                # dￃﾩterminer le style de tracￃﾩ
                 styleTrace=None
                 if typeDeCourbe in ("x","y"):
                     if ref == "camera":
@@ -1306,19 +1375,19 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                         styleTrace="zero"
                 else: # type de courbe "v""
                     styleTrace="zero"
-                # le tracé est fait dans un nouveau thread
+                # le tracￃﾩ est fait dans un nouveau thread
                 t=threading.Thread(target=traceur2d, args=(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace))
-                t.setDaemon(True) # le tracé peut survivre à pymecavideo
+                t.setDaemon(True) # le tracￃﾩ peut survivre ￃﾠ pymecavideo
                 t.start()
             except:
-                pass # il faut accepter que le combo soit vide à l'initialisation
+                pass # il faut accepter que le combo soit vide ￃﾠ l'initialisation
     
     def affiche_point_attendu(self,n):
         """
-        Renseigne sur le numéro du point attendu
+        Renseigne sur le numￃﾩro du point attendu
         """
-        ### Transformer en unicode pour éviter le proclème du caractère ° qui ne s'affiche pas correctement ###
-        self.mets_a_jour_label_infos(self.tr(unicode("Cliquer sur le point N°%d" %n,"utf8")))
+        ### Transformer en unicode pour ￃﾩviter le proclￃﾨme du caractￃﾨre ￂﾰ qui ne s'affiche pas correctement ###
+        self.mets_a_jour_label_infos(self.tr(unicode("Cliquer sur le point Nￂﾰ%d" %n,"utf8")))
 
 
 
@@ -1330,7 +1399,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             point_attendu=1+len(liste_points)
         else:
             point_attendu=1
-            if self.index_de_l_image<self.image_max : ##si on atteint la fin de la vidéo
+            if self.index_de_l_image<self.image_max : ##si on atteint la fin de la vidￃﾩo
                 
                 self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
                 self.nb_image_deja_analysees += 1
@@ -1344,14 +1413,14 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 #print "NOK"
                 if self.auto:
                     self.emit(SIGNAL('selection_done()'))
-                self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint la fin de la vidéo","utf8")))
+                self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint la fin de la vidￃﾩo","utf8")))
 
         #print self.index_de_l_image
         
     def clic_sur_label_video_ajuste_ui(self,point_attendu):
         """
         Ajuste l'interface utilisateur pour attendre un nouveau clic
-        @param point_attendu le numéro du point qui est à cliquer
+        @param point_attendu le numￃﾩro du point qui est ￃﾠ cliquer
         """
         self.affiche_point_attendu(point_attendu)
         self.lance_capture = True
@@ -1373,10 +1442,10 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         
     def stock_coordonnees_image(self, ligne, liste_points, interactif=True, index_image = False):
         """
-        place les données dans le tableau.
-        @param ligne le numérode la ligne où placer les données (commence à 0)
-        @param liste_points la liste des points cliqués sur l'image courante
-        @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
+        place les donnￃﾩes dans le tableau.
+        @param ligne le numￃﾩrode la ligne oￃﾹ placer les donnￃﾩes (commence ￃﾠ 0)
+        @param liste_points la liste des points cliquￃﾩs sur l'image courante
+        @param interactif vrai s'il faut rafraￃﾮchir tout de suite l'interface utilisateur.
         """
         #print ligne, index_image, self.index_de_l_image, self.premiere_image
         if not index_image :
@@ -1384,12 +1453,12 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         t = "%4f" %((ligne)*self.deltaT)
         #print liste_points
         self.points[ligne]=[t]+liste_points
-        #rentre le temps dans la première colonne
+        #rentre le temps dans la premiￃﾨre colonne
         self.table_widget.insertRow(ligne)
         self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
         
         i=0
-        #Pour chaque point dans liste_points, insère les valeur dans la ligne
+        #Pour chaque point dans liste_points, insￃﾨre les valeur dans la ligne
         for point in liste_points :
             pm=self.pointEnMetre(point)
             self.table_widget.setItem(ligne,i+1,QTableWidgetItem(str(pm.x())))
@@ -1397,7 +1466,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             i+=2
         if interactif:
             self.table_widget.show()
-        #enlève la ligne supplémentaire, une fois qu'une ligne a été remplie
+        #enlￃﾨve la ligne supplￃﾩmentaire, une fois qu'une ligne a ￃﾩtￃﾩ remplie
         if ligne == 0 :
             self.table_widget.removeRow(1)
 
@@ -1410,18 +1479,21 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     
     def affiche_image(self):
         self.extract_image(self.filename, self.index_de_l_image)
+#        print "affiche_image", self.chemin_image
         image=QImage(self.chemin_image)
+     
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
-        try :
-            self.label_video.setMouseTracking(True)
-            self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
-            self.label_video.met_a_jour_crop()
-            self.label_video.update()
-            self.label_video.show()
-            self.ui.horizontalSlider.setValue(self.index_de_l_image)
-            self.ui.spinBox_image.setValue(self.index_de_l_image)
-        except AttributeError:
-            pass
+#        try :
+        self.label_video.setMouseTracking(True)
+        self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
+        self.label_video.met_a_jour_crop()
+        self.label_video.update()
+        self.label_video.show()
+        self.ui.horizontalSlider.setValue(self.index_de_l_image)
+        self.ui.spinBox_image.setValue(self.index_de_l_image)
+#        except AttributeError:
+#            print "error!!"
+#            pass
         
     def recommence_echelle(self):
         self.ui.tabWidget.setCurrentIndex(0)
@@ -1442,7 +1514,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def demande_echelle(self):
         
-        echelle_result_raw = QInputDialog.getText(None, self.tr(unicode("Définir une échelle","utf8")), self.tr(unicode("Quelle est la longueur en mètre de votre étalon sur l'image ?","utf8"))
+        echelle_result_raw = QInputDialog.getText(None, self.tr(unicode("Dￃﾩfinir une ￃﾩchelle","utf8")), self.tr(unicode("Quelle est la longueur en mￃﾨtre de votre ￃﾩtalon sur l'image ?","utf8"))
 ,QLineEdit.Normal, QString("1.0"))
         if echelle_result_raw[1] == False :
             return None
@@ -1450,21 +1522,21 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             echelle_result = [float(echelle_result_raw[0].replace(",",".")), echelle_result_raw[1]]
 
             if echelle_result[0] <= 0 or echelle_result[1] == False :
-                self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable","utf8")))
+                self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une ￃﾩchelle valable","utf8")))
             else :
                 self.echelle_image.etalonneReel(echelle_result[0])
                 self.job = Label_Echelle(self.label_video,self)
                 self.job.setPixmap(QPixmap(self.chemin_image))
                 self.job.show()
         except ValueError :
-            self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable","utf8")))
+            self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une ￃﾩchelle valable","utf8")))
             self.demande_echelle()
         self.ui.pushButton_video.setEnabled(0)
 
     def feedbackEchelle(self, p1, p2):
         """
-        affiche une trace au-dessus du self.job, qui reflète les positions
-        retenues pour l'échelle
+        affiche une trace au-dessus du self.job, qui reflￃﾨte les positions
+        retenues pour l'ￃﾩchelle
         """
         from echelle import Label_Echelle_Trace
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1,p2)
@@ -1475,7 +1547,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         
     def reinitialise_environnement(self):
         os.chdir(self._dir("images"))
-        for filename in glob("*.jpg"):  # a remettre à la fin ;) 
+        for filename in glob("*"+EXT_IMG):  # a remettre ￃﾠ la fin ;) 
                 os.remove(filename)
         
     def closeEvent(self,event):
@@ -1495,7 +1567,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def verifie_donnees_sauvegardees(self):
         if self.modifie:
-            retour = QMessageBox.warning(self,QString(self.tr(unicode("Les données seront perdues","utf8"))),QString(self.tr(unicode("Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?","utf8"))),QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel )
+            retour = QMessageBox.warning(self,QString(self.tr(unicode("Les donnￃﾩes seront perdues","utf8"))),QString(self.tr(unicode("Votre travail n'a pas ￃﾩtￃﾩ sauvegardￃﾩ\nVoulez-vous les sauvegarder ?","utf8"))),QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel )
             if retour == QMessageBox.Yes :
                 self.enregistre_ui()
                 return True
@@ -1514,7 +1586,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             
         elif self.index_de_l_image==0 : 
             self.index_de_l_image=1
-            self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint le début de la vidéo","utf8")))
+            self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint le dￃﾩbut de la vidￃﾩo","utf8")))
             self.affiche_image()
     
     def mets_a_jour_label_infos(self, message):
@@ -1525,21 +1597,23 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     def openexample(self):
         dir_="%s/video" %(self._dir("share"))
         self.reinitialise_tout()
-        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)","utf8")))
+        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidￃﾩo","utf8")), dir_,self.tr(unicode("fichiers vidￃﾩos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)","utf8")))
         self.openTheFile(filename)
         
     def openfile(self):
         """
-        Ouvre un dialogue pour choisir un fichier vidéo puis le charge
+        Ouvre un dialogue pour choisir un fichier vidￃﾩo puis le charge
         """
         dir_=self._dir("stockmovies")
-        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)","utf8")))
+        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidￃﾩo","utf8")), dir_,self.tr(unicode("fichiers vidￃﾩos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)","utf8")))
+        print "open", filename
         self.openTheFile(filename)
+        
         self.reinitialise_capture()
         
     def renomme_le_fichier(self):
-        renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr(unicode("Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
-        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), self._dir("stockmovies"),"*.avi")
+        renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr(unicode("Le nom de votre fichier contient des caractￃﾨres accentuￃﾩs ou des espaces.\n Merci de bien vouloir le renommer avant de continuer","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
+        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidￃﾩo","utf8")), self._dir("stockmovies"),"*.avi")
         self.openTheFile(filename)
 
     def openTheFile(self,filename):
@@ -1552,13 +1626,14 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
             self.prefs.lastVideo=unicode(filename,"utf8")
             self.prefs.videoDir=os.path.dirname(self.filename)
             self.prefs.save()
+            
             self.init_image()
-            self.mets_a_jour_label_infos(self.tr("Veuillez choisir une image et définir l'échelle"))
+            self.mets_a_jour_label_infos(self.tr("Veuillez choisir une image et dￃﾩfinir l'ￃﾩchelle"))
             self.ui.Bouton_Echelle.setEnabled(True)
             self.ui.horizontalSlider.setEnabled(1)
             self.label_video.show()
-                # n'enregistre les préférence que quand la première image
-                # a été extraite avec succès !!
+                # n'enregistre les prￃﾩfￃﾩrence que quand la premiￃﾨre image
+                # a ￃﾩtￃﾩ extraite avec succￃﾨs !!
             self.prefs.videoDir=os.path.dirname(self.filename)
             self.prefs.save()
 
@@ -1583,8 +1658,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 command="x-www-browser %s" %helpfile
                 status,output=commands.getstatusoutput(command)
         else:
-            QMessageBox.warning(None,"Aide",self.trUtf8("Désolé pas de fichier d'aide pour le langage %1.").arg(lang))
-	    #Utilisation de Qstring.arg à cause d'une incompatibilité entre %s (string) et l'unicode Qt 
+            QMessageBox.warning(None,"Aide",self.trUtf8("Dￃﾩsolￃﾩ pas de fichier d'aide pour le langage %1.").arg(lang))
+        #Utilisation de Qstring.arg ￃﾠ cause d'une incompatibilitￃﾩ entre %s (string) et l'unicode Qt 
         
         
     def init_image(self):
@@ -1603,7 +1678,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         
         
     def defini_barre_avancement(self):
-        """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
+        """rￃﾩcupￃﾨre le maximum d'images de la vidￃﾩo et dￃﾩfini la spinbox et le slider"""
         framerate, self.image_max = self.recupere_avi_infos(self.filename)
         self.deltaT = float(1.0/framerate)
         self.ui.horizontalSlider.setMinimum(1)
@@ -1613,33 +1688,58 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         
         os.chdir(self._dir("images"))
         try :
-              os.remove("video_000001.jpg")
-              a = self.extract_image(self.filename, 1)
-              os.chdir(self._dir("images"))
-              os.remove("video_000001.jpg")
+            os.remove("video_00001"+EXT_IMG)
+            a = self.extract_image(self.filename, 1)
+            os.chdir(self._dir("images"))
+            os.remove("video_00001"+EXT_IMG)
         except OSError:
-              pass
-    def extract_image(self, video, index,force=False, sortie=False):
+            pass
+        
+    def extract_image(self, video, index, force=False, sortie=False):
         """
-        extrait l'image d'index "index" de la video à l'aide de ffmpeg
+        extrait l'image d'index "index" de la video ￃﾠ l'aide de ffmpeg
         et l'enregistre sur le disque.
-        "force" permet de spécifier si on veut obliger l'écriture d'une image même si elle existe
-        "sortie" spécifie si on a besoin de la sortie standard. 
+        "force" permet de spￃﾩcifier si on veut obliger l'ￃﾩcriture d'une image mￃﾪme si elle existe
+        "sortie" spￃﾩcifie si on a besoin de la sortie standard. 
         """
-        os.chdir(self._dir("images"))
+        if sys.platform == 'win32':
+            imfilename=os.path.join(self._dir("images"), "video_%05d"% index + EXT_IMG)
+#            imfilename = '"'+imfilename+'"'
+#            print "extract_image", imfilename
+        else:
+            os.chdir(self._dir("images"))
+            imfilename="video_%06d"% index + EXT_IMG
         output = ""
         #sortie=True
         #force=True
-        imfilename="video_%06d.jpg" % index
-        if os.path.isfile(imfilename) and force==False: #si elle existe déjà et , ne fait rien
+
+        if os.path.isfile(imfilename) and force==False: #si elle existe dￃﾩjￃﾠ et , ne fait rien
+#            print "  existe dￃﾩja !"
             self.chemin_image = imfilename
         else : #sinon, extrait depuis la video
-            #attention au cas de la dernière image.
+            #attention au cas de la derniￃﾨre image.
             i=1
             #print "video", video, type(video)
             ffmpeg_dir=self._dir("conf")
+#            print "ffmpeg",ffmpeg_dir, self.ffmpeg
             #print [self.ffmpeg,"""-i""", video,"""-ss""",str((index-i)*self.deltaT),"""-vframes""",str(1),"""-f""","""image2""","""-vcodec""","""mjpeg""",imfilename]
-            cmd0_ = subprocess.Popen(args=[self.ffmpeg,"""-i""", video,"""-ss""",str((index-i)*self.deltaT),"""-vframes""",str(1),"""-f""","""image2""","""-vcodec""","""mjpeg""",imfilename], stderr=PIPE)
+            args=[self.ffmpeg,"""-i""", video,"""-ss""",str((index-i)*self.deltaT),"""-vframes""",str(1),"""-f""","""image2""","""-vcodec""","""mjpeg""",imfilename]
+#            print args
+            if sys.platform == 'win32':
+                if hasattr(sys.stderr, self.ffmpeg):
+                    childstderr = sys.stderr
+                elif hasattr(sys.stderr, '_file') and hasattr(sys.stderr._file, self.ffmpeg):
+                    childstderr = sys.stderr._file
+                else:
+                    # Give up and point child stderr at nul
+                    childStderrPath = 'nul'
+                    childstderr = file(childStderrPath, 'a')
+                    childstderr = PIPE
+                cmd0_ = subprocess.Popen(args=args,
+                                         stderr=childstderr)
+            else:
+                cmd0_ = subprocess.Popen(args=[self.ffmpeg,"""-i""", video,"""-ss""",str((index-i)*self.deltaT),"""-vframes""",str(1),"""-f""","""image2""","""-vcodec""","""mjpeg""",imfilename], 
+                                         stderr=PIPE)
             cmd0_.wait()
             cmd0_.poll()
             if sortie :
@@ -1657,9 +1757,12 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                     #status, output = commands.getstatusoutput(cmd)
                 self.chemin_image = imfilename
             elif returncode==1 and self.prefs.lastVideo != "":
-              mauvaisevideo = QMessageBox.warning(self,self.tr(unicode("ERREUR","utf8")), QString(self.tr(unicode("La video que vous tentez d'ouvrir n'est pas dans un format lisible.\n Merci d'en ouvrir une autre ou de l'encoder autrement","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
-              self.prefs.lastVideo = ""
-              self.close()
+                print "erreur", returncode
+                mauvaisevideo = QMessageBox.warning(self,self.tr(unicode("ERREUR","utf8")), QString(self.tr(unicode("La video que vous tentez d'ouvrir n'est pas dans un format lisible.\n Merci d'en ouvrir une autre ou de l'encoder autrement","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
+                self.prefs.lastVideo = ""
+                self.close()
+            else:
+                print "erreur", returncode
               
             #elif returncode > 256 :
 
@@ -1667,7 +1770,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 return sortie_
           
     def recupere_avi_infos(self, fileName):
-        "Ouvre une vidéo AVI et retourne son framerate ainsi que le nombre d'images de la vidéo."
+        "Ouvre une vidￃﾩo AVI et retourne son framerate ainsi que le nombre d'images de la vidￃﾩo."
         framerate = 25
         duration=0
         #cmd= self.ffmpeg+" -y -i "+fileName+" "+os.path.join(self._dir("images"),"out.avi")
@@ -1714,7 +1817,7 @@ def run():
 
     filename=""
     if len(args)>0:
-        filename=args[-1]# passe le dernier paramètre
+        filename=args[-1]# passe le dernier paramￃﾨtre
         locale = QLocale.system().name()
 
     # ainsi pickle peut trouver le module "vecteur"
