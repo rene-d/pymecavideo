@@ -20,12 +20,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, os, thread, time, commands
+import sys, os#, thread, time, commands
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from math import sqrt, acos, asin, pi, cos, sin, atan2
 from vecteur import vecteur
 import re, subprocess, shutil
+from globdef import AVI_OUT, GetChildStdErr ,CROP, IMG_PATH
 
 class Cadreur:
     def __init__(self,numpoint,app):
@@ -71,11 +72,17 @@ class Cadreur:
         self.taille=vecteur(m.width(),m.height())
         ech=self.taille.norme()/vecteur(640,480).norme()
         
-        os.chdir(self.app._dir("images"))
-        liste_fichier = os.listdir(".")
-        for fichier in liste_fichier :
-            if "crop" in fichier:
-                os.remove(fichier)
+        if sys.platform == 'win32':
+            liste_fichier = os.listdir(IMG_PATH)
+            for fichier in liste_fichier :
+                if CROP in fichier:
+                    os.remove(os.path.join(IMG_PATH, fichier))
+        else:
+            os.chdir(self.app._dir("images"))
+            liste_fichier = os.listdir(".")
+            for fichier in liste_fichier :
+                if CROP in fichier:
+                    os.remove(fichier)
         for i in self.app.points.keys():
             p=self.app.points[i][self.numpoint]
             # calcule les vecteurs des marges
@@ -89,11 +96,22 @@ class Cadreur:
             if basdroite.x()%2==1  : basdroite  += vecteur(1,0)
             if hautgauche.y()%2==1 : hautgauche += vecteur(0,1)
             if basdroite.y()%2==1  : basdroite  += vecteur(0,1)
-            cmd=self.app.ffmpeg+" -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg -cropleft %d -croptop %d -cropright %d -cropbottom %d crop%04d.jpg" %(self.app.filename,(i+self.app.premiere_image-1)*self.app.deltaT,hautgauche.x(),hautgauche.y(),basdroite.x(),basdroite.y(),i)
-            #print "1", cmd, os.getcwd()
-
-            crop = subprocess.Popen(cmd,shell=True)
+            cmd = [self.app.ffmpeg, """-i""", self.app.filename, """-ss""", str((i+self.app.premiere_image-1) *self.app.deltaT),
+                   """-vframes""", """1""", """-f""", """image2""", """-vcodec""", """mjpeg""", 
+                   """-cropleft""",  str(hautgauche.x()) , """-croptop""",    str(hautgauche.y())  , 
+                   """-cropright""", str(basdroite.x())  , """-cropbottom""", str(basdroite.y()) ]
+           
+            if sys.platform == 'win32':
+                cmd.append(os.path.join(IMG_PATH, CROP + "%04d.jpg" %i))
+            else:
+                cmd.append(CROP + "%04d.jpg" %i)
+            print "1", cmd
+            childstderr, creationflags = GetChildStdErr()
+            crop = subprocess.Popen(cmd, #shell=True, 
+                                    stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
+                                    creationflags = creationflags )
             crop.wait()
+            print crop.returncode
             
         
     def creefilm(self, ralenti):
@@ -102,21 +120,40 @@ class Cadreur:
             for k in range(ralenti):
                 # reproduit "ralenti" fois les trames
                 #print i,j
-                fichier1, fichier2 = "crop%04d.jpg"%j,"crop-%04d.jpg" % i
+                fichier1 = os.path.join(IMG_PATH, CROP + "%04d.jpg" % j) 
+                fichier2 = os.path.join(IMG_PATH, CROP +"-%04d.jpg" % i)
                 shutil.copy(fichier1,fichier2)
                 i+=1
         try :
-            os.remove("out.avi")
+            os.remove(AVI_OUT)
         except OSError :
             pass
-        cmd= self.app.ffmpeg+" -r 25 -f image2 -i crop-%04d.jpg -r 25 -f avi -vcodec mpeg1video -b 800k out.avi"
-        crop = subprocess.Popen(cmd, shell=True)
+        
+        if sys.platform == 'win32':
+            cropfile = os.path.join(IMG_PATH, CROP+"-%04d.jpg")
+        else:
+            cropfile = CROP+"-%04d.jpg"
+        
+        cmd = [self.app.ffmpeg, """-r""", """25""", """-f""", """image2""", """-i""", cropfile,
+               """-r""", """25""", """-f""", """avi""", """-vcodec""", """mpeg1video""", 
+               """-b""", """800k""", AVI_OUT]
+        
+        print "film", cmd
+        childstderr, creationflags = GetChildStdErr()
+        crop = subprocess.Popen(cmd, #shell=True, 
+                                stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
+                                creationflags = creationflags)
         crop.wait()
-
+        print crop.returncode
+        
+        
     def montrefilm(self):
-        file="out.avi"
         #print self.app.prefs.videoPlayerCmd()
         print self.app.player
+        print AVI_OUT
         #self.app.dbg.p(2,"%s" %(cmd))
-        montre = subprocess.Popen([self.app.player,"out.avi"])
+        childstderr, creationflags = GetChildStdErr()
+        montre = subprocess.Popen([self.app.player, '-L', AVI_OUT], 
+                                  stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
+                                  creationflags = creationflags)
         montre.wait()

@@ -27,7 +27,7 @@ AppCopyright=Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org> Jean
 VersionInfoVersion = 5.2.0.0
 
 ;Répertoire de base contenant les fichiers
-SourceDir=D:\Documents\Developpement\pyMecaVideo\branches\5.2
+SourceDir=D:\Documents\Developpement\pyMecaVideo
 
 ;Repertoire d'installation
 DefaultDirName={pf}\pyMecaVideo
@@ -132,7 +132,7 @@ Source: data\help\*.*; DestDir: {app}\data\help; Flags : ignoreversion recursesu
 Source: data\video\*.*; DestDir: {app}\data\video; Flags : ignoreversion recursesubdirs; Components : exemple
 Source: data\icones\*.*; DestDir: {app}\data\icones; Flags : ignoreversion recursesubdirs
 Source: data\lang\*.*; DestDir: {app}\data\lang; Flags : ignoreversion recursesubdirs
-Source: src\ff*.exe; DestDir: {app}; Flags : ignoreversion; Components : ff
+Source: ff*.exe; DestDir: {app}; Flags : ignoreversion; Components : ff
 
 
 [Tasks]
@@ -210,6 +210,7 @@ begin
   else
     Result := ExpandConstant('{userdesktop}')
 end;
+
 
 
 

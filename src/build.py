@@ -43,7 +43,7 @@ options = {    "py2exe" : { "compressed": 2,
 
                                    }     }
 
-icon = "D:\\Documents\\Developpement\\pymecavideo\\branches\\5.2\\data\\icones\\pymecavideo.ico"
+icon = "D:\\Documents\\Developpement\\pymecavideo\\data\\icones\\pymecavideo.ico"
 setup(name='pyMecaVideo',
       version='5.2',
       description='Analyse Mécanique des videos',

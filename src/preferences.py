@@ -68,7 +68,7 @@ class Preferences:
             pf_path = os.environ["PROGRAMFILES"]
             vlc_path = os.path.join(pf_path, "VideoLAN", "VLC", "vlc.exe")
             if os.path.exists(vlc_path) :
-                self.videoPlayers["vlc"] = vlc_path + "-L %s"
+                self.videoPlayers["vlc"] = vlc_path# + " -L "
 
         if "xine" in self.videoPlayers.keys() :
             self.videopref="xine"
