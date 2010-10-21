@@ -590,8 +590,8 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
     def pointEnMetre(self,p):
         """
         renvoie un point, dont les coordonnées sont en mètre, dans un
-        référentiel àﾠ l'endroit"
-        @ param point un point en "coordonnées d'écran"
+        référentiel "à l\'endroit"
+        @param point un point en "coordonnées d\'écran"
         """
         print p, type(p)
         return vecteur(self.sens_X*(float(p.x()-self.origine.x())*self.echelle_image.mParPx()),self.sens_Y*
@@ -612,7 +612,7 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
 
     def export(self):
         """
-        Traite le signal venu de exportCombo, puis remet l'index de ce
+        Traite le signal venu de exportCombo, puis remet l\'index de ce 
         combo à zéro.
         """
         if self.ui.exportCombo.currentIndex()>0:
@@ -1647,7 +1647,6 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                 status,output=commands.getstatusoutput(command)
         else:
             QMessageBox.warning(None,"Aide",self.trUtf8("Désolé pas de fichier d'aide pour le langage %1.").arg(lang))
-        #Utilisation de Qstring.arg à cause d'une incompatibilité entre %s (string) et l'unicode Qt 
         
         
     def init_image(self):
