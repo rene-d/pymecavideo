@@ -1594,13 +1594,20 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
         self.openTheFile(filename)
 
     def openTheFile(self,filename):
+        """
+        Ouvre le fichier de nom filename, enregistre les préférences de
+         fichier vidéo.
+        @param filename chaîne de caractère, de type string,QSring ou QByteArray
+         le forçage de type permet d'accepter chacune des variantes en entrée.
+         N.B.: l'attribut self.prefs.lastVideo sera qui sera enregistré est de
+         type string et d'encodage unicode.
+        """
         if filename != "" : 
             filename = QString(filename)
             filename = filename.toUtf8()
             data = filename.data()
             self.filename = data.decode('utf-8')
-            print filename, self.filename
-            self.filename = os.path.abspath(filename)
+            self.filename = os.path.abspath(self.filename)
             self.prefs.lastVideo=unicode(filename,"utf8")
             self.prefs.videoDir=os.path.dirname(self.filename)
             self.prefs.save()
