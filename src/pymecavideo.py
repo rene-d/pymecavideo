@@ -142,7 +142,7 @@ class StartQT4(QMainWindow):
 
         elif self.platform.lower()=="linux":
             self.ffmpeg = "ffmpeg"
-            self.player = "cvlc"
+            self.player = "vlc"
         self.prefs=Preferences(self)
         ####intilise les répertoires
         self._dir()
@@ -245,21 +245,24 @@ class StartQT4(QMainWindow):
         self.init_interface()
 
         ######vérification de la présence de fmmpeg et ffplay dans le path.
+        ok_ffmpeg=True; ok_player=True;
         if sys.platform == 'win32':
             paths = os.environ['PATH'].split(os.pathsep)
             paths.append(PATH)
             print "paths", paths
             if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in paths)) :
-                self.ffmpeg = False
+                ok_ffmpeg = False
 #            if not(any(os.access(os.path.join(p,self.player), os.X_OK) for p in paths)) :
-#                self.player = False
+#                ok_player = False
         else:
+            player=self.player.split(" ")[0]
+            # on garde le nom de commande, pas les paramètres
             if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
-                self.ffmpeg = False
-            if not(any(os.access(os.path.join(p,self.player), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
-                self.player = False
-        if self.player== False or self.ffmpeg == False :
-            pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel ffmpeg ainsi que ffplay n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
+                ok_ffmpeg = False
+            if not(any(os.access(os.path.join(p,player), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
+                ok_player = False
+        if ok_player== False or ok_ffmpeg == False :
+            pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel %s ou %s n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre" %(self.ffmpeg, player),"utf8" ))), QMessageBox.Ok,QMessageBox.Ok)
             self.close()
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture']:
