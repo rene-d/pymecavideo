@@ -30,28 +30,28 @@ class Preferences:
     def __init__(self, parent):
         self.app=parent
         self.conffile=os.path.join(self.app._dir("conf"),"pymecavideo.conf")
-        # ajuste les valeurs par dÃ©faut
+        # ajuste les valeurs par défaut
         self.proximite=False
         self.lastVideo=""
         self.videoDir=os.getcwd()
         self.detect_video_players()
-        self.niveauDbg=0 # niveau d'importance des messages de dÃ©bogage
-        # rÃ©cupÃ¨re les valeurs enregistrÃ©es
+        self.niveauDbg=0 # niveau d'importance des messages de débogage
+        # récupère les valeurs enregistrées
         self.load()
 
     def __str__(self):
         """
-        Renvoie une chaÃ®ne reprÃ©sentant les prÃ©fÃ©rences, lisible par un humain
+        Renvoie une chaîne représentant les préférences, lisible par un humain
         """
-        result="Proximite de la souris %s" %self.proximite
-        result +="; derniere video %s" %self.lastVideo
-        result +="; videoDir %s" %self.videoDir
-        result +="; niveau courant de debogage %s" %self.niveauDbg
-        result +="; dictionnaire des lecteurs video %s" %self.videoPlayers
-        return result
+        result=self.app.tr("Proximite de la souris %1").arg(self.proximite)
+        result +=self.app.tr("; derniere video %1").arg(self.lastVideo)
+        result +=self.app.tr("; videoDir %1").arg(self.videoDir)
+        result +=self.app.tr("; niveau courant de debogage %1").arg(self.niveauDbg)
+        result +=self.app.tr("; dictionnaire des lecteurs video %1").arg("%s" %self.videoPlayers)
+        return "%s" %result
 
     def detect_video_players(self):
-        """dÃ©tecte les players dispnibles sur le systÃ¨me"""
+        """détecte les players disponibles sur le système"""
         
         self.videoPlayers = {}
         players = {"xine":"xine -l %s",
@@ -77,7 +77,7 @@ class Preferences:
         elif "mplayer" in self.videoPlayers.keys() :
             self.videopref="mplayer"
         else :
-            warning =QMessageBox.warning(None,u"ATTENTION : pas de lecteurs vidÃ©os trouvÃ©s","Vous devez installer VLC, fflpay, -ou MPLAYER ou XINE si vous Ãªtes sous linux-",QMessageBox.Ok,QMessageBox.Ok)
+            warning =QMessageBox.warning(None,self.app.tr("ATTENTION : pas de lecteurs video trouves"),self.app.tr("Vous devez installer VLC, fflpay, -ou MPLAYER ou XINE si vous êtes sous linux-"),QMessageBox.Ok,QMessageBox.Ok)
             import sys
             sys.exit(-1)#fais une erreur...mais fais ce qu'on veut ;)
         self.app.player = self.videoPlayers[self.videopref]
@@ -88,7 +88,7 @@ class Preferences:
         
     def save(self):
         """
-        Sauvegarde des prÃ©fÃ©rences dans le fichier de configuration.
+        Sauvegarde des préférences dans le fichier de configuration.
         """
         f=open(self.conffile,"w")
         self.app.dbg.p(9,"sauvegarde des preferences dans  %s" %self.conffile)
@@ -113,7 +113,7 @@ class Preferences:
 
     def setFromDialog(self):
         """
-        RÃ¨gle les prÃ©fÃ©rences Ã  l'aide d'un dialogue
+        Règle les préférences à l'aide d'un dialogue
         """
         self.app.dbg.p(2,"appel du dialogue des preferences")
         import Ui_preferences
@@ -125,8 +125,8 @@ class Preferences:
         #########################################################
         ui.spinBoxDbg.setValue(self.niveauDbg)
         p=ui.comboBoxProximite
-        p.addItem(u"Visibles partout")
-        p.addItem(u"Visible prÃ¨s de la souris")
+        p.addItem(self.app.tr("Visibles partout"))
+        p.addItem(self.app.tr("Visible pres de la souris"))
         if self.proximite:
             p.setCurrentIndex(1)
         else:
