@@ -44,7 +44,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -957,8 +957,8 @@ automatique</string>
          <rect>
           <x>0</x>
           <y>310</y>
-          <width>150</width>
-          <height>71</height>
+          <width>105</width>
+          <height>79</height>
          </rect>
         </property>
         <property name="title">
@@ -967,41 +967,37 @@ automatique</string>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
         </property>
-        <widget class="QComboBox" name="comboBox_mode_tracer">
-         <property name="geometry">
-          <rect>
-           <x>30</x>
-           <y>30</y>
-           <width>87</width>
-           <height>20</height>
-          </rect>
-         </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <property name="text">
-           <string>Choisir ...</string>
-          </property>
+          <widget class="QComboBox" name="comboBox_mode_tracer">
+           <item>
+            <property name="text">
+             <string>Choisir ...</string>
+            </property>
+           </item>
+          </widget>
          </item>
-        </widget>
-        <widget class="QLabel" name="label_graphiques">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>10</y>
-           <width>121</width>
-           <height>61</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
+         <item>
+          <widget class="QLabel" name="label_graphiques">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
+       <zorder>label_3</zorder>
+       <zorder>groupBox_4</zorder>
+       <zorder>groupBox_5</zorder>
+       <zorder>groupBox_6</zorder>
+       <zorder>groupBox_7</zorder>
+       <zorder>label_graphiques</zorder>
       </widget>
       <widget class="QWidget" name="tab_coord">
        <attribute name="title">
@@ -1074,7 +1070,7 @@ automatique</string>
      <x>0</x>
      <y>0</y>
      <width>820</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
