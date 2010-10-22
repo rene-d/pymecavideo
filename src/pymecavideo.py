@@ -72,6 +72,7 @@ from globdef import PATH, APP_DATA_PATH, EXT_IMG, GetChildStdErr, IMG_PATH, VIDE
 
 from detect import filter_picture
 import Error
+#import Error
 
 class MonThreadDeCalcul(QThread):
     """mon Thread"""
@@ -110,6 +111,7 @@ class StartQT4(QMainWindow):
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
         Error._ = self.tr
+#        Error._ = self.tr
         #### Mode plein écran
         self.plein_ecran = False
         QShortcut(QKeySequence(Qt.Key_F11),self, self.basculer_plein_ecran )
@@ -125,6 +127,7 @@ class StartQT4(QMainWindow):
             from Ui_pymecavideo_mini  import Ui_pymecavideo
             message = QMessageBox(self)
             message.setText(self.trUtf8("Pymecavideo utilise l'interface mini.\nAppuyez sur la touche F11 pour passer en mode plein écran"))
+            message.setText(self.trUtf8("pymecavideo utilise l'interface mini.\nAppuyez sur la touche F11 pour passer en mode plein écran"))
             message.setWindowTitle(self.trUtf8("Faible résolution"))
             message.exec_()        
             self.basculer_plein_ecran
@@ -527,7 +530,8 @@ class StartQT4(QMainWindow):
 
     def choisi_nouvelle_origine(self):
         nvl_origine=QMessageBox.information(self,QString("NOUVELLE ORIGINE"),\
-QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle origine"))
+                                            QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle origine"))
+                                            
         label = Label_Origine(parent=self.ui.label, app=self)
         label.show()
 
@@ -741,7 +745,11 @@ QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle orig
                         '/usr/share/pyshared/pymecavideo/lang'):
                 if os.path.exists(dir):
                     return dir
-        elif lequel == "share" : return os.path.join(pymecavideo_rep_install,"..","data")
+        elif lequel == "share" : 
+            if sys.platform == 'win32':
+                return os.path.join(pymecavideo_rep_install,"data")
+            else:
+                return os.path.join(pymecavideo_rep_install,"..","data")
         elif lequel == "help" : 
             if os.path.isdir("/usr/share/doc/python-mecavideo/html") :
                 return "/usr/share/doc/python-mecavideo/html"

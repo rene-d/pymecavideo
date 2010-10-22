@@ -101,7 +101,7 @@ AVI_OUT = os.path.join(IMG_PATH, "out.avi")
 #
 #
 #
-ERROR_FILE = os.path.join(APP_DATA_PATH, 'pyMecaVideo.exe' + '.log')
+ERROR_FILE = os.path.join(APP_DATA_PATH, 'pymecavideo.exe' + '.log')
 
 
 #

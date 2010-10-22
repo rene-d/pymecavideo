@@ -27,11 +27,11 @@ AppCopyright=Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org> Jean
 VersionInfoVersion = 5.2.0.0
 
 ;Répertoire de base contenant les fichiers
-SourceDir=D:\Documents\Developpement\pyMecaVideo
+SourceDir=D:\Documents\Developpement\pymecavideo
 
 ;Repertoire d'installation
-DefaultDirName={pf}\pyMecaVideo
-DefaultGroupName=pyMecaVideo
+DefaultDirName={pf}\pymecavideo
+DefaultGroupName=pymecavideo
 LicenseFile=gpl-2.0.txt
 
 ;Paramètres de compression
@@ -46,9 +46,9 @@ PrivilegesRequired=none
 OutputBaseFilename=pyMecaVideo 5.2
 OutputDir=releases
 
-;Dans le panneau de configuration de Windows2000/NT/XP, c'est l'icone de pyMecaVideo.exe qui
+;Dans le panneau de configuration de Windows2000/NT/XP, c'est l'icone de pymecavideo.exe qui
 ;apparaît à gauche du nom du fichier pour la désinstallation
-UninstallDisplayIcon={app}\data\icones\pyMecaVideo.ico
+UninstallDisplayIcon={app}\data\icones\pymecavideo.ico
 
 ;Fenêtre en background
 WindowResizable=false
@@ -66,7 +66,7 @@ Name: fr; MessagesFile: "compiler:Languages\French.isl"
 ;Name: fr; MessagesFile: "compiler:Languages\French.isl"
 
 [Messages]
-BeveledLabel=pyMecaVideo 5.2 installation
+BeveledLabel=pymecavideo 5.2 installation
 
 
 [CustomMessages]
@@ -77,9 +77,9 @@ fr.uninstall=Désinstaller
 fr.gpl_licence=Prendre connaissance du contrat de licence pour le logiciel
 fr.fdl_licence=Prendre connaissance du contrat de licence pour la documentation associée
 fr.CreateDesktopIcon=Créer un raccourci sur le bureau vers
-fr.AssocFileExtension=&Associer le programme pyMecaVideo à l'extension .mecavideo
+fr.AssocFileExtension=&Associer le programme pymecavideo à l'extension .mecavideo
 fr.CreateQuickLaunchIcon=Créer un icône dans la barre de lancement rapide
-fr.FileExtensionName=Fichier pyMecaVideo
+fr.FileExtensionName=Fichier pymecavideo
 fr.InstallFor=Installer pour :
 fr.AllUsers=Tous les utilisateurs
 fr.JustMe=Seulement moi
@@ -95,10 +95,10 @@ fr.ExampleFiles = Fichiers d'exemple
 en.uninstall=Uninstall
 en.gpl_licence=Read the GNU GPL
 en.fdl_licence=Read the GNU FDL
-en.AssocFileExtension=&Associate pyMecaVideo with .mecavideo extension
+en.AssocFileExtension=&Associate pymecavideo with .mecavideo extension
 en.CreateDesktopIcon=Create Desktop shortcut to
 en.CreateQuickLaunchIcon=Create a &Quick Launch icon to
-en.FileExtensionName=pyMecaVideo file
+en.FileExtensionName=pymecavideo file
 en.InstallFor=Install for :
 en.AllUsers=All users
 en.JustMe=Just me
@@ -115,7 +115,7 @@ en.ExampleFiles = Example Files
 Name: "custom"; Description: "Custom installation"; Flags: iscustom
 
 [Components]
-Name: "program"; Description: "pyMecaVideo"; Types: custom; Flags: fixed
+Name: "program"; Description: "pymecavideo"; Types: custom; Flags: fixed
 Name: "ff"; Description: {cm:ffmpeg_ffplay}; Types: custom
 Name: "help"; Description: {cm:HelpFiles}; Types: custom
 Name: "exemple"; Description: {cm:ExampleFiles}; Types: custom
@@ -142,12 +142,12 @@ Name: common; Description: {cm:AllUsers}; GroupDescription: {cm:InstallFor}; Fla
 Name: local;  Description: {cm:JustMe}; GroupDescription: {cm:InstallFor}; Flags: exclusive unchecked
 
 [Icons]
-Name: {group}\pyMecaVideo;Filename: {app}\bin\pyMecaVideo.exe; WorkingDir: {app}\bin; IconFileName: {app}\bin\pyMecaVideo.exe
-Name: {group}\{cm:uninstall} pyMecaVideo; Filename: {app}\unins000.exe;IconFileName: {app}\unins000.exe
+Name: {group}\pymecavideo;Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; IconFileName: {app}\bin\pymecavideo.exe
+Name: {group}\{cm:uninstall} pymecavideo; Filename: {app}\unins000.exe;IconFileName: {app}\unins000.exe
 ;
-; On ajoute sur le Bureau l'icône pyMecaVideo
+; On ajoute sur le Bureau l'icône pymecavideo
 ;
-Name: {code:DefDesktop}\pyMecaVideo 5.2;   Filename: {app}\bin\pyMecaVideo.exe; WorkingDir: {app}\bin; MinVersion: 4,4; Tasks: desktopicon2; IconFileName: {app}\bin\pyMecaVideo.exe
+Name: {code:DefDesktop}\pymecavideo 5.2;   Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; MinVersion: 4,4; Tasks: desktopicon2; IconFileName: {app}\bin\pymecavideo.exe
 
 
 [_ISTool]
@@ -158,11 +158,11 @@ Use7zip=true
 ; Tout ce qui concerne les fichiers .mecavideo
 Root: HKCR; SubKey: .mecavideo; ValueType: string; ValueData: {cm:FileExtensionName}; Flags: uninsdeletekey
 Root: HKCR; SubKey: {cm:FileExtensionName}; ValueType: string; Flags: uninsdeletekey; ValueData: {cm:FileExtensionName}
-Root: HKCR; SubKey: {cm:FileExtensionName}\Shell\Open\Command; ValueType: string; ValueData: """{app}\bin\pyMecaVideo.exe"" ""%1"""; Flags: uninsdeletekey;
-Root: HKCR; Subkey: {cm:FileExtensionName}\DefaultIcon; ValueType: string; ValueData: {app}\data\icones\pyMecaVideo.ico,0; Flags: uninsdeletekey;
+Root: HKCR; SubKey: {cm:FileExtensionName}\Shell\Open\Command; ValueType: string; ValueData: """{app}\bin\pymecavideo.exe"" ""%1"""; Flags: uninsdeletekey;
+Root: HKCR; Subkey: {cm:FileExtensionName}\DefaultIcon; ValueType: string; ValueData: {app}\data\icones\pymecavideo.ico,0; Flags: uninsdeletekey;
 
 ; Pour stocker le style d'installation : "All users" ou "Current user"
-Root: HKLM; Subkey: Software\pyMecaVideo; ValueType: string; ValueName: DataFolder; ValueData: {code:DefAppDataFolder}\pyMecaVideo ; Flags: uninsdeletekey;
+Root: HKLM; Subkey: Software\pymecavideo; ValueType: string; ValueName: DataFolder; ValueData: {code:DefAppDataFolder}\pymecavideo ; Flags: uninsdeletekey;
 
 
 
@@ -171,7 +171,7 @@ Procedure URLLabelOnClick(Sender: TObject);
 var
   ErrorCode: Integer;
 begin
-  ShellExec('open', 'http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  ShellExec('open', 'http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/pymecavideo', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
 end;
 
 {*** INITIALISATION ***}
@@ -180,7 +180,7 @@ var
   URLLabel: TNewStaticText;
 begin
   URLLabel := TNewStaticText.Create(WizardForm);
-  URLLabel.Caption := 'PyMecaVideo Web Site';
+  URLLabel.Caption := 'pymecavideo Web Site';
   URLLabel.Cursor := crHand;
   URLLabel.OnClick := @URLLabelOnClick;
   URLLabel.Parent := WizardForm;
@@ -210,6 +210,7 @@ begin
   else
     Result := ExpandConstant('{userdesktop}')
 end;
+
 
 
 
