@@ -1586,7 +1586,7 @@ class StartQT4(QMainWindow):
     def openexample(self):
         dir_="%s/video" %(self._dir("share"))
         self.reinitialise_tout()
-        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)","utf8")))
+        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov)","utf8")))
         self.openTheFile(filename)
         
     def openfile(self):
@@ -1594,7 +1594,7 @@ class StartQT4(QMainWindow):
         Ouvre un dialogue pour choisir un fichier vidéo puis le charge
         """
         dir_=self._dir("stockmovies")
-        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg)","utf8")))
+        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov)","utf8")))
         print "open", filename
         self.openTheFile(filename)
         
