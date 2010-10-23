@@ -44,7 +44,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -249,7 +249,7 @@
        </widget>
        <widget class="QGroupBox" name="groupBox_2">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="geometry">
          <rect>
@@ -307,7 +307,7 @@ vers le bas</string>
         </widget>
         <widget class="QPushButton" name="pushButton_origine">
          <property name="enabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="geometry">
           <rect>
@@ -970,6 +970,15 @@ automatique</string>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <widget class="QComboBox" name="comboBox_mode_tracer">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContents</enum>
+           </property>
            <item>
             <property name="text">
              <string>Choisir ...</string>
@@ -977,27 +986,8 @@ automatique</string>
            </item>
           </widget>
          </item>
-         <item>
-          <widget class="QLabel" name="label_graphiques">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
-       <zorder>label_3</zorder>
-       <zorder>groupBox_4</zorder>
-       <zorder>groupBox_5</zorder>
-       <zorder>groupBox_6</zorder>
-       <zorder>groupBox_7</zorder>
-       <zorder>label_graphiques</zorder>
       </widget>
       <widget class="QWidget" name="tab_coord">
        <attribute name="title">
@@ -1070,7 +1060,7 @@ automatique</string>
      <x>0</x>
      <y>0</y>
      <width>820</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

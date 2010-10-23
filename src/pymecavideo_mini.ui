@@ -268,7 +268,7 @@
        </widget>
        <widget class="QGroupBox" name="groupBox_2">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="geometry">
          <rect>
@@ -326,7 +326,7 @@ vers le bas</string>
         </widget>
         <widget class="QPushButton" name="pushButton_origine">
          <property name="enabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="geometry">
           <rect>
@@ -343,7 +343,7 @@ vers le bas</string>
           <bool>false</bool>
          </property>
         </widget>
-        <widget class="QCheckBox" name="checkBox_ordonnees_2">
+        <widget class="QCheckBox" name="checkBox_auto">
          <property name="geometry">
           <rect>
            <x>20</x>
@@ -995,30 +995,17 @@ automatique</string>
            <height>20</height>
           </rect>
          </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <item>
           <property name="text">
            <string>Choisir ...</string>
           </property>
          </item>
-        </widget>
-        <widget class="QLabel" name="label_graphiques">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>10</y>
-           <width>121</width>
-           <height>61</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
         </widget>
        </widget>
       </widget>
@@ -1051,6 +1038,36 @@ automatique</string>
         <property name="text">
          <string>changer d'échelle ?</string>
         </property>
+       </widget>
+       <widget class="QComboBox" name="exportCombo">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>10</y>
+          <width>131</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <item>
+         <property name="text">
+          <string>Exporter vers ....</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Oo.o Calc</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Qtiplot</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>SciDAVis</string>
+         </property>
+        </item>
        </widget>
       </widget>
      </widget>

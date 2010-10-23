@@ -288,8 +288,8 @@ class StartQT4(QMainWindow):
             #print "gnuplot OK"
         else :
             #print "gnuplot NOK"
-            self.ui.label_graphiques.setText(QString(self.tr("Manque Gnuplot")))
-            self.ui.comboBox_mode_tracer.hide()
+            self.ui.comboBox_mode_tracer.setItemText(0,QString(self.tr(unicode("manque\nGnuplot","utf8"))))
+            self.ui.comboBox_mode_tracer.setEnabled(0)
             self.ui.groupBox_7.setEnabled(0)
 
             
@@ -1239,12 +1239,13 @@ class StartQT4(QMainWindow):
 #                    if self.platform.lower()=="windows":
 #                    self.ui.comboBox_mode_tracer.setEnabled(0)
                 # on fait la liste des courbes traçables
-                self.ui.comboBox_mode_tracer.clear()
-                self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
-                for i in range(self.nb_de_points) :
-                    self.ui.comboBox_mode_tracer.addItem(QString("x%d(t)" %(i+1)))
-                    self.ui.comboBox_mode_tracer.addItem(QString("y%d(t)" %(i+1)))
-                    self.ui.comboBox_mode_tracer.addItem(QString("v%d(t)" %(i+1)))
+                if self.ui.groupBox_7.isEnabled():
+                    self.ui.comboBox_mode_tracer.clear()
+                    self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
+                    for i in range(self.nb_de_points) :
+                        self.ui.comboBox_mode_tracer.addItem(QString("x%d(t)" %(i+1)))
+                        self.ui.comboBox_mode_tracer.addItem(QString("y%d(t)" %(i+1)))
+                        self.ui.comboBox_mode_tracer.addItem(QString("v%d(t)" %(i+1)))
 
                 # on trace les points compte tenu du référentiel
                 for n in range(self.nb_de_points):
