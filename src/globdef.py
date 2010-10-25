@@ -88,6 +88,21 @@ if sys.platform == 'win32':
 else:
     PATH = APP_DATA_PATH = ""
     
+
+#
+# Dossier gnuplot
+#
+def GetGnuplotPath():
+    paths = os.environ['PATH'].split(os.pathsep)
+    paths.append(os.environ['PROGRAMFILES'])
+    GNUPLOT_PATH = None
+    for p in paths:
+        if os.access(os.path.join(p,"gnuplot"), os.X_OK):
+            GNUPLOT_PATH = p
+    return os.path.join(GNUPLOT_PATH, "gnuplot", "binary")
+GNUPLOT_PATH = GetGnuplotPath()
+
+
 #
 # Nom du dossier des images extraites
 #

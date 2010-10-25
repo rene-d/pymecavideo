@@ -63,7 +63,10 @@ from label_auto import Label_Auto
 import qtiplotexport
 from subprocess import *
 import re
-from traceur import traceur2d
+if sys.platform == "win32":
+    from mpl import traceur2d
+else:
+    from traceur import traceur2d
 import threading
 import platform, subprocess
 import tempfile
@@ -71,7 +74,9 @@ import tempfile
 from globdef import PATH, APP_DATA_PATH, EXT_IMG, GetChildStdErr, IMG_PATH, VIDEO
 
 from detect import filter_picture
-import Error
+
+if sys.argv[0].endswith(".exe"):
+    import Error
 #import Error
 
 class MonThreadDeCalcul(QThread):
@@ -110,7 +115,8 @@ class StartQT4(QMainWindow):
         ######QT
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
-        Error._ = self.tr
+        if sys.argv[0].endswith(".exe"):
+            Error._ = self.tr
 #        Error._ = self.tr
         #### Mode plein écran
         self.plein_ecran = False
@@ -253,6 +259,7 @@ class StartQT4(QMainWindow):
             paths = os.environ['PATH'].split(os.pathsep)
             paths.append(PATH)
             print "paths", paths
+#            print "paths", paths
             if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in paths)) :
                 ok_ffmpeg = False
 #            if not(any(os.access(os.path.join(p,self.player), os.X_OK) for p in paths)) :
@@ -1359,10 +1366,13 @@ class StartQT4(QMainWindow):
                     styleTrace="zero"
             else: # type de courbe "v""
                 styleTrace="zero"
-            # le tracé est fait dans un nouveau thread
-            t=threading.Thread(target=traceur2d, args=(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace))
-            t.setDaemon(True) # le tracé peut survivre à pymecavideo
-            t.start()
+            
+            if sys.platform == "win32":
+                traceur2d(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace)
+            else:# le tracé est fait dans un nouveau thread
+                t=threading.Thread(target=traceur2d, args=(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace))
+                t.setDaemon(True) # le tracé peut survivre à pymecavideo
+                t.start()
 #            except:
 #                pass # il faut accepter que le combo soit vide à l'initialisation
     
@@ -1468,13 +1478,14 @@ class StartQT4(QMainWindow):
      
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
 #        try :
-        self.label_video.setMouseTracking(True)
-        self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
-        self.label_video.met_a_jour_crop()
-        self.label_video.update()
-        self.label_video.show()
-        self.ui.horizontalSlider.setValue(self.index_de_l_image)
-        self.ui.spinBox_image.setValue(self.index_de_l_image)
+        if hasattr(self, "label_video"):
+            self.label_video.setMouseTracking(True)
+            self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
+            self.label_video.met_a_jour_crop()
+            self.label_video.update()
+            self.label_video.show()
+            self.ui.horizontalSlider.setValue(self.index_de_l_image)
+            self.ui.spinBox_image.setValue(self.index_de_l_image)
 #        except AttributeError:
 #            print "error!!"
 #            pass
