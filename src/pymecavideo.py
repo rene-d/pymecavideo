@@ -63,10 +63,11 @@ from label_auto import Label_Auto
 import qtiplotexport
 from subprocess import *
 import re
-if sys.platform == "win32":
-    from mpl import traceur2d
-else:
-    from traceur import traceur2d
+
+from mpl import traceur2d
+# on préfèrera définitivement le module mpl au module traceur ?
+#from traceur import traceur2d
+
 import threading
 import platform, subprocess
 import tempfile
