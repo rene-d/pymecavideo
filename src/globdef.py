@@ -94,7 +94,8 @@ else:
 #
 def GetGnuplotPath():
     paths = os.environ['PATH'].split(os.pathsep)
-    paths.append(os.environ['PROGRAMFILES'])
+    if 'PROGRAMFILES' in os.environ.keys():
+        paths.append(os.environ['PROGRAMFILES'])
     GNUPLOT_PATH = None
     for p in paths:
         if os.access(os.path.join(p,"gnuplot"), os.X_OK):
