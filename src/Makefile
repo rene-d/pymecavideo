@@ -18,7 +18,7 @@ pymecavideo.1: manpage.xml
 
 clean:
 	rm -rf build
-	rm -f video_*.jpg *~ Ui_* *.pyc *.txt *.1 ../data/lang/*.qm
+	rm -f video_*.jpg *~ Ui_* *.pyc *.txt *.1 ../data/lang/*.qm *.log
 	make -C help clean
 
 install-for-debian: all install-bin install-man install-help install-media fix-install
