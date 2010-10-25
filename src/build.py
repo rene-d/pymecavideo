@@ -5,10 +5,12 @@ from distutils.core import setup
 import py2exe
 import os
 import PyQt4
+import matplotlib
 
 # Remove the build folder, a bit slower but ensures that build contains the latest
 import shutil
 shutil.rmtree("build", ignore_errors=True)
+shutil.rmtree("dist", ignore_errors=True)
 
 from glob import glob
 data_files = [("Microsoft.VC90.CRT", glob(r'msvcr90.dll')), 
@@ -20,7 +22,7 @@ data_files = [("Microsoft.VC90.CRT", glob(r'msvcr90.dll')),
                                               'imageformats', 
                                               'qjpeg4.dll')])
               ]
-
+data_files += matplotlib.get_py2exe_datafiles()
 
 options = {    "py2exe" : { "compressed": 2,
                            
@@ -30,16 +32,26 @@ options = {    "py2exe" : { "compressed": 2,
                             
                             'packages' : ['win32api'], #'pytz',
                             
-                            "includes": ["sip"],#, "PyQt4.QtCore", "PyQt4.QtGui"],
+                            "includes": ["sip", #"matplotlib.backends",
+                                         "matplotlib.backends.backend_tkagg"],#, "PyQt4.QtCore", "PyQt4.QtGui"],
                             
-                            'excludes' : ['_gtkagg', '_tkagg', 'bsddb', 'curses', 'pywin.debugger',
-                                          'pywin.debugger.dbgcon', 'pywin.dialogs', 'tcl',
-                                          'Tkconstants', 'Tkinter', 'pydoc', 'doctest', 'test', 'sqlite3'
+                            'excludes' : ['bsddb', 'curses', 'pywin.debugger',
+                                          'pywin.debugger.dbgcon', 'pywin.dialogs', 
+                                          'pydoc', 'doctest', 'test', 'sqlite3',
+                                          "matplotlib.backends.backend_wxagg",
+                                          "matplotlib.backends.backend_wx",
+                                          '_gtkagg'
+                                          
+#                                          '_wxagg','_wx',#'_gtkagg', #'_tkagg','Tkinter''Tkconstants',tcl',
+#                                          ,'_agg2','_cairo',
+#                                          '_cocoaagg', '_fltkagg', '_gtk', '_gtkcairo'
                                           ],
                             
-                            'dll_excludes' : ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl85.dll',
-                                              'tk85.dll', "UxTheme.dll", "mswsock.dll", "POWRPROF.dll" , 
-                                              "AVIFIL32.dll", 'AVICAP32.dll', 'MSACM32.dll', 'OLEPRO32.DLL'],
+                            'dll_excludes' : ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 
+                                              "UxTheme.dll", "mswsock.dll", "POWRPROF.dll" , 
+                                              "AVIFIL32.dll", 'AVICAP32.dll', 'MSACM32.dll', 'OLEPRO32.DLL',
+                                              #'tk85.dll', 'tcl85.dll',
+                                              ],
 
                                    }     }
 

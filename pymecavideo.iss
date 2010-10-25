@@ -32,7 +32,7 @@ SourceDir=D:\Documents\Developpement\pymecavideo
 ;Repertoire d'installation
 DefaultDirName={pf}\pymecavideo
 DefaultGroupName=pymecavideo
-LicenseFile=gpl-2.0.txt
+LicenseFile=gpl-3.0.txt
 
 ;Paramètres de compression
 ;lzma ou zip
@@ -210,6 +210,7 @@ begin
   else
     Result := ExpandConstant('{userdesktop}')
 end;
+
 
 
 

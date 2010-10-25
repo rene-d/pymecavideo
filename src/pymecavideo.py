@@ -39,9 +39,15 @@ licence['fr']=u"""
     
     <http://www.gnu.org/licenses/>.
 """
-
+#
+# Le module de gestion des erreurs n'est chargé que si on execute le fichier .exe ou si on est sous Linux
+#
+import sys
+if sys.platform != "win32" or sys.argv[0].endswith(".exe"):
+    import Error
+    
 from vecteur import vecteur
-import sys, os, thread, time, commands, linecache, codecs, re
+import os, thread, time, commands, linecache, codecs, re
 import locale, getopt, pickle
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -76,8 +82,7 @@ from globdef import PATH, APP_DATA_PATH, EXT_IMG, GetChildStdErr, IMG_PATH, VIDE
 
 from detect import filter_picture
 
-if sys.argv[0].endswith(".exe"):
-    import Error
+
 #import Error
 
 class MonThreadDeCalcul(QThread):
@@ -116,8 +121,10 @@ class StartQT4(QMainWindow):
         ######QT
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
-        if sys.argv[0].endswith(".exe"):
+        try:
             Error._ = self.tr
+        except:
+            pass
 #        Error._ = self.tr
         #### Mode plein écran
         self.plein_ecran = False
@@ -291,7 +298,7 @@ class StartQT4(QMainWindow):
              
 
         ######vérification de la présencde gnuplot
-        if  any(os.access(os.path.join(p,"gnuplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
+        if  sys.platform == "win32" or any(os.access(os.path.join(p,"gnuplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
             pass
             #print "gnuplot OK"
         else :

@@ -100,7 +100,10 @@ def GetGnuplotPath():
     for p in paths:
         if os.access(os.path.join(p,"gnuplot"), os.X_OK):
             GNUPLOT_PATH = p
-    return os.path.join(GNUPLOT_PATH, "gnuplot", "binary")
+    if GNUPLOT_PATH != None:
+        return os.path.join(GNUPLOT_PATH, "gnuplot", "binary")
+    else:
+        return ""
 GNUPLOT_PATH = GetGnuplotPath()
 
 
