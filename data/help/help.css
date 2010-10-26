@@ -34,9 +34,22 @@ padding-left:2%;
 padding-right:2%;
 }
 
+div.appendix {
+float:left;
+width:74%;
+left: 0px;
+background:LavenderBlush;
+border:2px solid #564b47;
+border-style: outset;
+margin-bottom:5px;
+margin-top:5px;
+padding-left:2%;
+padding-right:2%;
+}
+
 div.toc  {
 width:20%;
-max-height:70%;
+max-height:40%;
 position:absolute;
 right:0;
 font-size:95%;
@@ -67,7 +80,7 @@ html>body .toc {
  }
 
 pre.programlisting{ 
- font-size:140%;
+ font-size:110%;
  color:wheat;
  background:darkslategrey;
  padding:0.3em;
@@ -79,13 +92,17 @@ pre.programlisting{
 div.footnotes{ 
 float:left;
 clear:both;
-width:100%;
+width:74%;
 left: 0px;
 font-size:90%;
-border: 1px solid grey;
+border:2px solid #564b47;
+border-style: outset;
+margin-bottom:5px;
+margin-top:5px;
+padding-left:2%;
+padding-right:2%;
 color:Navy;
 background:#ddffee; 
-margin-bottom:10px;
  }
 
 .term{ 

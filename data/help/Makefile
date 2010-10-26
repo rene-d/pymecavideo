@@ -1,7 +1,15 @@
 SOURCES=$(shell ls *.xml)
-TARGETS=$(SOURCES:.xml=.xhtml)
+SOURCES_W32 = win.svg tux.svg # image sources (width 32 px)
+GENERATED_W32 = $(patsubst %.svg, %.png, $(SOURCES_W32)) # generated images
+TARGETS=$(SOURCES:.xml=.xhtml) $(GENERATED_W32)
 
 all: $(TARGETS)
+
+win.png: win.svg
+	inkscape --export-png=$@ --export-width=32 $<
+tux.png: tux.svg
+	inkscape --export-png=$@ --export-width=32 $<
+
 
 %.xhtml : %.xml
 	@echo "$<   => $@"
@@ -10,4 +18,5 @@ all: $(TARGETS)
 
 clean:
 	rm -f *~ *.xhtml
+	rm -f $(GENERATED_W32)
 
