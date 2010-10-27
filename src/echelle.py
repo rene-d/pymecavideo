@@ -120,8 +120,7 @@ class Label_Echelle(QLabel):
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
             self.update()
 
-
-    def fait_crop(self, p):   
+    def fait_crop(self, p):
         rect = QRect(p.x()-25,p.y()-25,50,50)
         crop = self.app.image_640_480.copy(rect)
         self.cropX2=QPixmap.fromImage(crop.scaled(100,100,Qt.KeepAspectRatio))
