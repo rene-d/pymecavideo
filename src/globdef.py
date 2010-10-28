@@ -150,3 +150,4 @@ def GetChildStdErr():
         return childstderr, win32process.CREATE_NO_WINDOW
     else:
         return None, 0
+

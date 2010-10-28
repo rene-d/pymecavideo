@@ -19,26 +19,34 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import sys
 import matplotlib
-#matplotlib.use('Qt4Agg')
+if sys.platform == "win32":
+    matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt
+
 
 figNo=0
 fig=None
 
 def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None):
-    global fig, figNo
-
-    # conserve la même fenêtre de matplotlib quand elle a été créée
-    # pour la réutiliser. Il faut éviter de la fermer, ou alors, faire
-    # un peu de magie quand cette fenêtre est fermée, pour autoriser
-    # à la re-créer (ce n'est pas le cas dans la révision du 25 octobre 2010)
-    if figNo==0:
-        figNo=1
+    if sys.platform == "win32":
+        #
+        # Pas de problème sous windows car on n'ouvre pas de thread séparé
+        #
         fig = plt.figure(1)
     else:
-        fig.clear()
+        global fig, figNo
+        # conserve la même fenêtre de matplotlib quand elle a été créée
+        # pour la réutiliser. Il faut éviter de la fermer, ou alors, faire
+        # un peu de magie quand cette fenêtre est fermée, pour autoriser
+        # à la re-créer (ce n'est pas le cas dans la révision du 25 octobre 2010)
+        if figNo==0:
+            figNo=1
+            fig = plt.figure(1)
+        else:
+            fig.clear()
+            
     ax = fig.add_subplot(111)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
@@ -57,3 +65,27 @@ def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None):
         """
         return traceur2d(x,y,xlabel, ylabel, titre)
     
+    
+    
+#
+# Ce qui suit pourrait servir à intégrer les "plots" dans la fenêtre principale de pymecavideo
+# ce n'est pas fini !!! ce ne sont que les bases !!!
+#
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+
+class MyMplCanvas(FigureCanvas):
+    """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+
+        #
+        FigureCanvas.__init__(self, fig)
+        self.setParent(parent)
+
+        FigureCanvas.setSizePolicy(self,
+                                   QtGui.QSizePolicy.Expanding,
+                                   QtGui.QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+

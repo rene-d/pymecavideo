@@ -98,7 +98,7 @@ def SendBugReport():
     from PyQt4.QtGui import QMessageBox
     from PyQt4.QtCore import QString
     print "erreur"
-    message=_(u"pymecavideo à rencontré une erreur et doit être fermé.\nVoulez-vous envoyer un rapport de bug ?")
+    message=_(u"pymecavideo a rencontré une erreur et doit être fermé.\nVoulez-vous envoyer un rapport de bug ?")
     
     dlg = QMessageBox.warning(None,QString(_(unicode("Erreur","utf8"))),
                               QString(message),
@@ -108,7 +108,7 @@ def SendBugReport():
         #
         # D�finition du mail
         #
-        e_mail="ashashiwa@gmail.com;georgesk@ofset.org;cedrick.faury@freesbee.fr"
+        e_mail="pymecavideo-bugs@lists.tuxfamily.org"
         now = str(datetime.datetime.now())
         subject=u"pymecavideo " + globdef.VERSION
         subject+= _(u" : rapport de bug") + now

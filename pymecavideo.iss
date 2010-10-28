@@ -43,7 +43,7 @@ SolidCompression=yes
 PrivilegesRequired=none
 
 ;Nom du fichier généré et répertoire de destination
-OutputBaseFilename=pyMecaVideo 5.2
+OutputBaseFilename=pymecavideo_5.2_setup
 OutputDir=releases
 
 ;Dans le panneau de configuration de Windows2000/NT/XP, c'est l'icone de pymecavideo.exe qui
@@ -210,6 +210,7 @@ begin
   else
     Result := ExpandConstant('{userdesktop}')
 end;
+
 
 
 

@@ -266,7 +266,7 @@ class StartQT4(QMainWindow):
         if sys.platform == 'win32':
             paths = os.environ['PATH'].split(os.pathsep)
             paths.append(PATH)
-            print "paths", paths
+#            print "paths", paths
 #            print "paths", paths
             if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in paths)) :
                 ok_ffmpeg = False

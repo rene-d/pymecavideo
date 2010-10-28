@@ -33,24 +33,25 @@ options = {    "py2exe" : { "compressed": 2,
                             'packages' : ['win32api'], #'pytz',
                             
                             "includes": ["sip", #"matplotlib.backends",
-                                         "matplotlib.backends.backend_tkagg"],#, "PyQt4.QtCore", "PyQt4.QtGui"],
+                                         "matplotlib.backends.backend_qt4agg"
+                                         ],#, "PyQt4.QtCore", "PyQt4.QtGui"],
                             
                             'excludes' : ['bsddb', 'curses', 'pywin.debugger',
                                           'pywin.debugger.dbgcon', 'pywin.dialogs', 
                                           'pydoc', 'doctest', 'test', 'sqlite3',
+                                          'Tkinter', 'Tkconstants','tcl',
                                           "matplotlib.backends.backend_wxagg",
                                           "matplotlib.backends.backend_wx",
-                                          '_gtkagg'
-                                          
-#                                          '_wxagg','_wx',#'_gtkagg', #'_tkagg','Tkinter''Tkconstants',tcl',
-#                                          ,'_agg2','_cairo',
-#                                          '_cocoaagg', '_fltkagg', '_gtk', '_gtkcairo'
-                                          ],
+                                          '_gtkagg', '_tkagg',
+                                          '_wxagg','_wx',#'_gtkagg', #,
+                                          '_agg2','_cairo',
+                                          '_cocoaagg', '_fltkagg', '_gtk', '_gtkcairo'
+                                          'numpy','pylab'],
                             
                             'dll_excludes' : ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 
                                               "UxTheme.dll", "mswsock.dll", "POWRPROF.dll" , 
                                               "AVIFIL32.dll", 'AVICAP32.dll', 'MSACM32.dll', 'OLEPRO32.DLL',
-                                              #'tk85.dll', 'tcl85.dll',
+                                              'tk85.dll', 'tcl85.dll',
                                               ],
 
                                    }     }
