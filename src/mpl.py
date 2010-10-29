@@ -21,71 +21,147 @@
 """
 import sys
 import matplotlib
-if sys.platform == "win32":
-    matplotlib.use('Qt4Agg')
-import matplotlib.pyplot as plt
+#if sys.platform == "win32":
+#    matplotlib.use('Qt4Agg')
+#import matplotlib.pyplot as plt
 
+#
+#fig = plt.figure(1)
+#ax = fig.add_subplot(111)
+#
+#plots = {}
+#
+#def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None, item = None):
+#    print "traceur2d", titre, item
+#    global fig, ax, plots
+#    ax.set_xlabel(xlabel)
+#    ax.set_ylabel(ylabel)
+#    if item in plots:
+#        for p in plots[item]:
+#            p.remove()
+#    plots[item] = ax.plot(x, y, label = str(titre))
+#    
+#    l = ax.legend()
+#    d1 = l.draggable()
+#
+#    plt.draw()
+#    
+#plt.show()
+#plt.hide()
+#    
+#    
 
-figNo=0
-fig=None
-
-def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None):
-    if sys.platform == "win32":
-        #
-        # Pas de problème sous windows car on n'ouvre pas de thread séparé
-        #
-        fig = plt.figure(1)
-    else:
-        global fig, figNo
-        # conserve la même fenêtre de matplotlib quand elle a été créée
-        # pour la réutiliser. Il faut éviter de la fermer, ou alors, faire
-        # un peu de magie quand cette fenêtre est fermée, pour autoriser
-        # à la re-créer (ce n'est pas le cas dans la révision du 25 octobre 2010)
-        if figNo==0:
-            figNo=1
-            fig = plt.figure(1)
-        else:
-            fig.clear()
-            
-    ax = fig.add_subplot(111)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.plot(x, y, label = str(titre))
-    ax.legend()
-    
-    plt.show()
-    
-    
-    def __call__(x,y,xlabel="", ylabel="", titre=""):
-        """
-        traceur2d doit se présenter comme une fonction pour pouvoir
-        être appelé par threading.Thread(), d'où l'implémentation de
-        __call__. Cependant l'implémentation de mathplotlib est peu
-        efficace quand on utilise des threads.
-        """
-        return traceur2d(x,y,xlabel, ylabel, titre)
-    
-    
-    
+#figNo=0
+#fig=None
+#
+#def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None, item = None):
+#    
+#    if sys.platform == "win32":
+#        #
+#        # Pas de problème sous windows car on n'ouvre pas de thread séparé
+#        #
+#        fig = plt.figure(1)
+#    else:
+#        global fig, figNo
+#        # conserve la même fenêtre de matplotlib quand elle a été créée
+#        # pour la réutiliser. Il faut éviter de la fermer, ou alors, faire
+#        # un peu de magie quand cette fenêtre est fermée, pour autoriser
+#        # à la re-créer (ce n'est pas le cas dans la révision du 25 octobre 2010)
+#        if figNo==0:
+#            figNo=1
+#            fig = plt.figure(1)
+#        else:
+#            fig.clear()
+#            
+#    ax = fig.add_subplot(111)
+#    ax.set_xlabel(xlabel)
+#    ax.set_ylabel(ylabel)
+#    ax.plot(x, y, label = str(titre))
+#    ax.legend()
+#    
+#    plt.show()
+#    
+#    
+#    def __call__(x,y,xlabel="", ylabel="", titre=""):
+#        """
+#        traceur2d doit se présenter comme une fonction pour pouvoir
+#        être appelé par threading.Thread(), d'où l'implémentation de
+#        __call__. Cependant l'implémentation de mathplotlib est peu
+#        efficace quand on utilise des threads.
+#        """
+#        return traceur2d(x,y,xlabel, ylabel, titre)
+#    
+#
+#    
 #
 # Ce qui suit pourrait servir à intégrer les "plots" dans la fenêtre principale de pymecavideo
 # ce n'est pas fini !!! ce ne sont que les bases !!!
 #
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+from PyQt4 import QtGui 
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
+from matplotlib.pyplot import setp
+
+FONT_SIZE = 8
 
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+        
+        self.set_window_title("Courbes")
+        
+        self.axes_xy = fig.add_subplot(211)
+        self.axes_v = fig.add_subplot(212)
+        
+        for ax in [self.axes_xy, self.axes_v]:
+            setp(ax.get_xaxis().get_ticklabels(), fontsize = FONT_SIZE) 
+            setp(ax.get_yaxis().get_ticklabels(), fontsize = FONT_SIZE) 
 
         #
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
 
-        FigureCanvas.setSizePolicy(self,
-                                   QtGui.QSizePolicy.Expanding,
-                                   QtGui.QSizePolicy.Expanding)
+#        FigureCanvas.setSizePolicy(self,
+#                                   QtGui.QSizePolicy.Expanding,
+#                                   QtGui.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
 
+        self.toolbar = NavigationToolbar2QTAgg(self, self)
+        self.toolbar.show()
+
+
+        self.plots = {}
+
+canvas = MyMplCanvas()
+
+def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None, item = None):
+    print "traceur2d", titre, item
+    global canvas
+    
+    typeDeCourbe=("x","y","v")[(item-1)%3]
+    if typeDeCourbe == "v":
+        ax = canvas.axes_v
+    else:
+        ax = canvas.axes_xy
+    ax.set_xlabel(xlabel, size = FONT_SIZE)
+    ax.set_ylabel(ylabel, size = FONT_SIZE)
+    if item in canvas.plots:
+        for p in canvas.plots[item]:
+            p.remove()
+    canvas.plots[item] = ax.plot(x, y, label = str(titre))
+    
+    leg = ax.legend(shadow = True)
+    d1 = leg.draggable()
+
+    frame  = leg.get_frame()
+    frame.set_facecolor('0.80')    
+    
+    for t in leg.get_texts():
+        t.set_fontsize(FONT_SIZE)    
+
+
+    canvas.draw()
+    
+    canvas.show()

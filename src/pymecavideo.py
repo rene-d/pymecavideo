@@ -1327,9 +1327,9 @@ class StartQT4(QMainWindow):
             if itemChoisi <= 0: return # c'est rien du tout.
             numero=(itemChoisi-1)/3
             typeDeCourbe=("x","y","v")[(itemChoisi-1)%3]
-            titre=(self.tr("Evolution de l'abscisse du point %1").arg(numero+1),
-                  self.tr("Evolution de l'ordonnée du point %1").arg(numero+1),
-                  self.tr("Evolution de la vitesse du point %1").arg(numero+1))[(itemChoisi-1)%3]
+            titre=(self.tr(u"Evolution de l'abscisse du point %1").arg(numero+1),
+                   self.tr("Evolution de l'ordonnée du point %1").arg(numero+1),
+                   self.tr(u"Evolution de la vitesse du point %1").arg(numero+1))[(itemChoisi-1)%3]
             titre=titre.toAscii()
             abscisse=[]
             ordonnee=[]
@@ -1376,7 +1376,7 @@ class StartQT4(QMainWindow):
                 styleTrace="zero"
             
             if sys.platform == "win32":
-                traceur2d(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace)
+                traceur2d(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
             else:# le tracé est fait dans un nouveau thread
                 t=threading.Thread(target=traceur2d, args=(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace))
                 t.setDaemon(True) # le tracé peut survivre à pymecavideo
