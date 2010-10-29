@@ -143,12 +143,13 @@ def traceur2d(canvas,x,y,xlabel="", ylabel="", titre="", style=None, item = None
         ax = canvas.axes_v
     else:
         ax = canvas.axes_xy
-    ax.set_xlabel(xlabel, size = FONT_SIZE)
-    ax.set_ylabel(ylabel, size = FONT_SIZE)
+    ax.set_xlabel(unicode(xlabel,"ISO-8859-1"), size = FONT_SIZE)
+    ax.set_ylabel(unicode(ylabel,"ISO-8859-1"), size = FONT_SIZE)
+    ax.grid()
     if item in canvas.plots:
         for p in canvas.plots[item]:
             p.remove()
-    canvas.plots[item] = ax.plot(x, y, label = str(titre))
+    canvas.plots[item] = ax.plot(x, y, label = unicode(str(titre),"ISO-8859-1"))
     
     leg = ax.legend(shadow = True)
     if hasattr(leg,"draggable"):
