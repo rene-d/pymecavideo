@@ -104,7 +104,7 @@ class Label_Echelle(QLabel):
     def paintEvent(self, event):
         painter = QPainter()
         painter.begin(self)
-        #painter.drawPixmap(0,0,self.pix)
+
 	painter.setPen(Qt.red)
         if self.p1.x() >= 0:
 	    painter.drawLine(self.p1.x(), self.p1.y(), self.p2.x(), self.p2.y())
