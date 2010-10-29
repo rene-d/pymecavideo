@@ -151,7 +151,7 @@ def traceur2d(canvas,x,y,xlabel="", ylabel="", titre="", style=None, item = None
     canvas.plots[item] = ax.plot(x, y, label = str(titre))
     
     leg = ax.legend(shadow = True)
-    if sys.platform == "win32":
+    if hasattr(leg,"draggable"):
         d1 = leg.draggable()
 
     frame  = leg.get_frame()
