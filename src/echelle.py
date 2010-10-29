@@ -159,7 +159,6 @@ class Label_Echelle_Trace(QLabel):
         self.setAutoFillBackground(False)
         self.p1=p1
         self.p2=p2
-        #self.setCursor(Qt.CrossCursor)
         self.setMouseTracking(True)
     def mouseMoveEvent(self, event):
         event.ignore()
@@ -168,7 +167,6 @@ class Label_Echelle_Trace(QLabel):
     def paintEvent(self, event):
         painter = QPainter()
         painter.begin(self)
-        #painter.drawPixmap(0,0,self.pix)
         painter.setPen(Qt.green)
         painter.drawLine(self.p1.x(), self.p1.y(), self.p2.x(), self.p2.y())
         painter.end()

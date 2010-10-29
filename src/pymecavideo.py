@@ -1311,9 +1311,9 @@ class StartQT4(QMainWindow):
             numero=(itemChoisi-1)/3
             typeDeCourbe=("x","y","v")[(itemChoisi-1)%3]
             titre=(self.tr(u"Evolution de l'abscisse du point %1").arg(numero+1),
-                   self.tr("Evolution de l'ordonnée du point %1").arg(numero+1),
+                   self.tr(u"Evolution de l'ordonnee du point %1").arg(numero+1),
                    self.tr(u"Evolution de la vitesse du point %1").arg(numero+1))[(itemChoisi-1)%3]
-            titre=titre.toAscii()
+            #titre=titre.toAscii()
             abscisse=[]
             ordonnee=[]
             t=0
