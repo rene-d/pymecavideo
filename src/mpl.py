@@ -111,10 +111,11 @@ class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     def __init__(self,parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
+
         self.fig = fig
-        
+
         self.set_window_title("Courbes")
-        
+
         self.axes_xy = fig.add_subplot(211)
         self.axes_v = fig.add_subplot(212)
         self.pos_haut  = self.axes_xy.get_position()
@@ -123,6 +124,15 @@ class MyMplCanvas(FigureCanvas):
                         self.pos_haut.width, self.pos_haut.ymax - self.pos_bas.ymin ]
 
         print self.pos_tot
+
+
+
+
+        
+        #self.set_window_title("Courbes")
+        
+        #self.axes_xy = fig.add_subplot(211)
+        #self.axes_v = fig.add_subplot(212)
         
         for ax in [self.axes_xy, self.axes_v]:
             setp(ax.get_xaxis().get_ticklabels(), fontsize = FONT_SIZE) 
@@ -140,10 +150,11 @@ class MyMplCanvas(FigureCanvas):
         self.toolbar = NavigationToolbar2QTAgg(self, self)
         self.toolbar.show()
 
+
         self.plots = {}
-        
-        
-        
+
+
+
     def gererAxes(self):
         xy, v = self.getTypeCourbe()
         if xy == 0:
@@ -159,24 +170,33 @@ class MyMplCanvas(FigureCanvas):
             self.axes_xy.set_visible(True)
             self.axes_xy.set_position(self.pos_haut)
             self.axes_v.set_position(self.pos_bas)
-            
-                
-        
+
+
+
     def getTypeCourbe(self):
         v, xy = 0,0
         for t in self.plots.keys():
             typeDeCourbe=("x","y","v")[(t-1)%3]
             if typeDeCourbe == "v":
-                v +=1 
+                v +=1
             else:
                 xy += 1
         return xy, v
+
+
+
+
+
+        
 
 class mplWindow(QDialog):
     def __init__(self, parent,widget1,widget2):
         QDialog.__init__(self,parent)
         self.parent = parent
         self.layout = QVBoxLayout()
+        self.update_widgets(widget1,widget2)
+        
+    def update_widgets(self,widget1,widget2):
         self.layout.addWidget(widget1)
         self.layout.addWidget(widget2)
         self.setLayout(self.layout)
@@ -186,7 +206,22 @@ class traceur2d(QObject):
         print "traceur2d", titre, item
         self.parent = parent
         self.canvas  = self.parent.canvas
+        self.update_canvas(x,y,xlabel,ylabel,titre,style,item)
 
+    def update(self):
+        self.mpl_window.update_widgets(self.canvas,self.canvas.toolbar)
+        self.mpl_window.show()
+
+    def update_canvas(self,x,y,xlabel="", ylabel="", titre="", style=None, item = None):
+        if hasattr(self,'mpl_window') :
+            self.mpl_window.hide()
+            del self.mpl_window
+        self.change_canvas(x,y,xlabel,ylabel,titre,style,item)
+        self.mpl_window = mplWindow(self.parent,self.canvas,self.canvas.toolbar)
+        self.mpl_window.show()
+
+    def change_canvas(self,x,y,xlabel="", ylabel="", titre="", style=None, item = None):
+        print "#########traceur2d", titre, item
         typeDeCourbe=("x","y","v")[(item-1)%3]
         if typeDeCourbe == "v":
             ax = self.canvas.axes_v
@@ -198,9 +233,8 @@ class traceur2d(QObject):
             for p in self.canvas.plots[item]:
                 p.remove()
         self.canvas.plots[item] = ax.plot(x, y, label = str(titre))
-
         self.canvas.gererAxes()
-        
+
         leg = ax.legend(shadow = True)
         if hasattr(leg,"draggable"):
             d1 = leg.draggable()
@@ -211,5 +245,3 @@ class traceur2d(QObject):
         for t in leg.get_texts():
             t.set_fontsize(FONT_SIZE)
 
-        self.mpl_window = mplWindow(self.parent,self.canvas,self.canvas.toolbar)
-        self.mpl_window.show()
