@@ -508,6 +508,11 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.exportCombo,SIGNAL("currentIndexChanged(int)"),self.export)
         #### il faut connecter le combo exportCombo ####
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
+        QObject.connect(self,SIGNAL("mplWindowClosed()"),self.mplwindowclosed)
+        
+    def mplwindowclosed(self):
+        pass
+        
         
     def picture_detect(self):
         ## point = filter_picture(self.motif,self.image_640_480)

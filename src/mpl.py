@@ -176,6 +176,8 @@ class mplWindow(QDialog):
         self.layout.addWidget(widget1)
         self.layout.addWidget(widget2)
         self.setLayout(self.layout)
+    def closeEvent(self,event):
+        self.parent.emit(SIGNAL('mplWindowClosed()'))
 
 class traceur2d(QObject):
     def __init__(self,parent,x,y,xlabel="", ylabel="", titre="", style=None, item = None):
