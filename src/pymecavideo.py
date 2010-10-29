@@ -196,7 +196,6 @@ class StartQT4(QMainWindow):
         if  any(os.access(os.path.join(p,"qtiplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
             self.qtiplot_present="qtiplot"
        
-            
 
         self.init_variables(filename,opts)
 
@@ -1311,7 +1310,7 @@ class StartQT4(QMainWindow):
             numero=(itemChoisi-1)/3
             typeDeCourbe=("x","y","v")[(itemChoisi-1)%3]
             titre=(self.tr(u"Evolution de l'abscisse du point %1").arg(numero+1),
-                   self.tr(unicode("Evolution de l'ordonnée du point %1",'utf8')).arg(numero+1),
+                   self.tr(u"Evolution de l'ordonnée du point %1").arg(numero+1),
                    self.tr(u"Evolution de la vitesse du point %1").arg(numero+1))[(itemChoisi-1)%3]
             #titre=titre.toAscii()
             abscisse=[]
@@ -1366,7 +1365,11 @@ class StartQT4(QMainWindow):
                 #t.start()
 ##            except:
 #                pass # il faut accepter que le combo soit vide à l'initialisation
-    
+    def on_closeCanvas(self, event):
+        print "Fermeture canvas"
+        self.canvas.fig.clear()
+                    
+                    
     def affiche_point_attendu(self,n):
         """
         Renseigne sur le numéro du point attendu

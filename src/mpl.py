@@ -111,10 +111,18 @@ class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     def __init__(self,parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
+        self.fig = fig
+        
         self.set_window_title("Courbes")
         
         self.axes_xy = fig.add_subplot(211)
         self.axes_v = fig.add_subplot(212)
+        self.pos_haut  = self.axes_xy.get_position()
+        self.pos_bas   = self.axes_v.get_position()
+        self.pos_tot = [self.pos_haut.xmin, self.pos_bas.ymin,
+                        self.pos_haut.width, self.pos_haut.ymax - self.pos_bas.ymin ]
+
+        print self.pos_tot
         
         for ax in [self.axes_xy, self.axes_v]:
             setp(ax.get_xaxis().get_ticklabels(), fontsize = FONT_SIZE) 
@@ -132,8 +140,37 @@ class MyMplCanvas(FigureCanvas):
         self.toolbar = NavigationToolbar2QTAgg(self, self)
         self.toolbar.show()
 
-
         self.plots = {}
+        
+        
+        
+    def gererAxes(self):
+        xy, v = self.getTypeCourbe()
+        if xy == 0:
+            self.axes_xy.set_visible(False)
+            self.axes_v.set_visible(True)
+            self.axes_v.set_position(self.pos_tot)
+        elif v == 0:
+            self.axes_v.set_visible(False)
+            self.axes_xy.set_visible(True)
+            self.axes_xy.set_position(self.pos_tot)
+        else:
+            self.axes_v.set_visible(True)
+            self.axes_xy.set_visible(True)
+            self.axes_xy.set_position(self.pos_haut)
+            self.axes_v.set_position(self.pos_bas)
+            
+                
+        
+    def getTypeCourbe(self):
+        v, xy = 0,0
+        for t in self.plots.keys():
+            typeDeCourbe=("x","y","v")[(t-1)%3]
+            if typeDeCourbe == "v":
+                v +=1 
+            else:
+                xy += 1
+        return xy, v
 
 class mplWindow(QDialog):
     def __init__(self, parent,widget1,widget2):
@@ -162,6 +199,8 @@ class traceur2d(QObject):
                 p.remove()
         self.canvas.plots[item] = ax.plot(x, y, label = str(titre))
 
+        self.canvas.gererAxes()
+        
         leg = ax.legend(shadow = True)
         if hasattr(leg,"draggable"):
             d1 = leg.draggable()
