@@ -70,7 +70,7 @@ import qtiplotexport
 from subprocess import *
 import re
 
-from mpl import traceur2d
+from mpl import traceur2d, MyMplCanvas
 # on préfèrera définitivement le module mpl au module traceur ?
 #from traceur import traceur2d
 
@@ -112,7 +112,7 @@ class StartQT4(QMainWindow):
     def __init__(self, parent, filename, opts):
         #Données principales du logiciel : 
         #self.index_de_l_image : la position de l'image actuellement affichée
-        #print "opts", opts
+
         if "mini" in str(opts) :
             self.mini=True
         else :
@@ -131,7 +131,7 @@ class StartQT4(QMainWindow):
         QShortcut(QKeySequence(Qt.Key_F11),self, self.basculer_plein_ecran )
         
         height,width =  QDesktopWidget().screenGeometry().height(), QDesktopWidget().screenGeometry().width()
-        #print height, width
+
         if height >= 768 and width >= 1024 and self.mini==False:
         # Importation de l'interface ici car l'import de l'interface "mini" écrase l'interface "standard"
             from Ui_pymecavideo  import Ui_pymecavideo
@@ -220,7 +220,6 @@ class StartQT4(QMainWindow):
         
         
     def splashVideo(self):
-        #print "###########", self.filename, self.prefs.lastVideo
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
                 return
@@ -266,12 +265,8 @@ class StartQT4(QMainWindow):
         if sys.platform == 'win32':
             paths = os.environ['PATH'].split(os.pathsep)
             paths.append(PATH)
-#            print "paths", paths
-#            print "paths", paths
             if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in paths)) :
                 ok_ffmpeg = False
-#            if not(any(os.access(os.path.join(p,self.player), os.X_OK) for p in paths)) :
-#                ok_player = False
         else:
             player=self.player.split(" ")[0]
             # on garde le nom de commande, pas les paramètres
@@ -286,7 +281,6 @@ class StartQT4(QMainWindow):
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture']:
             if  any(os.access(os.path.join(p,logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
                 self.logiciel_acquisition = logiciel
-                #print logiciel
                 self.ui.pushButton_video.setEnabled(1)
                 break
         if self.logiciel_acquisition :
@@ -300,9 +294,7 @@ class StartQT4(QMainWindow):
         ######vérification de la présencde gnuplot
         if  sys.platform == "win32" or any(os.access(os.path.join(p,"gnuplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
             pass
-            #print "gnuplot OK"
         else :
-            #print "gnuplot NOK"
             self.ui.comboBox_mode_tracer.setItemText(0,QString(self.tr(unicode("manque\nGnuplot","utf8"))))
             self.ui.comboBox_mode_tracer.setEnabled(0)
             self.ui.groupBox_7.setEnabled(0)
@@ -415,7 +407,6 @@ class StartQT4(QMainWindow):
 
         #############si il existe un point actuel, cela signifie qu'on réinitlise tout amis qu'on doit garder la position de départ. Cas quand on revient en arrière d'un cran ou que l'on refait le point.
         if index_point_actuel :
-            #print index_point_actuel
             index = self.premiere_image
             self.init_variables(self.filename,None)
 
@@ -538,7 +529,6 @@ class StartQT4(QMainWindow):
         self.cree_tableau()
         index=0
         for point in  self.tousLesClics:
-            #print "#######", point
             self.stock_coordonnees_image(index,point)
             index+=1
 
@@ -702,8 +692,6 @@ class StartQT4(QMainWindow):
                 pass
             
         home = unicode(QDesktopServices.storageLocation(8), 'iso-8859-1')
-#        home = u""+home
-#        print "home" , home
         if sys.platform == 'win32':
             pymecavideo_rep = APP_DATA_PATH
         else:
@@ -734,7 +722,6 @@ class StartQT4(QMainWindow):
         
         liste_rep = [pymecavideo_rep, pymecavideo_rep_images, pymecavideo_rep_icones, pymecavideo_rep_langues, pymecavideo_rep_videos]
 
-        #print liste_rep
         for rep in liste_rep:
             if not os.path.exists(rep):
                 os.makedirs(rep)
@@ -976,7 +963,6 @@ class StartQT4(QMainWindow):
             self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr(u"point N°")+" "+str(i+1)))
         self.cree_tableau()
         if self.ui.checkBox_auto.isChecked():
-            #print "OK"
             self.auto=True
             reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Vous êtes sur le point de lancer une capture automatique\nCelle-ci ne peut se faire qu'avec un seul point."),
             QMessageBox.Ok,QMessageBox.Cancel)
@@ -1134,8 +1120,7 @@ class StartQT4(QMainWindow):
         """revient au point précédent
         """
         self.tousLesClics.decPtr()
-        #print self.index_de_l_image, self.index_du_point, self.tousLesClics, self.premiere_image
-        
+
         self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics,self.index_de_l_image-1)
         self.repasseTousLesClics()
         self.modifie=True
@@ -1268,8 +1253,6 @@ class StartQT4(QMainWindow):
                     ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
                     for i in self.points.keys():
                         if ref == "camera":
-                            #print len(self.points), i, n
-                            #print self.points
                             p = self.points[i][1+n]
                         else:
                             ref=int(ref)
@@ -1336,7 +1319,6 @@ class StartQT4(QMainWindow):
             t=0
             ancienPoint=None
             ref=self.ui.comboBox_referentiel.currentText().split(" ")[-1]
-            print self.points
             for i in self.points.keys():
                 if ref == "camera":
                     p = self.pointEnMetre(self.points[i][1+numero])
@@ -1375,13 +1357,14 @@ class StartQT4(QMainWindow):
             else: # type de courbe "v""
                 styleTrace="zero"
             
-            if sys.platform == "win32":
-                traceur2d(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
-            else:# le tracé est fait dans un nouveau thread
-                t=threading.Thread(target=traceur2d, args=(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace))
-                t.setDaemon(True) # le tracé peut survivre à pymecavideo
-                t.start()
-#            except:
+            if not hasattr(self,'canvas'):
+                self.canvas = MyMplCanvas(None)
+            traceur2d(self.canvas,abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
+            #else:# le tracé est fait dans un nouveau thread
+                #traceur2d(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, e)
+                #t.setDaemon(True) # le tracé peut survivre à pymecavideo
+                #t.start()
+##            except:
 #                pass # il faut accepter que le combo soit vide à l'initialisation
     
     def affiche_point_attendu(self,n):
@@ -1412,13 +1395,11 @@ class StartQT4(QMainWindow):
                 if self.auto:
                     self.emit(SIGNAL('selection_done()'))
             elif self.index_de_l_image==self.image_max :
-                #print "NOK"
                 if self.auto:
                     self.emit(SIGNAL('selection_done()'))
                 self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint la fin de la vidéo","utf8")))
 
-        #print self.index_de_l_image
-        
+
     def clic_sur_label_video_ajuste_ui(self,point_attendu):
         """
         Ajuste l'interface utilisateur pour attendre un nouveau clic
@@ -1449,11 +1430,9 @@ class StartQT4(QMainWindow):
         @param liste_points la liste des points cliqués sur l'image courante
         @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
         """
-        #print ligne, index_image, self.index_de_l_image, self.premiere_image
         if not index_image :
             index_image = self.index_de_l_image
         t = "%4f" %((ligne)*self.deltaT)
-        #print liste_points
         self.points[ligne]=[t]+liste_points
         #rentre le temps dans la première colonne
         self.table_widget.insertRow(ligne)
@@ -1481,7 +1460,6 @@ class StartQT4(QMainWindow):
     
     def affiche_image(self):
         self.extract_image(self.filename, self.index_de_l_image)
-#        print "affiche_image", self.chemin_image
         image=QImage(self.chemin_image)
      
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
@@ -1494,9 +1472,7 @@ class StartQT4(QMainWindow):
             self.label_video.show()
             self.ui.horizontalSlider.setValue(self.index_de_l_image)
             self.ui.spinBox_image.setValue(self.index_de_l_image)
-#        except AttributeError:
-#            print "error!!"
-#            pass
+
         
     def recommence_echelle(self):
         self.ui.tabWidget.setCurrentIndex(0)
@@ -1560,6 +1536,9 @@ class StartQT4(QMainWindow):
         
     def closeEvent(self,event):
         from tempfile import gettempdir
+        if hasattr(self,'canvas'):
+            self.canvas.close()
+            del self.canvas
         if self.verifie_donnees_sauvegardees() :
             self.reinitialise_environnement()
             liste_fichiers = os.listdir(gettempdir())
@@ -1728,8 +1707,6 @@ class StartQT4(QMainWindow):
         """
         if sys.platform == 'win32':
             imfilename=os.path.join(IMG_PATH, VIDEO+"_%05d"% index + EXT_IMG)
-#            imfilename = '"'+imfilename+'"'
-#            print "extract_image", imfilename
         else:
             os.chdir(self._dir("images"))
             imfilename="video_%06d"% index + EXT_IMG
@@ -1738,18 +1715,13 @@ class StartQT4(QMainWindow):
         #force=True
 
         if os.path.isfile(imfilename) and force==False: #si elle existe déjà et , ne fait rien
-#            print "  existe déja !"
             self.chemin_image = imfilename
         else : #sinon, extrait depuis la video
             #attention au cas de la dernière image.
             i=1
-            #print "video", video, type(video)
             ffmpeg_dir=self._dir("conf")
-#            print "ffmpeg",ffmpeg_dir, self.ffmpeg
-            #print [self.ffmpeg,"""-i""", video,"""-ss""",str((index-i)*self.deltaT),"""-vframes""",str(1),"""-f""","""image2""","""-vcodec""","""mjpeg""",imfilename]
             args=[self.ffmpeg,"""-i""", video,"""-ss""",str((index-i)*self.deltaT),
                   """-vframes""",str(1),"""-f""","""image2""","""-vcodec""","""mjpeg""",imfilename]
-#            print args
             childstderr, creationflags = GetChildStdErr()
             cmd0_ = subprocess.Popen(args=args,
                                      stderr=PIPE, stdin = childstderr, stdout = childstderr,
@@ -1761,15 +1733,7 @@ class StartQT4(QMainWindow):
            
             returncode =  cmd0_.returncode
             cmd0=self.ffmpeg+" -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg %s"
-            #print "######### returncode", returncode
             if returncode==0:
-                #print "OK"
-                #while not os.path.exists(imfilename) and i<index:
-                    #print "NOK"
-                    #i+=1
-                    #imfilename="video_%06d.jpg" %(index-i+1)
-                    #cmd= cmd0 %(video,(index-i)*self.deltaT,imfilename)
-                    #status, output = commands.getstatusoutput(cmd)
                 self.chemin_image = imfilename
             elif returncode==1 and self.prefs.lastVideo != "":
                 print "erreur", returncode
@@ -1788,8 +1752,6 @@ class StartQT4(QMainWindow):
         "Ouvre une vidéo AVI et retourne son framerate ainsi que le nombre d'images de la vidéo."
         framerate = 25
         duration=0
-        #cmd= self.ffmpeg+" -y -i "+fileName+" "+os.path.join(self._dir("images"),"out.avi")
-        #print self.filename
         videospec=self.extract_image(self.filename,1,True,True)[1]
         try:
             patternRate=re.compile(".*Video.* ([.0-9]+) tbr.*")
@@ -1808,7 +1770,6 @@ class StartQT4(QMainWindow):
         except:
             self.dbg.p(0, self.tr("Impossible de lire %s" %fileName))
         nb_images=int(duration*framerate)
-        #print framerate,nb_images
         return framerate,nb_images
         
     def traiteOptions(self):
@@ -1823,8 +1784,7 @@ def run():
     app = QApplication(sys.argv)
     
     args=sys.argv[1:]
-    #print args
-    try:                                
+    try:
         opts, args = getopt.getopt(args, "f:m:", ["fichier_mecavideo=","mini"] )
     except getopt.GetoptError:
         usage()
@@ -1850,9 +1810,6 @@ def run():
     if appTranslator.load(langdir):
         b = app.installTranslator(appTranslator)
     
-    #pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
-    #print pymecavideo_rep_install
-    #print filename
     windows = StartQT4(None,os.path.abspath(unicode(filename,"utf8")),opts)
     
     windows.show()

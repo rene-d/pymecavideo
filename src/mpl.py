@@ -107,7 +107,7 @@ FONT_SIZE = 8
 
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
+    def __init__(self,parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         
         self.set_window_title("Courbes")
@@ -134,12 +134,10 @@ class MyMplCanvas(FigureCanvas):
 
         self.plots = {}
 
-canvas = MyMplCanvas()
 
-def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None, item = None):
+
+def traceur2d(canvas,x,y,xlabel="", ylabel="", titre="", style=None, item = None, parent=None):
     print "traceur2d", titre, item
-    global canvas
-    
     typeDeCourbe=("x","y","v")[(item-1)%3]
     if typeDeCourbe == "v":
         ax = canvas.axes_v
@@ -153,7 +151,8 @@ def traceur2d(x,y,xlabel="", ylabel="", titre="", style=None, item = None):
     canvas.plots[item] = ax.plot(x, y, label = str(titre))
     
     leg = ax.legend(shadow = True)
-    d1 = leg.draggable()
+    if sys.platform == "win32":
+        d1 = leg.draggable()
 
     frame  = leg.get_frame()
     frame.set_facecolor('0.80')    
