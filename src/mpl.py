@@ -139,6 +139,15 @@ class MyMplCanvas(FigureCanvas):
 
         self.plots = {}
         
+    def effacerPlot(self, item):
+        for p in self.plots[item]:
+            p.remove()
+            del self.plots[item]
+        
+    def effacerTousLesPlots(self):
+        for item in self.plots.keys():
+            self.effacerPlot(item)
+        
     def gererAxes(self):
         xy, v = self.getTypeCourbe()
         if xy == 0:
@@ -176,6 +185,7 @@ class mplWindow(QDialog):
         self.layout.addWidget(widget1)
         self.layout.addWidget(widget2)
         self.setLayout(self.layout)
+        
     def closeEvent(self,event):
         self.parent.emit(SIGNAL('mplWindowClosed()'))
 
