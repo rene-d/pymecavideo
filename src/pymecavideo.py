@@ -1311,7 +1311,7 @@ class StartQT4(QMainWindow):
             numero=(itemChoisi-1)/3
             typeDeCourbe=("x","y","v")[(itemChoisi-1)%3]
             titre=(self.tr(u"Evolution de l'abscisse du point %1").arg(numero+1),
-                   self.tr(u"Evolution de l'ordonnee du point %1").arg(numero+1),
+                   self.tr(unicode("Evolution de l'ordonnée du point %1",'utf8')).arg(numero+1),
                    self.tr(u"Evolution de la vitesse du point %1").arg(numero+1))[(itemChoisi-1)%3]
             #titre=titre.toAscii()
             abscisse=[]
@@ -1359,7 +1359,7 @@ class StartQT4(QMainWindow):
             
             if not hasattr(self,'canvas'):
                 self.canvas = MyMplCanvas(None)
-            traceur2d(self.canvas,abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
+            self.traceur = traceur2d(self,abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,itemChoisi)
             #else:# le tracé est fait dans un nouveau thread
                 #traceur2d(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, e)
                 #t.setDaemon(True) # le tracé peut survivre à pymecavideo

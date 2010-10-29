@@ -99,7 +99,9 @@ import matplotlib
 #
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from PyQt4 import QtGui 
+from PyQt4 import QtGui
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
 from matplotlib.pyplot import setp
 
@@ -109,7 +111,6 @@ class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     def __init__(self,parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
-        
         self.set_window_title("Courbes")
         
         self.axes_xy = fig.add_subplot(211)
@@ -134,34 +135,42 @@ class MyMplCanvas(FigureCanvas):
 
         self.plots = {}
 
+class mplWindow(QDialog):
+    def __init__(self, parent,widget1,widget2):
+        QDialog.__init__(self,parent)
+        self.parent = parent
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(widget1)
+        self.layout.addWidget(widget2)
+        self.setLayout(self.layout)
 
+class traceur2d(QObject):
+    def __init__(self,parent,x,y,xlabel="", ylabel="", titre="", style=None, item = None):
+        print "traceur2d", titre, item
+        self.parent = parent
+        self.canvas  = self.parent.canvas
 
-def traceur2d(canvas,x,y,xlabel="", ylabel="", titre="", style=None, item = None, parent=None):
-    print "traceur2d", titre, item
-    typeDeCourbe=("x","y","v")[(item-1)%3]
-    if typeDeCourbe == "v":
-        ax = canvas.axes_v
-    else:
-        ax = canvas.axes_xy
-    ax.set_xlabel(unicode(xlabel,"ISO-8859-1"), size = FONT_SIZE)
-    ax.set_ylabel(unicode(ylabel,"ISO-8859-1"), size = FONT_SIZE)
-    ax.grid()
-    if item in canvas.plots:
-        for p in canvas.plots[item]:
-            p.remove()
-    canvas.plots[item] = ax.plot(x, y, label = unicode(str(titre),"ISO-8859-1"))
-    
-    leg = ax.legend(shadow = True)
-    if hasattr(leg,"draggable"):
-        d1 = leg.draggable()
+        typeDeCourbe=("x","y","v")[(item-1)%3]
+        if typeDeCourbe == "v":
+            ax = self.canvas.axes_v
+        else:
+            ax = self.canvas.axes_xy
+        ax.set_xlabel(xlabel, size = FONT_SIZE)
+        ax.set_ylabel(ylabel, size = FONT_SIZE)
+        if item in self.canvas.plots:
+            for p in self.canvas.plots[item]:
+                p.remove()
+        self.canvas.plots[item] = ax.plot(x, y, label = str(titre))
 
-    frame  = leg.get_frame()
-    frame.set_facecolor('0.80')    
-    
-    for t in leg.get_texts():
-        t.set_fontsize(FONT_SIZE)    
+        leg = ax.legend(shadow = True)
+        if hasattr(leg,"draggable"):
+            d1 = leg.draggable()
 
+        frame  = leg.get_frame()
+        frame.set_facecolor('0.80')
 
-    canvas.draw()
-    
-    canvas.show()
+        for t in leg.get_texts():
+            t.set_fontsize(FONT_SIZE)
+
+        self.mpl_window = mplWindow(self.parent,self.canvas,self.canvas.toolbar)
+        self.mpl_window.show()
