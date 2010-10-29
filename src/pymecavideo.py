@@ -511,7 +511,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self,SIGNAL("mplWindowClosed()"),self.mplwindowclosed)
         
     def mplwindowclosed(self):
-        pass
+        self.canvas.fig.clear()
         
         
     def picture_detect(self):
