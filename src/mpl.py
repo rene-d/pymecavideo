@@ -126,16 +126,24 @@ class MyMplCanvas(FigureCanvas):
 
         self.fig = fig
 
+        # ça, ça ne marche pas !!
         self.set_window_title("Courbes")
 
+        # on crée les "axes"
         self.axes_xy = fig.add_subplot(211)
         self.axes_v = fig.add_subplot(212)
+        
+        # on  sauvegarde les positions
         self.pos_haut  = self.axes_xy.get_position()
         self.pos_bas   = self.axes_v.get_position()
         self.pos_tot = [self.pos_haut.xmin, self.pos_bas.ymin,
                         self.pos_haut.width, self.pos_haut.ymax - self.pos_bas.ymin ]
 
-        #print self.pos_tot
+        # on affecte des labels (vide) et une taille de police (fait une fois pour toute)
+        for ax in [self.axes_xy, self.axes_v]:
+            ax.set_xlabel("t (s)", size = FONT_SIZE)
+            ax.set_ylabel("", size = FONT_SIZE)
+        
         
         for ax in [self.axes_xy, self.axes_v]:
             setp(ax.get_xaxis().get_ticklabels(), fontsize = FONT_SIZE) 
@@ -226,8 +234,8 @@ class traceur2d(QObject):
             ax = self.canvas.axes_v
         else:
             ax = self.canvas.axes_xy
-        ax.set_xlabel(coderISO(xlabel), size = FONT_SIZE)
-        ax.set_ylabel(coderISO(ylabel), size = FONT_SIZE)
+#        ax.set_xlabel(coderISO(xlabel), size = FONT_SIZE)
+        ax.set_ylabel(coderISO(ylabel))
         if item in self.canvas.plots:
             for p in self.canvas.plots[item]:
                 p.remove()
