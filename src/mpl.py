@@ -103,10 +103,22 @@ from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
-from matplotlib.pyplot import setp
+from matplotlib.artist import setp
 
+#
+# Taille de caractère unique pour tous les textes affichés par Matplotlib
+#
 FONT_SIZE = 8
 
+#
+# Fonction pour recoder tous les textes à afficher en ISO (pb mpl)
+#
+def coderISO(text):
+    return unicode(text, 'ISO-8859-1')
+
+#
+# 
+#
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     def __init__(self,parent=None, width=5, height=4, dpi=100):
@@ -214,12 +226,12 @@ class traceur2d(QObject):
             ax = self.canvas.axes_v
         else:
             ax = self.canvas.axes_xy
-        ax.set_xlabel(xlabel, size = FONT_SIZE)
-        ax.set_ylabel(ylabel, size = FONT_SIZE)
+        ax.set_xlabel(coderISO(xlabel), size = FONT_SIZE)
+        ax.set_ylabel(coderISO(ylabel), size = FONT_SIZE)
         if item in self.canvas.plots:
             for p in self.canvas.plots[item]:
                 p.remove()
-        self.canvas.plots[item] = ax.plot(x, y, label = str(titre))
+        self.canvas.plots[item] = ax.plot(x, y, label = coderISO(str(titre)))
         self.canvas.gererAxes()
 
         leg = ax.legend(shadow = True)
@@ -231,3 +243,5 @@ class traceur2d(QObject):
 
         for t in leg.get_texts():
             t.set_fontsize(FONT_SIZE)
+
+

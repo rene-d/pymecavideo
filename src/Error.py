@@ -97,7 +97,12 @@ def SendBugReport():
     import webbrowser, datetime
     from PyQt4.QtGui import QMessageBox
     from PyQt4.QtCore import QString
-    print "erreur"
+    def rien(x):
+        return x
+    try: 
+        a = _("test")
+    except:
+        _ = rien
     message=_(u"pymecavideo a rencontré une erreur et doit être fermé.\nVoulez-vous envoyer un rapport de bug ?")
     
     dlg = QMessageBox.warning(None,QString(_(unicode("Erreur","utf8"))),

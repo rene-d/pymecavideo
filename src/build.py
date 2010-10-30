@@ -46,12 +46,12 @@ options = {    "py2exe" : { "compressed": 2,
                                           '_wxagg','_wx',#'_gtkagg', #,
                                           '_agg2','_cairo',
                                           '_cocoaagg', '_fltkagg', '_gtk', '_gtkcairo'
-                                          'numpy','pylab'],
+                                          'numpy','pylab', "wx"],
                             
                             'dll_excludes' : ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 
                                               "UxTheme.dll", "mswsock.dll", "POWRPROF.dll" , 
                                               "AVIFIL32.dll", 'AVICAP32.dll', 'MSACM32.dll', 'OLEPRO32.DLL',
-                                              'tk85.dll', 'tcl85.dll',
+                                              'tk85.dll', 'tcl85.dll',"wx*.*"
                                               ],
 
                                    }     }
