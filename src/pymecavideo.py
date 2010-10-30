@@ -51,6 +51,7 @@ import os, thread, time, commands, linecache, codecs, re
 import locale, getopt, pickle
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import PyQt4.QtXml 
 from glob import glob
 from echelle import Label_Echelle, echelle
 from math import sqrt

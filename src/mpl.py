@@ -19,7 +19,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-import sys
+import sys, os
 import matplotlib
 #if sys.platform == "win32":
 #    matplotlib.use('Qt4Agg')
@@ -154,7 +154,7 @@ class MyMplCanvas(FigureCanvas):
 
         FigureCanvas.updateGeometry(self)
 
-        self.toolbar = NavigationToolbar2QTAgg(self, self)
+        self.toolbar = VMToolbar(self, self)
         self.toolbar.show()
 
         self.plots = {}
@@ -253,3 +253,13 @@ class traceur2d(QObject):
             t.set_fontsize(FONT_SIZE)
 
 
+class VMToolbar(NavigationToolbar2QTAgg):
+
+    def __init__(self, plotCanvas, parent):
+        NavigationToolbar2QTAgg.__init__(self, plotCanvas, parent)
+
+    def _icon(self, name):
+        #dirty hack to use exclusively .png and thus avoid .svg usage
+        #because .exe generation is problematic with .svg
+        name = name.replace('.svg','.png')
+        return QIcon(os.path.join(self.basedir, name)) 
