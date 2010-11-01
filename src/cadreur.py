@@ -105,13 +105,13 @@ class Cadreur:
                 cmd.append(os.path.join(IMG_PATH, CROP + "%04d.jpg" %i))
             else:
                 cmd.append(CROP + "%04d.jpg" %i)
-            print "1", cmd
+            
             childstderr, creationflags = GetChildStdErr()
             crop = subprocess.Popen(cmd, #shell=True, 
                                     stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
                                     creationflags = creationflags )
             crop.wait()
-            print crop.returncode
+            
             
         
     def creefilm(self, ralenti):
@@ -138,7 +138,7 @@ class Cadreur:
                """-r""", """25""", """-f""", """avi""", """-vcodec""", """mpeg1video""", 
                """-b""", """800k""", AVI_OUT]
         
-        print "film", cmd
+        print "film", AVI_OUT, cmd
         childstderr, creationflags = GetChildStdErr()
         crop = subprocess.Popen(cmd, #shell=True, 
                                 stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
@@ -150,10 +150,10 @@ class Cadreur:
     def montrefilm(self):
         #print self.app.prefs.videoPlayerCmd()
         print self.app.player
-        print AVI_OUT
+    
         #self.app.dbg.p(2,"%s" %(cmd))
         childstderr, creationflags = GetChildStdErr()
-        montre = subprocess.Popen([self.app.player, '-L', AVI_OUT], 
+        montre = subprocess.Popen(self.app.player + [AVI_OUT], 
                                   stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
                                   creationflags = creationflags)
         montre.wait()
