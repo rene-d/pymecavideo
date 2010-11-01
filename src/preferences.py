@@ -60,7 +60,8 @@ class Preferences:
         
         players = {"xine":["xine",  "-l"],
                    "vlc" :["vlc","-L"], 
-                   "mplayer" :["mplayer","-loop", "0"]}
+                   "mplayer" :["mplayer","-loop", "0"],
+                   "ffplay":["ffplay", "-autoexit", "-loop", "-1"]}
         
         if self.app.platform.lower()=="linux":
             for player in players :
@@ -74,7 +75,7 @@ class Preferences:
             vlc_path = os.path.join(pf_path, "VideoLAN", "VLC", "vlc.exe")
             if os.path.exists(vlc_path) :
                 self.videoPlayers["vlc"] = [vlc_path,"-L"]
-            self.videoPlayers["mplayer"] = players["mplayer"]
+            self.videoPlayers["ffplay"] = players["ffplay"]
 
         if "xine" in self.videoPlayers.keys() :
             self.videopref="xine"

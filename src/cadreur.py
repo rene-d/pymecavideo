@@ -149,6 +149,7 @@ class Cadreur:
         
     def montrefilm(self):
         #print self.app.prefs.videoPlayerCmd()
+        self.app.player = self.app.prefs.videoPlayers[self.app.prefs.videopref]
         print self.app.player
     
         #self.app.dbg.p(2,"%s" %(cmd))
