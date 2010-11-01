@@ -269,7 +269,10 @@ class StartQT4(QMainWindow):
             if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in paths)) :
                 ok_ffmpeg = False
         else:
-            player=self.player.split(" ")[0]
+            if type(self.player)==type([]):
+                player=self.player[0]
+            else:
+                player=self.player.split(" ")[0]
             # on garde le nom de commande, pas les paramètres
             if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
                 ok_ffmpeg = False
