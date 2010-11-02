@@ -79,15 +79,16 @@ if sys.platform == 'win32':
     except:
         APP_DATA_PATH = PATH
         
-        
     sys.path.append(os.path.join(PATH, 'bin'))
     
-    print "Dossier pymecavideo.exe", PATH
-    print "Dossier data", APP_DATA_PATH
+    
 
 else:
     PATH = APP_DATA_PATH = ""
-    
+
+print "Dossier de l'application :", PATH
+print "Dossier des données temporaires :", APP_DATA_PATH    
+
 
 #
 # Dossier gnuplot
@@ -105,12 +106,13 @@ def GetGnuplotPath():
     else:
         return ""
 GNUPLOT_PATH = GetGnuplotPath()
-
+print "Dossier gnuplot :", GNUPLOT_PATH
 
 #
 # Nom du dossier des images extraites
 #
 IMG_PATH = os.path.join(APP_DATA_PATH, "images_extraites")
+print "Dossier images_extraites :", IMG_PATH
 
 #
 # Nom du fichier de sortie AVI
@@ -128,7 +130,7 @@ ERROR_FILE = os.path.join(APP_DATA_PATH, 'pymecavideo.exe' + '.log')
 #
 CROP = "crop"
 VIDEO = "video"
-
+SUFF = "%04d.jpg"
 
 #
 # Gestion des Popen()

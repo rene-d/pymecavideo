@@ -79,7 +79,7 @@ import threading
 import platform, subprocess
 import tempfile
 
-from globdef import PATH, APP_DATA_PATH, EXT_IMG, GetChildStdErr, IMG_PATH, VIDEO
+from globdef import PATH, APP_DATA_PATH, GetChildStdErr, IMG_PATH, VIDEO, SUFF
 
 from detect import filter_picture
 
@@ -1534,11 +1534,11 @@ class StartQT4(QMainWindow):
 
     def reinitialise_environnement(self):
         if sys.platform == 'win32':
-            for filename in glob(os.path.join(IMG_PATH,"*"+EXT_IMG)):
+            for filename in glob(os.path.join(IMG_PATH,"*.jpg")):
                 os.remove(filename)
         else:
             os.chdir(self._dir("images"))
-            for filename in glob("*"+EXT_IMG):  # a remettre à la fin ;) 
+            for filename in glob("*.jpg"):  # a remettre à la fin ;) 
                 os.remove(filename)
                 
     def on_closeCanvas(self, event):
@@ -1692,7 +1692,7 @@ class StartQT4(QMainWindow):
         self.ui.spinBox_image.setMaximum(int(self.image_max))
         
         if sys.platform == 'win32':
-            fichier = os.path.join(IMG_PATH, VIDEO+"_%05d"%1 + EXT_IMG)
+            fichier = os.path.join(IMG_PATH, VIDEO + SUFF %1 )
             try :
                 os.remove(fichier)
                 a = self.extract_image(self.filename, 1)
@@ -1702,10 +1702,10 @@ class StartQT4(QMainWindow):
         else:
             os.chdir(self._dir("images"))
             try :
-                os.remove("video_00001"+EXT_IMG)
+                os.remove(VIDEO + SUFF %1)
                 a = self.extract_image(self.filename, 1)
                 os.chdir(self._dir("images"))
-                os.remove("video_00001"+EXT_IMG)
+                os.remove(VIDEO + SUFF %1)
             except OSError:
                 pass
         
@@ -1717,10 +1717,10 @@ class StartQT4(QMainWindow):
         "sortie" spécifie si on a besoin de la sortie standard. 
         """
         if sys.platform == 'win32':
-            imfilename=os.path.join(IMG_PATH, VIDEO+"_%05d"% index + EXT_IMG)
+            imfilename=os.path.join(IMG_PATH, VIDEO + SUFF %index)
         else:
             os.chdir(self._dir("images"))
-            imfilename="video_%06d"% index + EXT_IMG
+            imfilename = VIDEO + SUFF %index
         output = ""
         #sortie=True
         #force=True

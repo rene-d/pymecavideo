@@ -26,7 +26,7 @@ from PyQt4.QtGui import *
 from math import sqrt, acos, asin, pi, cos, sin, atan2
 from vecteur import vecteur
 import re, subprocess, shutil
-from globdef import AVI_OUT, GetChildStdErr ,CROP, IMG_PATH
+from globdef import AVI_OUT, GetChildStdErr ,CROP, IMG_PATH, SUFF
 
 class Cadreur:
     def __init__(self,numpoint,app):
@@ -83,6 +83,7 @@ class Cadreur:
             for fichier in liste_fichier :
                 if CROP in fichier:
                     os.remove(fichier)
+                    
         for i in self.app.points.keys():
             p=self.app.points[i][self.numpoint]
             # calcule les vecteurs des marges
@@ -101,10 +102,10 @@ class Cadreur:
                    """-cropleft""",  str(hautgauche.x()) , """-croptop""",    str(hautgauche.y())  , 
                    """-cropright""", str(basdroite.x())  , """-cropbottom""", str(basdroite.y()) ]
            
-            if sys.platform == 'win32':
-                cmd.append(os.path.join(IMG_PATH, CROP + "%04d.jpg" %i))
-            else:
-                cmd.append(CROP + "%04d.jpg" %i)
+#            if sys.platform == 'win32':
+            cmd.append(os.path.join(IMG_PATH, CROP + SUFF %i))
+#            else:
+#                cmd.append(CROP + SUFF %i)
             
             childstderr, creationflags = GetChildStdErr()
             crop = subprocess.Popen(cmd, #shell=True, 
@@ -120,8 +121,8 @@ class Cadreur:
             for k in range(ralenti):
                 # reproduit "ralenti" fois les trames
                 #print i,j
-                fichier1 = os.path.join(IMG_PATH, CROP + "%04d.jpg" % j) 
-                fichier2 = os.path.join(IMG_PATH, CROP +"-%04d.jpg" % i)
+                fichier1 = os.path.join(IMG_PATH, CROP + SUFF % j) 
+                fichier2 = os.path.join(IMG_PATH, CROP + "-" + SUFF % i)
                 shutil.copy(fichier1,fichier2)
                 i+=1
         try :
@@ -130,9 +131,9 @@ class Cadreur:
             pass
         
         if sys.platform == 'win32':
-            cropfile = os.path.join(IMG_PATH, CROP+"-%04d.jpg")
+            cropfile = os.path.join(IMG_PATH, CROP+"-"+SUFF)
         else:
-            cropfile = CROP+"-%04d.jpg"
+            cropfile = CROP+"-"+SUFF
         
         cmd = [self.app.ffmpeg, """-r""", """25""", """-f""", """image2""", """-i""", cropfile,
                """-r""", """25""", """-f""", """avi""", """-vcodec""", """mpeg1video""", 
