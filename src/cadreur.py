@@ -123,6 +123,7 @@ class Cadreur:
                 #print i,j
                 fichier1 = os.path.join(IMG_PATH, CROP + SUFF % j) 
                 fichier2 = os.path.join(IMG_PATH, CROP + "-" + SUFF % i)
+                print fichier1,fichier2
                 shutil.copy(fichier1,fichier2)
                 i+=1
         try :
@@ -133,17 +134,15 @@ class Cadreur:
         if sys.platform == 'win32':
             cropfile = os.path.join(IMG_PATH, CROP+"-"+SUFF)
         else:
-            cropfile = CROP+"-"+SUFF
+            cropfile = os.path.join(IMG_PATH, CROP+"-"+SUFF)
         
         cmd = [self.app.ffmpeg, """-r""", """25""", """-f""", """image2""", """-i""", cropfile,
                """-r""", """25""", """-f""", """avi""", """-vcodec""", """mpeg1video""", 
-               """-b""", """800k""", AVI_OUT]
+               """-b""", """800k""", str(AVI_OUT)]
         
         print "film", AVI_OUT, cmd
         childstderr, creationflags = GetChildStdErr()
-        crop = subprocess.Popen(cmd, #shell=True, 
-                                stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
-                                creationflags = creationflags)
+        crop = subprocess.Popen(cmd, stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr, creationflags = creationflags)
         crop.wait()
         print crop.returncode
         
@@ -155,7 +154,7 @@ class Cadreur:
     
         #self.app.dbg.p(2,"%s" %(cmd))
         childstderr, creationflags = GetChildStdErr()
-        montre = subprocess.Popen(self.app.player + [AVI_OUT], 
+        montre = subprocess.Popen(self.app.player + [AVI_OUT],
                                   stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
                                   creationflags = creationflags)
         montre.wait()
