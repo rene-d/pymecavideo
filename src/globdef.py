@@ -42,17 +42,24 @@ licence['fr']=u"""
 
 
 import sys, os
+from PyQt4.QtGui import QDesktopServices
+#from PyQt4.QtGui import *
 
 #
-# Version 
+# Version de pymecavideo
 #
 VERSION = "5.2"
 
-#
-# Format des images extraites
-#
-EXT_IMG = '.jpg'
 
+def testerDossier(listDir, defaut = ""):
+    for dir in listDir:
+        if os.path.exists(dir):
+            return dir
+    return defaut
+    
+#
+# Dossier de l'application
+#
 
 if sys.platform == 'win32':
     #
@@ -63,12 +70,20 @@ if sys.platform == 'win32':
     PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
     PATH = os.path.split(PATH)[0]
     os.chdir(PATH)
-    sys.path.append(PATH)
+
+else:
+    PATH = os.path.dirname(os.path.abspath(__file__))
     
-    #On récupￃﾨre lￃﾠ le dossier "Application data" 
-    #oￃﾹ devra ￃﾪtre enregistré les fichier "images_extraites"
+sys.path.append(PATH)
+print "Dossier de l'application :", PATH
+
     
-    # On lit la clef de registre indiquant le type d'installation
+#
+# Dossier des données "temporaires" (video*.jpg, crop*.jpg, out.avi)
+#
+if sys.platform == 'win32':
+    #On récupèreﾠ le dossier "Application data" 
+    #On lit la clef de registre indiquant le type d'installation
     import win32api, win32con
     try:
         regkey = win32api.RegOpenKeyEx( win32con.HKEY_LOCAL_MACHINE, 'SOFTWARE\\pymecavideo', 0, win32con.KEY_READ )
@@ -80,14 +95,17 @@ if sys.platform == 'win32':
         APP_DATA_PATH = PATH
         
     sys.path.append(os.path.join(PATH, 'bin'))
-    
-    
 
 else:
     PATH = APP_DATA_PATH = ""
+print "Dossier des données temporaires :", APP_DATA_PATH
 
-print "Dossier de l'application :", PATH
-print "Dossier des données temporaires :", APP_DATA_PATH    
+
+#
+# Nom du dossier des images extraites
+#
+IMG_PATH = os.path.join(APP_DATA_PATH, "images_extraites")
+print "Dossier images_extraites :", IMG_PATH
 
 
 #
@@ -108,11 +126,77 @@ def GetGnuplotPath():
 GNUPLOT_PATH = GetGnuplotPath()
 print "Dossier gnuplot :", GNUPLOT_PATH
 
+
 #
-# Nom du dossier des images extraites
+# Dossier "home"
 #
-IMG_PATH = os.path.join(APP_DATA_PATH, "images_extraites")
-print "Dossier images_extraites :", IMG_PATH
+HOME_PATH = unicode(QDesktopServices.storageLocation(8), 'iso-8859-1')
+
+#
+# Dossier "video"
+#
+if sys.platform == 'win32':
+    VIDEO_PATH = os.path.join(PATH,"data","video")
+else:
+    VIDEO_PATH = testerDossier((os.path.join(PATH,"..","data","video"),
+                                '/usr/share/pymecavideo/video',
+                                '/usr/share/python-mecavideo/video'),
+                                APP_DATA_PATH)
+        
+print "Dossier des videos :", VIDEO_PATH
+        
+
+#
+# Dossier de pymecavideo.conf
+#
+if sys.platform == 'win32':
+    CONF_PATH = APP_DATA_PATH
+else:
+    CONF_PATH = PATH
+print "Dossier de pymecavideo.conf :", CONF_PATH
+
+
+#
+# Dossier des icones
+#
+if sys.platform == 'win32':
+    ICON_PATH = os.path.join(PATH,"data","icones")
+else:
+    ICON_PATH = testerDossier((os.path.join(PATH,"..","data","icones"),
+                               '/usr/share/python-mecavideo/icones'))
+print "Dossier des icones :", ICON_PATH 
+
+
+#
+# Dossier des langues
+#
+if sys.platform == 'win32':
+    LANG_PATH = os.path.join(PATH,"data","lang")
+else:
+    LANG_PATH = testerDossier((os.path.join(PATH,"..","data","lang"),
+                               '/usr/share/pyshared/pymecavideo/lang'))
+print "Dossier des langues :", LANG_PATH 
+
+
+#
+# Dossier "data"
+#
+if sys.platform == 'win32':
+    DATA_PATH = os.path.join(PATH,"data")
+else:
+    DATA_PATH = os.path.join(PATH,"..","data")
+print "Dossier ""data"" :", DATA_PATH 
+
+
+#
+# Dossier de l'aide
+#
+if sys.platform == 'win32':
+    HELP_PATH = os.path.join(PATH,"data", "help")
+else:
+    HELP_PATH = testerDossier(("/usr/share/doc/python-mecavideo/html",
+                               "/usr/share/doc/HTML/fr/pymecavideo"))
+print "Dossier de l'aide :", HELP_PATH 
 
 #
 # Nom du fichier de sortie AVI
