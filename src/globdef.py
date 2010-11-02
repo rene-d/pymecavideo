@@ -97,7 +97,8 @@ if sys.platform == 'win32':
     sys.path.append(os.path.join(PATH, 'bin'))
 
 else:
-    PATH = APP_DATA_PATH = ""
+    datalocation=os.path.join("%s"%QDesktopServices.storageLocation(QDesktopServices.DataLocation),"pymecavideo")
+    PATH = APP_DATA_PATH = datalocation
 print "Dossier des données temporaires :", APP_DATA_PATH
 
 
@@ -184,7 +185,9 @@ print "Dossier des langues :", LANG_PATH
 if sys.platform == 'win32':
     DATA_PATH = os.path.join(PATH,"data")
 else:
-    DATA_PATH = os.path.join(PATH,"..","data")
+    #DATA_PATH = os.path.join(PATH,"..","data")
+    DATA_PATH = testerDossier((os.path.join("..","data"),
+                               '/usr/share/python-mecavideo/'))
 print "Dossier ""data"" :", DATA_PATH 
 
 
