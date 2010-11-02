@@ -75,7 +75,7 @@ else:
     PATH = os.path.dirname(os.path.abspath(__file__))
     
 sys.path.append(PATH)
-print "Dossier de l'application :", PATH
+#print "Dossier de l'application :", PATH
 
     
 #
@@ -99,14 +99,14 @@ if sys.platform == 'win32':
 else:
     datalocation=os.path.join("%s"%QDesktopServices.storageLocation(QDesktopServices.DataLocation),"pymecavideo")
     PATH = APP_DATA_PATH = datalocation
-print "Dossier des données temporaires :", APP_DATA_PATH
+#print "Dossier des données temporaires :", APP_DATA_PATH
 
 
 #
 # Nom du dossier des images extraites
 #
 IMG_PATH = os.path.join(APP_DATA_PATH, "images_extraites")
-print "Dossier images_extraites :", IMG_PATH
+#print "Dossier images_extraites :", IMG_PATH
 
 
 #
@@ -125,7 +125,7 @@ def GetGnuplotPath():
     else:
         return ""
 GNUPLOT_PATH = GetGnuplotPath()
-print "Dossier gnuplot :", GNUPLOT_PATH
+#print "Dossier gnuplot :", GNUPLOT_PATH
 
 
 #
@@ -139,12 +139,12 @@ HOME_PATH = unicode(QDesktopServices.storageLocation(8), 'iso-8859-1')
 if sys.platform == 'win32':
     VIDEO_PATH = os.path.join(PATH,"data","video")
 else:
-    VIDEO_PATH = testerDossier((os.path.join(PATH,"..","data","video"),
+    VIDEO_PATH = testerDossier((os.path.join("..","data","video"),
                                 '/usr/share/pymecavideo/video',
                                 '/usr/share/python-mecavideo/video'),
                                 APP_DATA_PATH)
         
-print "Dossier des videos :", VIDEO_PATH
+#print "Dossier des videos :", VIDEO_PATH
         
 
 #
@@ -154,7 +154,7 @@ if sys.platform == 'win32':
     CONF_PATH = APP_DATA_PATH
 else:
     CONF_PATH = PATH
-print "Dossier de pymecavideo.conf :", CONF_PATH
+#print "Dossier de pymecavideo.conf :", CONF_PATH
 
 
 #
@@ -163,20 +163,20 @@ print "Dossier de pymecavideo.conf :", CONF_PATH
 if sys.platform == 'win32':
     ICON_PATH = os.path.join(PATH,"data","icones")
 else:
-    ICON_PATH = testerDossier((os.path.join(PATH,"..","data","icones"),
+    ICON_PATH = testerDossier((os.path.join("..","data","icones"),
                                '/usr/share/python-mecavideo/icones'))
-print "Dossier des icones :", ICON_PATH 
+#print "Dossier des icones :", ICON_PATH 
 
 
 #
 # Dossier des langues
 #
 if sys.platform == 'win32':
-    LANG_PATH = os.path.join(PATH,"data","lang")
+    LANG_PATH = os.path.join(PATH,"..","data","lang")
 else:
-    LANG_PATH = testerDossier((os.path.join(PATH,"..","data","lang"),
+    LANG_PATH = testerDossier(("../data/lang",
                                '/usr/share/pyshared/pymecavideo/lang'))
-print "Dossier des langues :", LANG_PATH 
+#print "Dossier des langues :", LANG_PATH 
 
 
 #
@@ -188,7 +188,7 @@ else:
     #DATA_PATH = os.path.join(PATH,"..","data")
     DATA_PATH = testerDossier((os.path.join("..","data"),
                                '/usr/share/python-mecavideo/'))
-print "Dossier ""data"" :", DATA_PATH 
+#print "Dossier ""data"" :", DATA_PATH 
 
 
 #
@@ -197,9 +197,9 @@ print "Dossier ""data"" :", DATA_PATH
 if sys.platform == 'win32':
     HELP_PATH = os.path.join(PATH,"data", "help")
 else:
-    HELP_PATH = testerDossier(("/usr/share/doc/python-mecavideo/html",
+    HELP_PATH = testerDossier(("../data/help","/usr/share/doc/python-mecavideo/html",
                                "/usr/share/doc/HTML/fr/pymecavideo"))
-print "Dossier de l'aide :", HELP_PATH 
+#print "Dossier de l'aide :", HELP_PATH 
 
 #
 # Nom du fichier de sortie AVI
@@ -210,6 +210,20 @@ AVI_OUT = os.path.join(IMG_PATH, "out.avi")
 #
 #
 ERROR_FILE = os.path.join(APP_DATA_PATH, 'pymecavideo.exe' + '.log')
+
+####################
+print "###Répertoires système"
+print "Dossier contenant les données de pymecavideo :", DATA_PATH
+print "Dossier de l'aide :", HELP_PATH
+print "Dossier des langues :", LANG_PATH
+print "Dossier des icones :", ICON_PATH
+print "Dossier des videos :", VIDEO_PATH
+print "Dossier gnuplot :", GNUPLOT_PATH
+print "###Répertoires Utilisateur"
+print "Dossier de l'application :", PATH
+print "Dossier de pymecavideo.conf :", CONF_PATH
+print "Dossier images_extraites :", IMG_PATH
+print "Dossier des données temporaires :", APP_DATA_PATH
 
 
 #

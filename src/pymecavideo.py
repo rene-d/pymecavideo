@@ -709,6 +709,7 @@ class StartQT4(QMainWindow):
                 if "share" in pymecavideo_rep_install or "usr" in pymecavideo_rep_install  or "Program" in pymecavideo_rep_install : #on est dans le cadre d'une install système on utilise donc le répertoire générique)
                     datalocation="%s" %QDesktopServices.storageLocation(QDesktopServices.DataLocation)
                     pymecavideo_rep=os.path.join(datalocation,"pymecavideo")
+                    print pymecavideo_rep
                 else : #installation locale, a priori pour les gens qui connaissent)
                     datalocation = os.path.join(pymecavideo_rep_install,"..") #on lance depuis src
                     pymecavideo_rep=datalocation

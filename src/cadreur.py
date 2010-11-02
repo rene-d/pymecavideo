@@ -72,17 +72,11 @@ class Cadreur:
         self.taille=vecteur(m.width(),m.height())
         ech=self.taille.norme()/vecteur(640,480).norme()
         
-        if sys.platform == 'win32':
-            liste_fichier = os.listdir(IMG_PATH)
-            for fichier in liste_fichier :
-                if CROP in fichier:
-                    os.remove(os.path.join(IMG_PATH, fichier))
-        else:
-            os.chdir(self.app._dir("images"))
-            liste_fichier = os.listdir(".")
-            for fichier in liste_fichier :
-                if CROP in fichier:
-                    os.remove(fichier)
+
+        liste_fichier = os.listdir(IMG_PATH)
+        for fichier in liste_fichier :
+            if CROP in fichier:
+                os.remove(os.path.join(IMG_PATH, fichier))
                     
         for i in self.app.points.keys():
             p=self.app.points[i][self.numpoint]
@@ -130,11 +124,8 @@ class Cadreur:
             os.remove(AVI_OUT)
         except OSError :
             pass
-        
-        if sys.platform == 'win32':
-            cropfile = os.path.join(IMG_PATH, CROP+"-"+SUFF)
-        else:
-            cropfile = os.path.join(IMG_PATH, CROP+"-"+SUFF)
+
+        cropfile = os.path.join(IMG_PATH, CROP+"-"+SUFF)
         
         cmd = [self.app.ffmpeg, """-r""", """25""", """-f""", """image2""", """-i""", cropfile,
                """-r""", """25""", """-f""", """avi""", """-vcodec""", """mpeg1video""", 
