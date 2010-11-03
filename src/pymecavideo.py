@@ -79,7 +79,7 @@ import threading
 import platform, subprocess
 import tempfile
 
-from globdef import PATH, APP_DATA_PATH, GetChildStdErr, IMG_PATH, VIDEO, SUFF
+from globdef import PATH, APP_DATA_PATH, GetChildStdErr, IMG_PATH, VIDEO, SUFF, VIDEO_PATH, CONF_PATH, IMG_PATH, ICON_PATH, LANG_PATH, DATA_PATH,HELP_PATH
 
 from detect import filter_picture
 
@@ -686,99 +686,30 @@ class StartQT4(QMainWindow):
     def _dir(lequel=None,install=None):
         """renvoie les répertoires utiles.
         paramètre lequel (chaîne) : peut prendre les valeurs utiles suivantes,
-        "stockmovies", "home", "conf", "images", "icones"
+        "videos", "home", "conf", "images", "icones", "langues", "data", "help"
 
         quand le paramètre est absent, initialise les répertoires si nécessaire
         """
-        
-        if sys.platform == 'win32':
-            pymecavideo_rep_install = PATH
-        else:
-            try:
-                pymecavideo_rep_install= os.path.dirname(os.path.abspath(__file__))
-                sys.path.append(pymecavideo_rep_install) # pour pickle !
-            except :
-                pass
-            
+
         home = unicode(QDesktopServices.storageLocation(8), 'iso-8859-1')
-        if sys.platform == 'win32':
-            pymecavideo_rep = APP_DATA_PATH
-        else:
-            ####vérifie si on est dans le cadre d'une installation systeme (rpm, deb, etc) ou locale
-            try :
-                if "share" in pymecavideo_rep_install or "usr" in pymecavideo_rep_install  or "Program" in pymecavideo_rep_install : #on est dans le cadre d'une install système on utilise donc le répertoire générique)
-                    datalocation="%s" %QDesktopServices.storageLocation(QDesktopServices.DataLocation)
-                    pymecavideo_rep=os.path.join(datalocation,"pymecavideo")
-                    print pymecavideo_rep
-                else : #installation locale, a priori pour les gens qui connaissent)
-                    datalocation = os.path.join(pymecavideo_rep_install,"..") #on lance depuis src
-                    pymecavideo_rep=datalocation
-            except :
-                pass
 
-        ###########pymecavideo_rep est le répertoire de travail de pymecavideo. il dépose ici les images.
-        pymecavideo_rep_images=os.path.join(pymecavideo_rep,"images_extraites")
-
-        ###########Les données -vidéos, icones etc.- sont dans le répertoire qui est lié à l'éxécutable. pymecavideo_exe
-        pymecavideo_exe = pymecavideo_rep_install
-        if sys.platform == 'win32':
-            pymecavideo_rep_icones=os.path.join(pymecavideo_exe,"data","icones")
-            pymecavideo_rep_langues=os.path.join(pymecavideo_exe,"data","lang")
-            pymecavideo_rep_videos=os.path.join(pymecavideo_exe,"data","video")
-        else:
-            pymecavideo_rep_icones=os.path.join(pymecavideo_exe,"..","data","icones")
-            pymecavideo_rep_langues=os.path.join(pymecavideo_exe,"..","data","lang")
-            pymecavideo_rep_videos=os.path.join(pymecavideo_exe,"..","data","video")
-        
-        liste_rep = [pymecavideo_rep, pymecavideo_rep_images, pymecavideo_rep_icones, pymecavideo_rep_langues, pymecavideo_rep_videos]
-
-        for rep in liste_rep:
-            if not os.path.exists(rep):
-                os.makedirs(rep)
-                    
-        if   lequel == "home": return home
-        elif lequel == "stockmovies":
-            for dir in (pymecavideo_rep_videos,
-                        '/usr/share/pymecavideo/video',
-                        '/usr/share/python-mecavideo/video'):
-                if os.path.exists(dir):
-                    return dir
-                else:
-                    return pymecavideo_rep_install
-        elif lequel == "conf": return pymecavideo_rep
-        elif lequel == "images": return pymecavideo_rep_images
-        elif lequel == "icones":
-            for dir in (pymecavideo_rep_icones,
-                        '/usr/share/python-mecavideo/icones'):
-                if os.path.exists(dir):
-                    return dir
-        elif lequel == "langues":
-            for dir in (pymecavideo_rep_langues,
-                        '/usr/share/pyshared/pymecavideo/lang'):
-                if os.path.exists(dir):
-                    return dir
-        elif lequel == "share" : 
-            if sys.platform == 'win32':
-                return os.path.join(pymecavideo_rep_install,"data")
-            else:
-                return os.path.join(pymecavideo_rep_install,"..","data")
-        elif lequel == "help" : 
-            if os.path.isdir("/usr/share/doc/python-mecavideo/html") :
-                return "/usr/share/doc/python-mecavideo/html"
-            elif os.path.isdir("/usr/share/doc/HTML/fr/pymecavideo") :
-                return "/usr/share/doc/HTML/fr/pymecavideo"
+        if   lequel == "home": return  home
+        elif lequel == "videos": return VIDEO_PATH
+        elif lequel == "conf": return  CONF_PATH
+        elif lequel == "images": return IMG_PATH
+        elif lequel == "icones": return ICON_PATH
+        elif lequel == "langues": return LANG_PATH
+        elif lequel == "data" : return DATA_PATH
+        elif lequel == "help" : return HELP_PATH
         elif type(lequel) == type(""):
             self.dbg.p(1,"erreur, appel de _dir() avec le paramètre inconnu %s" %lequel)
             self.close()
         else:
             # vérifie/crée les repertoires
-            for d in ("stockmovies", "home", "conf", "images", "icones"):
+            for d in ("conf", "images"):
                 dd=StartQT4._dir(str(d))
                 if not os.path.exists(dd):
                     os.mkdir(dd)
-        #if install : #install les fichiers nécessaires au bon fonctionnement de pymecavideo_rep
-            
-            
 
     _dir=staticmethod(_dir)
 
@@ -1594,7 +1525,8 @@ class StartQT4(QMainWindow):
 
 
     def openexample(self):
-        dir_="%s/video" %(self._dir("share"))
+        dir_="%s" %(self._dir("videos"))
+        print dir_
         self.reinitialise_tout()
         filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov)","utf8")))
         self.openTheFile(filename)
@@ -1603,16 +1535,18 @@ class StartQT4(QMainWindow):
         """
         Ouvre un dialogue pour choisir un fichier vidéo puis le charge
         """
-        dir_=self._dir("stockmovies")
+        dir_=self._dir("videos")
         filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov)","utf8")))
         print "open", filename
         self.openTheFile(filename)
-        
-        self.reinitialise_capture()
+        try :
+            self.reinitialise_capture()
+        except :
+            pass
         
     def renomme_le_fichier(self):
         renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr(unicode("Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
-        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), self._dir("stockmovies"),"*.avi")
+        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), self._dir("videos"),"*.avi")
         self.openTheFile(filename)
 
     def openTheFile(self,filename):
