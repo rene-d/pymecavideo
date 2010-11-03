@@ -171,7 +171,7 @@ if sys.platform == 'win32':
     LANG_PATH = os.path.join(PATH,"..","data","lang")
 else:
     LANG_PATH = testerDossier((os.path.join(APPLI,"..","data","lang"),
-                               '/usr/share/pyshared/pymecavideo/lang'))
+    '/usr/share/pyshared/pymecavideo/lang','/usr/share/python-mecavideo/lang'))
 #print "Dossier des langues :", LANG_PATH 
 
 
