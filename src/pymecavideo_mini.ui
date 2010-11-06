@@ -1161,7 +1161,7 @@ automatique</string>
   </action>
   <action name="actionRouvrirMecavideo">
    <property name="text">
-    <string>Rouvrir un fichier mecavidéo</string>
+    <string>Ouvrir un projet mecavidéo</string>
    </property>
   </action>
   <action name="actionPreferences">
