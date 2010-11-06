@@ -112,8 +112,6 @@ class MonThreadDeCalcul(QThread):
 class StartQT4(QMainWindow):
     def __init__(self, parent, filename, opts):
         #Données principales du logiciel : 
-        #self.index_de_l_image : la position de l'image actuellement affichée
-
         if "mini" in str(opts) :
             self.mini=True
         else :
@@ -1241,7 +1239,6 @@ class StartQT4(QMainWindow):
             print "pb self.tracer_trajectoires"
 
     def tracer_courbe(self,itemChoisi):
-        print "tracer_courbe", itemChoisi
         if self.ui.comboBox_mode_tracer.isEnabled():
 #            try:
             self.ui.comboBox_mode_tracer.setCurrentIndex(0)
@@ -1523,7 +1520,6 @@ class StartQT4(QMainWindow):
 
     def openexample(self):
         dir_="%s" %(self._dir("videos"))
-        print dir_
         self.reinitialise_tout()
         filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov)","utf8")))
         self.openTheFile(filename)
