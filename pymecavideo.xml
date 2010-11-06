@@ -1,0 +1,7 @@
+<mime-info>
+<mime-type type="application/x-pymecavideo">
+  <comment xml:lang="en">Pymecaivdeo Project</comment>
+  <comment xml:lang="fr">Projet pymecavideo</comment>
+  <glob pattern="*.mecavideo" />
+</mime-type>
+</mime-info>
