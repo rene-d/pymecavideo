@@ -160,7 +160,7 @@ if sys.platform == 'win32':
     ICON_PATH = os.path.join(PATH,"data","icones")
 else:
     ICON_PATH = testerDossier((os.path.join(APPLI,"..","data","icones"),
-                               '/usr/share/python-mecavideo/icones'))
+    '/usr/share/python-mecavideo/icones','/usr/share/pymecavideo/icones'))
 #print "Dossier des icones :", ICON_PATH 
 
 
@@ -171,7 +171,7 @@ if sys.platform == 'win32':
     LANG_PATH = os.path.join(PATH,"..","data","lang")
 else:
     LANG_PATH = testerDossier((os.path.join(APPLI,"..","data","lang"),
-    '/usr/share/pyshared/pymecavideo/lang','/usr/share/python-mecavideo/lang'))
+    '/usr/share/pyshared/pymecavideo/lang','/usr/share/python-mecavideo/lang','/usr/share/pymecavideo/lang'))
 #print "Dossier des langues :", LANG_PATH 
 
 
