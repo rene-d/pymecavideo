@@ -714,12 +714,13 @@ class StartQT4(QMainWindow):
     _dir=staticmethod(_dir)
 
     def rouvre_ui(self):
-        if sys.platform == 'win32':
-            pass
-        else:
-            os.chdir(self._dir("home"))
-            
-        fichier = QFileDialog.getOpenFileName(self,"FileDialog", "","*.mecavideo")
+        #if sys.platform == 'win32':
+            #pass
+        #else:
+            #os.chdir(self._dir("home"))
+        dir_ = self._dir("home")    
+        fichier = QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir un projet Pymecavideo","utf8")), dir_,self.tr(unicode("fichiers pymecavideo ( *.mecavideo)","utf8")))
+        
         if fichier != "":
             self.rouvre(fichier)
 
