@@ -1723,7 +1723,11 @@ class StartQT4(QMainWindow):
     def traiteOptions(self):
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
-                self.rouvre(val)
+                if os.path.isfile(val) and os.path.splitext(val)[1] == ".pymecavideo":
+                    try:
+                        self.rouvre(val)
+                    except:
+                        pass
         
 def usage():
     print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--mini]")
