@@ -110,7 +110,7 @@ class MonThreadDeCalcul(QThread):
 
 
 class StartQT4(QMainWindow):
-    def __init__(self, parent, filename, opts):
+    def __init__(self, parent, opts):
         #Données principales du logiciel : 
         if "mini" in str(opts) :
             self.mini=True
@@ -197,7 +197,7 @@ class StartQT4(QMainWindow):
        
             
 
-        self.init_variables(filename,opts)
+        self.init_variables(opts)
 
         #connections internes
         self.ui_connections()
@@ -225,10 +225,13 @@ class StartQT4(QMainWindow):
         if os.path.isfile(self.filename):
             self.openTheFile(self.filename)
         elif os.path.isfile(self.prefs.lastVideo):
-            self.openTheFile(self.prefs.lastVideo)
+            try:
+                self.openTheFile(self.prefs.lastVideo)
+            except:
+                pass
         
 
-    def init_variables(self, filename, opts):
+    def init_variables(self, opts):
 
         self.logiciel_acquisition = False
         self.points_ecran={}
@@ -254,7 +257,7 @@ class StartQT4(QMainWindow):
         self.premiere_image = 1      # nￂﾰ de la première image cliquée
         self.index_de_l_image = 1    # image àﾠ afficher
         self.echelle_v = 0
-        self.filename=filename
+        self.filename=""
         self.opts=opts
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
         self.init_interface()
@@ -767,7 +770,10 @@ class StartQT4(QMainWindow):
         self.table_widget.show()
         # attention à la fonction défaire/refaire : elle est mal initialisée !!!
 
-
+        # On met à jour les préférences
+        self.prefs.lastVideo=self.filename
+        self.prefs.videoDir=os.path.dirname(self.filename)
+        self.prefs.save()
 
     def entete_fichier(self, msg=""):
         result=u"""#pymecavideo
@@ -1558,8 +1564,9 @@ class StartQT4(QMainWindow):
             self.filename = data.decode('utf-8')
             self.filename = os.path.abspath(self.filename)
             self.prefs.lastVideo=unicode(filename,"utf8")
-            self.prefs.videoDir=os.path.dirname(self.filename)
-            self.prefs.save()
+#            self.prefs.videoDir=os.path.dirname(self.filename)
+#            self.prefs.save()
+#            self.prefs.save()
             
             self.init_image()
             self.mets_a_jour_label_infos(self.tr(u"Veuillez choisir une image et définir l'échelle"))
@@ -1676,8 +1683,10 @@ class StartQT4(QMainWindow):
                 self.chemin_image = imfilename
             elif returncode==1 and self.prefs.lastVideo != "":
                 print "erreur", returncode
+                self.chemin_image = ""
                 mauvaisevideo = QMessageBox.warning(self,self.tr(unicode("ERREUR","utf8")), QString(self.tr(unicode("La video que vous tentez d'ouvrir n'est pas dans un format lisible.\n Merci d'en ouvrir une autre ou de l'encoder autrement","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
                 self.prefs.lastVideo = ""
+                self.prefs.save()
                 self.close()
             else:
                 print "erreur", returncode
@@ -1729,10 +1738,12 @@ def run():
         usage()
         sys.exit(2)
 
-    filename=""
-    if len(args)>0:
-        filename=args[-1]# passe le dernier paramètre
-        locale = QLocale.system().name()
+    print "Options", opts, args
+    
+#    filename=""
+#    if len(args)>0:
+#        filename=args[-1]# passe le dernier paramètre
+#        locale = QLocale.system().name()
 
     # ainsi pickle peut trouver le module "vecteur"
 
@@ -1749,7 +1760,7 @@ def run():
     if appTranslator.load(langdir):
         b = app.installTranslator(appTranslator)
     
-    windows = StartQT4(None,os.path.abspath(unicode(filename,"utf8")),opts)
+    windows = StartQT4(None,opts)
     
     windows.show()
     

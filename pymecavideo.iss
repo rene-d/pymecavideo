@@ -20,11 +20,11 @@
 [Setup]
 ;Informations générales sur l'application
 AppName=pymecavideo 5
-AppVerName=pymecavideo 5.2
-AppVersion=5.2
+AppVerName=pymecavideo 5.3
+AppVersion=5.3
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
 AppCopyright=Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org> Jean-Baptiste Butet <ashashiwa@gmail.com>
-VersionInfoVersion = 5.2.0.0
+VersionInfoVersion = 5.3.0.0
 
 ;Répertoire de base contenant les fichiers
 SourceDir=D:\Documents\Developpement\pymecavideo
@@ -43,7 +43,7 @@ SolidCompression=yes
 PrivilegesRequired=none
 
 ;Nom du fichier généré et répertoire de destination
-OutputBaseFilename=pymecavideo_5.2_setup
+OutputBaseFilename=pymecavideo_5.3_setup
 OutputDir=releases
 
 ;Dans le panneau de configuration de Windows2000/NT/XP, c'est l'icone de pymecavideo.exe qui
@@ -66,7 +66,7 @@ Name: fr; MessagesFile: "compiler:Languages\French.isl"
 ;Name: fr; MessagesFile: "compiler:Languages\French.isl"
 
 [Messages]
-BeveledLabel=pymecavideo 5.2 installation
+BeveledLabel=pymecavideo 5.3 installation
 
 
 [CustomMessages]
@@ -147,7 +147,7 @@ Name: {group}\{cm:uninstall} pymecavideo; Filename: {app}\unins000.exe;IconFileN
 ;
 ; On ajoute sur le Bureau l'icône pymecavideo
 ;
-Name: {code:DefDesktop}\pymecavideo 5.2;   Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; MinVersion: 4,4; Tasks: desktopicon2; IconFileName: {app}\bin\pymecavideo.exe
+Name: {code:DefDesktop}\pymecavideo 5.3;   Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; MinVersion: 4,4; Tasks: desktopicon2; IconFileName: {app}\bin\pymecavideo.exe
 
 
 [_ISTool]
@@ -158,7 +158,7 @@ Use7zip=true
 ; Tout ce qui concerne les fichiers .mecavideo
 Root: HKCR; SubKey: .mecavideo; ValueType: string; ValueData: {cm:FileExtensionName}; Flags: uninsdeletekey
 Root: HKCR; SubKey: {cm:FileExtensionName}; ValueType: string; Flags: uninsdeletekey; ValueData: {cm:FileExtensionName}
-Root: HKCR; SubKey: {cm:FileExtensionName}\Shell\Open\Command; ValueType: string; ValueData: """{app}\bin\pymecavideo.exe"" ""%1"""; Flags: uninsdeletekey;
+Root: HKCR; SubKey: {cm:FileExtensionName}\Shell\Open\Command; ValueType: string; ValueData: """{app}\bin\pymecavideo.exe"" ""-f %1"""; Flags: uninsdeletekey;
 Root: HKCR; Subkey: {cm:FileExtensionName}\DefaultIcon; ValueType: string; ValueData: {app}\data\icones\pymecavideo.ico,0; Flags: uninsdeletekey;
 
 ; Pour stocker le style d'installation : "All users" ou "Current user"
@@ -210,6 +210,7 @@ begin
   else
     Result := ExpandConstant('{userdesktop}')
 end;
+
 
 
 
