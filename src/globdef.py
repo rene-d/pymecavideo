@@ -70,12 +70,11 @@ if sys.platform == 'win32':
     PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
     PATH = os.path.split(PATH)[0]
     os.chdir(PATH)
+    sys.path.append(PATH)
 
 else:
-    PATH = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(PATH)
-    APPLI = PATH
-sys.path.append(PATH)
+    pass
+
 #print "Dossier de l'application :", PATH
 
     
@@ -137,7 +136,7 @@ HOME_PATH = unicode(QDesktopServices.storageLocation(8), 'iso-8859-1')
 if sys.platform == 'win32':
     VIDEO_PATH = os.path.join(PATH,"data","video")
 else:
-    VIDEO_PATH = testerDossier((os.path.join(APPLI,"..","data","video"),
+    VIDEO_PATH = testerDossier((os.path.join("..","data","video"),
                                 '/usr/share/pymecavideo/video',
                                 '/usr/share/python-mecavideo/video'),
                                 APP_DATA_PATH)
@@ -159,7 +158,7 @@ else:
 if sys.platform == 'win32':
     ICON_PATH = os.path.join(PATH,"data","icones")
 else:
-    ICON_PATH = testerDossier((os.path.join(APPLI,"..","data","icones"),
+    ICON_PATH = testerDossier((os.path.join("..","data","icones"),
     '/usr/share/python-mecavideo/icones','/usr/share/pymecavideo/icones'))
 #print "Dossier des icones :", ICON_PATH 
 
@@ -170,7 +169,7 @@ else:
 if sys.platform == 'win32':
     LANG_PATH = os.path.join(PATH,"..","data","lang")
 else:
-    LANG_PATH = testerDossier((os.path.join(APPLI,"..","data","lang"),
+    LANG_PATH = testerDossier((os.path.join("..","data","lang"),
     '/usr/share/pyshared/pymecavideo/lang','/usr/share/python-mecavideo/lang','/usr/share/pymecavideo/lang'))
 #print "Dossier des langues :", LANG_PATH 
 
@@ -182,8 +181,8 @@ if sys.platform == 'win32':
     DATA_PATH = os.path.join(PATH,"data")
 else:
     #DATA_PATH = os.path.join(PATH,"..","data")
-    DATA_PATH = testerDossier((os.path.join(APPLI,"..","data"),
-                               '/usr/share/python-mecavideo/'))
+    DATA_PATH = testerDossier((os.path.join("..","data"),
+    '/usr/share/python-mecavideo/','/usr/share/pymecavideo/'))
 #print "Dossier ""data"" :", DATA_PATH 
 
 
@@ -193,7 +192,7 @@ else:
 if sys.platform == 'win32':
     HELP_PATH = os.path.join(PATH,"data", "help")
 else:
-    HELP_PATH = testerDossier((os.path.join(APPLI,"..","data","help"),"/usr/share/doc/python-mecavideo/html",
+    HELP_PATH = testerDossier((os.path.join("..","data","help"),"/usr/share/doc/python-mecavideo/html",
                                "/usr/share/doc/HTML/fr/pymecavideo"))
 #print "Dossier de l'aide :", HELP_PATH 
 

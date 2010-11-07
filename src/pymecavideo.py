@@ -231,7 +231,7 @@ class StartQT4(QMainWindow):
                 pass
         
 
-    def init_variables(self, opts):
+    def init_variables(self, opts, filename=""):
 
         self.logiciel_acquisition = False
         self.points_ecran={}
@@ -257,7 +257,7 @@ class StartQT4(QMainWindow):
         self.premiere_image = 1      # nￂﾰ de la première image cliquée
         self.index_de_l_image = 1    # image àﾠ afficher
         self.echelle_v = 0
-        self.filename=""
+        self.filename=filename
         self.opts=opts
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
         self.init_interface()
@@ -405,23 +405,30 @@ class StartQT4(QMainWindow):
         """
         self.dbg.p(2,"Dans reinitialise_tout: echelle_image=%s, nb_de_points=None%s, tousLesClics=%s,index_point_actuel=%s" %(echelle_image, nb_de_points, tousLesClics,index_point_actuel))
         self.montre_vitesses(False)
+        print "a"
         self.oubliePoints()
+        print "b"
         self.label_trajectoire.update()
+        print "c"
         self.ui.label.update()
+        print "d"
         self.label_video.update()
+        print "e"
 
         #############si il existe un point actuel, cela signifie qu'on réinitlise tout amis qu'on doit garder la position de départ. Cas quand on revient en arrière d'un cran ou que l'on refait le point.
         if index_point_actuel :
             index = self.premiere_image
             self.init_variables(self.filename,None)
-
+            print "f"
             ############ permet de récupérer les 2 valeurs souhaitées
             self.premiere_image = index
+            print "g"
             self.index_de_l_image = index
+            print "h"
             ############
         else :
-            self.init_variables(self.filename,None)
-
+            self.init_variables(self.filename)
+            print "i"
   
         self.init_interface()
         self.ui.checkBox_avancees.setEnabled(1)
@@ -446,19 +453,29 @@ class StartQT4(QMainWindow):
         session de capture.
         """
         self.montre_vitesses(False)
+        print 1
+        
         self.oubliePoints()
+        print 2
         self.label_trajectoire.update()
+        print 3
         self.ui.label.update()
+        print 4
         self.label_video.update()
+        print 5
         self.label_video.setCursor(Qt.ArrowCursor)
-
+        print 6
         for enfant in self.label_video.children():
               enfant.hide()
               del enfant
         del self.label_video.zoom_croix
+        
         del self.label_video
-        self.init_variables(self.filename,None)
+        print 7
+        self.init_variables(None, filename=self.filename)
+        print 8
         self.affiche_image()
+        print 9
 
         self.echelle_image=echelle()
         self.affiche_echelle()
@@ -744,6 +761,8 @@ class StartQT4(QMainWindow):
         self.loads(dd)               # on récupère les données importantes
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        framerate, self.image_max = self.recupere_avi_infos(self.filename)
+        self.defini_barre_avancement()
         self.affiche_echelle()       # on met à jour le widget d'échelle
         n=len(self.points.keys())
         self.nb_image_deja_analysees = n
@@ -1562,7 +1581,7 @@ class StartQT4(QMainWindow):
             filename = filename.toUtf8()
             data = filename.data()
             self.filename = data.decode('utf-8')
-            self.filename = os.path.abspath(self.filename)
+            #self.filename = self.filename
             self.prefs.lastVideo=unicode(filename,"utf8")
 #            self.prefs.videoDir=os.path.dirname(self.filename)
 #            self.prefs.save()
