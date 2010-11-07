@@ -836,10 +836,10 @@ class StartQT4(QMainWindow):
             self.modifie=False
         
     def enregistre_ui(self):
-        if sys.platform == 'win32':
-            pass
-        else:
-            os.chdir(self._dir("home"))
+        #if sys.platform == 'win32':
+            #pass
+        #else:
+            #os.chdir(self._dir("home"))
         
         if self.points!={}:
             fichier = QFileDialog.getSaveFileName(self,"FileDialog", "data.csv","*.csv *.txt *.asc *.dat")
@@ -1465,13 +1465,13 @@ class StartQT4(QMainWindow):
         self.origine_trace.show()
 
     def reinitialise_environnement(self):
-        if sys.platform == 'win32':
-            for filename in glob(os.path.join(IMG_PATH,"*.jpg")):
-                os.remove(filename)
-        else:
-            os.chdir(self._dir("images"))
-            for filename in glob("*.jpg"):  # a remettre à la fin ;) 
-                os.remove(filename)
+        #if sys.platform == 'win32':
+        for filename in glob(os.path.join(IMG_PATH,"*.jpg")):
+            os.remove(filename)
+        #else:
+            #os.chdir(self._dir("images"))
+            #for filename in glob("*.jpg"):  # a remettre à la fin ;) 
+                #os.remove(filename)
                 
     def on_closeCanvas(self, event):
         print "Fermeture canvas"
@@ -1626,23 +1626,23 @@ class StartQT4(QMainWindow):
         self.ui.horizontalSlider.setMaximum(int(self.image_max))
         self.ui.spinBox_image.setMaximum(int(self.image_max))
         
-        if sys.platform == 'win32':
-            fichier = os.path.join(IMG_PATH, VIDEO + SUFF %1 )
-            try :
-                os.remove(fichier)
-                a = self.extract_image(self.filename, 1)
-                os.remove(fichier)
-            except OSError:
-                pass
-        else:
-            os.chdir(self._dir("images"))
-            try :
-                os.remove(VIDEO + SUFF %1)
-                a = self.extract_image(self.filename, 1)
-                os.chdir(self._dir("images"))
-                os.remove(VIDEO + SUFF %1)
-            except OSError:
-                pass
+        #if sys.platform == 'win32':
+        fichier = os.path.join(IMG_PATH, VIDEO + SUFF %1 )
+        try :
+            os.remove(fichier)
+            a = self.extract_image(self.filename, 1)
+            os.remove(fichier)
+        except OSError:
+            pass
+        #else:
+            #os.chdir(self._dir("images"))
+            #try :
+                #os.remove(VIDEO + SUFF %1)
+                #a = self.extract_image(self.filename, 1)
+                #os.chdir(self._dir("images"))
+                #os.remove(VIDEO + SUFF %1)
+            #except OSError:
+                #pass
         
     def extract_image(self, video, index, force=False, sortie=False):
         """
@@ -1651,11 +1651,11 @@ class StartQT4(QMainWindow):
         "force" permet de spécifier si on veut obliger l'écriture d'une image même si elle existe
         "sortie" spécifie si on a besoin de la sortie standard. 
         """
-        if sys.platform == 'win32':
-            imfilename=os.path.join(IMG_PATH, VIDEO + SUFF %index)
-        else:
-            os.chdir(self._dir("images"))
-            imfilename = VIDEO + SUFF %index
+        #if sys.platform == 'win32':
+        imfilename=os.path.join(IMG_PATH, VIDEO + SUFF %index)
+        #else:
+            #os.chdir(self._dir("images"))
+            #imfilename = VIDEO + SUFF %index
         output = ""
         #sortie=True
         #force=True
@@ -1728,6 +1728,9 @@ class StartQT4(QMainWindow):
                         self.rouvre(val)
                     except:
                         pass
+                if os.path.isfile(val) and os.path.splitext(val)[1] == ".avi":
+                    self.openTheFile(val)
+                    
         
 def usage():
     print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--mini]")
