@@ -1723,7 +1723,7 @@ class StartQT4(QMainWindow):
     def traiteOptions(self):
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
-                if os.path.isfile(val) and os.path.splitext(val)[1] == ".pymecavideo":
+                if os.path.isfile(val) and os.path.splitext(val)[1] == ".mecavideo":
                     try:
                         self.rouvre(val)
                     except:
