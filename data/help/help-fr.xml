@@ -435,10 +435,10 @@ GNU/Linux et sous <trademark>Windows</trademark>.
   <row>
   <entry>Logiciel</entry>
   <entry><inlinemediaobject><imageobject>
-    <imagedata fileref="tux.png" format="PNG" width="32px" />
+    <imagedata fileref="tux-w32.png" format="PNG" width="32px" />
   </imageobject></inlinemediaobject></entry>
   <entry><inlinemediaobject><imageobject>
-    <imagedata fileref="win.png" format="PNG" width="32px" />
+    <imagedata fileref="win-w32.png" format="PNG" width="32px" />
   </imageobject></inlinemediaobject></entry>
   <entry>Description</entry>
 </row>

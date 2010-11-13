@@ -1,14 +1,18 @@
 SOURCES=$(shell ls *.xml)
 SOURCES_W32 = win.svg tux.svg # image sources (width 32 px)
-GENERATED_W32 = $(patsubst %.svg, %.png, $(SOURCES_W32)) # generated images
-TARGETS=$(SOURCES:.xml=.xhtml) $(GENERATED_W32)
+GENERATED_W32 = $(patsubst %.svg, %-w32.png, $(SOURCES_W32)) # generated images
+TARGETS=$(SOURCES:.xml=.xhtml)
 
-all: $(TARGETS)
+all: $(TARGETS) images
 
-win.png: win.svg
-	inkscape --export-png=$@ --export-width=32 $<
-tux.png: tux.svg
-	inkscape --export-png=$@ --export-width=32 $<
+images: $(GENERATED_W32)
+
+%-w32.png: %.svg
+	if [ -x /usr/bin/rsvg ]; then \
+	  rsvg -w 32 $< $@; \
+	else \
+	  inkscape --export-png=$@ --export-width=32 $<; \
+	fi
 
 
 %.xhtml : %.xml
