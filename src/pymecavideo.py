@@ -418,8 +418,9 @@ class StartQT4(QMainWindow):
         #############si il existe un point actuel, cela signifie qu'on réinitlise tout amis qu'on doit garder la position de départ. Cas quand on revient en arrière d'un cran ou que l'on refait le point.
         if index_point_actuel :
             index = self.premiere_image
-            self.init_variables(self.filename,None)
             print "f"
+            self.init_variables(None, filename=self.filename)
+
             ############ permet de récupérer les 2 valeurs souhaitées
             self.premiere_image = index
             print "g"
@@ -427,7 +428,7 @@ class StartQT4(QMainWindow):
             print "h"
             ############
         else :
-            self.init_variables(self.filename)
+            self.init_variables(None, filename=self.filename)
             print "i"
   
         self.init_interface()
@@ -1653,7 +1654,7 @@ class StartQT4(QMainWindow):
         """
 
         imfilename=os.path.join(IMG_PATH, VIDEO + SUFF %index)
-
+        print "##########",imfilename
         output = ""
 
         if os.path.isfile(imfilename) and force==False: #si elle existe déjà et , ne fait rien
@@ -1667,7 +1668,7 @@ class StartQT4(QMainWindow):
             childstderr, creationflags = GetChildStdErr()
             cmd0_ = subprocess.Popen(args=args,
                                      stderr=PIPE, stdin = childstderr, stdout = childstderr,
-                                     creationflags = creationflags)# |subprocess.CREATE_NEW_CONSOLE )
+                                     creationflags = creationflags)
             cmd0_.wait()
             cmd0_.poll()
             if sortie :
