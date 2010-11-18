@@ -52,6 +52,10 @@ import locale, getopt, pickle
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import PyQt4.QtXml 
+
+# création précoce de l'objet application, déjà nécessaire pour traiter les bugs
+app = QApplication(sys.argv)
+
 from glob import glob
 from echelle import Label_Echelle, echelle
 from math import sqrt
@@ -1733,7 +1737,7 @@ def usage():
     print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--mini]")
 
 def run():
-    app = QApplication(sys.argv)
+    global app
     
     args=sys.argv[1:]
     try:
