@@ -47,6 +47,8 @@ if sys.platform != "win32" or sys.argv[0].endswith(".exe"):
     import Error
     
 from vecteur import vecteur
+from videoImage import videoImage
+
 import os, thread, time, commands, linecache, codecs, re
 import locale, getopt, pickle
 from PyQt4.QtCore import *
@@ -100,7 +102,7 @@ class MonThreadDeCalcul(QThread):
 
     def run(self):
         point = filter_picture(self.motif,self.image)
-        #if self.parent.centre_ref.x()-self.parent.carre/2-point[0] == 0 and  self.parent.centre_ref.y()-self.parent.carre/2-point[1] == 0 :#fonctionne sur l'image numéro 1
+
         ##itère d'un cran et lance la détection
         self.parent.label_video.liste_points.append(vecteur(point[0], point[1]))
         if self.parent.index_de_l_image<self.parent.image_max:
@@ -108,12 +110,8 @@ class MonThreadDeCalcul(QThread):
 
             self.parent.emit(SIGNAL('clic_sur_video()'))
 
-        #else :
-            #retour = QMessageBox.critical(self.parent,QString(self.parent.tr("Impossible de corréler")),QString(self.parent.tr("Veuillez prendre une image plus contrastée.\nle logiciel n'arrive
-#pas àﾠ retrouver l'objet")),QMessageBox.Ok )
 
-
-class StartQT4(QMainWindow):
+class StartQT4(QMainWindow, videoImage):
     def __init__(self, parent, opts):
         #Données principales du logiciel : 
         if "mini" in str(opts) :
@@ -123,6 +121,7 @@ class StartQT4(QMainWindow):
         
         ######QT
         QMainWindow.__init__(self)
+        videoImage.__init__(self)
         QWidget.__init__(self, parent)
         try:
             Error._ = self.tr
@@ -155,14 +154,6 @@ class StartQT4(QMainWindow):
 
 
 
-        self.platform = platform.system()
-        if self.platform.lower()=="windows":
-            self.ffmpeg = os.path.join(PATH,"ffmpeg.exe")
-            self.player = "ffplay.exe"
-
-        elif self.platform.lower()=="linux":
-            self.ffmpeg = "ffmpeg"
-            self.player = "vlc"
         self.prefs=Preferences(self)
         ####intilise les répertoires
         self._dir()
@@ -226,8 +217,8 @@ class StartQT4(QMainWindow):
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
                 return
-        if os.path.isfile(self.filename):
-            self.openTheFile(self.filename)
+        if os.path.isfile(self.videoFileName):
+            self.openTheFile(self.videoFileName)
         elif os.path.isfile(self.prefs.lastVideo):
             try:
                 self.openTheFile(self.prefs.lastVideo)
@@ -235,7 +226,7 @@ class StartQT4(QMainWindow):
                 pass
         
 
-    def init_variables(self, opts, filename=""):
+    def init_variables(self, opts, videoFileName=""):
 
         self.logiciel_acquisition = False
         self.points_ecran={}
@@ -246,7 +237,6 @@ class StartQT4(QMainWindow):
         self.origine = vecteur(320,240)
         self.auto=False
 
-        self.deltaT = 0.04       #durée 40 ms par défaut : 25 images/s
         self.lance_capture = False
         self.modifie=False
         self.points={}        #dictionnaire des points cliqués, par nￂﾰ d'image.
@@ -261,31 +251,11 @@ class StartQT4(QMainWindow):
         self.premiere_image = 1      # nￂﾰ de la première image cliquée
         self.index_de_l_image = 1    # image àﾠ afficher
         self.echelle_v = 0
-        self.filename=filename
+        self.videoFileName=videoFileName
         self.opts=opts
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
         self.init_interface()
 
-        ######vérification de la présence de fmmpeg et ffplay dans le path.
-        ok_ffmpeg=True; ok_player=True;
-        if sys.platform == 'win32':
-            paths = os.environ['PATH'].split(os.pathsep)
-            paths.append(PATH)
-            if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in paths)) :
-                ok_ffmpeg = False
-        else:
-            if type(self.player)==type([]):
-                player=self.player[0]
-            else:
-                player=self.player.split(" ")[0]
-            # on garde le nom de commande, pas les paramètres
-            if not( any(os.access(os.path.join(p,self.ffmpeg), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
-                ok_ffmpeg = False
-            if not(any(os.access(os.path.join(p,player), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
-                ok_player = False
-        if ok_player== False or ok_ffmpeg == False :
-            pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel %s ou %s n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre" %(self.ffmpeg, player),"utf8" ))), QMessageBox.Ok,QMessageBox.Ok)
-            self.close()
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture']:
             if  any(os.access(os.path.join(p,logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
@@ -423,7 +393,7 @@ class StartQT4(QMainWindow):
         if index_point_actuel :
             index = self.premiere_image
             print "f"
-            self.init_variables(None, filename=self.filename)
+            self.init_variables(None, videoFileName=self.videoFileName)
 
             ############ permet de récupérer les 2 valeurs souhaitées
             self.premiere_image = index
@@ -432,7 +402,7 @@ class StartQT4(QMainWindow):
             print "h"
             ############
         else :
-            self.init_variables(None, filename=self.filename)
+            self.init_variables(None, videoFileName=self.videoFileName)
             print "i"
   
         self.init_interface()
@@ -477,7 +447,7 @@ class StartQT4(QMainWindow):
         
         del self.label_video
         print 7
-        self.init_variables(None, filename=self.filename)
+        self.init_variables(None, videoFileName=self.videoFileName)
         print 8
         self.affiche_image()
         print 9
@@ -542,12 +512,8 @@ class StartQT4(QMainWindow):
         
         
     def picture_detect(self):
-        ## point = filter_picture(self.motif,self.image_640_480)
-        ## self.label_video.liste_points.append(vecteur(point[0], point[1]))
-        ## self.label_video.pos_avant=self.label_video.pos
-        ## self.emit(SIGNAL('clic_sur_video()'))
-        # le problème c'est que le signal ci-dessus provoque une procédure
-        # qui elle-même rappelle picrute_detect grâce à l'émission d'un autre
+        # le problème c'est que le signal qui sera émis provoque une procédure
+        # qui elle-même rappelle picture_detect grâce à l'émission d'un autre
         # signal. Le fait de créer un Thread évite que ça soit circulaire
         # mais ça empile autant de threads qu'il y a d'images !
         self.calcul=MonThreadDeCalcul(self, self.motif,self.image_640_480)
@@ -745,7 +711,7 @@ class StartQT4(QMainWindow):
 
     def loads(self,s):
         s=s[1:-1].replace("\n#","\n")
-        self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points = pickle.loads(s)
+        self.videoFileName,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points = pickle.loads(s)
 
     def rouvre(self,fichier):
         lignes=open(fichier,"r").readlines()
@@ -766,7 +732,7 @@ class StartQT4(QMainWindow):
         self.loads(dd)               # on récupère les données importantes
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        framerate, self.image_max = self.recupere_avi_infos(self.filename)
+        self.recupere_avi_infos()
         self.defini_barre_avancement()
         self.affiche_echelle()       # on met à jour le widget d'échelle
         n=len(self.points.keys())
@@ -795,8 +761,8 @@ class StartQT4(QMainWindow):
         # attention à la fonction défaire/refaire : elle est mal initialisée !!!
 
         # On met à jour les préférences
-        self.prefs.lastVideo=self.filename
-        self.prefs.videoDir=os.path.dirname(self.filename)
+        self.prefs.lastVideo=self.videoFileName
+        self.prefs.videoDir=os.path.dirname(self.videoFileName)
         self.prefs.save()
 
     def entete_fichier(self, msg=""):
@@ -808,11 +774,11 @@ class StartQT4(QMainWindow):
 #intervalle de temps : %f
 #suivi de %s point(s)
 #%s
-#""" %(self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon(),self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points,msg)
+#""" %(self.videoFileName,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon(),self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points,msg)
         return result
 
     def dumps(self):
-        return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points)).replace("\n","\n#")
+        return "#"+pickle.dumps((self.videoFileName,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points)).replace("\n","\n#")
     def enregistre(self, fichier):
         sep_decimal="."
         try:
@@ -1418,7 +1384,7 @@ class StartQT4(QMainWindow):
         self.affiche_image()
     
     def affiche_image(self):
-        self.extract_image(self.filename, self.index_de_l_image)
+        self.extract_image(self.index_de_l_image, self.prefs)
         image=QImage(self.chemin_image)
      
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
@@ -1541,17 +1507,17 @@ class StartQT4(QMainWindow):
     def openexample(self):
         dir_="%s" %(self._dir("videos"))
         self.reinitialise_tout()
-        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov)","utf8")))
-        self.openTheFile(filename)
+        videoFileName=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov)","utf8")))
+        self.openTheFile(videoFileName)
         
     def openfile(self):
         """
         Ouvre un dialogue pour choisir un fichier vidéo puis le charge
         """
         dir_=self._dir("videos")
-        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov)","utf8")))
-        print "open", filename
-        self.openTheFile(filename)
+        videoFileName=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov)","utf8")))
+        print "open", videoFileName
+        self.openTheFile(videoFileName)
         try :
             self.reinitialise_capture()
         except :
@@ -1559,37 +1525,32 @@ class StartQT4(QMainWindow):
         
     def renomme_le_fichier(self):
         renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr(unicode("Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
-        filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), self._dir("videos"),"*.avi")
-        self.openTheFile(filename)
+        videoFileName=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), self._dir("videos"),"*.avi")
+        self.openTheFile(videoFileName)
 
-    def openTheFile(self,filename):
+    def openTheFile(self,videoFileName):
         """
-        Ouvre le fichier de nom filename, enregistre les préférences de
+        Ouvre le fichier de nom videoFileName, enregistre les préférences de
          fichier vidéo.
-        @param filename chaîne de caractère, de type string,QSring ou QByteArray
+        @param videoFileName chaîne de caractère, de type string,QSring ou QByteArray
          le forçage de type permet d'accepter chacune des variantes en entrée.
          N.B.: l'attribut self.prefs.lastVideo sera qui sera enregistré est de
          type string et d'encodage unicode.
         """
-        if filename != "" : 
-            filename = QString(filename)
-            filename = filename.toUtf8()
-            data = filename.data()
-            self.filename = data.decode('utf-8')
-            #self.filename = self.filename
-            self.prefs.lastVideo=unicode(filename,"utf8")
-#            self.prefs.videoDir=os.path.dirname(self.filename)
-#            self.prefs.save()
-#            self.prefs.save()
+        if videoFileName != "" : 
+            videoFileName = QString(videoFileName)
+            videoFileName = videoFileName.toUtf8()
+            data = videoFileName.data()
+            self.videoFileName = data.decode('utf-8')
+            self.prefs.lastVideo=unicode(videoFileName,"utf8")
             
             self.init_image()
             self.mets_a_jour_label_infos(self.tr(u"Veuillez choisir une image et définir l'échelle"))
             self.ui.Bouton_Echelle.setEnabled(True)
             self.ui.horizontalSlider.setEnabled(1)
             self.label_video.show()
-                # n'enregistre les préférence que quand la première image
-                # a été extraite avec succès !!
-            self.prefs.videoDir=os.path.dirname(self.filename)
+
+            self.prefs.videoDir=os.path.dirname(self.videoFileName)
             self.prefs.save()
 
     def propos(self):
@@ -1617,7 +1578,7 @@ class StartQT4(QMainWindow):
         
         
     def init_image(self):
-        """intialise certaines variables lors le la mise en place d'une nouvelle image"""
+        """intialise certaines variables lors le la mise en place d'une nouvelle vidéo"""
         self.index_de_l_image = 1
         self.trajectoire = {}
         self.ui.spinBox_image.setMinimum(1)
@@ -1633,8 +1594,7 @@ class StartQT4(QMainWindow):
         
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
-        framerate, self.image_max = self.recupere_avi_infos(self.filename)
-        self.deltaT = float(1.0/framerate)
+        self.recupere_avi_infos()
         self.ui.horizontalSlider.setMinimum(1)
         
         self.ui.horizontalSlider.setMaximum(int(self.image_max))
@@ -1643,83 +1603,12 @@ class StartQT4(QMainWindow):
         fichier = os.path.join(IMG_PATH, VIDEO + SUFF %1 )
         try :
             os.remove(fichier)
-            a = self.extract_image(self.filename, 1)
+            a = self.extract_image(1, self.prefs)
             os.remove(fichier)
         except OSError:
             pass
 
         
-    def extract_image(self, video, index, force=False, sortie=False):
-        """
-        extrait l'image d'index "index" de la video à l'aide de ffmpeg
-        et l'enregistre sur le disque.
-        "force" permet de spécifier si on veut obliger l'écriture d'une image même si elle existe
-        "sortie" spécifie si on a besoin de la sortie standard. 
-        """
-
-        imfilename=os.path.join(IMG_PATH, VIDEO + SUFF %index)
-        print "##########",imfilename
-        output = ""
-
-        if os.path.isfile(imfilename) and force==False: #si elle existe déjà et , ne fait rien
-            self.chemin_image = imfilename
-        else : #sinon, extrait depuis la video
-            #attention au cas de la dernière image.
-            i=1
-            ffmpeg_dir=self._dir("conf")
-            args=[self.ffmpeg,"""-i""", video,"""-ss""",str((index-i)*self.deltaT),
-                  """-vframes""",str(1),"""-f""","""image2""","""-vcodec""","""mjpeg""",imfilename]
-            childstderr, creationflags = GetChildStdErr()
-            cmd0_ = subprocess.Popen(args=args,
-                                     stderr=PIPE, stdin = childstderr, stdout = childstderr,
-                                     creationflags = creationflags)
-            cmd0_.wait()
-            cmd0_.poll()
-            if sortie :
-                sortie_ = cmd0_.communicate()
-           
-            returncode =  cmd0_.returncode
-            cmd0=self.ffmpeg+" -i %s -ss %f -vframes 1 -f image2 -vcodec mjpeg %s"
-            if returncode==0:
-                self.chemin_image = imfilename
-            elif returncode==1 and self.prefs.lastVideo != "":
-                print "erreur", returncode
-                self.chemin_image = ""
-                mauvaisevideo = QMessageBox.warning(self,self.tr(unicode("ERREUR","utf8")), QString(self.tr(unicode("La video que vous tentez d'ouvrir n'est pas dans un format lisible.\n Merci d'en ouvrir une autre ou de l'encoder autrement","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
-                self.prefs.lastVideo = ""
-                self.prefs.save()
-                self.close()
-            else:
-                print "erreur", returncode
-              
-            #elif returncode > 256 :
-
-            if sortie:
-                return sortie_
-          
-    def recupere_avi_infos(self, fileName):
-        "Ouvre une vidéo AVI et retourne son framerate ainsi que le nombre d'images de la vidéo."
-        framerate = 25
-        duration=0
-        videospec=self.extract_image(self.filename,1,True,True)[1]
-        try:
-            patternRate=re.compile(".*Video.* ([.0-9]+) tbr.*")
-            patternDuration=re.compile(".*Duration.* (\\d+):(\\d+):([.0-9]*),.*")
-            l=videospec.split("\n")
-            for line in l:
-                m=patternRate.match(line)
-                if m:
-                    framerate=float(m.group(1))
-                m=patternDuration.match(line)
-                if m:
-                    h=int(m.group(1))
-                    min=int(m.group(2))
-                    s=float(m.group(3))
-                    duration=3600*h+60*min+s
-        except:
-            self.dbg.p(0, self.tr("Impossible de lire %s" %fileName))
-        nb_images=int(duration*framerate)
-        return framerate,nb_images
         
     def traiteOptions(self):
         for opt,val in self.opts:
@@ -1746,15 +1635,8 @@ def run():
         usage()
         sys.exit(2)
 
-    print "Options", opts, args
+    #print "Options", opts, args
     
-#    filename=""
-#    if len(args)>0:
-#        filename=args[-1]# passe le dernier paramètre
-#        locale = QLocale.system().name()
-
-    # ainsi pickle peut trouver le module "vecteur"
-
     ###translation##
     locale = "%s" %QLocale.system().name()
     #locale = "%s" %QString("en_EN")

@@ -205,18 +205,18 @@ AVI_OUT = os.path.join(IMG_PATH, "out.avi")
 ERROR_FILE = os.path.join(APP_DATA_PATH, 'pymecavideo.exe' + '.log')
 
 ####################
-print "###Répertoires système"
-print "Dossier contenant les données de pymecavideo :", DATA_PATH
-print "Dossier de l'aide :", HELP_PATH
-print "Dossier des langues :", LANG_PATH
-print "Dossier des icones :", ICON_PATH
-print "Dossier des videos :", VIDEO_PATH
-print "Dossier gnuplot :", GNUPLOT_PATH
-print "###Répertoires Utilisateur"
-print "Dossier de l'application :", PATH
-print "Dossier de pymecavideo.conf :", CONF_PATH
-print "Dossier images_extraites :", IMG_PATH
-print "Dossier des données temporaires :", APP_DATA_PATH
+#print "###Répertoires système"
+#print "Dossier contenant les données de pymecavideo :", DATA_PATH
+#print "Dossier de l'aide :", HELP_PATH
+#print "Dossier des langues :", LANG_PATH
+#print "Dossier des icones :", ICON_PATH
+#print "Dossier des videos :", VIDEO_PATH
+#print "Dossier gnuplot :", GNUPLOT_PATH
+#print "###Répertoires Utilisateur"
+#print "Dossier de l'application :", PATH
+#print "Dossier de pymecavideo.conf :", CONF_PATH
+#print "Dossier images_extraites :", IMG_PATH
+#print "Dossier des données temporaires :", APP_DATA_PATH
 
 
 #

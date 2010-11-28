@@ -32,7 +32,7 @@ class standardDragTable(QTableWidget):
         QTableWidget.__init__(self,parent)
         QObject.connect(self,SIGNAL("itemSelectionChanged()"), self.selection)
         self.sep_decimal="."
-        print "locale", locale.getdefaultlocale()[0][0:2]
+        # print "locale", locale.getdefaultlocale()[0][0:2]
         try:
             if locale.getdefaultlocale()[0][0:2]=='fr':
                 # en France, le séparateur décimal est la virgule
