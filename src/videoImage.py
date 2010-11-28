@@ -172,3 +172,39 @@ class videoImage:
             self.dbg.p(0, QApplication.tr("Impossible de lire %s" %self.videoFileName))
         self.image_max=int(duration*self.framerate)
         self.deltaT=1.0/self.framerate
+
+    def videoCropCmd(self, image, hautgauche, basdroite):
+        """
+        compose et renvoie une commande servent à faire un extrait de video
+        @param image numéro de l'image à découper
+        @param hautgauche coordonnées d'un coin de la zone à découper
+        @param basdroite coordonnées de l'autre coin
+        @return une commande pour découper un rectangle dans une image de la vidéo
+        """
+        cmd = [self.ffmpeg,
+               """-i""", self.videoFileName,
+               """-ss""", str(image *self.deltaT),
+               """-vframes""", """1""",
+               """-f""", """image2""",
+               """-vcodec""", """mjpeg""", 
+               """-cropleft""",  str(hautgauche.x()) ,
+               """-croptop""",    str(hautgauche.y())  , 
+               """-cropright""", str(basdroite.x())  ,
+               """-cropbottom""", str(basdroite.y()) ]
+        return cmd
+
+    def videoMergeCmd(self, images, destfile):
+        """
+        renvoie une commande pour combiner une série d'images en une vidéo
+        @param images désignation des images à monter en animation
+        @param destfile fichier vidéo à créer
+        """
+        cmd = [self.ffmpeg,
+               """-r""", """25""",
+               """-f""", """image2""",
+               """-i""", images,
+               """-r""", """25""",
+               """-f""", """avi""",
+               """-vcodec""", """mpeg1video""", 
+               """-b""", """800k""", destfile]
+        return cmd

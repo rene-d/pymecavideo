@@ -91,11 +91,8 @@ class Cadreur:
             if basdroite.x()%2==1  : basdroite  += vecteur(1,0)
             if hautgauche.y()%2==1 : hautgauche += vecteur(0,1)
             if basdroite.y()%2==1  : basdroite  += vecteur(0,1)
-            cmd = [self.app.ffmpeg, """-i""", self.app.filename, """-ss""", str((i+self.app.premiere_image-1) *self.app.deltaT),
-                   """-vframes""", """1""", """-f""", """image2""", """-vcodec""", """mjpeg""", 
-                   """-cropleft""",  str(hautgauche.x()) , """-croptop""",    str(hautgauche.y())  , 
-                   """-cropright""", str(basdroite.x())  , """-cropbottom""", str(basdroite.y()) ]
-           
+            cmd = self.app.videoCropCmd(i+self.app.premiere_image-1,
+                                        hautgauche, basdroite)           
 #            if sys.platform == 'win32':
             cmd.append(os.path.join(IMG_PATH, CROP + SUFF %i))
 #            else:
@@ -127,9 +124,7 @@ class Cadreur:
 
         cropfile = os.path.join(IMG_PATH, CROP+"-"+SUFF)
         
-        cmd = [self.app.ffmpeg, """-r""", """25""", """-f""", """image2""", """-i""", cropfile,
-               """-r""", """25""", """-f""", """avi""", """-vcodec""", """mpeg1video""", 
-               """-b""", """800k""", str(AVI_OUT)]
+        cmd = self.app.videoMergeCmd(cropfile, str(AVI_OUT))
         
         print "film", AVI_OUT, cmd
         childstderr, creationflags = GetChildStdErr()
