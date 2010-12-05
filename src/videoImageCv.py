@@ -60,8 +60,8 @@ class film:
         le constructeur
         @param filename le nom d'un fichier video
         """
-        self.filename=filename
-        self.capture = cvCreateFileCapture(filename)
+        self.filename="%s" %filename.encode()
+        self.capture = cvCreateFileCapture(self.filename)
         self.frame=cvQueryFrame(self.capture)
         self.num=0
         self.fps=cvGetCaptureProperty(self.capture,CV_CAP_PROP_FPS)
@@ -115,22 +115,30 @@ class videoImage:
         """
         Le constructeur
         """
-        self.videoFileName=videoFileName
         if videoFileName == None:
+            self.videoFileName=None
             self.film=None
             self.framerate = 25      # vitesse des vidéos pas défaut
             self.deltaT = 0.04       # durée 40 ms par défaut : 25 images/s
             self.image_max=None
         else:
-            self.film=film(videoFileName)
-            self.framerate=self.film.tramesParSeconde()
-            self.deltaT=1.0/self.framerate
-            self.image_max=self.film.totalTrames()
+            self.initFromFile(videoFileName)
         self.chemin_image=None
         self.ffmpeg = None       # on ignore le nom de la commande au début
         self.platform = None     # de même on ignore la plateforme.
 
         self.initPlatform()
+
+    def initFromFile(self,videoFileName):
+        """
+        Initialisations depuis un nom de fichier vidéo
+        """
+        self.videoFileName=videoFileName
+        self.film=film(videoFileName)
+        self.framerate=self.film.tramesParSeconde()
+        self.deltaT=1.0/self.framerate
+        self.image_max=self.film.totalTrames()
+        
 
     def initPlatform(self):
         """
@@ -175,15 +183,18 @@ class videoImage:
         @param sortie booléen vrai si on a besoin de récupérer la sortie standard de la commande qui est lancée
         """
 
-        imfilename=os.path.join(IMG_PATH, VIDEO + SUFF %index)
+        imfilename=os.path.join(IMG_PATH, VIDEO + SUFF %index).encode()
 
         if os.path.isfile(imfilename) and force==False: #si elle existe déjà et , ne fait rien
             self.chemin_image = imfilename
         else : #sinon, extrait depuis la video
             #attention au cas de la dernière image.
             if not sortie: # dans ce cas, on n'utilise pas ffmpeg mais openCv
+                if self.film == None:
+                    self.initFromFile(self.videoFileName)
                 img=self.film.image(index-1)
-                cvSaveImage(imfilename,img)
+                print "OpenCV a encore traité une image, la", index
+                if img: cvSaveImage(imfilename,img)
                 return
             # là, sortie == True et on utilise ffmpeg.
             i=1

@@ -47,7 +47,8 @@ if sys.platform != "win32" or sys.argv[0].endswith(".exe"):
     import Error
     
 from vecteur import vecteur
-from videoImage import videoImage
+#from videoImage import videoImage
+from videoImageCv import videoImage
 
 import os, thread, time, commands, linecache, codecs, re
 import locale, getopt, pickle
