@@ -46,10 +46,8 @@ from globdef import PATH, IMG_PATH, VIDEO, SUFF, GetChildStdErr
 
 import os.path, subprocess, re, platform
 
-import opencv
-from opencv.cv import *
-from opencv.highgui import *
-from opencv.adaptors import *
+import cv
+from cv import *
 
 class film:
     """
@@ -61,11 +59,11 @@ class film:
         @param filename le nom d'un fichier video
         """
         self.filename="%s" %filename.encode()
-        self.capture = cvCreateFileCapture(self.filename)
-        self.frame=cvQueryFrame(self.capture)
+        self.capture = CreateFileCapture(self.filename)
+        self.frame=QueryFrame(self.capture)
         self.num=0
-        self.fps=cvGetCaptureProperty(self.capture,CV_CAP_PROP_FPS)
-        self.framecount=cvGetCaptureProperty(self.capture,CV_CAP_PROP_FRAME_COUNT)
+        self.fps=GetCaptureProperty(self.capture,CV_CAP_PROP_FPS)
+        self.framecount=GetCaptureProperty(self.capture,CV_CAP_PROP_FRAME_COUNT)
         
     def image(self,num,recode=None):
         """
@@ -76,12 +74,12 @@ class film:
         """
         if num>self.num:
             for i in range(self.num,num):
-                self.frame=cvQueryFrame(self.capture)
+                self.frame=QueryFrame(self.capture)
         elif 0<=num<self.num: 
-            cvReleaseCapture(self.capture)
-            self.capture = cvCreateFileCapture(self.filename)
+            #ReleaseCapture(self.capture)
+            self.capture = CreateFileCapture(self.filename)
             for i in range (0, num+1):
-                self.frame=cvQueryFrame(self.capture)
+                self.frame=QueryFrame(self.capture)
         self.num=num
         if recode == 'PIL':
             return Ipl2PIL(self.frame)
@@ -194,7 +192,7 @@ class videoImage:
                     self.initFromFile(self.videoFileName)
                 img=self.film.image(index-1)
                 print "OpenCV a encore traité une image, la", index
-                if img: cvSaveImage(imfilename,img)
+                if img: SaveImage(imfilename,img)
                 return
             # là, sortie == True et on utilise ffmpeg.
             i=1
