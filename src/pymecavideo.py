@@ -736,7 +736,6 @@ class StartQT4(QMainWindow, videoImage):
         self.loads(dd)               # on récupère les données importantes
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        self.recupere_avi_infos()
         self.defini_barre_avancement()
         self.affiche_echelle()       # on met à jour le widget d'échelle
         n=len(self.points.keys())
@@ -1388,7 +1387,7 @@ class StartQT4(QMainWindow, videoImage):
         self.affiche_image()
     
     def affiche_image(self):
-        self.extract_image(self.index_de_l_image, self.prefs)
+        self.extract_image(self.index_de_l_image)
         image=QImage(self.chemin_image)
      
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
@@ -1550,7 +1549,6 @@ class StartQT4(QMainWindow, videoImage):
         """
         if videoFileName != "" : 
             self.initFromFile(self.utf8Str(videoFileName))
-            print "GRRR", self.videoFileName, type(self.videoFileName)
             self.prefs.lastVideo=unicode(self.videoFileName,"utf8")
             
             self.init_image()
@@ -1603,7 +1601,6 @@ class StartQT4(QMainWindow, videoImage):
         
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
-        self.recupere_avi_infos()
         self.ui.horizontalSlider.setMinimum(1)
         
         self.ui.horizontalSlider.setMaximum(int(self.image_max))
@@ -1612,7 +1609,7 @@ class StartQT4(QMainWindow, videoImage):
         fichier = os.path.join(IMG_PATH, VIDEO + SUFF %1 )
         try :
             os.remove(fichier)
-            a = self.extract_image(1, self.prefs)
+            a = self.extract_image(1)
             os.remove(fichier)
         except OSError:
             pass

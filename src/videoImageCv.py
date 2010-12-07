@@ -135,8 +135,8 @@ class videoImage:
         self.film=film(videoFileName)
         self.framerate=self.film.tramesParSeconde()
         self.deltaT=1.0/self.framerate
-        self.image_max=self.film.totalTrames()
-        for i in range(self.image_max):
+        self.image_max=self.film.totalTrames()-1
+        for i in range(self.image_max+1):
             self.extract_image(i,force=True)
         
 
@@ -173,87 +173,22 @@ class videoImage:
             pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel %s ou %s n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre" %(self.ffmpeg, player),"utf8" ))), QMessageBox.Ok,QMessageBox.Ok)
             #self.close()
 
-    def extract_image(self, index, prefs=None, force=False, sortie=False):
+    def extract_image(self, index, force=False):
         """
         extrait l'image d'index "index" de la video à l'aide de ffmpeg
         et l'enregistre sur le disque.
         @param index désigne l'image
-        @param prefs une structure de préférences de pymecavideo (None par défaut)
         @param force booléen pour forcer la réécriture d'une image même si elle existe déjà
-        @param sortie booléen vrai si on a besoin de récupérer la sortie standard de la commande qui est lancée
         """
-
         imfilename=os.path.join(IMG_PATH, VIDEO + SUFF %index).encode()
+        self.chemin_image = imfilename
+        if not os.path.isfile(imfilename) or force==True:
+            if self.film == None:
+                self.initFromFile(self.videoFileName)
+            img=self.film.image(index-1)
+            if img: SaveImage(imfilename,img)
 
-        if os.path.isfile(imfilename) and force==False: #si elle existe déjà et , ne fait rien
-            self.chemin_image = imfilename
-        else : #sinon, extrait depuis la video
-            #attention au cas de la dernière image.
-            if not sortie: # dans ce cas, on n'utilise pas ffmpeg mais openCv
-                if self.film == None:
-                    self.initFromFile(self.videoFileName)
-                img=self.film.image(index-1)
-                if img: SaveImage(imfilename,img)
-                return
-            # là, sortie == True et on utilise ffmpeg.
-            i=1
-            args=[self.ffmpeg,"""-i""", self.videoFileName,"""-ss""",str((index-i)*self.deltaT),
-                  """-vframes""",str(1),"""-f""","""image2""","""-vcodec""","""mjpeg""",imfilename]
-            childstderr, creationflags = GetChildStdErr()
-            cmd0 = subprocess.Popen(args=args,
-                                    stderr=subprocess.PIPE,
-                                    stdin = childstderr,
-                                    stdout = childstderr,
-                                    creationflags = creationflags)
-            cmd0.wait()
-            cmd0.poll()
-            if sortie :
-                sortie_ = cmd0.communicate()
-           
-            returncode =  cmd0.returncode
-            if returncode==0:
-                self.chemin_image = imfilename
-            elif returncode==1 and prefs.lastVideo != "":
-                print "erreur", returncode
-                self.chemin_image = ""
-                mauvaisevideo = QMessageBox.warning(self,QApplication.tr(unicode("ERREUR","utf8")), QString(QApplication.tr(unicode("La video que vous tentez d'ouvrir n'est pas dans un format lisible.\n Merci d'en ouvrir une autre ou de l'encoder autrement","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
-                prefs.lastVideo = ""
-                prefs.save()
-                # self.close()
-            else:
-                print "erreur", returncode
-              
-            #elif returncode > 256 :
-
-            if sortie:
-                return sortie_
           
-    def recupere_avi_infos(self):
-        """Ouvre une vidéo AVI et retourne son framerate ainsi que le nombre d'images de la vidéo.
-        met à jour self.framerate, self.deltaT, self.image_max
-        """
-        self.framerate = 25
-        duration=0
-        videospec=self.extract_image(1,self.prefs, force=True, sortie=True)[1]
-        try:
-            patternRate=re.compile(".*Video.* ([.0-9]+) tbr.*")
-            patternDuration=re.compile(".*Duration.* (\\d+):(\\d+):([.0-9]*),.*")
-            l=videospec.split("\n")
-            for line in l:
-                m=patternRate.match(line)
-                if m:
-                    self.framerate=float(m.group(1))
-                m=patternDuration.match(line)
-                if m:
-                    h=int(m.group(1))
-                    min=int(m.group(2))
-                    s=float(m.group(3))
-                    duration=3600*h+60*min+s
-        except:
-            self.dbg.p(0, QApplication.tr("Impossible de lire %s" %self.videoFileName))
-        self.image_max=int(duration*self.framerate)
-        self.deltaT=1.0/self.framerate
-
     def videoCropCmd(self, image, hautgauche, basdroite):
         """
         compose et renvoie une commande servent à faire un extrait de video
