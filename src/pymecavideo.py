@@ -1546,10 +1546,7 @@ class StartQT4(QMainWindow, videoImage):
         """
         Ouvre le fichier de nom videoFileName, enregistre les préférences de
          fichier vidéo.
-        @param videoFileName chaîne de caractère, de type string,QSring ou QByteArray
-         le forçage de type permet d'accepter chacune des variantes en entrée.
-         N.B.: l'attribut self.prefs.lastVideo sera qui sera enregistré est de
-         type string et d'encodage unicode.
+        @param videoFileName le nom du fichier vidéo
         """
         if videoFileName != "" : 
             self.initFromFile(self.utf8Str(videoFileName))
