@@ -136,6 +136,8 @@ class videoImage:
         self.framerate=self.film.tramesParSeconde()
         self.deltaT=1.0/self.framerate
         self.image_max=self.film.totalTrames()
+        for i in range(self.image_max):
+            self.extract_image(i,force=True)
         
 
     def initPlatform(self):
@@ -171,12 +173,12 @@ class videoImage:
             pas_ffmpeg = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel %s ou %s n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre" %(self.ffmpeg, player),"utf8" ))), QMessageBox.Ok,QMessageBox.Ok)
             #self.close()
 
-    def extract_image(self, index, prefs, force=False, sortie=False):
+    def extract_image(self, index, prefs=None, force=False, sortie=False):
         """
         extrait l'image d'index "index" de la video à l'aide de ffmpeg
         et l'enregistre sur le disque.
         @param index désigne l'image
-        @param prefs une structure de préférences de pymecavideo
+        @param prefs une structure de préférences de pymecavideo (None par défaut)
         @param force booléen pour forcer la réécriture d'une image même si elle existe déjà
         @param sortie booléen vrai si on a besoin de récupérer la sortie standard de la commande qui est lancée
         """
@@ -191,7 +193,6 @@ class videoImage:
                 if self.film == None:
                     self.initFromFile(self.videoFileName)
                 img=self.film.image(index-1)
-                print "OpenCV a encore traité une image, la", index
                 if img: SaveImage(imfilename,img)
                 return
             # là, sortie == True et on utilise ffmpeg.

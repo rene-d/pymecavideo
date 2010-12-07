@@ -252,7 +252,10 @@ class StartQT4(QMainWindow, videoImage):
         self.premiere_image = 1      # nￂﾰ de la première image cliquée
         self.index_de_l_image = 1    # image àﾠ afficher
         self.echelle_v = 0
-        self.videoFileName=videoFileName
+        if os.path.exists(videoFileName):
+            self.initFromFile(videoFileName)
+        else:
+            self.videoFileName=""
         self.opts=opts
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
         self.init_interface()
@@ -1529,6 +1532,16 @@ class StartQT4(QMainWindow, videoImage):
         videoFileName=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), self._dir("videos"),"*.avi")
         self.openTheFile(videoFileName)
 
+    def utf8Str(self,s):
+        """
+        @param s chaîne de caractère, de type string,QSring ou QByteArray
+        un forçage de type permet d'accepter chacune des variantes en entrée.
+        @result la même chaine de caractères, de type <str>
+        """
+        result = QString(s)
+        result = u"%s" %result
+        return result.encode('utf-8')
+
     def openTheFile(self,videoFileName):
         """
         Ouvre le fichier de nom videoFileName, enregistre les préférences de
@@ -1539,11 +1552,9 @@ class StartQT4(QMainWindow, videoImage):
          type string et d'encodage unicode.
         """
         if videoFileName != "" : 
-            videoFileName = QString(videoFileName)
-            videoFileName = videoFileName.toUtf8()
-            data = videoFileName.data()
-            self.videoFileName = data.decode('utf-8')
-            self.prefs.lastVideo=unicode(videoFileName,"utf8")
+            self.initFromFile(self.utf8Str(videoFileName))
+            print "GRRR", self.videoFileName, type(self.videoFileName)
+            self.prefs.lastVideo=unicode(self.videoFileName,"utf8")
             
             self.init_image()
             self.mets_a_jour_label_infos(self.tr(u"Veuillez choisir une image et définir l'échelle"))
