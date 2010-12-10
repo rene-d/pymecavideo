@@ -1120,11 +1120,11 @@ class StartQT4(QMainWindow, videoImage):
         ref=self.ui.comboBox_referentiel.currentText().split(" ")[-1]
         if len(ref)==0 or ref == "camera": return
         c=Cadreur(int(ref),self)
-        c.cropimages()
+        m = QImage(self.chemin_image).size()
+        self.cropimages(self.points, int(ref), self.premiere_image-1, c.decal, c.rayons, m.width(), m.height())
         c.creefilm(ralenti)
         c.montrefilm()
-        
-        
+
     def tracer_trajectoires(self, newValue):
         """
         traite les signaux émis par le changement d'onglet, ou

@@ -58,51 +58,6 @@ class Cadreur:
         self.rayons=vecteur((agauche+adroite)/2, (dessus+dessous)/2)
             
 
-    def cropimages(self):
-        """
-        crée une nouvelle série d'images en découpant dans la vidéo de
-        départ.
-        """
-        
-        #regexp_taille=re.compile(".*[^1-9]([1-9][0-9]*) x ([1-9][0-9]*).*")
-        #st,out = commands.getstatusoutput("file -L %s" %self.app.filename)
-        #m=regexp_taille.match(out)
-        #if not m : return
-        m = QImage(self.app.chemin_image).size()
-        self.taille=vecteur(m.width(),m.height())
-        ech=self.taille.norme()/vecteur(640,480).norme()
-        
-
-        liste_fichier = os.listdir(IMG_PATH)
-        for fichier in liste_fichier :
-            if CROP in fichier:
-                os.remove(os.path.join(IMG_PATH, fichier))
-                    
-        for i in self.app.points.keys():
-            p=self.app.points[i][self.numpoint]
-            # calcule les vecteurs des marges
-            hautgauche=(p+self.decal-self.rayons)*ech
-            basdroite=(vecteur(640,480)-(p+self.decal+self.rayons))*ech
-            hautgauche.rounded()
-            basdroite.rounded()
-            ## les bandes en haut et en bas doivent avoir
-            ## un nombre pair de lignes
-            if hautgauche.x()%2==1 : hautgauche += vecteur(1,0)
-            if basdroite.x()%2==1  : basdroite  += vecteur(1,0)
-            if hautgauche.y()%2==1 : hautgauche += vecteur(0,1)
-            if basdroite.y()%2==1  : basdroite  += vecteur(0,1)
-            cmd = self.app.videoCropCmd(i+self.app.premiere_image-1,
-                                        hautgauche, basdroite)           
-#            if sys.platform == 'win32':
-            cmd.append(os.path.join(IMG_PATH, CROP + SUFF %i))
-#            else:
-#                cmd.append(CROP + SUFF %i)
-            
-            childstderr, creationflags = GetChildStdErr()
-            crop = subprocess.Popen(cmd, #shell=True, 
-                                    stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
-                                    creationflags = creationflags )
-            crop.wait()
             
             
         

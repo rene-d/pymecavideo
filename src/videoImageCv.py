@@ -42,7 +42,8 @@ licence['fr']=u"""
 
 from PyQt4.QtGui import QApplication,QMessageBox
 
-from globdef import PATH, IMG_PATH, VIDEO, SUFF, GetChildStdErr
+from globdef import PATH, IMG_PATH, VIDEO, SUFF, GetChildStdErr, CROP
+from vecteur import vecteur
 
 import os.path, subprocess, re, platform
 
@@ -208,6 +209,49 @@ class videoImage:
                """-cropright""", str(basdroite.x())  ,
                """-cropbottom""", str(basdroite.y()) ]
         return cmd
+
+    def cropimages(self, points, numpoint, premiere, decal, rayons, w, h):
+        """
+        crée une nouvelle série d'images en découpant dans la vidéo de
+        départ.
+        @param points une liste de points (deux dimensions)
+        @pram numpoint le numéro du point lié au cadre
+        @param premiere numéro de la première image à considérer
+        @param decal un vecteur qui place le centre du cadre à partir du point à suivre
+        @param rayons un vecteur qui donne la taille du cadre
+        @param w largeur de l'image issue de la vidéo
+        @param h hauteur de l'image issue de la vidéo
+        """
+        
+        taille=vecteur(w,h)
+        ech=taille.norme()/vecteur(640,480).norme()
+        
+
+        liste_fichier = os.listdir(IMG_PATH)
+        for fichier in liste_fichier :
+            if CROP in fichier:
+                os.remove(os.path.join(IMG_PATH, fichier))
+                    
+        for i in points.keys():
+            p=points[i][numpoint]
+            # calcule les vecteurs des marges
+            hautgauche=(p+decal-rayons)*ech
+            basdroite=(vecteur(640,480)-(p+decal+rayons))*ech
+            hautgauche.rounded()
+            basdroite.rounded()
+            ## les bandes en haut et en bas doivent avoir
+            ## un nombre pair de lignes
+            if hautgauche.x()%2==1 : hautgauche += vecteur(1,0)
+            if basdroite.x()%2==1  : basdroite  += vecteur(1,0)
+            if hautgauche.y()%2==1 : hautgauche += vecteur(0,1)
+            if basdroite.y()%2==1  : basdroite  += vecteur(0,1)
+            cmd = self.videoCropCmd(i+premiere, hautgauche, basdroite)
+            cmd.append(os.path.join(IMG_PATH, CROP + SUFF %i))
+            childstderr, creationflags = GetChildStdErr()
+            crop = subprocess.Popen(cmd, #shell=True, 
+                                    stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
+                                    creationflags = creationflags )
+            crop.wait()
 
     def videoMergeCmd(self, images, destfile):
         """
