@@ -43,7 +43,7 @@ licence['fr']=u"""
 # Le module de gestion des erreurs n'est chargé que si on execute le fichier .exe ou si on est sous Linux
 #
 import sys
-if sys.platform != "win32" or sys.argv[0].endswith(".exe"):
+if sys.platform == "win32" or sys.argv[0].endswith(".exe"):
     import Error
     
 from vecteur import vecteur
