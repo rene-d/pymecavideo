@@ -1,8 +1,33 @@
 # -*- coding: utf-8 -*-
+"""
+    detect, a module for pymecavideo:
+      this module implements the automatic detection of moving objects.
+      
+    Copyright (C) 2010 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    Copyright (C) 2010 Georges Khaznadar <georgesk@ofset.org>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import cv
 from cv import *
+from globdef import *
+import os.path
 
 def filter_picture(part,image):
+    partImg=os.path.join(IMG_PATH,"part.png")
+    img=os.path.join(IMG_PATH,"image.png")
     if type(image)==type("") and type(part)==type("") :
         image=cv.LoadImage(image,1)
         part=cv.LoadImage(part,1)
@@ -14,10 +39,10 @@ def filter_picture(part,image):
         #print "point", points
         return points
     elif "QImage" in str(type(part)) and "QImage" in str(type(image)):
-        part.save("part.png")
-        image.save("image.png")
-        image=cv.LoadImage("image.png",1)
-        part=cv.LoadImage("part.png",1)
+        part.save(partImg)
+        image.save(img)
+        image=cv.LoadImage(img,1)
+        part=cv.LoadImage(partImg,1)
         point1, point2 = detect_part(part,image)
         #print "P1,P2__", point1, point2
         return point2
@@ -35,8 +60,3 @@ def detect_part(part,image):
     m, M, point2, point1 = cv.MinMaxLoc(result)
     #print  point1, point2
     return point1, point2
-
-#filter_picture("modele.png", "cible.png")
-#image=cv.LoadImage("modele.png",1)
-#icon=cv.LoadImage("cible.png",1)
-#filter_picture(image, icon)
