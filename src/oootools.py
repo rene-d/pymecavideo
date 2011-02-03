@@ -1,10 +1,10 @@
 #!/usr/bin/python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright (c) 2006 Nuxeo SARL <http://nuxeo.com>
 # Authors : Laurent Godard <lgodard@indesko.com>
 #
 # This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License version 3 as published
+# it under the terms of the GNU General Public License version 2 as published
 # by the Free Software Foundation.
 #
 # This program is distributed in the hope that it will be useful,

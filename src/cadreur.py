@@ -20,23 +20,53 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, os#, thread, time, commands
+import sys, os, cv, time
+import re, subprocess, shutil
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from math import sqrt, acos, asin, pi, cos, sin, atan2
+
 from vecteur import vecteur
-import re, subprocess, shutil
-from globdef import AVI_OUT, GetChildStdErr ,CROP, IMG_PATH, SUFF
 
 class Cadreur:
-    def __init__(self,numpoint,app):
+    """
+    Un objet capable de recadrer une vidéo en suivant le déplacement
+    d'un point donné. La video de départ mesure 640x480
+    """
+    def __init__(self,numpoint,app, titre=None):
         """
-        Crée un objet capable de recadrer une vidéo en suivant le déplacement
-        d'un point donné. La video de départ mesure 640x480
+        Le constructeur.
+        @param numpoint le numéro du point qui doit rester immobile
+        @param app l'application Pymecavideo
+        @param titre le titre désiré pour la fenêtre
         """
+        if titre==None:
+            self.titre="Nouveau cadre"
+        quitteLabel="Curseur à droite pour quitter"
+        ralentiLabel="Choisir le ralenti"
         self.numpoint=numpoint
         self.app=app
+        self.capture=cv.CreateFileCapture(self.app.filename)
+        self.fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
+        self.delay=int(1000.0/self.fps)
+        self.ralenti=1
+        wsub=cv.NamedWindow(self.titre)
+        cv.CreateTrackbar(quitteLabel,self.titre, 0, 1, self.controleStop)
+        cv.CreateTrackbar(ralentiLabel,self.titre, 0, 16, self.controleRalenti)
         self.maxcadre()
+
+    def controleStop(self,position):
+        """
+        fonction de rappel commandée par le bouton "Quitte"
+        """
+        if position==1:
+            self.fini=True
+            
+    def controleRalenti(self,position):
+        """
+        fonction de rappel commandée par le bouton "Quitte"
+        """
+        self.ralenti=max([1,position])
 
     def maxcadre(self):
         """
@@ -45,57 +75,123 @@ class Cadreur:
         la taille de ce cadre, et self.decal qui est le décalage du point
         à suivre par rapport au centre du cadre.
         """
-        dessus=480; dessous=480
-        agauche=640; adroite=640
-        for i in self.app.points.keys():
-            p=self.app.points[i][self.numpoint]
-            x=p.x(); y=p.y() # attention : axe y dirigé vers le bas
-            if x < agauche: agauche=x
-            if 640-x < adroite: adroite=640-x
-            if y < dessus: dessus=y
-            if 480-y < dessous: dessous=480-y
+        agauche=[pp[self.numpoint].x() for pp in self.app.points.values()]
+        dessus=[pp[self.numpoint].y() for pp in self.app.points.values()]
+        adroite=[640-x for x in agauche]
+        dessous=[480-y for y in dessus]
+        
+        agauche=min(agauche)
+        adroite=min(adroite)
+        dessus=min(dessus)
+        dessous=min(dessous)
+
         self.decal=vecteur((adroite-agauche)/2, (dessous-dessus)/2)
         self.rayons=vecteur((agauche+adroite)/2, (dessus+dessous)/2)
-            
+           
 
-            
-            
-        
-    def creefilm(self, ralenti):
-        i=0
-        for j in self.app.points.keys():
-            for k in range(ralenti):
-                # reproduit "ralenti" fois les trames
-                #print i,j
-                fichier1 = os.path.join(IMG_PATH, CROP + SUFF % j) 
-                fichier2 = os.path.join(IMG_PATH, CROP + "-" + SUFF % i)
-                print fichier1,fichier2
-                shutil.copy(fichier1,fichier2)
-                i+=1
-        try :
-            os.remove(AVI_OUT)
-        except OSError :
-            pass
-
-        cropfile = os.path.join(IMG_PATH, CROP+"-"+SUFF)
-        
-        cmd = self.app.videoMergeCmd(cropfile, str(AVI_OUT))
-        
-        print "film", AVI_OUT, cmd
-        childstderr, creationflags = GetChildStdErr()
-        crop = subprocess.Popen(cmd, stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr, creationflags = creationflags)
-        crop.wait()
-        print crop.returncode
-        
+    def queryFrame(self):
+        """
+        récupère l'image suivante du film et traite le cas où OpenCV
+        ne sait pas le faire
+        @return une IplImage
+        """
+        if cv.GrabFrame(self.capture):
+            return cv.RetrieveFrame(self.capture)
+        else:
+            print "erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile
+            sys.exit(1)
         
     def montrefilm(self):
-        #print self.app.prefs.videoPlayerCmd()
-        self.app.player = self.app.prefs.videoPlayers[self.app.prefs.videopref]
-        print self.app.player
-    
-        #self.app.dbg.p(2,"%s" %(cmd))
-        childstderr, creationflags = GetChildStdErr()
-        montre = subprocess.Popen(self.app.player + [AVI_OUT],
-                                  stderr = subprocess.PIPE, stdin = childstderr, stdout = childstderr,
-                                  creationflags = creationflags)
-        montre.wait()
+        """
+        Calcule et montre le film recadré à l'aide d'OpenCV
+        """
+        m = QImage(self.app.chemin_image).size()
+        self.taille=vecteur(m.width(),m.height())
+        ech=self.taille.norme()/vecteur(640,480).norme()
+        
+        self.fini=False
+        while not self.fini:
+            #rembobine
+            self.capture=cv.CreateFileCapture(self.app.filename)
+            for i in self.app.points.keys():
+                if self.fini: break # valeur volatile à examiner souvent
+                p=self.app.points[i][self.numpoint]
+                hautgauche=(p+self.decal-self.rayons)*ech
+                taille=self.rayons*2*ech
+                img=self.queryFrame()
+                x,y = int(hautgauche.x()), int(hautgauche.y())
+                w,h = int(taille.x()), int(taille.y())
+                isub = cv.GetSubRect(img, (x,y,w,h))
+                cv.ShowImage(self.titre,isub)
+                cv.WaitKey(self.delay*self.ralenti)
+        # ferme la fenêtre
+        cv.DestroyWindow(self.titre)
+
+class openCvReader:
+    """
+    Un lecteur de vidéos qui permet d'extraire les images une par une
+    """
+
+    def __init__(self, filename):
+        """
+        le constructeur
+        @param filename le nom d'un fichier vidéo
+        """
+        self.filename=filename
+        self.rembobine()
+
+    def rembobine(self):
+        """
+        Recharge le fichier vidéo
+        """
+        self.capture=cv.CreateFileCapture(self.filename)
+        self.nextImage=1
+        
+
+    def getImage(self, index):
+        """
+        récupère une IplImage
+        @param index le numéro de l'image, commence à 1.
+        @return l'image trouvée
+        """
+        if index < self.nextImage:
+            self.rembobine()
+        while index >= self.nextImage:
+            if cv.GrabFrame(self.capture):
+                img=cv.RetrieveFrame(self.capture)
+                self.nextImage+=1
+            else:
+                return None
+        return img
+
+    def writeImage(self, index, imgFileName):
+        """
+        Enregistre une image de la vidéo
+        @param index le numéro de l'image (commence à 1)
+        @param imgFileName un nom de fichier pour l'enregistrement
+        @return vrai si l'enregistrement a réussi
+        """
+        img=self.getImage(index)
+        if img:
+            cv.SaveImage(imgFileName, img)
+            return True
+        else:
+            return False
+
+    def recupere_avi_infos(self):
+        """
+        Trouve deux renseignements au sujet d'un fichier vidéo
+        @return une paire (framerate,nombre d'images)
+        """
+        try:
+            self.rembobine()
+            fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
+            fcount=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FRAME_COUNT)
+        except:
+            print "could not retrieve informations from the video file."
+            print "assuming fps = 25, frame count = 10."
+            return 25,10 
+        return fps, fcount-1
+
+    def __str__(self):
+        return "<openCvReader instance: filename=%s, nextImage=%d>" %(self.filename, self.nextImage)

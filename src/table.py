@@ -32,7 +32,6 @@ class standardDragTable(QTableWidget):
         QTableWidget.__init__(self,parent)
         QObject.connect(self,SIGNAL("itemSelectionChanged()"), self.selection)
         self.sep_decimal="."
-        # print "locale", locale.getdefaultlocale()[0][0:2]
         try:
             if locale.getdefaultlocale()[0][0:2]=='fr':
                 # en France, le séparateur décimal est la virgule
@@ -69,8 +68,8 @@ class standardDragTable(QTableWidget):
         lig_debut=""
         for c in range(self.columnCount()):
             i = self.horizontalHeaderItem(c)
-            lig_debut+=str(i.text())
-        t+=lig_debut+"\n"
+            lig_debut+=str(i.text())+"\t"
+        t+=lig_debut[:-1]+"\n"
         for l in range(self.rowCount()):
             lig=""
             ok=False # a priori la ligne pourrait être vide

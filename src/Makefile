@@ -61,4 +61,4 @@ install-ordinaire: all
 	install -m 0644 ../data/icones/pymecavideo.svg icones/pymecavideo.png \
 	  $(DESTDIR)/usr/share/icons
 
-.PHONY: clean all install-for-debian install-bin install-man install-help install-media fix-install install-ordinaire helpfiles
+.PHONY: clean all install-for-debian install-mime install-bin install-man install-help install-media fix-install install-ordinaire helpfiles
