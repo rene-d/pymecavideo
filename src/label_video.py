@@ -33,7 +33,6 @@ class Label_Video(QtGui.QLabel):
     def __init__(self, parent, app):
         QtGui.QLabel.__init__(self,parent)
         self.setGeometry(QtCore.QRect(0,0,640,480))
-        self.setAlignment(Qt.AlignTop)
         self.parent=parent
         self.liste_points = []
         self.app=app
@@ -46,10 +45,8 @@ class Label_Video(QtGui.QLabel):
     def reinit(self):
         try :
             del self.zoom_croix
-            
         except :
             pass
-
         self.met_a_jour_crop()
         self.setMouseTracking(True)
         

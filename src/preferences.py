@@ -34,7 +34,6 @@ class Preferences:
         self.proximite=False
         self.lastVideo=""
         self.videoDir=os.getcwd()
-        self.detect_video_players()
         self.niveauDbg=0 # niveau d'importance des messages de débogage
         # récupère les valeurs enregistrées
         self.load()
@@ -47,52 +46,8 @@ class Preferences:
         result +=self.app.tr("; derniere video %1").arg(self.lastVideo)
         result +=self.app.tr("; videoDir %1").arg(self.videoDir)
         result +=self.app.tr("; niveau courant de debogage %1").arg(self.niveauDbg)
-        result +=self.app.tr("; dictionnaire des lecteurs video %1").arg("%s" %self.videoPlayers)
         return "%s" %result
 
-    def detect_video_players(self):
-        """détecte les players disponibles sur le système"""
-        
-        self.videoPlayers = {}
-#        players = {"xine":"xine -l %s",
-#                   "vlc" :"vlc -L %s", 
-#                   "mplayer" :"mplayer -loop 0 %s"}
-        
-        players = {"xine":["xine",  "-l"],
-                   "vlc" :["vlc","-L"], 
-                   "mplayer" :["mplayer","-loop", "0"],
-                   "ffplay":["ffplay", "-autoexit", "-loop", "-1"]}
-        
-        if self.app.platform.lower()=="linux":
-            for player in players :
-                # si linux/unix
-                status, output = commands.getstatusoutput("whereis "+player+"|grep bin")
-                if status== 0 :
-                    self.videoPlayers[player]=players[player]
-        # si windows on regarde Vlc
-        elif self.app.platform.lower()=="windows":
-            pf_path = os.environ["PROGRAMFILES"]
-            vlc_path = os.path.join(pf_path, "VideoLAN", "VLC", "vlc.exe")
-            if os.path.exists(vlc_path) :
-                self.videoPlayers["vlc"] = [vlc_path,"-L"]
-            self.videoPlayers["ffplay"] = players["ffplay"]
-
-        if "xine" in self.videoPlayers.keys() :
-            self.videopref="xine"
-        elif "vlc" in self.videoPlayers.keys() :
-            self.videopref="vlc"
-        elif "mplayer" in self.videoPlayers.keys() :
-            self.videopref="mplayer"
-        else :
-            warning =QMessageBox.warning(None,self.app.tr("ATTENTION : pas de lecteurs video trouves"),self.app.tr("Vous devez installer VLC, fflpay, -ou MPLAYER ou XINE si vous êtes sous linux-"),QMessageBox.Ok,QMessageBox.Ok)
-            import sys
-            sys.exit(-1)#fais une erreur...mais fais ce qu'on veut ;)
-        self.app.player = self.videoPlayers[self.videopref]
-        
-        
-        
-        
-        
     def save(self):
         """
         Sauvegarde des préférences dans le fichier de configuration.
@@ -100,24 +55,20 @@ class Preferences:
         f=open(self.conffile,"w")
         self.app.dbg.p(9,"sauvegarde des preferences dans  %s" %self.conffile)
         self.app.dbg.p(9, "%s" %self)
-        pickle.dump((self.proximite,self.lastVideo,self.videoDir,self.videopref,self.niveauDbg),f)
+        pickle.dump((self.proximite,self.lastVideo,self.videoDir,self.niveauDbg),f)
         f.close()
         
     def load(self):
         if os.path.exists(self.conffile):
             try:
                 f=open(self.conffile,"r")
-                (self.proximite,self.lastVideo,self.videoDir,self.videopref,self.niveauDbg) = pickle.load(f)
+                (self.proximite,self.lastVideo,self.videoDir,self.niveauDbg) = pickle.load(f)
                 f.close()
                 self.app.dbg=Dbg(self.niveauDbg)
             except:
                 self.app.dbg.p(2,"erreur en lisant %s" %self.conffile)
                 pass
         
-    def videoPlayerCmd(self):
-        cmd=self.videoPlayers[self.videopref]
-        return cmd
-
     def setFromDialog(self):
         """
         Règle les préférences à l'aide d'un dialogue
@@ -138,11 +89,6 @@ class Preferences:
             p.setCurrentIndex(1)
         else:
             p.setCurrentIndex(0)
-        p=ui.comboBoxVideoPLayer
-        vp=self.videoPlayers.keys()
-        for cmd in vp:
-            p.addItem(cmd)
-        p.setCurrentIndex(vp.index(self.videopref))
         retval=d.exec_()
         if retval:
             ######################################################
@@ -154,7 +100,6 @@ class Preferences:
             self.proximite=(ui.comboBoxProximite.currentIndex() == 1)
             self.app.visibilite_vitesses()
             
-            self.videopref=str(ui.comboBoxVideoPLayer.currentText())
             self.save()
         return
         

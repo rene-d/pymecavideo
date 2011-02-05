@@ -34,16 +34,16 @@ class label_numero(QLabel):
         event.ignore()
 
 class Point(QLabel):
-    def __init__(self, parent, point, color, numero, app, pred=None, show=True):
+    def __init__(self, parent, point, color, numero, app, pred=None, showVelocity=True):
         """
-        Crée un point graphique. Paramètres :
-        parent : widget parent
-        point : coordonnées (de type vecteur)
-        color : couleur
-        numero : numéro à afficher
-        app : l'application qui commande
-        pred : le point prédecesseur
-        show : montre les vitesses
+        Le constructuer crée un point graphique.
+        @param parent widget parent
+        @param point coordonnées (de type vecteur)
+        @param color couleur
+        @param numero numéro à afficher
+        @param app l'application qui commande
+        @param pred le point prédecesseur
+        @param showVelocity montre les vitesses
         """
         QLabel.__init__(self, parent)
         self.app=app
@@ -56,7 +56,7 @@ class Point(QLabel):
         self.setMouseTracking(True)
         if pred != None:
             pred.succ = self
-            pred.calcule_vitesse(self.app.ui.echelle_v.currentText(),show)
+            pred.calcule_vitesse(self.app.ui.echelle_v.currentText(),showVelocity)
 ########empeche le widget de capturer les signaux, que l'on récupère dans label_video
     def mouseMoveEvent(self, event):
         event.ignore()
@@ -66,24 +66,24 @@ class Point(QLabel):
         event.ignore()
 
 
-    def montre_vitesse(self, show):
+    def montre_vitesse(self, showVelocity):
         """
-        montre ou cache la vitesse, selon le paramètre show
+        montre ou cache la vitesse, selon le paramètre showVelocity
         """
         if self.vitesse != None:
-            if show:
+            if showVelocity:
                 self.vitesse.show()
             else:
                 self.vitesse.hide()
         
-    def calcule_vitesse(self, ech, show=True):
+    def calcule_vitesse(self, ech, showVelocity=True):
         """
         si self.pred et self.succ sont tous deux définis, le calcul de
         vitesse est possible. Le vecteur vitesse précédent éventuel est effacé
         et un nouveau est tracé.
         Paramètres :
         ech : l'échelle en px pour 1m/s, type chaîne de caractères
-        show : booléen, vrai si on doit montrer la vitesse tout de suite
+        showVelocity : booléen, vrai si on doit montrer la vitesse tout de suite
         """
         if self.vitesse != None:
             self.vitesse.hide()
@@ -92,7 +92,7 @@ class Point(QLabel):
             deltaP = self.succ.point - self.pred.point
             v=deltaP*(1/(2*self.app.deltaT))*self.app.echelle_image.mParPx()
             self.vitesse=Vitesse(self,self.point,v, self.color, ech)
-            if show:
+            if showVelocity:
                 self.vitesse.show()
             
     def paintEvent(self,event):
@@ -124,10 +124,6 @@ class Repere(Point):
         self.painter.scale(8,8)
         self.painter.drawPolyline(p1,p2,p3,p4,p2)
         self.painter.rotate(self.app.sens_X*self.app.sens_Y*(-90))
-        #p1=QPoint(self.app.sens_X*(0),self.app.sens_Y*(20))
-        #p2=QPoint(self.app.sens_X*(0),self.app.sens_Y*(-20))
-        #p3=QPoint(self.app.sens_X*(-1),self.app.sens_Y*(18))
-        #p4=QPoint(self.app.sens_X*(-1),self.app.sens_Y*(-18))
         self.painter.drawPolyline(p1,p2,p3,p4,p2)
         self.painter.end()
     def mouseMoveEvent(self, event):

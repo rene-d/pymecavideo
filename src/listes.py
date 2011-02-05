@@ -30,6 +30,12 @@ class listePointee:
         """
         self.data=[]
         self.ptr=-1
+    def count(self):
+        """
+        @return le nombre d'éléments existants, indépendamment de la
+        position du pointeur
+        """
+        return len(self.data)
     def append(self, val):
         """Ajoute un élément. Si le pointeur n'était pas à la fin, détruit
         les enregistrements qui suivent.

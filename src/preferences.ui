@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>338</width>
-    <height>161</height>
+    <width>305</width>
+    <height>107</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,30 +25,20 @@
     <widget class="QComboBox" name="comboBoxProximite"/>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Afficheur vidéo</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="comboBoxVideoPLayer"/>
-   </item>
-   <item row="2" column="0">
     <widget class="QLabel" name="label_4">
      <property name="text">
       <string>Niveau de verbosité (débogage)</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="1" column="1">
     <widget class="QSpinBox" name="spinBoxDbg">
      <property name="maximum">
       <number>9</number>
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="2" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

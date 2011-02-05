@@ -249,10 +249,11 @@ class StartQT4(QMainWindow):
         self.index_du_point = 0
         self.echelle_image = echelle() # objet gérant l'image
         self.nb_image_deja_analysees = 0 #indique le nombre d'images dont on a dejàﾠ fait l'étude, ce qui correspond aussi au nombre de lignes dans le tableau.
-        self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green"] #correspond aux couleurs des points del a trajectoire
+        self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green"] #correspond aux couleurs des points de la trajectoire
+        self.pointsProvisoires=[]    # quand on a plusieurs clics à faire
         self.nb_de_points = 1        # nombre de points suivis
-        self.premiere_image = 1      # nￂﾰ de la première image cliquée
-        self.index_de_l_image = 1    # image àﾠ afficher
+        self.premiere_image = 1      # n° de la première image cliquée
+        self.index_de_l_image = 1    # image à afficher
         self.echelle_v = 0
         self.filename=filename
         self.opts=opts
@@ -289,22 +290,12 @@ class StartQT4(QMainWindow):
         
              
 
-        ######vérification de la présencde gnuplot
-        if  sys.platform == "win32" or any(os.access(os.path.join(p,"gnuplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
-            pass
-        else :
-            self.ui.comboBox_mode_tracer.setItemText(0,QString(self.tr(unicode("manque\nGnuplot","utf8"))))
-            self.ui.comboBox_mode_tracer.setEnabled(0)
-            self.ui.groupBox_7.setEnabled(0)
-
-            
-                
-
-        
     def init_interface(self):
         self.cree_tableau()
         self.label_trajectoire=Label_Trajectoire(self.ui.label_3, self)
         self.ui.horizontalSlider.setEnabled(0)
+        self.ui.label_sous_zoom.setText(self.tr(u"Surveillez le zoom"))
+        
 
         self.ui.pushButton_video.setEnabled(0)
         
@@ -318,7 +309,6 @@ class StartQT4(QMainWindow):
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setValue(1)
         
-        self.ui.button_video.setEnabled(0)
         self.affiche_nb_points(False)
         self.ui.Bouton_Echelle.setEnabled(False)
         self.ui.echelle_v.setDuplicatesEnabled(False)
@@ -334,12 +324,7 @@ class StartQT4(QMainWindow):
         #création du label qui contiendra la vidéo.
         self.label_video = Label_Video(parent=self.ui.label, app=self)
 
-
-        ### Cacher uniquement le groupBox qui contient les widgets pushButton_origine, checkBox_abscisses, checkBox_ordonnees ###
-        self.ui.groupBox_2.hide()
-        #self.ui.pushButton_origine.hide()
-        #self.ui.checkBox_abscisses.hide()
-        #self.ui.checkBox_ordonnees.hide()
+        self.ui.group_advanced.hide()
 
         self.ui.tabWidget.setCurrentIndex(0) # montre l'onglet video
 
@@ -402,7 +387,11 @@ class StartQT4(QMainWindow):
         self.ui.label.update()
         self.label_video.update()
 
-        #############si il existe un point actuel, cela signifie qu'on réinitlise tout mais qu'on doit garder la position de départ. Cas quand on revient en arrière d'un cran ou que l'on refait le point.
+        #############
+        # si il existe un point actuel, cela signifie qu'on réinitialise
+        # tout mais qu'on doit garder la position de départ. Cas quand
+        #on revient en arrière d'un cran ou que l'on refait le point.
+        #############
         if index_point_actuel :
             index = self.premiere_image
             self.init_variables(None, filename=self.filename)
@@ -415,20 +404,18 @@ class StartQT4(QMainWindow):
             self.init_variables(None, filename=self.filename)
   
         self.init_interface()
-        self.ui.checkBox_avancees.setEnabled(1)
-        self.ui.groupBox_2.show()
-        self.ui.groupBox_2.setEnabled(1)
+        self.affiche_fonctionnalites_avancees()
         self.ui.pushButton_origine.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
         for enfant in self.label_video.children():
-              enfant.hide()      
+              enfant.hide()
               del enfant
         if echelle_image:
             self.echelle_image=echelle_image
         if nb_de_points:
             self.nb_de_points=nb_de_points
-        if tousLesClics:
+        if tousLesClics!=None and tousLesClics.count():
             self.tousLesClics=tousLesClics
 
     def reinitialise_capture(self):
@@ -457,15 +444,15 @@ class StartQT4(QMainWindow):
         self.ui.horizontalSlider.setEnabled(1)
         self.ui.spinBox_image.setEnabled(1)
         self.ui.spinBox_image.setValue(1)
-        self.ui.pushButton_defait.setEnabled(0)
-        self.ui.pushButton_refait.setEnabled(0)
+        self.enableDefaire(False)
+        self.enableRefaire(False)
         self.affiche_nb_points(0)
         ### Réactiver checkBox_avancees après réinitialisation ###
         self.ui.checkBox_avancees.setEnabled(1)
 
 
-        if self.table_widget:
-            self.table_widget.clear()
+        if self.ui.tableWidget:
+            self.ui.tableWidget.clear()
 
     def ui_connections(self):
         """connecte les signaux de QT"""
@@ -474,9 +461,14 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.action_propos,SIGNAL("triggered()"), self.propos)
         QObject.connect(self.ui.actionAide,SIGNAL("triggered()"), self.aide)
         QObject.connect(self.ui.actionPreferences,SIGNAL("triggered()"), self.prefs.setFromDialog)
+        QObject.connect(self.ui.actionDefaire,SIGNAL("triggered()"), self.efface_point_precedent)
+        QObject.connect(self.ui.actionRefaire,SIGNAL("triggered()"), self.refait_point_suivant)
         QObject.connect(self.ui.actionQuitter,SIGNAL("triggered()"), self.close)
         QObject.connect(self.ui.actionSaveData,SIGNAL("triggered()"), self.enregistre_ui)
         QObject.connect(self.ui.actionCopier_dans_le_presse_papier,SIGNAL("triggered()"), self.presse_papier)
+        QObject.connect(self.ui.actionOpenOffice_org_Calc,SIGNAL("triggered()"), self.oooCalc)
+        QObject.connect(self.ui.actionQtiplot,SIGNAL("triggered()"), self.qtiplot)
+        QObject.connect(self.ui.actionScidavis,SIGNAL("triggered()"), self.scidavis)
         QObject.connect(self.ui.actionRouvrirMecavideo,SIGNAL("triggered()"), self.rouvre_ui)
         QObject.connect(self.ui.Bouton_Echelle,SIGNAL("clicked()"), self.demande_echelle)
         QObject.connect(self.ui.horizontalSlider,SIGNAL("valueChanged(int)"), self.affiche_image_slider)
@@ -577,21 +569,15 @@ class StartQT4(QMainWindow):
         self.emit(SIGNAL('change_axe_origine()'))
 
     def affiche_fonctionnalites_avancees(self):
-
-    ### Monter/cacher le groupBox_2 au lieu de chaque widget indépendamment ###
+        """
+        met à jour l'affichage des fonctions avancées, selon l'état
+        coché ou décoché de la case de choix
+        """
         if self.ui.checkBox_avancees.isChecked() :
-            self.ui.groupBox_2.setEnabled(1)
-            self.ui.groupBox_2.show()
-            #self.ui.label_axe.show()
-            #self.ui.pushButton_origine.show()
-            #self.ui.checkBox_abscisses.show()
-            #self.ui.checkBox_ordonnees.show()
+            self.ui.group_advanced.setEnabled(1)
+            self.ui.group_advanced.show()
         else :
-            self.ui.groupBox_2.hide()
-            #self.ui.label_axe.hide()
-            #self.ui.pushButton_origine.hide()
-            #self.ui.checkBox_abscisses.hide()
-            #self.ui.checkBox_ordonnees.hide()
+            self.ui.group_advanced.hide()
 
 
     def pointEnMetre(self,p):
@@ -611,10 +597,10 @@ class StartQT4(QMainWindow):
         si la locale est française.
         """
         trange=QTableWidgetSelectionRange(0,0,
-                                          self.table_widget.rowCount()-1,
-                                          self.table_widget.columnCount()-1)
-        self.table_widget.setRangeSelected(trange,True)
-        self.table_widget.selection()
+                                          self.ui.tableWidget.rowCount()-1,
+                                          self.ui.tableWidget.columnCount()-1)
+        self.ui.tableWidget.setRangeSelected(trange,True)
+        self.ui.tableWidget.selection()
 
     def export(self):
         """
@@ -711,7 +697,8 @@ class StartQT4(QMainWindow):
     def loads(self,s):
         s=s[1:-1].replace("\n#","\n")
         self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points = pickle.loads(s)
-
+        self.cvReader=openCvReader(self.filename)
+        
     def rouvre(self,fichier):
         lignes=open(fichier,"r").readlines()
         i=0
@@ -739,6 +726,11 @@ class StartQT4(QMainWindow):
         self.ui.horizontalSlider.setValue(n+self.premiere_image)
         self.ui.spinBox_image.setValue(n+self.premiere_image)
         self.affiche_nb_points(self.nb_de_points)
+        self.enableDefaire(True)
+        self.enableRefaire(False)
+        # On regénère la liste self.tousLesClics
+        for i in self.points.keys():
+           self.tousLesClics.append(self.points[i][1:])
         self.affiche_image() # on affiche l'image
         self.debut_capture(departManuel=False)
         # On regénère le tableau d'après les points déjà existants.
@@ -747,16 +739,16 @@ class StartQT4(QMainWindow):
         for k in self.points.keys():
             data=self.points[k]
             t="%4f" %(float(data[0]))
-            self.table_widget.insertRow(ligne)
-            self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
+            self.ui.tableWidget.insertRow(ligne)
+            self.ui.tableWidget.setItem(ligne,0,QTableWidgetItem(t))
             i=1
             for vect in data[1:]:
                 vect=self.pointEnMetre(vect)
-                self.table_widget.setItem(ligne,i,QTableWidgetItem(str(vect.x())))
-                self.table_widget.setItem(ligne,i+1,QTableWidgetItem(str(vect.y())))
+                self.ui.tableWidget.setItem(ligne,i,QTableWidgetItem(str(vect.x())))
+                self.ui.tableWidget.setItem(ligne,i+1,QTableWidgetItem(str(vect.y())))
                 i+=2
             ligne+=1
-        self.table_widget.show()
+        self.ui.tableWidget.show()
         # attention à la fonction défaire/refaire : elle est mal initialisée !!!
 
         # On met à jour les préférences
@@ -872,15 +864,7 @@ class StartQT4(QMainWindow):
 
         self.ui.checkBox_avancees.setEnabled(0)
         
-        ### On ne fait que cacher le groupBox_2 au lieu de désactiver chaque widget###
-        self.ui.groupBox_2.setEnabled(0)
-        #self.ui.pushButton_origine.setEnabled(0)
-        #self.ui.checkBox_abscisses.setEnabled(0)
-        #self.ui.checkBox_ordonnees.setEnabled(0)
-
-        #self.ui.pushButton_origine.setEnabled(0)
-        #self.ui.checkBox_abscisses.setEnabled(0)
-        #self.ui.checkBox_ordonnees.setEnabled(0)
+        self.ui.group_advanced.setEnabled(0)
         
         self.label_trajectoire = Label_Trajectoire(self.ui.label_3,self)
         self.ui.comboBox_referentiel.clear()
@@ -901,26 +885,18 @@ class StartQT4(QMainWindow):
         """
         Crée un tableau de coordonnées neuf dans l'onglet idoine.
         """
-        try: # efface tout tableau existant préalablement
-            self.table_widget.hide()
-            self.table_widget.close()
-        except AttributeError:
-            pass
-        from table import standardDragTable
-        self.table_widget=standardDragTable(self.ui.tab_coord)
+        self.ui.tableWidget.clear()
         self.ui.tab_coord.setEnabled(1)
-        self.table_widget.setRowCount(1)
-        self.table_widget.setColumnCount(self.nb_de_points*2 + 1)
+        self.ui.tableWidget.setRowCount(1)
+        self.ui.tableWidget.setColumnCount(self.nb_de_points*2 + 1)
+        self.ui.tableWidget.setDragEnabled(True)
         # on met des titres aux colonnes.
-        self.table_widget.setHorizontalHeaderItem(0,QTableWidgetItem('t (s)'))
+        self.ui.tableWidget.setHorizontalHeaderItem(0,QTableWidgetItem('t (s)'))
         for i in range(self.nb_de_points):
             x="X%d (m)" %(1+i)
             y="Y%d (m)" %(1+i)
-            self.table_widget.setHorizontalHeaderItem(1+2*i,QTableWidgetItem(x))
-            self.table_widget.setHorizontalHeaderItem(2+2*i,QTableWidgetItem(y))
-        ### On remonte un peu le table_widget ###
-        self.table_widget.setGeometry(QRect(10, 40, 640, 480))
-        self.table_widget.setDragEnabled(True)
+            self.ui.tableWidget.setHorizontalHeaderItem(1+2*i,QTableWidgetItem(x))
+            self.ui.tableWidget.setHorizontalHeaderItem(2+2*i,QTableWidgetItem(y))
 
     def traiteSouris(self,p):
         """
@@ -1130,7 +1106,6 @@ class StartQT4(QMainWindow):
 
         try : 
             if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
-                self.ui.comboBox_referentiel.setEnabled(0)
                 self.label_video.zoom_croix.hide()
                 self.oubliePoints()
                 if newValue=="absolu":
@@ -1143,28 +1118,14 @@ class StartQT4(QMainWindow):
                     bc=self.mediane_trajectoires(int(ref)-1)
                     origine=vecteur(320,240)-bc
 
-                    if self.ui.comboBox_referentiel.count()>2 :
-                        # il y a plus d'un point étudié, on active le
-                        # bouton vidéo et on autorise de changer de référentiel
-                        self.ui.button_video.setEnabled(1)
-                        self.ui.comboBox_referentiel.setEnabled(1)
-                    else :
-                        self.ui.button_video.setEnabled(0)
-
-                else:
-                    self.ui.button_video.setEnabled(0)
-                    if self.ui.comboBox_referentiel.count()>2 :
-                        self.ui.comboBox_referentiel.setEnabled(1) #ne pas autoriser le changement de référentiel si il n'y a que 1 point.
-#                    if self.platform.lower()=="windows":
-#                    self.ui.comboBox_mode_tracer.setEnabled(0)
-                # on fait la liste des courbes traçables
-                if self.ui.groupBox_7.isEnabled():
-                    self.ui.comboBox_mode_tracer.clear()
-                    self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
-                    for i in range(self.nb_de_points) :
-                        self.ui.comboBox_mode_tracer.addItem(QString("x%d(t)" %(i+1)))
-                        self.ui.comboBox_mode_tracer.addItem(QString("y%d(t)" %(i+1)))
-                        self.ui.comboBox_mode_tracer.addItem(QString("v%d(t)" %(i+1)))
+                # garnit le menu des courbes à tracer
+                self.ui.comboBox_mode_tracer.clear()
+                self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
+                for i in range(self.nb_de_points) :
+                    combo=self.ui.comboBox_mode_tracer
+                    combo.addItem(QString("x%d(t)" %(i+1)))
+                    combo.addItem(QString("y%d(t)" %(i+1)))
+                    combo.addItem(QString("v%d(t)" %(i+1)))
 
                 # on trace les points compte tenu du référentiel
                 for n in range(self.nb_de_points):
@@ -1213,7 +1174,7 @@ class StartQT4(QMainWindow):
                       ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
                       for i in self.points.keys():
                             p = self.points[i][1+n]
-                            point = Point(self.label_video, p, couleur, i+1, self,ancienPoint, show=False) # le point est chaîné au précédent s'il existe.
+                            point = Point(self.label_video, p, couleur, i+1, self,ancienPoint, showVelocity=False) # le point est chaîné au précédent s'il existe.
                             ancienPoint=point
                             point.montre_vitesse(False) #ne montre pas les vitesses
                             point.show()
@@ -1287,9 +1248,10 @@ class StartQT4(QMainWindow):
     def affiche_point_attendu(self,n):
         """
         Renseigne sur le numéro du point attendu
+        affecte la ligne de statut et la ligne sous le zoom
         """
-        ### Transformer en unicode pour éviter le proclème du caractère ￂﾰ qui ne s'affiche pas correctement ###
-        self.mets_a_jour_label_infos(self.tr(unicode("Cliquer sur le point N°%d" %n,"utf8")))
+        self.mets_a_jour_label_infos(self.tr(u"Pointage des positions : cliquer sur le point N°%d" %n))
+        self.ui.label_sous_zoom.setText(self.tr(u"zoom point %d" %n))
 
 
 
@@ -1297,10 +1259,24 @@ class StartQT4(QMainWindow):
     def clic_sur_label_video(self, liste_points=None, interactif=True):
         if liste_points==None:
             liste_points = self.label_video.liste_points
+        ### on fait des marques pour les points déjà visités
+        etiquette="@abcdefghijklmnopqrstuvwxyz"[len(liste_points)]
+        point = Point(self.label_video, liste_points[-1], "white", etiquette, self,showVelocity=False)
+        point.show()
+        ###
+        self.pointsProvisoires.append(point)
         if self.nb_de_points > len(liste_points) :
             point_attendu=1+len(liste_points)
+            self.affiche_point_attendu(point_attendu)
         else:
+            ### on retire les marques précédemment mises en place
+            for p in self.pointsProvisoires:
+                p.hide()
+                del p
+            self.pointsProvisoires=[]
+            ###
             point_attendu=1
+            self.affiche_point_attendu(point_attendu)
             if self.index_de_l_image<self.image_max : ##si on atteint la fin de la vidéo
                 
                 self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
@@ -1314,24 +1290,32 @@ class StartQT4(QMainWindow):
             elif self.index_de_l_image==self.image_max :
                 if self.auto:
                     self.emit(SIGNAL('selection_done()'))
-                self.mets_a_jour_label_infos(self.tr(unicode("Vous avez atteint la fin de la vidéo","utf8")))
+                self.mets_a_jour_label_infos(self.tr(u"Vous avez atteint la fin de la vidéo"))
 
-
+    def enableDefaire(self, value):
+        """
+        Contrôle la possibilité de défaire un clic
+        @param value booléen
+        """
+        self.ui.pushButton_defait.setEnabled(value)
+        self.ui.actionDefaire.setEnabled(value)
+        
+    def enableRefaire(self, value):
+        """
+        Contrôle la possibilité de refaire un clic
+        @param value booléen
+        """
+        self.ui.pushButton_refait.setEnabled(value)
+        self.ui.actionRefaire.setEnabled(value)
+        
     def clic_sur_label_video_ajuste_ui(self,point_attendu):
         """
         Ajuste l'interface utilisateur pour attendre un nouveau clic
         @param point_attendu le numéro du point qui est à cliquer
         """
-        self.affiche_point_attendu(point_attendu)
         self.lance_capture = True
-        if len(self.tousLesClics) > 0:
-            self.ui.pushButton_defait.setEnabled(1)
-        else:
-            self.ui.pushButton_defait.setEnabled(0)
-        if self.tousLesClics.nextCount() > 0:
-            self.ui.pushButton_refait.setEnabled(1)
-        else:
-            self.ui.pushButton_refait.setEnabled(0)
+        self.enableDefaire(len(self.tousLesClics) > 0)
+        self.enableRefaire(self.tousLesClics.nextCount() > 0)
 
         if point_attendu==1 : # pour une acquisition sur une nouvelle image
             if len(self.label_video.liste_points) > 0:
@@ -1352,21 +1336,21 @@ class StartQT4(QMainWindow):
         t = "%4f" %((ligne)*self.deltaT)
         self.points[ligne]=[t]+liste_points
         #rentre le temps dans la première colonne
-        self.table_widget.insertRow(ligne)
-        self.table_widget.setItem(ligne,0,QTableWidgetItem(t))
+        self.ui.tableWidget.insertRow(ligne)
+        self.ui.tableWidget.setItem(ligne,0,QTableWidgetItem(t))
         
         i=0
         #Pour chaque point dans liste_points, insère les valeur dans la ligne
         for point in liste_points :
             pm=self.pointEnMetre(point)
-            self.table_widget.setItem(ligne,i+1,QTableWidgetItem(str(pm.x())))
-            self.table_widget.setItem(ligne,i+2,QTableWidgetItem(str(pm.y())))
+            self.ui.tableWidget.setItem(ligne,i+1,QTableWidgetItem(str(pm.x())))
+            self.ui.tableWidget.setItem(ligne,i+2,QTableWidgetItem(str(pm.y())))
             i+=2
         if interactif:
-            self.table_widget.show()
+            self.ui.tableWidget.show()
         #enlève la ligne supplémentaire, une fois qu'une ligne a été remplie
         if ligne == 0 :
-            self.table_widget.removeRow(1)
+            self.ui.tableWidget.removeRow(1)
 
     def transforme_index_en_temps(self, index):
         return float(self.deltaT*(index))
@@ -1409,9 +1393,12 @@ class StartQT4(QMainWindow):
         self.affiche_image()
 
     def demande_echelle(self):
-        
-        echelle_result_raw = QInputDialog.getText(None, self.tr(unicode("Définir une échelle","utf8")), 
-                                                  self.tr(unicode("Quelle est la longueur en mètre de votre étalon sur l'image ?","utf8")),
+        """
+        demande l'échelle interactivement
+        """
+        echelle_result_raw = QInputDialog.getText(None,
+                                                  self.tr(u"Définir une échelle"), 
+                                                  self.tr(u"Quelle est la longueur en mètre de votre étalon sur l'image ?"),
                                                   QLineEdit.Normal, QString("1.0"))
         if echelle_result_raw[1] == False :
             return None
@@ -1419,14 +1406,14 @@ class StartQT4(QMainWindow):
             echelle_result = [float(echelle_result_raw[0].replace(",",".")), echelle_result_raw[1]]
 
             if echelle_result[0] <= 0 or echelle_result[1] == False :
-                self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable","utf8")))
+                self.mets_a_jour_label_infos(self.tr(u" Merci d'indiquer une échelle valable"))
             else :
                 self.echelle_image.etalonneReel(echelle_result[0])
                 self.job = Label_Echelle(self.label_video,self)
                 self.job.setPixmap(QPixmap(self.chemin_image))
                 self.job.show()
         except ValueError :
-            self.mets_a_jour_label_infos(self.tr(unicode(" Merci d'indiquer une échelle valable","utf8")))
+            self.mets_a_jour_label_infos(self.tr(u" Merci d'indiquer une échelle valable"))
             self.demande_echelle()
         self.ui.pushButton_video.setEnabled(0)
 
