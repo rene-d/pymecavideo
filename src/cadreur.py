@@ -27,6 +27,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from vecteur import vecteur
+from globdef import PYMECA_SHARE
 
 class Cadreur:
     """
@@ -144,7 +145,8 @@ class openCvReader:
         self.rembobine()
         
     def autoTest(self):
-        cmd="python testfilm.py %s" %self.filename
+        cmd="python %s %s" %(os.path.join(PYMECA_SHARE, 'testfilm.py'),
+                             self.filename)
         retcode=subprocess.call(cmd, shell=True)
         self.ok = retcode==0
 

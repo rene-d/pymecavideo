@@ -136,6 +136,17 @@ else:
                                 '/usr/share/pymecavideo/video',
                                 '/usr/share/python-mecavideo/video'),
                                 APP_DATA_PATH)
+
+#
+# Dossier pour testfilm.py
+#
+
+PYMECA_SHARE =testerDossier(('/usr/share/pymecavideo',
+                             '/usr/share/python-mecavideo',
+                             '.'),
+                            '/usr/share/pymecavideo')
+                             
+
 #
 # Dossier de pymecavideo.conf
 #
