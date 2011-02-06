@@ -20,7 +20,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, os, cv, time
+import sys, os, cv, time, subprocess
 import re, subprocess, shutil
 
 from PyQt4.QtCore import *
@@ -134,11 +134,24 @@ class openCvReader:
 
     def __init__(self, filename):
         """
-        le constructeur
+        Le constructeur tente d'ouvrir le fichier video. En cas d'échec
+        la valeur booléenne de l'instance sera False. Le test de validité est
+        isolé dans un sous-shell
         @param filename le nom d'un fichier vidéo
         """
         self.filename=filename
+        self.autoTest()
         self.rembobine()
+        
+    def autoTest(self):
+        cmd="python testfilm.py %s" %self.filename
+        retcode=subprocess.call(cmd, shell=True)
+        self.ok = retcode==0
+
+    def __int__(self):
+        return int(self.ok)
+    def __nonzero__(self):
+        return self.ok
 
     def rembobine(self):
         """
@@ -195,3 +208,15 @@ class openCvReader:
 
     def __str__(self):
         return "<openCvReader instance: filename=%s, nextImage=%d>" %(self.filename, self.nextImage)
+
+
+if __name__ == '__main__':
+    if len(sys.argv)>1:
+        vidfile=sys.argv[1]
+    else:
+        vidfile='/usr/share/python-mecavideo/video/g1.avi'
+    cvReader=openCvReader(vidfile)
+    if cvReader:
+        print "Ouverture du fichier %s réussie" %vidfile
+    else:
+        print "Ouverture manquée pour le fichier %s"  %vidfile

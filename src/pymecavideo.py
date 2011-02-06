@@ -69,7 +69,7 @@ from dbg import Dbg
 from listes import listePointee
 from version import Version
 from label_auto import Label_Auto
-#from detect import filter_picture
+import altvideo
 
 import qtiplotexport
 from subprocess import *
@@ -83,7 +83,9 @@ import threading
 import platform, subprocess
 import tempfile
 
-from globdef import PATH, APP_DATA_PATH, GetChildStdErr, IMG_PATH, VIDEO, SUFF, VIDEO_PATH, CONF_PATH, IMG_PATH, ICON_PATH, LANG_PATH, DATA_PATH,HELP_PATH
+from globdef import PATH, APP_DATA_PATH, GetChildStdErr, IMG_PATH, \
+     VIDEO, SUFF, VIDEO_PATH, CONF_PATH, IMG_PATH, ICON_PATH, LANG_PATH, \
+     DATA_PATH,HELP_PATH, NEWVID_PATH
 
 from detect import filter_picture
 
@@ -149,16 +151,13 @@ class StartQT4(QMainWindow):
         self.ui.setupUi(self)
         self.dbg=Dbg(0)
         self.cvReader=None
+        self.newVideos=[]            # les vidéos créées par recodage
 
 
 
         self.platform = platform.system()
-        if self.platform.lower()=="windows":
-            self.player = "ffplay.exe"
-        elif self.platform.lower()=="linux":
-            self.player = "vlc"
         self.prefs=Preferences(self)
-        ####intilise les répertoires
+        ####intialise les répertoires
         self._dir()
         defait_icon=os.path.join(self._dir("icones"),"undo.png")
         
@@ -260,22 +259,6 @@ class StartQT4(QMainWindow):
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
         self.init_interface()
 
-        ######vérification de la présence de ffplay dans le path.
-        ok_player=True;
-        if sys.platform == 'win32':
-            paths = os.environ['PATH'].split(os.pathsep)
-            paths.append(PATH)
-        else:
-            if type(self.player)==type([]):
-                player=self.player[0]
-            else:
-                player=self.player.split(" ")[0]
-            # on garde le nom de commande, pas les paramètres
-            if not(any(os.access(os.path.join(p,player), os.X_OK) for p in os.environ['PATH'].split(os.pathsep))) :
-                ok_player = False
-        if not ok_player:
-            pas_player = QMessageBox.warning(self,self.tr(unicode("ERREUR !!!","utf8")),QString(self.tr(unicode("le logiciel %s n'a pas été trouvé sur votre système. Merci de bien vouloir l'installer avant de poursuivre" %(player),"utf8" ))), QMessageBox.Ok,QMessageBox.Ok)
-            self.close()
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture']:
             if  any(os.access(os.path.join(p,logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)) :
@@ -687,6 +670,19 @@ class StartQT4(QMainWindow):
 
     _dir=staticmethod(_dir)
 
+    def init_cvReader(self):
+        """
+        Initialise le lecteur de flux vidéo pour OpenCV
+        et recode la vidéo si nécessaire.
+        """
+        self.cvReader=openCvReader(self.filename)
+        if not self.cvReader:
+            new=altvideo.altVideo(self.filename, NEWVID_PATH)
+            if new:
+                self.filename=new
+                self.cvReader=openCvReader(self.filename)
+                self.newVideos.append(new)
+
     def rouvre_ui(self):
         dir_ = self._dir("home")
         fichier = QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir un projet Pymecavideo","utf8")), dir_,self.tr(unicode("fichiers pymecavideo ( *.mecavideo)","utf8")))
@@ -697,7 +693,7 @@ class StartQT4(QMainWindow):
     def loads(self,s):
         s=s[1:-1].replace("\n#","\n")
         self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points = pickle.loads(s)
-        self.cvReader=openCvReader(self.filename)
+        self.init_cvReader()
         
     def rouvre(self,fichier):
         lignes=open(fichier,"r").readlines()
@@ -1436,10 +1432,15 @@ class StartQT4(QMainWindow):
         self.canvas.fig.clear()
         
     def closeEvent(self,event):
+        """
+        Un crochet pour y mettre toutes les procédures à faire lors
+        de la fermeture de l'application.
+        """
         from tempfile import gettempdir
         if hasattr(self,'canvas'):
             self.canvas.close()
             del self.canvas
+        self.nettoieVideosRecodees()
         if self.verifie_donnees_sauvegardees() :
             self.reinitialise_environnement()
             liste_fichiers = os.listdir(gettempdir())
@@ -1452,6 +1453,13 @@ class StartQT4(QMainWindow):
             event.accept()
         else :
             event.ignore()
+
+    def nettoieVideosRecodees(self):
+        """
+        Retire les vidéos recodées automatiquement
+        """
+        for f in self.newVideos:
+            subprocess.call("rm -f %s" %f, shell=True)
 
     def verifie_donnees_sauvegardees(self):
         if self.modifie:
@@ -1519,8 +1527,8 @@ class StartQT4(QMainWindow):
             filename = filename.toUtf8()
             data = filename.data()
             self.filename = data.decode('utf-8')
-            self.cvReader=openCvReader(self.filename)
-            self.prefs.lastVideo=unicode(filename,"utf8")
+            self.init_cvReader()
+            self.prefs.lastVideo=self.filename
             self.init_image()
             self.mets_a_jour_label_infos(self.tr(u"Veuillez choisir une image et définir l'échelle"))
             self.ui.Bouton_Echelle.setEnabled(True)

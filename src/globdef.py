@@ -98,9 +98,12 @@ else:
 
 
 #
-# Nom du dossier des images extraites
+# Nom du dossier des images extraites et des vidéos créées
 #
 IMG_PATH = os.path.join(APP_DATA_PATH, "images_extraites")
+NEWVID_PATH = os.path.join(APP_DATA_PATH, "videos_recodees")
+if not os.path.exists(NEWVID_PATH):
+    os.mkdir(NEWVID_PATH)
 
 #
 # Dossier gnuplot
