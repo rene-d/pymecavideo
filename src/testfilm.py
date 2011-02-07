@@ -18,7 +18,6 @@ class film:
         t=threading.Thread(target=self.autoTest)
         t.start()
         t.join(5.0) # attente de 5 secondes au plus
-        
 
     def autoTest(self):
         self.ok=False

@@ -144,7 +144,6 @@ else:
 PYMECA_SHARE =testerDossier(('/usr/share/pymecavideo',
                              '/usr/share/python-mecavideo',
                              '.'))
-                             
 
 #
 # Dossier de pymecavideo.conf
