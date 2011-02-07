@@ -103,9 +103,7 @@ else:
 IMG_PATH = os.path.join(APP_DATA_PATH, "images_extraites")
 NEWVID_PATH = os.path.join(APP_DATA_PATH, "videos_recodees")
 if not os.path.exists(NEWVID_PATH):
-    print "ok", NEWVID_PATH
     os.makedirs(NEWVID_PATH)
-    print os.path.exists(NEWVID_PATH)
 
 #
 # Dossier gnuplot
@@ -145,8 +143,7 @@ else:
 
 PYMECA_SHARE =testerDossier(('/usr/share/pymecavideo',
                              '/usr/share/python-mecavideo',
-                             '.'),
-                            '/usr/share/pymecavideo')
+                             '.'))
                              
 
 #
