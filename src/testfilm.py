@@ -22,11 +22,16 @@ class film:
     def autoTest(self):
         self.ok=False
         try:
+
             self.frame=cv.QueryFrame(self.capture)
             self.num=0
             self.fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
             self.framecount=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FRAME_COUNT)
-            self.ok=True
+            ###Hack
+            if self.filename.split(".")[-1] == "avi":
+                self.ok = True
+            else :
+                self.ok = False
         except:
             pass
 
