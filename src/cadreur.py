@@ -205,7 +205,8 @@ class openCvReader:
         except:
             print "could not retrieve informations from the video file."
             print "assuming fps = 25, frame count = 10."
-            return 25,10 
+            return 25,10
+        print "############", "fps, fcount-1", fps, fcount-1
         return fps, fcount-1
 
     def __str__(self):
