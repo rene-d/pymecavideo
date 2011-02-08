@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import cv
+import cv, os
 import sys, threading
 
 class film:
@@ -14,6 +14,7 @@ class film:
         @param filename le nom d'un fichier video
         """
         self.filename=filename
+        self.filesize=os.path.getsize(filename)
         self.capture=cv.CreateFileCapture(self.filename)
         t=threading.Thread(target=self.autoTest)
         t.start()
