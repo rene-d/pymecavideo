@@ -33,6 +33,7 @@ class Label_Video(QtGui.QLabel):
     def __init__(self, parent, app):
         QtGui.QLabel.__init__(self,parent)
         self.setGeometry(QtCore.QRect(0,0,640,480))
+        self.setStyleSheet("background-color: grey");
         self.parent=parent
         self.liste_points = []
         self.app=app
@@ -54,7 +55,6 @@ class Label_Video(QtGui.QLabel):
         
         if self.app.lance_capture==True and self.app.auto==False:
             self.liste_points.append(vecteur(event.x(), event.y()))
-            #self.zoom_croix.hide()
             self.pos_avant=self.pos
             self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
 

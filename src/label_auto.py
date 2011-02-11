@@ -65,6 +65,8 @@ class Label_Auto(QLabel):
     def mouseReleaseEvent(self,event):
         self.app.zoom = True
         self.app.motif = self.getMotif()
+        self.app.ui.Bouton_lance_capture.setText(self.app.tr(u"Arrêter"))
+        self.app.ui.Bouton_lance_capture.setEnabled(1)
         self.app.emit(QtCore.SIGNAL('selection_done()'))
         self.hide()
 
