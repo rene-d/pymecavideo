@@ -56,6 +56,19 @@ class Cadreur:
         cv.CreateTrackbar(ralentiLabel,self.titre, 0, 16, self.controleRalenti)
         self.maxcadre()
 
+    def echelleTaille(self):
+        """
+        Renvoie l'échelle qui permet de passer de l'image dans pymecavideo
+        à l'image effectivement trouvée dans le film, et la taille du film
+        @return un triplet échelle, largeur, hauteur (de l'image dans le widget de de pymecavideo)
+        """
+        m = QImage(self.app.chemin_image).size()
+        echx=1.0*m.width()/640
+        echy=1.0*m.height()/480
+        # permet de prendre en compte les vidéos à un format différent de 4:3
+        ech=max(echx,echy)
+        return ech, m.width()/ech, m.height()/ech
+
     def controleStop(self,position):
         """
         fonction de rappel commandée par le bouton "Quitte"
@@ -76,15 +89,19 @@ class Cadreur:
         la taille de ce cadre, et self.decal qui est le décalage du point
         à suivre par rapport au centre du cadre.
         """
+        ech, w, h = self.echelleTaille()
+        
         agauche=[pp[self.numpoint].x() for pp in self.app.points.values()]
         dessus=[pp[self.numpoint].y() for pp in self.app.points.values()]
-        adroite=[640-x for x in agauche]
-        dessous=[480-y for y in dessus]
+        adroite=[w-x-1 for x in agauche]
+        dessous=[h-y-1 for y in dessus]
         
         agauche=min(agauche)
         adroite=min(adroite)
         dessus=min(dessus)
         dessous=min(dessous)
+        self.tl=vecteur(agauche,dessus)                  #topleft
+        self.sz=vecteur(adroite+agauche,dessous+dessus)  #size
 
         self.decal=vecteur((adroite-agauche)/2, (dessous-dessus)/2)
         self.rayons=vecteur((agauche+adroite)/2, (dessus+dessous)/2)
@@ -106,10 +123,7 @@ class Cadreur:
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
-        m = QImage(self.app.chemin_image).size()
-        self.taille=vecteur(m.width(),m.height())
-        ech=self.taille.norme()/vecteur(640,480).norme()
-        
+        ech, w, h=self.echelleTaille ()
         self.fini=False
         while not self.fini:
             #rembobine
@@ -117,8 +131,10 @@ class Cadreur:
             for i in self.app.points.keys():
                 if self.fini: break # valeur volatile à examiner souvent
                 p=self.app.points[i][self.numpoint]
-                hautgauche=(p+self.decal-self.rayons)*ech
-                taille=self.rayons*2*ech
+                #hautgauche=(p+self.decal-self.rayons)*ech
+                hautgauche=(p-self.tl)*ech
+                #taille=self.rayons*2*ech
+                taille=self.sz*ech
                 img=self.queryFrame()
                 x,y = int(hautgauche.x()), int(hautgauche.y())
                 w,h = int(taille.x()), int(taille.y())
@@ -205,7 +221,7 @@ class openCvReader:
         except:
             print "could not retrieve informations from the video file."
             print "assuming fps = 25, frame count = 10."
-            return 25,10
+            return 25,10 
         return fps, fcount-1
 
     def __str__(self):

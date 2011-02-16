@@ -278,8 +278,7 @@ class StartQT4(QMainWindow):
         self.label_trajectoire=Label_Trajectoire(self.ui.label_3, self)
         self.ui.horizontalSlider.setEnabled(0)
         self.ui.label_sous_zoom.setText(self.tr(u"Surveillez le zoom"))
-        self.ui.Bouton_lance_capture.setEnabled(1)
-        self.ui.Bouton_lance_capture.setText(self.tr(u"Démarrer"))
+        
 
         self.ui.pushButton_video.setEnabled(0)
         
@@ -349,7 +348,10 @@ class StartQT4(QMainWindow):
             self.ui.Bouton_Echelle.setEnabled(True)
         else:
             epxParM=self.echelle_image.pxParM()
-            self.ui.echelleEdit.setText("%.1f" %epxParM)
+            if epxParM > 20:
+                self.ui.echelleEdit.setText("%.1f" %epxParM)
+            else:
+                self.ui.echelleEdit.setText("%8e" %epxParM)
             self.ui.Bouton_Echelle.setEnabled(False)
         self.ui.echelleEdit.show()
         self.ui.Bouton_Echelle.show()
@@ -489,13 +491,11 @@ class StartQT4(QMainWindow):
         
     def picture_detect(self):
         # le problème c'est que le signal ci-dessus provoque une procédure
-        # qui elle-même rappelle picture_detect grâce à l'émission d'un autre
+        # qui elle-même rappelle picrute_detect grâce à l'émission d'un autre
         # signal. Le fait de créer un Thread évite que ça soit circulaire
         # mais ça empile autant de threads qu'il y a d'images !
-
         self.calcul=MonThreadDeCalcul(self, self.motif,self.image_640_480)
         self.calcul.start()
-        
 
     def refait_echelle(self):
         #"""Permet de retracer une échelle et de recalculer les points"""
@@ -827,62 +827,58 @@ class StartQT4(QMainWindow):
 
         """
         try :
-                #type(self.capture)
-                self.capture.stop()
-        except AttributeError :
-            try :
-                self.origine_trace.hide()
-                del self.origine_trace
-            except :
-                pass
-            self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
-            self.origine_trace.show()
-            self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
-            self.label_video.setFocus()
-            self.label_video.show()
-            self.label_video.activateWindow()
-            self.label_video.setVisible(True)
+            self.origine_trace.hide()
+            del self.origine_trace
+        except :
+            pass
+        self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
+        self.origine_trace.show()
+        self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
+        self.label_video.setFocus()
+        self.label_video.show()
+        self.label_video.activateWindow()
+        self.label_video.setVisible(True)
 
-            #self.origine_trace.show()
+        #self.origine_trace.show()
 
-            self.label_echelle_trace.lower()  #nécessaire sinon, label_video n'est pas actif.
-            self.origine_trace.lower()
+        self.label_echelle_trace.lower()  #nécessaire sinon, label_video n'est pas actif.
+        self.origine_trace.lower() 
 
-            self.nb_de_points = self.ui.spinBox_nb_de_points.value()
-            self.affiche_nb_points(False)
-            self.affiche_lance_capture(False)
-            self.ui.horizontalSlider.setEnabled(0)
-            self.ui.spinBox_image.setEnabled(0)
+        self.nb_de_points = self.ui.spinBox_nb_de_points.value()
+        self.affiche_nb_points(False)
+        self.affiche_lance_capture(False)
+        self.ui.horizontalSlider.setEnabled(0)
+        self.ui.spinBox_image.setEnabled(0)
 
-            if departManuel==True: # si on a mis la première image à la main
-                self.premiere_image=self.ui.horizontalSlider.value()
-            self.affiche_point_attendu(1)
-            self.lance_capture = True
-            self.label_video.setCursor(Qt.CrossCursor)
-            self.ui.tab_traj.setEnabled(1)
-            self.ui.actionSaveData.setEnabled(1)
-            self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
-            self.ui.comboBox_referentiel.setEnabled(1)
-            self.ui.pushButton_select_all_table.setEnabled(1)
+        if departManuel==True: # si on a mis la première image à la main
+            self.premiere_image=self.ui.horizontalSlider.value()
+        self.affiche_point_attendu(1)
+        self.lance_capture = True
+        self.label_video.setCursor(Qt.CrossCursor)
+        self.ui.tab_traj.setEnabled(1)
+        self.ui.actionSaveData.setEnabled(1)
+        self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
+        self.ui.comboBox_referentiel.setEnabled(1)
+        self.ui.pushButton_select_all_table.setEnabled(1)
 
-            self.ui.checkBox_avancees.setEnabled(0)
-
-            self.ui.group_advanced.setEnabled(0)
-
-            self.label_trajectoire = Label_Trajectoire(self.ui.label_3,self)
-            self.ui.comboBox_referentiel.clear()
-            self.ui.comboBox_referentiel.insertItem(-1, "camera")
-            for i in range(self.nb_de_points) :
-                self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr(u"point N°")+" "+str(i+1)))
-            self.cree_tableau()
-            if self.ui.checkBox_auto.isChecked():
-                self.auto=True
-                reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Vous êtes sur le point de lancer une capture automatique\nCelle-ci ne peut se faire qu'avec un seul point."),
-                QMessageBox.Ok,QMessageBox.Cancel)
-                if reponse==QMessageBox.Ok:
-                    reponse==QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
-                    self.label_auto = Label_Auto(self.label_video,self)
-                    self.label_auto.show()
+        self.ui.checkBox_avancees.setEnabled(0)
+        
+        self.ui.group_advanced.setEnabled(0)
+        
+        self.label_trajectoire = Label_Trajectoire(self.ui.label_3,self)
+        self.ui.comboBox_referentiel.clear()
+        self.ui.comboBox_referentiel.insertItem(-1, "camera")
+        for i in range(self.nb_de_points) :
+            self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr(u"point N°")+" "+str(i+1)))
+        self.cree_tableau()
+        if self.ui.checkBox_auto.isChecked():
+            self.auto=True
+            reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Vous êtes sur le point de lancer une capture automatique\nCelle-ci ne peut se faire qu'avec un seul point."),
+            QMessageBox.Ok,QMessageBox.Cancel)
+            if reponse==QMessageBox.Ok:
+                reponse==QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
+                self.label_auto = Label_Auto(self.label_video,self)
+                self.label_auto.show()
 
     def cree_tableau(self):
         """
@@ -1570,7 +1566,7 @@ class StartQT4(QMainWindow):
         
         
     def init_image(self):
-        """intialise certaines variables lors le la mise en place d'une nouvelle vidéo"""
+        """intialise certaines variables lors le la mise en place d'une nouvelle image"""
         self.index_de_l_image = 1
         self.trajectoire = {}
         self.ui.spinBox_image.setMinimum(1)
