@@ -33,7 +33,7 @@ class Label_Video(QtGui.QLabel):
     def __init__(self, parent, app):
         QtGui.QLabel.__init__(self,parent)
         self.setGeometry(QtCore.QRect(0,0,640,480))
-        self.setStyleSheet("background-color: grey");
+        #self.setStyleSheet("background-color: grey");
         self.parent=parent
         self.liste_points = []
         self.app=app
