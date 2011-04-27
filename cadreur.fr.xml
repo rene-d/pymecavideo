@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+
+<!--
+
+Process this file with an XSLT processor: `xsltproc \
+-''-nonet /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/\
+manpages/docbook.xsl manpage.dbk'.  A manual page
+<package>.<section> will be generated.  You may view the
+manual page with: nroff -man <package>.<section> | less'.  A
+typical entry in a Makefile or Makefile.am is:
+
+DB2MAN=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/\
+manpages/docbook.xsl
+XP=xsltproc -''-nonet
+
+manpage.1: manpage.dbk
+        $(XP) $(DB2MAN) $<
+    
+The xsltproc binary is found in the xsltproc package.  The
+XSL files are in docbook-xsl.  Please remember that if you
+create the nroff version in one of the debian/rules file
+targets (such as build), you will need to include xsltproc
+and docbook-xsl in your Build-Depends control field.
+
+-->
+
+  <!-- Fill in your name for FIRSTNAME and SURNAME. -->
+  <!ENTITY dhfirstname "<firstname>FIRSTNAME</firstname>">
+  <!ENTITY dhsurname   "<surname>SURNAME</surname>">
+  <!-- Please adjust the date whenever revising the manpage. -->
+  <!ENTITY dhdate      "<date>26 avril 2011</date>">
+  <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
+       allowed: see man(7), man(1). -->
+  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
+  <!ENTITY dhemail     "<email>georgesk@ofset.org</email>">
+  <!ENTITY dhusername  "Georges Khaznadar">
+  <!ENTITY dhucpackage "<refentrytitle>CADREUR</refentrytitle>">
+  <!ENTITY dhpackage   "cadreur">
+  <!ENTITY lang        "fr">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]>
+
+<refentry lang="fr">
+  <refentryinfo>
+    <address>
+      &dhemail;
+    </address>
+    <copyright>
+      <year>2011</year>
+      <holder>&dhusername;</holder>
+    </copyright>
+    &dhdate;
+  </refentryinfo>
+  <refmeta>
+    &dhucpackage;
+
+    &dhsection;
+  </refmeta>
+  <refnamediv>
+    <refname>&dhpackage;.&lang;</refname>
+
+    <refpurpose>lecteur vidéo basé sur OpenCv capable de recadrer dynamiquement une vidéo</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+
+      <arg><option><replaceable>nomFichier.{avi|mpg|...}</replaceable></option></arg>
+      <arg><option><replaceable>fifo</replaceable></option></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>DESCRIPTION</title>
+
+    <para><command>&dhpackage;</command> peut être utilisé pour
+    simuler le mouvement d'une caméra en recoupant les trames d'une vidéo
+    en tenant compte d'un déplacement donné. On peut le contrôler en rentrant
+    des commandes dans un fichier FIFO (first IN, first OUT).
+    </para>
+
+  </refsect1>
+  <refsect1>
+    <title>ARGUMENTS</title>
+
+    <variablelist>
+      <varlistentry>
+        <term><option><replaceable>nomFichier.{avi|mpg|...}</replaceable></option>
+        </term>
+        <listitem>
+          <para>Définit un fichier vidéo à visionner.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option><replaceable>fifo</replaceable></option>
+        </term>
+        <listitem>
+          <para>A namedUn fichier FIFO nommé, pour récupérer les commandes
+	  issues d'autres processus.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+  <refsect1>
+    <title>AUTEUR</title>
+
+    <para>Cette page de manuel a été écrite par &dhusername; &dhemail; pour le
+      système &debian; (mais peut être utilisée pour d'autres).  Vous avez
+      la permission de la copier, de la distribuer et/ou de la modifier
+      sous les termes de la licence &gnu; General Public License, Version 3
+      ou toute autre version supérieure publiée par la Free Software Foundation.
+    </para>
+	<para>
+	  Dans le cas des systèmes Debian, le texte complet de la licence
+	  GNU General Public License se trouve dans le fichier
+	  /usr/share/common-licenses/GPL-3.
+	</para>
+
+  </refsect1>
+</refentry>
+
