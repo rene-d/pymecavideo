@@ -28,7 +28,7 @@ void PyMecaVideo::fileSelect() {
                                 QApplication::UnicodeUTF8),homeDir,tr("Video files ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)"));
         if (!videoFileName.isEmpty()){
             setCurrentDir(videoFileName); //dirName is the name of choosen directory
-            statusBar()->showMessage(tr("Video File choosen "), 2000);
+            statusBar()->showMessage((tr("Video File choosen "), videoFileName), 2000);
 
                      }
 }
