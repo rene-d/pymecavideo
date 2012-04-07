@@ -11,8 +11,16 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        pymecavideo.cpp
+        pymecavideo.cpp \
+    displaypicturelabel.cpp \
+    zoom.cpp \
+    scalelabel.cpp \
+    qmat.cpp
 
-HEADERS  += pymecavideo.h
+HEADERS  += pymecavideo.h \
+    displaypicturelabel.h \
+    zoom.h \
+    scalelabel.h \
+    qmat.h
 
 FORMS    += pymecavideo.ui

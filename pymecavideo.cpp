@@ -21,7 +21,26 @@ PyMecaVideo::~PyMecaVideo()
     delete ui;
 }
 //functions
-//SELECTDIR is called when radioButton "directory" is checked.
+
+//select and show film frame Number "number"
+
+Mat getmat()
+{
+
+    VideoCapture cam(0);
+    cam >> mat;// vous pouvez ensuite executer autant de transformation que vous voulez, le tout est de renvoyer un cv::Mat
+    return mat
+}
+
+void PyMecaVideo::loadPicture(uint number)
+{
+    Mat mat;
+    VideoCapture cam(0);
+    cam >> mat;
+    QMat qmat(mat);
+    qmat.show(); }
+
+//fileSelect is called when radioButton "directory" is checked.
 void PyMecaVideo::fileSelect() {
 
         QString videoFileName = QFileDialog::getOpenFileName(this,tr("pymecavideo","Open video file",
@@ -29,11 +48,12 @@ void PyMecaVideo::fileSelect() {
         if (!videoFileName.isEmpty()){
             setCurrentDir(videoFileName); //dirName is the name of choosen directory
             statusBar()->showMessage((tr("Video File choosen "), videoFileName), 2000);
-
+            //load first picture of video
+            loadpicture(1);
                      }
 }
 
-//SETCURRENTDIR allow some informations on top of Qapplication and define "curDir"
+//SETCURRENTDIR set working directory and display some informations on top of Qapplication and define "curDir"
 void PyMecaVideo::setCurrentDir(const QString &fileName)
 {
     curDir = fileName;
@@ -46,7 +66,7 @@ void PyMecaVideo::setCurrentDir(const QString &fileName)
     setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("Application")));
 
 }
-//stripped name is name without path
+//stripped name is name without path : /home/truc/video.avi return video.avi
 QString PyMecaVideo::strippedName(const QString &fullFileName)
 {
     return QFileInfo(fullFileName).fileName();
