@@ -2,8 +2,8 @@
 #include "ui_pymecavideo.h"
 #include <QtGui/QApplication>
 #include <QtGui>
-#include <qmat.h>
-#include <cv.h>
+//#include <qmat.h>
+//#include <cv.h>
 
 using namespace cv;
 
@@ -28,26 +28,53 @@ PyMecaVideo::~PyMecaVideo()
 
 //select and show film frame Number "number"
 
-Mat PyMecaVideo::getMat()
+Mat PyMecaVideo::getMat(uint number)
 {//get matrice opencv from a source
-    Mat mat;
-    VideoCapture cam(0);
-    cam >> mat;// vous pouvez ensuite executer autant de transformation que vous voulez, le tout est de renvoyer un cv::Mat
+//    Mat mat;
+    //if capture -> don't initalize it
+    qDebug()<<"entering in getMat";
+//    if (!capture)
+//    {
+    qDebug()<<"initalizing capture from  file "<<videoFileName ;
+
+    capture = cvCaptureFromFile(videoFileName.toStdString().c_str()); //initialize file
+    if (!capture)
+    {
+        qDebug()<<"WOUH WOUH !!! no capture !!!";
+    }
+//    }
+
+    //move to frame number 'number'
+    //cvSetCaptureProperty(capture, CV_CAP_PROP_POS_MSEC, 0);
+    cvSetCaptureProperty(capture, CV_CAP_PROP_POS_FRAMES, number);
+
+
+    qDebug()<<"querying frame from capture";
+    acquiredImage = cvQueryFrame(capture);
+    if (!acquiredImage)
+    {
+        qDebug()<<"WOUH WOUH !!! no frame !!!";
+    }
+    qDebug()<<"transform IplImage in a cv::Mat";
+
+    mat = Mat(acquiredImage,true);
+    qDebug()<<"get out of getMat()";
     return mat;
 }
 
 void PyMecaVideo::loadPicture(uint number)
 {
-    Mat mat;
-    mat = getMat();
-    QMat qmat(mat, ui->label);
+
+    pictureMat = getMat(number);
+    qDebug()<<"open a QMat widget";
+    QMat qmat(pictureMat, ui->widget);
     qmat.show();
 }
 
 //fileSelect is called when radioButton "directory" is checked.
 void PyMecaVideo::fileSelect() {
 
-        QString videoFileName = QFileDialog::getOpenFileName(this,tr("pymecavideo","Open video file",
+        videoFileName = QFileDialog::getOpenFileName(this,tr("pymecavideo","Open video file",
                                 QApplication::UnicodeUTF8),homeDir,tr("Video files ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)"));
         if (!videoFileName.isEmpty()){
             setCurrentDir(videoFileName); //dirName is the name of choosen directory

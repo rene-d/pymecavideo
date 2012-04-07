@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <qmat.h>
 
+
+
 using namespace cv;
 
 namespace Ui {
@@ -29,11 +31,18 @@ private:
     QString videoFileName;
     void setCurrentDir(const QString &fileName);
     void loadPicture(uint);
-    Mat getMat();
+    Mat getMat(uint);
     QString strippedName(const QString &fullFileName);
     QString curDir;
     QDir Dir;
     QString homeDir;
+
+    CvCapture* capture;
+    IplImage* acquiredImage;
+    Mat mat;
+    Mat pictureMat;
+    QMat qmat;
+
 
 
 };

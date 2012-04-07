@@ -5,6 +5,7 @@
 */
 
 #include "qmat.h"
+#include <QtGui>
 
 using namespace std;
 using namespace cv;
@@ -13,19 +14,19 @@ using namespace cv;
 
 
     QMat::QMat(QWidget *parent) : QWidget(parent)
-    {
+    {   qDebug()<<"init QMat widget 1";
         _Label = new QLabel(this);
         setLabel();
     }
 
     QMat::QMat(Mat newMat, QWidget *parent) : QWidget(parent), _mat(newMat)
-    {
+    {   qDebug()<<"init QMat widget 1";
         _Label = new QLabel(this);
         setLabel();
     }
 
     QMat::QMat(Mat (*mat_function)(), int waitTime, QWidget *parent) : QWidget(parent), _function(mat_function)
-    {
+    {   qDebug()<<"init QMat widget 1";
         _timer = new QTimer(this);
         _timer->start(waitTime);
         _mat = _function();
