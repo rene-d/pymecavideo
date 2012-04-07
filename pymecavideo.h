@@ -5,8 +5,7 @@
 #include <QDir>
 #include <stdio.h>
 #include <qmat.h>
-
-
+#include <QPushButton>
 
 using namespace cv;
 
@@ -37,13 +36,24 @@ private:
     QString curDir;
     QDir Dir;
     QString homeDir;
+    QPushButton *OpenFile;
+    QPushButton *PlayPauseButton;
+    QPushButton *StopButton;
+    QPushButton *FastForwardButton;
+    QPushButton *FastBackwardButton;
+    QPushButton *FPFForwardButton;
+    QPushButton *FPFBackwardButton;
 
-    CvCapture* capture;
-    IplImage* acquiredImage;
-    Mat mat;
-    Mat pictureMat;
-    QMat qmat;
-    uint num;
+    QPushButton *metadatareaderbutton;
+
+
+
+//    CvCapture* capture;
+//    IplImage* acquiredImage;
+//    Mat mat;
+//    Mat pictureMat;
+//    QMat qmat;
+    uint frameNumber;
 
 
 
