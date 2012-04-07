@@ -24,13 +24,14 @@ public:
 
 private slots :
     void fileSelect();
+    void loadPicture();
 
 
 private:
     Ui::PyMecaVideo *ui;
     QString videoFileName;
     void setCurrentDir(const QString &fileName);
-    void loadPicture(uint);
+
     Mat getMat(uint);
     QString strippedName(const QString &fullFileName);
     QString curDir;
@@ -42,6 +43,7 @@ private:
     Mat mat;
     Mat pictureMat;
     QMat qmat;
+    uint num;
 
 
 
