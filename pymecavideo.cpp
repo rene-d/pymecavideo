@@ -2,6 +2,10 @@
 #include "ui_pymecavideo.h"
 #include <QtGui/QApplication>
 #include <QtGui>
+#include <qmat.h>
+#include <cv.h>
+
+using namespace cv;
 
 PyMecaVideo::PyMecaVideo(QWidget *parent) :
     QMainWindow(parent),
@@ -24,21 +28,21 @@ PyMecaVideo::~PyMecaVideo()
 
 //select and show film frame Number "number"
 
-Mat getmat()
-{
-
+Mat PyMecaVideo::getMat()
+{//get matrice opencv from a source
+    Mat mat;
     VideoCapture cam(0);
     cam >> mat;// vous pouvez ensuite executer autant de transformation que vous voulez, le tout est de renvoyer un cv::Mat
-    return mat
+    return mat;
 }
 
 void PyMecaVideo::loadPicture(uint number)
 {
     Mat mat;
-    VideoCapture cam(0);
-    cam >> mat;
-    QMat qmat(mat);
-    qmat.show(); }
+    mat = getMat();
+    QMat qmat(mat, ui->label);
+    qmat.show();
+}
 
 //fileSelect is called when radioButton "directory" is checked.
 void PyMecaVideo::fileSelect() {
@@ -49,7 +53,7 @@ void PyMecaVideo::fileSelect() {
             setCurrentDir(videoFileName); //dirName is the name of choosen directory
             statusBar()->showMessage((tr("Video File choosen "), videoFileName), 2000);
             //load first picture of video
-            loadpicture(1);
+            loadPicture(1);
                      }
 }
 

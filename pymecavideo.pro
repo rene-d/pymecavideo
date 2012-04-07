@@ -10,6 +10,11 @@ TARGET = pymecavideo
 TEMPLATE = app
 
 
+CONFIG += link_pkgconfig
+PKGCONFIG += opencv
+
+
+
 SOURCES += main.cpp\
         pymecavideo.cpp \
     displaypicturelabel.cpp \

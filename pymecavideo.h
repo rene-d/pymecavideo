@@ -3,7 +3,10 @@
 
 #include <QMainWindow>
 #include <QDir>
-#include <stdio.h>>
+#include <stdio.h>
+#include <qmat.h>
+
+using namespace cv;
 
 namespace Ui {
     class PyMecaVideo;
@@ -25,6 +28,8 @@ private:
     Ui::PyMecaVideo *ui;
     QString videoFileName;
     void setCurrentDir(const QString &fileName);
+    void loadPicture(uint);
+    Mat getMat();
     QString strippedName(const QString &fullFileName);
     QString curDir;
     QDir Dir;
