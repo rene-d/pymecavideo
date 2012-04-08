@@ -33,8 +33,8 @@ private slots :
 //    void stop();
 //    void fastforward();
 //    void fastbackward();
-//    void FPFforward();
-//    void FPFbackward();
+    void FPFforward();
+    void FPFbackward();
 
 private:
     Ui::PyMecaVideo *ui;

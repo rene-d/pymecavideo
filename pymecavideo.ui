@@ -140,12 +140,12 @@
           </rect>
          </property>
         </widget>
-        <widget class="QLabel" name="label_numero_image">
+        <widget class="QLabel" name="PictureNumLabel">
          <property name="geometry">
           <rect>
            <x>250</x>
            <y>0</y>
-           <width>56</width>
+           <width>91</width>
            <height>16</height>
           </rect>
          </property>
@@ -157,25 +157,6 @@
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-        <widget class="QSpinBox" name="spinBox_image">
-         <property name="geometry">
-          <rect>
-           <x>320</x>
-           <y>0</y>
-           <width>51</width>
-           <height>26</height>
-          </rect>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>51</width>
-           <height>26</height>
-          </size>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </widget>

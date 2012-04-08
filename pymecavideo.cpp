@@ -113,52 +113,53 @@ void PyMecaVideo::playpause()
 //    }
 //}
 
-//void PyMecaVideo::FPFbackward()
-//{
-//    if(player->isPlaying())
-//    {
-//        player->pause();
-//    }
-//    else
-//    {}
+void PyMecaVideo::FPFbackward()
+{
+    if(!pause)
+    {
+        Media->pause();
+        pause=true;
+    }
+    else
+    {}
 
-//    timeline=player->totalTime();
-//    newtimestamp=player->currentTime()-40;//Video with frame rate 25fps
+    timeline=Media->totalTime();
+    newtimestamp=Media->currentTime()-40;//Video with frame rate 25fps
 
-//    if (newtimestamp<0)
-//    {
-//    }
-//    else
-//    {
-//        player->seek(newtimestamp);
-//    }
+    if (newtimestamp<0)
+    {
+    }
+    else
+    {
+        Media->seek(newtimestamp);
+    }
 
-//}
+}
 
-//void PyMecaVideo::FPFforward()
-//{
+void PyMecaVideo::FPFforward()
+{
 
-//    if(player->isPlaying())
-//    {
-//        player->pause();
-//    }
-//    else
-//    {}
+    if(!pause)
+    {
+        Media->pause();
+    }
+    else
+    {}
 
-//    timeline=player->totalTime();
-//    newtimestamp=player->currentTime()+40;//Video with frame rate 25fps
+    timeline=Media->totalTime();
+    newtimestamp=Media->currentTime()+40;//Video with frame rate 25fps
 
-//    //QMessageBox::information(0,"Titre de la fenêtre",QString::number(timeline));
-//    //QMessageBox::information(0,"Titre de la fenêtre",QString::number(newtimestamp));
-//    if (newtimestamp>timeline)
-//    {
-//    }
-//    else
-//    {
-//        player->seek(newtimestamp);
-//    }
+    //QMessageBox::information(0,"Titre de la fenêtre",QString::number(timeline));
+    //QMessageBox::information(0,"Titre de la fenêtre",QString::number(newtimestamp));
+    if (newtimestamp>timeline)
+    {
+    }
+    else
+    {
+        Media->seek(newtimestamp);
+    }
 
-//}
+}
 
 PyMecaVideo::~PyMecaVideo()
 {
