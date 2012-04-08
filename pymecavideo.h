@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <qmat.h>
 #include <QPushButton>
+#include <phonon/mediaobject.h>
+#include <phonon/videoplayer.h>
+
 
 using namespace cv;
 
@@ -24,7 +27,12 @@ public:
 private slots :
     void fileSelect();
     void loadPicture();
-
+    void playpause();
+    void stop();
+    void fastforward();
+    void fastbackward();
+    void FPFforward();
+    void FPFbackward();
 
 private:
     Ui::PyMecaVideo *ui;
@@ -43,10 +51,11 @@ private:
     QPushButton *FastBackwardButton;
     QPushButton *FPFForwardButton;
     QPushButton *FPFBackwardButton;
-
+    Phonon::MediaObject m;
     QPushButton *metadatareaderbutton;
-
-
+    Phonon::VideoPlayer *player;
+int timeline;
+ int newtimestamp;
 
 //    CvCapture* capture;
 //    IplImage* acquiredImage;

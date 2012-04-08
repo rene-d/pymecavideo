@@ -1,12 +1,13 @@
 #include "pymecavideo.h"
 #include "ui_pymecavideo.h"
 #include <QtGui/QApplication>
+#include <QCoreApplication>
+
 #include <QtGui>
 #include <QTimer>
 //#include <qmat.h>
 //#include <cv.h>
-#include <phonon/videoplayer.h>
-#include <phonon/mediaobject.h>
+
 
 using namespace cv;
 
@@ -22,7 +23,7 @@ PyMecaVideo::PyMecaVideo(QWidget *parent) :
     homeDir = QDesktopServices::HomeLocation;
 
     //Video player creation
-       Phonon::VideoPlayer * player=new Phonon::VideoPlayer(Phonon::VideoCategory);
+       Phonon::VideoPlayer * player=new Phonon::VideoPlayer(Phonon::VideoCategory,ui->widget);
        player->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
        PlayPauseButton=new QPushButton("play-pause",ui->frame);
@@ -39,6 +40,125 @@ PyMecaVideo::PyMecaVideo(QWidget *parent) :
            LayoutBoutonsPlayer->addWidget(FPFForwardButton);
            LayoutBoutonsPlayer->addWidget(FastForwardButton);
 
+           connect(PlayPauseButton, SIGNAL(clicked()), this, SLOT(playpause()));
+           connect(StopButton, SIGNAL(clicked()), this, SLOT(stop()));
+           connect(FastForwardButton, SIGNAL(clicked()), this, SLOT(fastforward()));
+           connect(FastBackwardButton, SIGNAL(clicked()), this, SLOT(fastbackward()));
+           connect(FPFForwardButton, SIGNAL(clicked()), this, SLOT(FPFforward()));
+           connect(FPFBackwardButton, SIGNAL(clicked()), this, SLOT(FPFbackward()));
+
+}
+
+void PyMecaVideo::playpause()
+{
+
+    if(player->isPaused())
+    {
+        PlayPauseButton->setIcon(QIcon(":/icons/Play"));
+        PlayPauseButton->setCheckable(false);
+        PlayPauseButton->setChecked(false);
+        player->play();
+
+    }
+    else if(player->isPlaying())
+    {
+        PlayPauseButton->setIcon(QIcon(":/icons/Pause"));
+        PlayPauseButton->setCheckable(true);
+        PlayPauseButton->setChecked(true);
+        player->pause();
+    }
+    else
+    {
+    player->play();
+    }
+}
+
+void PyMecaVideo::stop()
+{
+    PlayPauseButton->setIcon(QIcon(":/icons/Play"));
+    player->stop();
+}
+
+void PyMecaVideo::fastforward()
+{
+    timeline=player->totalTime();
+
+
+    newtimestamp=player->currentTime()+timeline/10;
+    //QMessageBox::information(0,"Titre de la fenêtre",QString::number(newtimestamp));
+
+    if (newtimestamp>timeline)
+    {
+        player->stop();
+    }
+    else
+    {
+        player->seek(newtimestamp);
+    }
+}
+
+void PyMecaVideo::fastbackward()
+{
+    timeline=player->totalTime();
+
+
+    newtimestamp=player->currentTime()-timeline/10;
+    //QMessageBox::information(0,"Titre de la fenêtre",QString::number(newtimestamp));
+
+    if (newtimestamp<0)
+    {
+        player->seek(0);
+    }
+    else
+    {
+        player->seek(newtimestamp);
+    }
+}
+
+void PyMecaVideo::FPFbackward()
+{
+    if(player->isPlaying())
+    {
+        player->pause();
+    }
+    else
+    {}
+
+    timeline=player->totalTime();
+    newtimestamp=player->currentTime()-40;//Video with frame rate 25fps
+
+    if (newtimestamp<0)
+    {
+    }
+    else
+    {
+        player->seek(newtimestamp);
+    }
+
+}
+
+void PyMecaVideo::FPFforward()
+{
+
+    if(player->isPlaying())
+    {
+        player->pause();
+    }
+    else
+    {}
+
+    timeline=player->totalTime();
+    newtimestamp=player->currentTime()+40;//Video with frame rate 25fps
+
+    //QMessageBox::information(0,"Titre de la fenêtre",QString::number(timeline));
+    //QMessageBox::information(0,"Titre de la fenêtre",QString::number(newtimestamp));
+    if (newtimestamp>timeline)
+    {
+    }
+    else
+    {
+        player->seek(newtimestamp);
+    }
 
 }
 
@@ -63,9 +183,14 @@ void PyMecaVideo::loadPicture()
 //    connect(player, SIGNAL(finished()), player, SLOT(deleteLater()));
 //    qDebug()<<"3";
 
-//    qDebug()<<"4";
+    qDebug()<<"4";
 
 
+    m.setCurrentSource(videoFileName);
+    Phonon::createPath(m,player);
+        qDebug()<<"3";
+        player->play(Phonon::MediaSource(m.currentSource()));
+            qDebug()<<"2";
 //    player->load(videoFileName);
 
 //    player->show();
