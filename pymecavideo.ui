@@ -91,43 +91,92 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <widget class="QWidget" name="layoutWidget">
+        <widget class="QPushButton" name="PlayPauseButton">
          <property name="geometry">
           <rect>
-           <x>80</x>
+           <x>160</x>
            <y>0</y>
-           <width>333</width>
-           <height>28</height>
+           <width>31</width>
+           <height>25</height>
           </rect>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="label_numero_image">
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Image n°</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="spinBox_image">
-            <property name="minimumSize">
-             <size>
-              <width>51</width>
-              <height>26</height>
-             </size>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <property name="text">
+          <string>Play</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="pushButtonMajor">
+         <property name="geometry">
+          <rect>
+           <x>200</x>
+           <y>0</y>
+           <width>31</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>+1</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="pushButtonMinor">
+         <property name="geometry">
+          <rect>
+           <x>120</x>
+           <y>0</y>
+           <width>31</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>-1</string>
+         </property>
+        </widget>
+        <widget class="Phonon::SeekSlider" name="seekSlider">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>0</y>
+           <width>102</width>
+           <height>20</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_numero_image">
+         <property name="geometry">
+          <rect>
+           <x>250</x>
+           <y>0</y>
+           <width>56</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Image n°</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spinBox_image">
+         <property name="geometry">
+          <rect>
+           <x>320</x>
+           <y>0</y>
+           <width>51</width>
+           <height>26</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>26</height>
+          </size>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
         </widget>
        </widget>
        <widget class="QGroupBox" name="groupBox">
@@ -762,6 +811,13 @@ automatique</string>
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Phonon::SeekSlider</class>
+   <extends>QWidget</extends>
+   <header location="global">phonon/seekslider.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

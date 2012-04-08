@@ -8,7 +8,9 @@
 #include <QPushButton>
 #include <phonon/mediaobject.h>
 #include <phonon/videoplayer.h>
-
+#include <phonon/videowidget.h>
+#include <phonon/seekslider.h>
+#include <phonon/audiooutput.h>
 
 using namespace cv;
 
@@ -28,11 +30,11 @@ private slots :
     void fileSelect();
     void loadPicture();
     void playpause();
-    void stop();
-    void fastforward();
-    void fastbackward();
-    void FPFforward();
-    void FPFbackward();
+//    void stop();
+//    void fastforward();
+//    void fastbackward();
+//    void FPFforward();
+//    void FPFbackward();
 
 private:
     Ui::PyMecaVideo *ui;
@@ -44,16 +46,30 @@ private:
     QString curDir;
     QDir Dir;
     QString homeDir;
-    QPushButton *OpenFile;
-    QPushButton *PlayPauseButton;
-    QPushButton *StopButton;
-    QPushButton *FastForwardButton;
-    QPushButton *FastBackwardButton;
-    QPushButton *FPFForwardButton;
-    QPushButton *FPFBackwardButton;
-    Phonon::MediaObject m;
-    QPushButton *metadatareaderbutton;
-    Phonon::VideoPlayer *player;
+    Phonon::VideoWidget *Video;
+//    Phonon::VolumeSlider *SliderVolume;
+    Phonon::SeekSlider *SliderPiste;
+    Phonon::MediaObject *Media;
+    Phonon::MediaObject *Information;
+    Phonon::AudioOutput *Audio;
+    bool pause;
+
+
+
+
+
+
+
+//    QPushButton *OpenFile;
+//    QPushButton *PlayPauseButton;
+//    QPushButton *StopButton;
+//    QPushButton *FastForwardButton;
+//    QPushButton *FastBackwardButton;
+//    QPushButton *FPFForwardButton;
+//    QPushButton *FPFBackwardButton;
+//    Phonon::MediaObject m;
+//    QPushButton *metadatareaderbutton;
+//    Phonon::VideoPlayer *player;
 int timeline;
  int newtimestamp;
 
