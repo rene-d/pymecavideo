@@ -49,7 +49,7 @@ private:
     QString curDir;
     QDir Dir;
     QString homeDir;
-    QPixmap pixmap;
+    QPixmap * snapshot;
     QImage * frame;
     Phonon::VideoWidget *Video;
 //    Phonon::VolumeSlider *SliderVolume;
