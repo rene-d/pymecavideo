@@ -54,11 +54,10 @@ void PyMecaVideo::defineScale()
 {
     QPixmap * snapshot= new QPixmap(QPixmap::grabWindow(ui->widget->winId()));
     qDebug() << "snapshot captured?" << !snapshot->isNull();
-    snapshot->save("--printScreen7.bmp", "BMP");
     Video->hide();
 
     ScaleLabel * scalelabel = new ScaleLabel(ui->widget);
-    scalelabel->setPixmap(QPixmap("--printScreen7.bmp"));
+    scalelabel->setPixmap(snapshot);
     scalelabel->raise();
     scalelabel->show();
 
@@ -235,7 +234,16 @@ void PyMecaVideo::loadPicture()
             Media->play();
             Media->pause();
             pause = true;
+            enableButton();
 
+
+}
+
+void PyMecaVideo::enableButton()
+{
+    ui->PlayPauseButton->setEnabled(true);
+    ui->pushButtonMajor->setEnabled(true);
+    ui->pushButtonMinor->setEnabled(true);
 
 }
 

@@ -38,6 +38,7 @@ private slots :
     void FPFforward();
     void FPFbackward();
     void defineScale();
+    void enableButton();
 
 private:
     Ui::PyMecaVideo *ui;
@@ -49,7 +50,7 @@ private:
     QString curDir;
     QDir Dir;
     QString homeDir;
-    QPixmap * snapshot;
+    QPixmap  snapshot;
     QImage * frame;
     Phonon::VideoWidget *Video;
 //    Phonon::VolumeSlider *SliderVolume;

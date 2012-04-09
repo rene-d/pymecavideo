@@ -17,6 +17,7 @@ ScaleLabel::ScaleLabel(QWidget *parent) :
 void ScaleLabel::paintEvent(QPaintEvent* event)
 {
 
+        const QPixmap *pix = this->pixmap();
 
         QPainter painter;
         painter.begin( this );
@@ -24,6 +25,10 @@ void ScaleLabel::paintEvent(QPaintEvent* event)
         if (grabScale)
         {
             painter.drawLine(scaleOrigin, mousePosition);
+        }
+        if (!pix)
+        {
+        painter.drawPixmap(0,0,*pix);
         }
         painter.end();
 

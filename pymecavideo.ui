@@ -92,6 +92,9 @@
          <enum>QFrame::Raised</enum>
         </property>
         <widget class="QPushButton" name="PlayPauseButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="geometry">
           <rect>
            <x>160</x>
@@ -105,6 +108,9 @@
          </property>
         </widget>
         <widget class="QPushButton" name="pushButtonMajor">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="geometry">
           <rect>
            <x>200</x>
@@ -118,6 +124,9 @@
          </property>
         </widget>
         <widget class="QPushButton" name="pushButtonMinor">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="geometry">
           <rect>
            <x>120</x>
@@ -131,6 +140,9 @@
          </property>
         </widget>
         <widget class="Phonon::SeekSlider" name="seekSlider">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="geometry">
           <rect>
            <x>10</x>
