@@ -14,6 +14,7 @@ public:
     explicit ScaleLabel(QWidget *parent = 0);
     QPoint scaleOrigin;
     QPoint scaleEnd;
+    void setPix (QPixmap);
 signals:
 
 public slots:
@@ -24,10 +25,11 @@ private:
     void mouseReleaseEvent (QMouseEvent *event);
     void mousePressEvent (QMouseEvent *event);
 
+
     bool grabScale;
     bool released;
     QPoint mousePosition;
-    QPixmap * pix;
+    QPixmap Pix;
 
 };
 
