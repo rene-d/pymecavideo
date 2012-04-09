@@ -46,6 +46,21 @@ PyMecaVideo::PyMecaVideo(QWidget *parent) :
 //           connect(FastBackwardButton, SIGNAL(clicked()), this, SLOT(fastbackward()));
            connect(ui->pushButtonMajor, SIGNAL(clicked()), this, SLOT(FPFforward()));
            connect(ui->pushButtonMinor, SIGNAL(clicked()), this, SLOT(FPFbackward()));
+           connect(ui->ScaleButton, SIGNAL(clicked()), this, SLOT(defineScale()));
+
+}
+
+void PyMecaVideo::defineScale()
+{
+    QPixmap snapshot= QPixmap::grabWindow(ui->widget->winId());
+    qDebug() << "snapshot captured?" << !snapshot.isNull();
+    snapshot.save("--printScreen6.bmp", "BMP");
+    Video->hide();
+
+    ScaleLabel * scalelabel = new ScaleLabel(ui->widget);
+    scalelabel->setPixmap(snapshot);
+    scalelabel->show();
+
 
 }
 
@@ -196,6 +211,7 @@ void PyMecaVideo::loadPicture()
 
 //    qDebug()<<ui->seekSlider->mediaObject()<<player->mediaObject();
             Video=new Phonon::VideoWidget(ui->widget);
+            Video->setMouseTracking(true);
 //            /*SliderVolume*/=new Phonon::VolumeSlider;
 //            SliderPiste=new Phonon::SeekSlider(ui->frame);
 //            ui->seekSlider->show();
@@ -233,7 +249,7 @@ void PyMecaVideo::fileSelect() {
             frameNumber = 0;
             //load first picture of video
             loadPicture();
-
+            ui->ScaleButton->setEnabled(true);
 
                      }
 }

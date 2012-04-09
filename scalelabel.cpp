@@ -3,11 +3,11 @@
 #include "qlabel.h"
 
 
-ScaleLabel::ScaleLabel(QLabel *parent) :
+ScaleLabel::ScaleLabel(QWidget *parent) :
     QLabel(parent)
 {
     this->setGeometry(QRect(0,0,640,480));
-    this->setAutoFillBackground(false);
+//    this->setAutoFillBackground(true);
     this->setMouseTracking(true);
     grabScale = false;
     released = false;
@@ -16,25 +16,28 @@ ScaleLabel::ScaleLabel(QLabel *parent) :
 
 void ScaleLabel::paintEvent(QPaintEvent* event)
 {
-        QPainter painter(this);
 
-        painter.begin(this);
+
+        QPainter painter;
+        painter.begin( this );
         painter.setPen(Qt::red);
         if (grabScale)
         {
             painter.drawLine(scaleOrigin, mousePosition);
         }
         painter.end();
+
+
 }
 
 
 void ScaleLabel::mouseMoveEvent(QMouseEvent* event)
 {   //if mouse is pressed, scale is shown
 
-    qDebug()<<QString::number(event->pos().x());
-    qDebug()<<QString::number(event->pos().y());
+//    qDebug()<<QString::number(event->pos().x());
+//    qDebug()<<QString::number(event->pos().y());
     mousePosition =  event->pos();
-
+    this->update();
 
     //update picture in zoom until mouse is released
     if (!released) {
@@ -47,6 +50,8 @@ void ScaleLabel::mousePressEvent(QMouseEvent* event)
 {
     grabScale = true;
     scaleOrigin = event->pos();
+    qDebug()<<"scale Origine"<<scaleOrigin;
+    this->update();
 
 }
 
@@ -55,5 +60,7 @@ void ScaleLabel::mouseReleaseEvent(QMouseEvent* event)
     grabScale = false;
     released=false;
     scaleEnd = event->pos();
+    qDebug()<<"scale END"<<scaleEnd;
+    this->update();
 
 }

@@ -233,7 +233,7 @@ automatique</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QPushButton" name="Bouton_Echelle">
+          <widget class="QPushButton" name="ScaleButton">
            <property name="enabled">
             <bool>false</bool>
            </property>

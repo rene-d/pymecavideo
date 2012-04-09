@@ -2,6 +2,7 @@
 #define PYMECAVIDEO_H
 
 #include <QMainWindow>
+#include <QPixmap>
 #include <QDir>
 #include <stdio.h>
 #include <qmat.h>
@@ -11,6 +12,7 @@
 #include <phonon/videowidget.h>
 #include <phonon/seekslider.h>
 #include <phonon/audiooutput.h>
+#include <scalelabel.h>
 
 using namespace cv;
 
@@ -35,6 +37,7 @@ private slots :
 //    void fastbackward();
     void FPFforward();
     void FPFbackward();
+    void defineScale();
 
 private:
     Ui::PyMecaVideo *ui;
@@ -46,12 +49,15 @@ private:
     QString curDir;
     QDir Dir;
     QString homeDir;
+    QPixmap pixmap;
+    QImage * frame;
     Phonon::VideoWidget *Video;
 //    Phonon::VolumeSlider *SliderVolume;
     Phonon::SeekSlider *SliderPiste;
     Phonon::MediaObject *Media;
     Phonon::MediaObject *Information;
     Phonon::AudioOutput *Audio;
+    ScaleLabel *scalelabel;
     bool pause;
 
 

@@ -11,7 +11,7 @@ class ScaleLabel : public QLabel
 {
     Q_OBJECT
 public:
-    explicit ScaleLabel(QLabel *parent = 0);
+    explicit ScaleLabel(QWidget *parent = 0);
     QPoint scaleOrigin;
     QPoint scaleEnd;
 signals:
@@ -23,7 +23,7 @@ private:
     void mouseMoveEvent (QMouseEvent *event);
     void mouseReleaseEvent (QMouseEvent *event);
     void mousePressEvent (QMouseEvent *event);
-    QPainter painter;
+
     bool grabScale;
     bool released;
     QPoint mousePosition;
