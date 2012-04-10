@@ -32,9 +32,6 @@ private slots :
     void fileSelect();
     void loadPicture();
     void playpause();
-//    void stop();
-//    void fastforward();
-//    void fastbackward();
     void FPFforward();
     void FPFbackward();
     void defineScale();
@@ -45,6 +42,9 @@ private:
     QString videoFileName;
     void setCurrentDir(const QString &fileName);
 
+    CvCapture *capture ;
+    double fps;
+
     Mat getMat(uint);
     QString strippedName(const QString &fullFileName);
     QString curDir;
@@ -53,7 +53,7 @@ private:
     QPixmap  snapshot;
     QImage * frame;
     Phonon::VideoWidget *Video;
-//    Phonon::VolumeSlider *SliderVolume;
+
     Phonon::SeekSlider *SliderPiste;
     Phonon::MediaObject *Media;
     Phonon::MediaObject *Information;
