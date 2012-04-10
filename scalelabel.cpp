@@ -11,6 +11,7 @@ ScaleLabel::ScaleLabel(QWidget *parent) :
     this->setMouseTracking(true);
     grabScale = false;
     released = false;
+    scaleDefined = false;
 //    QPoint mousePosition = new QPoint;
     QPixmap *pix = new QPixmap();
 }
@@ -24,17 +25,16 @@ void ScaleLabel::paintEvent(QPaintEvent* event)
         painter.begin( this );
         painter.setPen(Qt::red);
         painter.drawPixmap(0,0,Pix);
+        if (scaleDefined)
+        {
+            painter.drawLine(scaleOrigin, scaleEnd);
+        }
         if (grabScale)
         {
 
             painter.drawLine(scaleOrigin, mousePosition);
         }
-//        if (!pix)
-//        {
-//        QPixmap pix = *pPix;
-        qDebug()<<"drawpixamp ???";
 
-//        }
         painter.end();
 
 
@@ -42,6 +42,7 @@ void ScaleLabel::paintEvent(QPaintEvent* event)
 
 void ScaleLabel::setPix(QPixmap pix)
 {
+    qDebug()<<"setPix OK";
     Pix = QPixmap(pix);
 }
 
@@ -75,6 +76,7 @@ void ScaleLabel::mouseReleaseEvent(QMouseEvent* event)
     released=false;
     scaleEnd = event->pos();
     qDebug()<<"scale END"<<scaleEnd;
+    scaleDefined = true;
     this->update();
 
 }

@@ -36,6 +36,9 @@ private slots :
     void FPFbackward();
     void defineScale();
     void enableButton();
+    void ticked(qint64);
+    void updatePicture();
+
 
 private:
     Ui::PyMecaVideo *ui;
@@ -44,12 +47,14 @@ private:
 
     CvCapture *capture ;
     double fps;
+    double TimePerFrame;
 
     Mat getMat(uint);
     QString strippedName(const QString &fullFileName);
     QString curDir;
     QDir Dir;
     QString homeDir;
+    QString scale_in_pixel;
     QPixmap  snapshot;
     QImage * frame;
     Phonon::VideoWidget *Video;
@@ -60,6 +65,7 @@ private:
     Phonon::AudioOutput *Audio;
     ScaleLabel *scalelabel;
     bool pause;
+    bool scale_defined;
 
 
 
@@ -87,7 +93,8 @@ int timeline;
 //    QMat qmat;
     uint frameNumber;
 
-
+signals:
+    void frameChanged();
 
 };
 

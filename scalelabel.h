@@ -28,6 +28,7 @@ private:
 
     bool grabScale;
     bool released;
+    bool scaleDefined;
     QPoint mousePosition;
     QPixmap Pix;
 

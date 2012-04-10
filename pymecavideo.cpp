@@ -22,27 +22,68 @@ PyMecaVideo::PyMecaVideo(QWidget *parent) :
     homeDir = QDesktopServices::HomeLocation;
 
     Media=new Phonon::MediaObject(this);
+    Video=new Phonon::VideoWidget(ui->widget);
+
+
 
     //connections
    connect(ui->actionOuvrir_un_fichier, SIGNAL(triggered() ),
                  this, SLOT(fileSelect()));
    connect(ui->PlayPauseButton, SIGNAL(clicked()), this, SLOT(playpause()));
    connect(ui->pushButtonMajor, SIGNAL(clicked()), this, SLOT(FPFforward()));
+
    connect(ui->pushButtonMinor, SIGNAL(clicked()), this, SLOT(FPFbackward()));
+
    connect(ui->ScaleButton, SIGNAL(clicked()), this, SLOT(defineScale()));
+   connect(Media, SIGNAL(tick(qint64)),this,SLOT(ticked(qint64)));
+   connect(this, SIGNAL(frameChanged()),this,SLOT(updatePicture()));
+
+}
+
+void PyMecaVideo::updatePicture()
+{
+    //HACK HACK : it seems impossible to draw a transparent Qlabel on qvideoWidget /o\
+    //when picture changed on videoWidget, pixmap is update on top level Qlabel
+    QPixmap  snapshot=  QPixmap(QPixmap::grabWindow(ui->widget->winId()));
+    scalelabel->setPix(snapshot);
+}
+
+void PyMecaVideo::ticked(qint64 tick)
+{
+    qDebug()<<"tick";
+    emit frameChanged();
 
 }
 
 void PyMecaVideo::defineScale()
 {
     QPixmap  snapshot=  QPixmap(QPixmap::grabWindow(ui->widget->winId()));
-
+    qDebug()<<1;
     Video->hide();
-
-    ScaleLabel * scalelabel = new ScaleLabel(ui->widget);
+    qDebug()<<2;
+    ScaleLabel * scalelabel = new ScaleLabel(Video);
     scalelabel->setPix(snapshot);
-    scalelabel->raise();
+    qDebug()<<3;
+
+    qDebug()<<4;
+
+    scale_in_pixel = QInputDialog::getText(this,
+                                               tr("Définir l'échelle"),
+                                               tr("Quel est la longueur connue ?"),
+                                               QLineEdit::Normal, QString("1.0"));
+
     scalelabel->show();
+    qDebug()<<5;
+    qDebug()<<scale_in_pixel;
+    scale_in_pixel.replace(",",".");
+
+
+    while ((scale_in_pixel <= 0) or (scale_in_pixel.isNull()))
+    {   scale_in_pixel = QInputDialog::getText(this,
+        tr("Erreur !! Définir à nouveau l'échelle"),
+        tr("Quel est la longueur connue ?"),
+        QLineEdit::Normal, QString("1.0"));
+    }
 
 
 }
@@ -63,6 +104,7 @@ void PyMecaVideo::playpause()
         Media->pause();
         pause = true;
     }
+    emit frameChanged();
 }
 
 
@@ -77,7 +119,7 @@ void PyMecaVideo::FPFbackward()
     {}
 
     timeline=Media->totalTime();
-    newtimestamp=Media->currentTime()-40;//Video with frame rate 25fps
+    newtimestamp=Media->currentTime()-TimePerFrame*1000;
 
     if (newtimestamp<0)
     {
@@ -86,7 +128,8 @@ void PyMecaVideo::FPFbackward()
     {
         Media->seek(newtimestamp);
     }
-
+    qDebug()<<"timeline"<<Media->currentTime();
+    emit frameChanged();
 }
 
 void PyMecaVideo::FPFforward()
@@ -100,7 +143,7 @@ void PyMecaVideo::FPFforward()
     {}
 
     timeline=Media->totalTime();
-    newtimestamp=Media->currentTime()+40;//Video with frame rate 25fps
+    newtimestamp=Media->currentTime()+TimePerFrame*1000;
 
     if (newtimestamp>timeline)
     {
@@ -109,7 +152,8 @@ void PyMecaVideo::FPFforward()
     {
         Media->seek(newtimestamp);
     }
-
+    qDebug()<<"timeline"<<Media->currentTime();
+    emit frameChanged();
 }
 
 PyMecaVideo::~PyMecaVideo()
@@ -125,13 +169,14 @@ PyMecaVideo::~PyMecaVideo()
 void PyMecaVideo::loadPicture()
 {
 
-            Video=new Phonon::VideoWidget(ui->widget);
+
             Video->setMouseTracking(true);
 
             //use of opencv to compute fps
             CvCapture *capture = cvCaptureFromFile(videoFileName.toStdString().c_str());
             fps = cvGetCaptureProperty(capture,CV_CAP_PROP_FPS);
-            qDebug()<<"video framerate : fps"<<fps;
+            TimePerFrame = 1.0/fps;
+            qDebug()<<"video framerate :"<<fps<<" fps or one frame is"<<TimePerFrame<<"long (s)";
             cvReleaseCapture( &capture );
 
 
@@ -147,8 +192,11 @@ void PyMecaVideo::loadPicture()
             Video->setAspectRatio(Phonon::VideoWidget::AspectRatioWidget);
             Video->installEventFilter(this);
 
+
+
+
+            Media->seek(1);
             Video->show();
-            Media->play();
             Media->pause();
             pause = true;
             enableButton();
