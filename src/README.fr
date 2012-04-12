@@ -1,0 +1,44 @@
+Description : 
+    Pymecavideo est un logiciel écrit en PyQT4 pour permettre le
+pointage d'une vidéo, le tracé des trajectoires du point pointé et
+l'export des positions (temporelles et spatiales) des points choisis.
+
+Installation : 
+    Pymecavideo nécessite 3 dépendances :
+        PyQT4 : python-qt4  (-devel si vous utilisez le svn)
+        ffmpeg et ffplay
+        vlc (ou clvc)
+        
+
+Contribuer :
+Pymecavideo a été en premier lieu écrit en français et n'a, a l'heure
+d'aujourd'hui pas la prétention d'être porté en anglais, que ce soit
+les commentaires de code ou le code en lui-même.
+
+Par contre, l'internationalisation pour l'utilisateur est effective
+grâce aux outils de traduction intégés à PyQT4
+
+Si le besoin s'en fait sentir, le logiciel sera modifié en conséquence.
+
+Cependant, si vous voulez contribuer et formuler des patch, merci de
+mettre vos variables avec des noms français ou francisés :
+    exemple : "self.calcul_precis" sera préféré à "self.accurate_compute"
+
+La version SVN est disponible sur ce serveur :
+svn://svn.tuxfamily.org/svnroot/oppl/pymecavideo
+et un trac (wiki + gestion de bugs/tickets) lui est associé :
+    http://gnoulibre.org/trac/pymecavideo n'hésitez pas à
+vous en servir.
+
+pour l'installer : des paquets deb et RPMS sont disponibles sur le site. Voir le fichier INSTALL 
+
+Enjoy :=)
+
+JB BUTET <ashashiwa@gmail.com>
+
+Il y a un empaquetage Debian, disponible à debian.ofset.org
+Ajoutez la ligne "deb http://debian.ofset.org etch main" dans votre fichier
+sources.list, et vous pourrez installer le paquet python-mecavideo par
+la méthode habituelle.
+
+Georges Khaznadar <georgesk@ofset.org>
