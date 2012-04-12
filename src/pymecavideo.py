@@ -1105,8 +1105,9 @@ class StartQT4(QMainWindow):
 
         try : 
             if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
+                origine = vecteur(0,0)
                 self.label_video.zoom_croix.hide()
-                self.oubliePoints()
+                #self.oubliePoints()
                 if newValue=="absolu":
                     ref="camera"
                 else:
@@ -1115,8 +1116,12 @@ class StartQT4(QMainWindow):
                 if len(ref)==0 : return
                 if ref != "camera":
                     bc=self.mediane_trajectoires(int(ref)-1)
-                    origine=vecteur(320,240)-bc
-
+                    origine=vecteur(340,260)-bc
+                    self.label_trajectoire.origine = origine
+                    print "@@@@@@@@@@", ref
+                    self.label_trajectoire.referentiel = ref
+                else : 
+                    self.label_trajectoire.origine = vecteur(0,0)
                 # garnit le menu des courbes à tracer
                 self.ui.comboBox_mode_tracer.clear()
                 self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
@@ -1125,59 +1130,62 @@ class StartQT4(QMainWindow):
                     combo.addItem(QString("x%d(t)" %(i+1)))
                     combo.addItem(QString("y%d(t)" %(i+1)))
                     combo.addItem(QString("v%d(t)" %(i+1)))
-
+                
                 # on trace les points compte tenu du référentiel
-                for n in range(self.nb_de_points):
-                    couleur = self.couleurs[n]
-                    ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
-                    for i in self.points.keys():
-                        if ref == "camera":
-                            p = self.points[i][1+n]
-                        else:
-                            ref=int(ref)
-                            p = self.points[i][1+n]-self.points[i][ref]+origine
-                        if ref != "camera" and n == ref-1:
-                            # on a affaire au tracé du repère du référentiel :
-                            # une seule instance suffira, vu qu'il ne bouge pas.
-                            if newValue!="absolu":
-                                if i == self.points.keys()[0]:
-                                    point = Repere(self.label_trajectoire, p, couleur, 0, self)
-                                    point.show()
-                                    self.retientPoint(n,ref,i,p,point)
-                                    self.repere=1 #permet de voir si un repère a déjà été dessiné
-                        else:
-                            if newValue!="absolu":
-                                point = Point(self.label_trajectoire, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
-                                ancienPoint=point
-                                point.show()
-                                self.retientPoint(n,ref,i,p,point)
-                                if i == self.points.keys()[0] and self.repere==0 and ref=="camera":
-                                        point_ = Repere(self.label_trajectoire, self.origine, couleur, 0, self)
-                                        point_.show()
-                                        self.retientPoint(n,ref,i,p,point_)
-                                        self.repere=1
+                #for n in range(self.nb_de_points):
+                    #couleur = self.couleurs[n]
+                    #ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
+                    #for i in self.points.keys():
+                        #if ref == "camera":
+                            #p = self.points[i][1+n]
+                        #else:
+                            #ref=int(ref)
+                            #p = self.points[i][1+n]-self.points[i][ref]+origine
+                        #if ref != "camera" and n == ref-1:
+                            ## on a affaire au tracé du repère du référentiel :
+                            ## une seule instance suffira, vu qu'il ne bouge pas.
+                            #if newValue!="absolu":
+                                #if i == self.points.keys()[0]:
+                                    #repere = Repere(self.label_trajectoire, p, couleur, 0, self)
+                                    #repere.show()
+                                    ##self.retientPoint(n,ref,i,p,point) unneeded
+                                    #self.repere=1 #permet de voir si un repère a déjà été dessiné
+                        #else:
+                            #if newValue!="absolu":
+                                #point = Point(self.label_trajectoire, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
+                                #ancienPoint=point
+                                #point.show()
+                                #self.retientPoint(n,ref,i,p,point)
+                                #if i == self.points.keys()[0] and self.repere==0 and ref=="camera":
+                                        #point_ = Repere(self.label_trajectoire, self.origine, couleur, 0, self)
+                                        #point_.show()
+                                        #self.retientPoint(n,ref,i,p,point_)
+                                        #self.repere=1
 
-                            else: #newValue=="absolu"
-                                point = Point(self.label_video, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
-                                ancienPoint=point
-                                point.montre_vitesse(False)
-                                point.show()
-                                self.retientPoint(n,ref,i,p,point)
+                            #else: #newValue=="absolu"
+                                #point = Point(self.label_video, p, couleur, i+1, self,ancienPoint) # le point est chaîné au précédent s'il existe.
+                                #ancienPoint=point
+                                #point.montre_vitesse(False)
+                                #point.show()
+                                #self.retientPoint(n,ref,i,p,point)
 
 
-            else : #premier onglet
-                  ref="camera"
-                  #self.oubliePoints()
-                  for n in range(self.nb_de_points):
-                      couleur = self.couleurs[n]
-                      ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
-                      for i in self.points.keys():
-                            p = self.points[i][1+n]
-                            point = Point(self.label_video, p, couleur, i+1, self,ancienPoint, showVelocity=False) # le point est chaîné au précédent s'il existe.
-                            ancienPoint=point
-                            point.montre_vitesse(False) #ne montre pas les vitesses
-                            point.show()
-                            self.retientPoint(n,ref,i,p,point)
+            #else : #premier onglet
+                  #ref="camera"
+                  ##self.oubliePoints()
+                  #for n in range(self.nb_de_points):
+                      #couleur = self.couleurs[n]
+                      #ancienPoint=None #ancienPoint sert à chaîner les points consécutifs
+                      #for i in self.points.keys():
+                            #p = self.points[i][1+n]
+                            #point = Point(self.label_video, p, couleur, i+1, self,ancienPoint, showVelocity=False) # le point est chaîné au précédent s'il existe.
+                            #ancienPoint=point
+                            #point.montre_vitesse(False) #ne montre pas les vitesses
+                            #point.show()
+                            #self.retientPoint(n,ref,i,p,point)
+                            
+                            
+                            
         except ZeroDivisionError:
             print "pb self.tracer_trajectoires"
 
@@ -1261,7 +1269,7 @@ class StartQT4(QMainWindow):
         ### on fait des marques pour les points déjà visités
         etiquette="@abcdefghijklmnopqrstuvwxyz"[len(liste_points)]
         point = Point(self.label_video, liste_points[-1], "white", etiquette, self,showVelocity=False)
-        point.show()
+        #point.show()
         ###
         self.pointsProvisoires.append(point)
         if self.nb_de_points > len(liste_points) :

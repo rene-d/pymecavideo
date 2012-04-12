@@ -43,6 +43,7 @@ class Label_Video(QtGui.QLabel):
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
+        self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green"]
     def reinit(self):
         try :
             del self.zoom_croix
@@ -79,7 +80,33 @@ class Label_Video(QtGui.QLabel):
     def cache_zoom(self):
         pass
 
-
+    def paintEvent(self,event):
+        
+        self.painter = QPainter()
+        self.painter.begin(self)
+        self.painter.drawPixmap(0,0,self.pixmap())
+        for points in self.app.points.values() :      
+            color=0
+            for point in points:
+                if type(point)!= type(""): 
+                    self.painter.setPen(QColor(self.couleurs[color]))
+                    self.painter.setFont(QFont("", 10))
+                    self.painter.translate(point.x(), point.y())
+                    self.painter.drawLine(-2,0,2,0)
+                    self.painter.drawLine(0,-2,0,2)
+                    self.painter.translate(-10, +10)
+                    self.painter.drawText(0,0,str(color+1))
+                    
+                    self.painter.translate(-point.x()+10, -point.y()-10)
+                    
+                    color+=1
+                #except AttributeError:
+                    #print type(point)
+                    #pass #needed as first thing in "points" is its number.
+                
+        self.painter.end()
+        
+        
     def fait_crop(self, p):
         rect = QRect(p.x()-25,p.y()-25,50,50)
         crop = self.app.image_640_480.copy(rect)

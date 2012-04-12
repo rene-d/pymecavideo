@@ -49,7 +49,7 @@ class Point(QLabel):
         self.app=app
         self.point, self.color = point,color
         self.setGeometry(QRect(0,0,640,480))
-        self.numero=label_numero("<font color='%s'>%s</font>" %(color,numero),self,point)
+       # self.numero=label_numero("<font color='%s'>%s</font>" %(color,numero),self,point)
         self.vitesse=None
         self.succ=None     # le successeur
         self.pred=pred
@@ -57,13 +57,13 @@ class Point(QLabel):
         if pred != None:
             pred.succ = self
             pred.calcule_vitesse(self.app.ui.echelle_v.currentText(),showVelocity)
-########empeche le widget de capturer les signaux, que l'on récupère dans label_video
-    def mouseMoveEvent(self, event):
-        event.ignore()
+#########empeche le widget de capturer les signaux, que l'on récupère dans label_video
+    #def mouseMoveEvent(self, event):
+        #event.ignore()
 
-########empeche le widget de capturer les signaux, que l'on récupère dans label_video
-    def mouseReleaseEvent(self, event):
-        event.ignore()
+#########empeche le widget de capturer les signaux, que l'on récupère dans label_video
+    #def mouseReleaseEvent(self, event):
+        #event.ignore()
 
 
     def montre_vitesse(self, showVelocity):
@@ -95,14 +95,14 @@ class Point(QLabel):
             if showVelocity:
                 self.vitesse.show()
             
-    def paintEvent(self,event):
-        self.painter = QPainter()
-        self.painter.begin(self)
-        self.painter.setPen(QColor(self.color))
-        self.painter.translate(self.point.x(), self.point.y())
-        self.painter.drawLine(-2,0,2,0)
-        self.painter.drawLine(0,-2,0,2)
-        self.painter.end()
+    #def paintEvent(self,event):
+        #self.painter = QPainter()
+        #self.painter.begin(self)
+        #self.painter.setPen(QColor(self.color))
+        #self.painter.translate(self.point.x(), self.point.y())
+        #self.painter.drawLine(-2,0,2,0)
+        #self.painter.drawLine(0,-2,0,2)
+        #self.painter.end()
     def showVec(self):
         if self.app.prox and self.vitesse: self.vitesse.show()
     def hideVec(self):
