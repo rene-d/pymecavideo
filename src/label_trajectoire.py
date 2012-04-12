@@ -22,7 +22,6 @@ class Label_Trajectoire(QLabel):
         self.painter = QPainter()
         self.painter.begin(self)
         self.painter.fillRect(QRect(0,0,640,480),QColor("grey"))
-        print "@@@@@@@@@@@@@referentiel",self.referentiel
         for points in self.app.points.values() :
             color=0
             for point in points:
@@ -35,7 +34,7 @@ class Label_Trajectoire(QLabel):
                     self.painter.setPen(QColor(self.couleurs[color]))
                     self.painter.setFont(QFont("", 10))
                     self.painter.translate(point.x()+self.origine.x()-ptreferentiel.x(), point.y()+self.origine.y()-ptreferentiel.y())
-                    print point.x()-self.origine.x()-ptreferentiel.x(), point.y()-self.origine.y()-ptreferentiel.y()
+
                     self.painter.drawLine(-2,0,2,0)
                     self.painter.drawLine(0,-2,0,2)
                     self.painter.translate(-10, +10)

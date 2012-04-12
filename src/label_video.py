@@ -58,7 +58,7 @@ class Label_Video(QtGui.QLabel):
             self.liste_points.append(vecteur(event.x(), event.y()))
             self.pos_avant=self.pos
             self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
-
+            self.update()
             self.met_a_jour_crop()
     def enterEvent(self, event):
         if self.app.lance_capture==True and self.app.auto==False:#ne se lance que si la capture est lancée
@@ -85,8 +85,10 @@ class Label_Video(QtGui.QLabel):
         self.painter = QPainter()
         self.painter.begin(self)
         self.painter.drawPixmap(0,0,self.pixmap())
+
         for points in self.app.points.values() :      
             color=0
+ 
             for point in points:
                 if type(point)!= type(""): 
                     self.painter.setPen(QColor(self.couleurs[color]))
@@ -100,10 +102,24 @@ class Label_Video(QtGui.QLabel):
                     self.painter.translate(-point.x()+10, -point.y()-10)
                     
                     color+=1
-                #except AttributeError:
-                    #print type(point)
-                    #pass #needed as first thing in "points" is its number.
+        color=0
+        if self.liste_points != []:
+
+            for point in self.liste_points:
+                    
+                self.painter.setPen(QColor(self.couleurs[color]))
+                self.painter.setFont(QFont("", 10))
+                self.painter.translate(point.x(), point.y())
+                self.painter.drawLine(-2,0,2,0)
+                self.painter.drawLine(0,-2,0,2)
+                self.painter.translate(-10, +10)
+                self.painter.drawText(0,0,str(color+1))
                 
+                self.painter.translate(-point.x()+10, -point.y()-10)
+                color+=1    
+                        
+                        
+                    
         self.painter.end()
         
         
