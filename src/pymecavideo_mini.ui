@@ -55,7 +55,7 @@
     </font>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="0">
+    <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="autoFillBackground">
        <bool>true</bool>
@@ -64,7 +64,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -736,8 +736,8 @@ automatique</string>
        <widget class="QLabel" name="label_3">
         <property name="geometry">
          <rect>
-          <x>158</x>
-          <y>5</y>
+          <x>153</x>
+          <y>40</y>
           <width>640</width>
           <height>480</height>
          </rect>
@@ -833,30 +833,6 @@ automatique</string>
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="button_video">
-           <property name="text">
-            <string>Voir la vidéo</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Depuis ce référentiel</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBox_referentiel">
-           <property name="minimumSize">
-            <size>
-             <width>130</width>
-             <height>25</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="Line" name="line_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -923,6 +899,48 @@ automatique</string>
           </widget>
          </item>
         </layout>
+       </widget>
+       <widget class="QPushButton" name="button_video">
+        <property name="geometry">
+         <rect>
+          <x>540</x>
+          <y>10</y>
+          <width>130</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Voir la vidéo</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="comboBox_referentiel">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>10</y>
+          <width>130</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>130</width>
+          <height>25</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_8">
+        <property name="geometry">
+         <rect>
+          <x>219</x>
+          <y>10</y>
+          <width>181</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Définir un autre référentiel : </string>
+        </property>
        </widget>
       </widget>
       <widget class="QWidget" name="tab_coord">
@@ -1005,7 +1023,7 @@ automatique</string>
      <x>0</x>
      <y>0</y>
      <width>833</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

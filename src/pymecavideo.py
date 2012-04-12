@@ -368,7 +368,7 @@ class StartQT4(QMainWindow):
         """
         self.dbg.p(2,"Dans reinitialise_tout: echelle_image=%s, nb_de_points=None%s, tousLesClics=%s,index_point_actuel=%s" %(echelle_image, nb_de_points, tousLesClics,index_point_actuel))
         self.montre_vitesses(False)
-        self.oubliePoints()
+        #self.oubliePoints()
         self.label_trajectoire.update()
         self.ui.label.update()
         self.label_video.update()
@@ -411,7 +411,7 @@ class StartQT4(QMainWindow):
         """
         self.montre_vitesses(False)
         
-        self.oubliePoints()
+        #self.oubliePoints()
         self.label_trajectoire.update()
         self.ui.label.update()
         self.label_video.update()
@@ -1055,6 +1055,7 @@ class StartQT4(QMainWindow):
         if len(ref)==0 or ref == "camera": return
         c=Cadreur(int(ref),self)
         c.montrefilm()
+        
         
     def tracer_trajectoires(self, newValue):
         """

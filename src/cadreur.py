@@ -29,12 +29,13 @@ from PyQt4.QtGui import *
 from vecteur import vecteur
 from globdef import PYMECA_SHARE
 
-class Cadreur:
+class Cadreur(QObject):
     """
     Un objet capable de recadrer une vidéo en suivant le déplacement
     d'un point donné. La video de départ mesure 640x480
     """
     def __init__(self,numpoint,app, titre=None):
+        QObject.__init__(app)
         """
         Le constructeur.
         @param numpoint le numéro du point qui doit rester immobile
@@ -42,19 +43,18 @@ class Cadreur:
         @param titre le titre désiré pour la fenêtre
         """
         if titre==None:
-            self.titre="Nouveau cadre"
-        quitteLabel="Curseur à droite pour quitter"
-        ralentiLabel="Choisir le ralenti"
+            self.titre="Presser la touche ESC pour sortir"
+
         self.numpoint=numpoint
         self.app=app
         self.capture=cv.CreateFileCapture(self.app.filename)
         self.fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
         self.delay=int(1000.0/self.fps)
-        self.ralenti=1
-        wsub=cv.NamedWindow(self.titre)
-        cv.CreateTrackbar(quitteLabel,self.titre, 0, 1, self.controleStop)
-        cv.CreateTrackbar(ralentiLabel,self.titre, 0, 16, self.controleRalenti)
+        self.ralenti=3
+        #cv.StartWindowThread()
+        self.fini=False
         self.maxcadre()
+
 
     def echelleTaille(self):
         """
@@ -69,12 +69,6 @@ class Cadreur:
         ech=max(echx,echy)
         return ech, m.width()/ech, m.height()/ech
 
-    def controleStop(self,position):
-        """
-        fonction de rappel commandée par le bouton "Quitte"
-        """
-        if position==1:
-            self.fini=True
             
     def controleRalenti(self,position):
         """
@@ -119,18 +113,25 @@ class Cadreur:
             print "erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile
             sys.exit(1)
         
+        
     def montrefilm(self,fini=False):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
+        wsub=cv.NamedWindow(self.titre)
+
+        ralentiLabel="Choisir le ralenti"
+
+        cv.CreateTrackbar(ralentiLabel,self.titre, 0, 16, self.controleRalenti)
         ech, w, h=self.echelleTaille()
-        print "NUT1"
+        i=0
         while not fini:
-            print "NUT2"
+            
+           
             #rembobine
             self.capture=cv.CreateFileCapture(self.app.filename)
+
             for i in self.app.points.keys():
-                if fini: break # valeur volatile à examiner souvent
                 p=self.app.points[i][self.numpoint]
                 #hautgauche=(p+self.decal-self.rayons)*ech
                 hautgauche=(p-self.tl)*ech
@@ -141,9 +142,14 @@ class Cadreur:
                 w,h = int(taille.x()), int(taille.y())
                 isub = cv.GetSubRect(img, (x,y,w,h))
                 cv.ShowImage(self.titre,isub)
-                cv.WaitKey(self.delay*self.ralenti)
+                k= cv.WaitKey(int(self.delay*self.ralenti))
+                if k ==1048603:
+                    fini=True
+                    cv.DestroyAllWindows() 
+                    break
+
         # ferme la fenêtre
-        print "NUT3"
+
         cv.DestroyWindow(self.titre)
         fini = True
 
