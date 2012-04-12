@@ -43,7 +43,7 @@ class Label_Video(QtGui.QLabel):
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
-        self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green"]
+        self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green","red", "blue", "cyan", "magenta", "yellow", "gray", "green"]
     def reinit(self):
         try :
             del self.zoom_croix

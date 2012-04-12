@@ -399,6 +399,8 @@ class StartQT4(QMainWindow):
               del enfant
         if echelle_image:
             self.echelle_image=echelle_image
+            self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+            
         if nb_de_points:
             self.nb_de_points=nb_de_points
         if tousLesClics!=None and tousLesClics.count():
@@ -1024,6 +1026,7 @@ class StartQT4(QMainWindow):
 
         self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics,self.index_de_l_image-1)
         self.repasseTousLesClics()
+        self.label_echelle_trace.show()
         self.modifie=True
 
     def refait_point_suivant(self):

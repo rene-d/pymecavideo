@@ -11,7 +11,7 @@ class Label_Trajectoire(QLabel):
         self.setCursor(Qt.ArrowCursor)
         self.setAutoFillBackground(True)
         self.setMouseTracking(1)
-        self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green"]
+        self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green","red", "blue", "cyan", "magenta", "yellow", "gray", "green"]
         self.origine = origine
         self.referentiel = referentiel
 

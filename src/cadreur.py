@@ -51,7 +51,6 @@ class Cadreur(QObject):
         self.fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
         self.delay=int(1000.0/self.fps)
         self.ralenti=3
-        #cv.StartWindowThread()
         self.fini=False
         self.maxcadre()
 
