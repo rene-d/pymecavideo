@@ -60,7 +60,6 @@ from glob import glob
 from echelle import Label_Echelle, echelle
 from math import sqrt
 from label_video import Label_Video
-from point import Point, Repere
 from label_trajectoire import Label_Trajectoire
 from label_origine import Label_Origine
 from cadreur import Cadreur, openCvReader
@@ -99,16 +98,13 @@ class MonThreadDeCalcul(QThread):
         self.parent=parent
         self.motif = motif
         self.image = image
+        print "_init_thread"
 
     def run(self):
+        print "rentre dans thread"
         point = filter_picture(self.motif,self.image)
+        return point
 
-        ##itère d'un cran et lance la détection
-        self.parent.label_video.liste_points.append(vecteur(point[0], point[1]))
-        if self.parent.index_de_l_image<self.parent.image_max:
-            self.parent.label_video.pos_avant=self.parent.label_video.pos
-
-            self.parent.emit(SIGNAL('clic_sur_video()'))
 
 
 class StartQT4(QMainWindow):
@@ -226,7 +222,7 @@ class StartQT4(QMainWindow):
                 self.openTheFile(self.prefs.lastVideo)
             except:
                 pass
-        
+       
 
     def init_variables(self, opts, filename=""):
 
@@ -238,7 +234,7 @@ class StartQT4(QMainWindow):
         self.repere=0
         self.origine = vecteur(320,240)
         self.auto=False
-
+        self.motif = []
         self.lance_capture = False
         self.modifie=False
         self.points={}        #dictionnaire des points cliqués, par n d'image.
@@ -434,7 +430,7 @@ class StartQT4(QMainWindow):
         self.ui.spinBox_image.setValue(1)
         self.enableDefaire(False)
         self.enableRefaire(False)
-        self.affiche_nb_points(0)
+        self.affiche_nb_points(1)
         ### Réactiver checkBox_avancees après réinitialisation ###
         self.ui.checkBox_avancees.setEnabled(1)
 
@@ -480,6 +476,8 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
         QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_ou_origine)
         QObject.connect(self,SIGNAL('selection_done()'),self.picture_detect)
+        QObject.connect(self,SIGNAL('selection_motif_done()'),self.storeMotif)
+
         ## QObject.connect(self.ui.calcButton,SIGNAL("clicked()"),self.oooCalc)
         ## QObject.connect(self.ui.qtiplotButton,SIGNAL("clicked()"),self.qtiplot)
         QObject.connect(self.ui.exportCombo,SIGNAL("currentIndexChanged(int)"),self.export)
@@ -487,17 +485,43 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
         QObject.connect(self,SIGNAL("mplWindowClosed()"),self.mplwindowclosed)
         
+        
+    def storeMotif(self):
+        
+        print "motif", self.motif
+        if len(self.motif)==self.nb_de_points:
+            self.label_auto.hide()
+            self.label_auto.close()
+            print "motif finis", self.motif
+            self.picture_detect()    
+
+        
+        
     def mplwindowclosed(self):
         self.canvas.effacerTousLesPlots()
         
         
     def picture_detect(self):
-        # le problème c'est que le signal ci-dessus provoque une procédure
-        # qui elle-même rappelle picrute_detect grâce à l'émission d'un autre
-        # signal. Le fait de créer un Thread évite que ça soit circulaire
-        # mais ça empile autant de threads qu'il y a d'images !
-        self.calcul=MonThreadDeCalcul(self, self.motif,self.image_640_480)
-        self.calcul.start()
+        
+        while self.index_de_l_image<self.image_max:
+            for motif in self.motif:
+                self.run_detect(motif,self.image_640_480)
+            
+            
+    def run_detect(self,motif, image):
+        myThread = MonThreadDeCalcul(self,motif,image)
+        point = myThread.run()
+        print "POIOIOPIPOIOP",point
+        
+        ##itère d'un cran et lance la détection
+        #self.label_video.liste_points.append(vecteur(point[0], point[1]))
+        if self.index_de_l_image<=self.image_max:
+            self.label_video.pos_avant=self.label_video.pos
+            self.label_video.storePoint(vecteur(point[0], point[1]))
+            self.label_video.raise_()
+            #self.emit(SIGNAL('clic_sur_video()'))
+            self.clic_sur_label_video()
+            
 
     def refait_echelle(self):
         #"""Permet de retracer une échelle et de recalculer les points"""
@@ -884,13 +908,16 @@ class StartQT4(QMainWindow):
             self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr(u"point N°")+" "+str(i+1)))
         self.cree_tableau()
         if self.ui.checkBox_auto.isChecked():
-            self.auto=True
-            reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Vous êtes sur le point de lancer une capture automatique\nCelle-ci ne peut se faire qu'avec un seul point."),
-            QMessageBox.Ok,QMessageBox.Cancel)
-            if reponse==QMessageBox.Ok:
-                reponse==QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
-                self.label_auto = Label_Auto(self.label_video,self)
-                self.label_auto.show()
+            ###############
+            #get motif to track
+            reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
+
+            print "BIPM"
+            self.label_auto = Label_Auto(self.label_video,self)
+            self.label_auto.show()
+            
+            
+                
 
     def cree_tableau(self):
         """
@@ -1187,27 +1214,25 @@ class StartQT4(QMainWindow):
         self.ui.label_sous_zoom.setText(self.tr(u"zoom point %d" %n))
 
 
-
-
     def clic_sur_label_video(self, liste_points=None, interactif=True):
+        print "rentre ds clic_sur_label_video"
+        
         if liste_points==None:
             liste_points = self.label_video.liste_points
         ### on fait des marques pour les points déjà visités
         etiquette="@abcdefghijklmnopqrstuvwxyz"[len(liste_points)]
-        point = Point(self.label_video, liste_points[-1], "white", etiquette, self,showVelocity=False)
-        #point.show()
-        ###
-        self.pointsProvisoires.append(point)
+
+
         if self.nb_de_points > len(liste_points) :
             point_attendu=1+len(liste_points)
             self.affiche_point_attendu(point_attendu)
+            self.affiche_image()
+            print "affiche", self.index_de_l_image
+
+
+
         else:
-            ### on retire les marques précédemment mises en place
-            for p in self.pointsProvisoires:
-                p.hide()
-                del p
-            self.pointsProvisoires=[]
-            ###
+
             point_attendu=1
             self.affiche_point_attendu(point_attendu)
             if self.index_de_l_image<self.image_max : ##si on atteint la fin de la vidéo
@@ -1216,15 +1241,15 @@ class StartQT4(QMainWindow):
                 self.nb_image_deja_analysees += 1
                 self.index_de_l_image += 1
                 if interactif:
-                    self.clic_sur_label_video_ajuste_ui(point_attendu)
                     self.modifie=True
-                if self.auto:
-                    self.emit(SIGNAL('selection_done()'))
+                self.clic_sur_label_video_ajuste_ui(point_attendu)
+                
+                       
             elif self.index_de_l_image==self.image_max :
-                if self.auto:
-                    self.emit(SIGNAL('selection_done()'))
-                self.mets_a_jour_label_infos(self.tr(u"Vous avez atteint la fin de la vidéo"))
 
+                self.mets_a_jour_label_infos(self.tr(u"Vous avez atteint la fin de la vidéo"))
+        
+        
     def enableDefaire(self, value):
         """
         Contrôle la possibilité de défaire un clic
@@ -1246,6 +1271,7 @@ class StartQT4(QMainWindow):
         Ajuste l'interface utilisateur pour attendre un nouveau clic
         @param point_attendu le numéro du point qui est à cliquer
         """
+        print "rentre dans ajouste_ui"
         self.lance_capture = True
         self.enableDefaire(len(self.tousLesClics) > 0)
         self.enableRefaire(self.tousLesClics.nextCount() > 0)
@@ -1299,6 +1325,7 @@ class StartQT4(QMainWindow):
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
 #        try :
         if hasattr(self, "label_video"):
+            print "et pourtant"
             self.label_video.setMouseTracking(True)
             self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
             self.label_video.met_a_jour_crop()
@@ -1468,6 +1495,7 @@ class StartQT4(QMainWindow):
             self.init_image()
             self.mets_a_jour_label_infos(self.tr(u"Veuillez choisir une image et définir l'échelle"))
             self.ui.Bouton_Echelle.setEnabled(True)
+            self.ui.spinBox_nb_de_points.setEnabled(True)
             self.ui.horizontalSlider.setEnabled(1)
             self.label_video.show()
 

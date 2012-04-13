@@ -57,14 +57,17 @@ class Label_Video(QtGui.QLabel):
         self.met_a_jour_crop()
         self.setMouseTracking(True)
         
-    def mouseReleaseEvent(self, event):
-        
+    def storePoint(self,point):
         if self.app.lance_capture==True and self.app.auto==False:
-            self.liste_points.append(vecteur(event.x(), event.y()))
+            self.liste_points.append(point)
             self.pos_avant=self.pos
             self.app.emit(SIGNAL('clic_sur_video()'))
             self.update()
             self.met_a_jour_crop()
+        
+    def mouseReleaseEvent(self, event):
+        self.storePoint(vecteur(event.x(), event.y()))
+        
     def enterEvent(self, event):
         if self.app.lance_capture==True and self.app.auto==False:#ne se lance que si la capture est lancée
             self.setCursor(QtCore.Qt.CrossCursor)
