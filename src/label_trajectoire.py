@@ -6,7 +6,6 @@ from vecteur import vecteur
 class Label_Trajectoire(QLabel):
     def __init__(self, parent, app, origine = vecteur(0,0), referentiel = 0):
         QLabel.__init__(self,parent)
-        print "INIT"
         self.app=app
         self.setGeometry(QRect(0,0,640,480))
         self.setCursor(Qt.ArrowCursor)
@@ -27,7 +26,6 @@ class Label_Trajectoire(QLabel):
         self.painter.fillRect(QRect(0,0,640,480),QColor("grey"))
         ############################################################
         #paint the origin
-        print "self.origine_mvt", self.origine_mvt
         self.painter.setPen(Qt.green)
         self.painter.drawLine(self.origine_mvt.x()-5, self.origine_mvt.y(), self.origine_mvt.x()+5, self.origine_mvt.y())
         self.painter.drawLine(self.origine_mvt.x(), self.origine_mvt.y()-5, self.origine_mvt.x(), self.origine_mvt.y()+5)

@@ -53,7 +53,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -83,16 +83,22 @@
            </property>
            <item>
             <widget class="QGroupBox" name="groupBox_3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="minimumSize">
               <size>
-               <width>150</width>
-               <height>150</height>
+               <width>0</width>
+               <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>200</height>
+               <width>120</width>
+               <height>150</height>
               </size>
              </property>
              <property name="title">
@@ -145,26 +151,6 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QLabel" name="label_sous_zoom">
-                <property name="text">
-                 <string>Surveillez le zoom</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>2</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
              </layout>
             </widget>
            </item>
@@ -173,7 +159,7 @@
              <property name="minimumSize">
               <size>
                <width>150</width>
-               <height>230</height>
+               <height>180</height>
               </size>
              </property>
              <property name="maximumSize">
@@ -352,23 +338,6 @@
                <string>Tout réinitialiser</string>
               </property>
              </widget>
-             <widget class="QCheckBox" name="checkBox_avancees">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>190</y>
-                <width>121</width>
-                <height>31</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Fonctionnalités 
- avancées</string>
-              </property>
-              <property name="autoRepeat">
-               <bool>false</bool>
-              </property>
-             </widget>
              <widget class="QPushButton" name="Bouton_Echelle">
               <property name="enabled">
                <bool>false</bool>
@@ -456,87 +425,55 @@
  étudier:</string>
               </property>
              </widget>
+             <zorder>Bouton_lance_capture</zorder>
+             <zorder>pushButton_defait</zorder>
+             <zorder>pushButton_refait</zorder>
+             <zorder>pushButton_reinit</zorder>
+             <zorder>Bouton_Echelle</zorder>
+             <zorder>label_4</zorder>
+             <zorder>echelleEdit</zorder>
+             <zorder>spinBox_nb_de_points</zorder>
+             <zorder>label_5</zorder>
+             <zorder>groupBox_3</zorder>
+             <zorder>groupBox_3</zorder>
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="group_advanced">
+            <widget class="QPushButton" name="pushButton_origine">
              <property name="enabled">
               <bool>true</bool>
              </property>
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>150</height>
-              </size>
+             <property name="text">
+              <string>Changer l'origine</string>
              </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>200</height>
-              </size>
+             <property name="flat">
+              <bool>false</bool>
              </property>
-             <property name="title">
-              <string>Changer de repère</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_6">
-              <item>
-               <widget class="QPushButton" name="pushButton_origine">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="text">
-                 <string>Définir l'origine</string>
-                </property>
-                <property name="flat">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_abscisses">
-                <property name="text">
-                 <string>Abscisses 
-vers la gauche</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_ordonnees">
-                <property name="text">
-                 <string>Ordonnées 
-vers le bas</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_auto">
-                <property name="text">
-                 <string>Suivi 
-automatique</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
             </widget>
            </item>
            <item>
-            <spacer name="verticalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
+            <widget class="QCheckBox" name="checkBox_auto">
+             <property name="text">
+              <string>Suivi 
+automatique</string>
              </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Preferred</enum>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_ordonnees">
+             <property name="text">
+              <string>Ordonnées 
+vers le bas</string>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>2</height>
-              </size>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_abscisses">
+             <property name="text">
+              <string>Abscisses 
+vers la gauche</string>
              </property>
-            </spacer>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -1055,7 +992,7 @@ automatique</string>
      <x>0</x>
      <y>0</y>
      <width>882</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

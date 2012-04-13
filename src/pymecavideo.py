@@ -109,10 +109,10 @@ class MonThreadDeCalcul(QThread):
 class StartQT4(QMainWindow):
     def __init__(self, parent, opts):
         #Données principales du logiciel : 
-        if "mini" in str(opts) :
-            self.mini=True
-        else :
+        if "maxi" in str(opts) :
             self.mini=False
+        else :
+            self.mini=True
         
         ######QT
         QMainWindow.__init__(self)
@@ -136,11 +136,11 @@ class StartQT4(QMainWindow):
         else :
             from Ui_pymecavideo_mini  import Ui_pymecavideo
             message = QMessageBox(self)
-            message.setText(self.trUtf8("Pymecavideo utilise l'interface mini.\nAppuyez sur la touche F11 pour passer en mode plein écran"))
-            message.setText(self.trUtf8("pymecavideo utilise l'interface mini.\nAppuyez sur la touche F11 pour passer en mode plein écran"))
-            message.setWindowTitle(self.trUtf8("Faible résolution"))
-            message.exec_()        
-            self.basculer_plein_ecran
+            #message.setText(self.trUtf8("Pymecavideo utilise l'interface mini.\nAppuyez sur la touche F11 pour passer en mode plein écran"))
+            #message.setText(self.trUtf8("pymecavideo utilise l'interface mini.\nAppuyez sur la touche F11 pour passer en mode plein écran"))
+            #message.setWindowTitle(self.trUtf8("Faible résolution"))
+            #message.exec_()        
+            #self.basculer_plein_ecran
         #changer ici le pichier adéquat pour les petites résolutions.
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
@@ -272,7 +272,6 @@ class StartQT4(QMainWindow):
         self.cree_tableau()
         self.label_trajectoire=Label_Trajectoire(self.ui.label_3, self)
         self.ui.horizontalSlider.setEnabled(0)
-        self.ui.label_sous_zoom.setText(self.tr(u"Surveillez le zoom"))
         
 
         self.ui.pushButton_video.setEnabled(0)
@@ -302,7 +301,7 @@ class StartQT4(QMainWindow):
         #création du label qui contiendra la vidéo.
         self.label_video = Label_Video(parent=self.ui.label, app=self)
 
-        self.ui.group_advanced.hide()
+        #self.ui.group_advanced.hide()
 
         self.ui.tabWidget.setCurrentIndex(0) # montre l'onglet video
 
@@ -431,7 +430,7 @@ class StartQT4(QMainWindow):
         self.enableRefaire(False)
         self.affiche_nb_points(1)
         ### Réactiver checkBox_avancees après réinitialisation ###
-        self.ui.checkBox_avancees.setEnabled(1)
+        #self.ui.checkBox_avancees.setEnabled(1)
 
 
         if self.ui.tableWidget:
@@ -468,7 +467,6 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_reinit,SIGNAL("clicked()"),self.reinitialise_capture)
         QObject.connect(self.ui.pushButton_defait,SIGNAL("clicked()"),self.efface_point_precedent)
         QObject.connect(self.ui.pushButton_refait,SIGNAL("clicked()"),self.refait_point_suivant)
-        QObject.connect(self.ui.checkBox_avancees,SIGNAL("stateChanged(int)"),self.affiche_fonctionnalites_avancees)
         QObject.connect(self.ui.pushButton_origine,SIGNAL("clicked()"),self.choisi_nouvelle_origine)
         QObject.connect(self.ui.pushButton_video,SIGNAL("clicked()"),self.lance_logiciel_video)
         QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.change_sens_X )
@@ -583,16 +581,16 @@ class StartQT4(QMainWindow):
             self.sens_Y = 1
         self.emit(SIGNAL('change_axe_origine()'))
 
-    def affiche_fonctionnalites_avancees(self):
-        """
-        met à jour l'affichage des fonctions avancées, selon l'état
-        coché ou décoché de la case de choix
-        """
-        if self.ui.checkBox_avancees.isChecked() :
-            self.ui.group_advanced.setEnabled(1)
-            self.ui.group_advanced.show()
-        else :
-            self.ui.group_advanced.hide()
+    #def affiche_fonctionnalites_avancees(self):
+        #"""
+        #met à jour l'affichage des fonctions avancées, selon l'état
+        #coché ou décoché de la case de choix
+        #"""
+        #if self.ui.checkBox_avancees.isChecked() :
+            #self.ui.group_advanced.setEnabled(1)
+            #self.ui.group_advanced.show()
+        #else :
+            #self.ui.group_advanced.hide()
 
 
     def pointEnMetre(self,p):
@@ -890,9 +888,8 @@ class StartQT4(QMainWindow):
         self.ui.comboBox_referentiel.setEnabled(1)
         self.ui.pushButton_select_all_table.setEnabled(1)
 
-        self.ui.checkBox_avancees.setEnabled(0)
         
-        self.ui.group_advanced.setEnabled(0)
+        #self.ui.group_advanced.setEnabled(0)
         
         
         self.ui.comboBox_referentiel.clear()
@@ -1201,7 +1198,7 @@ class StartQT4(QMainWindow):
         affecte la ligne de statut et la ligne sous le zoom
         """
         self.mets_a_jour_label_infos(self.tr(u"Pointage des positions : cliquer sur le point N°%d" %n))
-        self.ui.label_sous_zoom.setText(self.tr(u"zoom point %d" %n))
+        #self.ui.label_sous_zoom.setText(self.tr(u"zoom point %d" %n))
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
@@ -1574,14 +1571,14 @@ class StartQT4(QMainWindow):
                     
         
 def usage():
-    print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--mini]")
+    print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--maxi]")
 
 def run():
     global app
     
     args=sys.argv[1:]
     try:
-        opts, args = getopt.getopt(args, "f:m:", ["fichier_mecavideo=","mini"] )
+        opts, args = getopt.getopt(args, "f:m:", ["fichier_mecavideo=","maxi"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)

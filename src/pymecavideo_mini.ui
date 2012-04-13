@@ -64,7 +64,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -266,111 +266,28 @@
          </property>
         </widget>
        </widget>
-       <widget class="QGroupBox" name="group_advanced">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>380</y>
-          <width>150</width>
-          <height>141</height>
-         </rect>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>150</width>
-          <height>140</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>200</height>
-         </size>
-        </property>
-        <property name="title">
-         <string>Changer de repère</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-        <widget class="QCheckBox" name="checkBox_abscisses">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>50</y>
-           <width>121</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Abscisses 
-vers la gauche</string>
-         </property>
-        </widget>
-        <widget class="QCheckBox" name="checkBox_ordonnees">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>80</y>
-           <width>111</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Ordonnées 
-vers le bas</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="pushButton_origine">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>20</y>
-           <width>111</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Définir l'origine</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-        </widget>
-        <widget class="QCheckBox" name="checkBox_auto">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>110</y>
-           <width>111</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>suivi
-automatique</string>
-         </property>
-        </widget>
-       </widget>
        <widget class="QGroupBox" name="groupBox_3">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="geometry">
          <rect>
-          <x>1</x>
-          <y>1</y>
-          <width>150</width>
-          <height>151</height>
+          <x>10</x>
+          <y>0</y>
+          <width>121</width>
+          <height>130</height>
          </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>150</width>
-          <height>130</height>
+          <width>0</width>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -423,20 +340,13 @@ automatique</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QLabel" name="label_sous_zoom">
-           <property name="text">
-            <string>Surveillez le zoom</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
        <widget class="QGroupBox" name="groupBox">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>160</y>
+          <y>140</y>
           <width>150</width>
           <height>210</height>
          </rect>
@@ -623,23 +533,6 @@ automatique</string>
           <string>Tout réinitialiser</string>
          </property>
         </widget>
-        <widget class="QCheckBox" name="checkBox_avancees">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>180</y>
-           <width>121</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Fonctionnalités 
- avancées</string>
-         </property>
-         <property name="autoRepeat">
-          <bool>false</bool>
-         </property>
-        </widget>
         <widget class="QPushButton" name="Bouton_Echelle">
          <property name="enabled">
           <bool>false</bool>
@@ -727,6 +620,55 @@ automatique</string>
  étudier:</string>
          </property>
         </widget>
+       </widget>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>360</y>
+          <width>123</width>
+          <height>132</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QCheckBox" name="checkBox_auto">
+           <property name="text">
+            <string>suivi
+automatique</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_origine">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Changer d'origine</string>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_abscisses">
+           <property name="text">
+            <string>Abscisses 
+vers la gauche</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_ordonnees">
+           <property name="text">
+            <string>Ordonnées 
+vers le bas</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
       <widget class="QWidget" name="tab_traj">
@@ -820,9 +762,9 @@ automatique</string>
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>10</y>
+          <y>40</y>
           <width>141</width>
-          <height>253</height>
+          <height>141</height>
          </rect>
         </property>
         <property name="title">
@@ -832,13 +774,6 @@ automatique</string>
          <property name="leftMargin">
           <number>0</number>
          </property>
-         <item>
-          <widget class="Line" name="line_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="QLabel" name="label_7">
            <property name="text">
