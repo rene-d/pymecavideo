@@ -44,7 +44,6 @@ class Label_Video(QtGui.QLabel):
         self.zoom_croix.hide()
         self.setMouseTracking(True)
         self.origine=vecteur(self.geometry().width()/2,self.geometry().height()/2)
-        print self.origine
         #####################TODO
         self.decal = vecteur(0,0) #if video is not 4:3, center video
         
@@ -89,7 +88,6 @@ class Label_Video(QtGui.QLabel):
         pass
 
     def paintEvent(self,event):
-               
         self.painter = QPainter()
         self.painter.begin(self)
         try : 
@@ -108,6 +106,7 @@ class Label_Video(QtGui.QLabel):
         
         ############################################################
         #draw points
+        
         for points in self.app.points.values() : #all points clicked are stored here, but updated every "number of point to click" frames
             color=0
  

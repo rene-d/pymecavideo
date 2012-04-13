@@ -98,10 +98,9 @@ class MonThreadDeCalcul(QThread):
         self.parent=parent
         self.motif = motif
         self.image = image
-        print "_init_thread"
 
     def run(self):
-        print "rentre dans thread"
+
         point = filter_picture(self.motif,self.image)
         return point
 
@@ -488,11 +487,9 @@ class StartQT4(QMainWindow):
         
     def storeMotif(self):
         
-        print "motif", self.motif
         if len(self.motif)==self.nb_de_points:
             self.label_auto.hide()
             self.label_auto.close()
-            print "motif finis", self.motif
             self.picture_detect()    
 
         
@@ -511,7 +508,6 @@ class StartQT4(QMainWindow):
     def run_detect(self,motif, image):
         myThread = MonThreadDeCalcul(self,motif,image)
         point = myThread.run()
-        print "POIOIOPIPOIOP",point
         
         ##itère d'un cran et lance la détection
         #self.label_video.liste_points.append(vecteur(point[0], point[1]))
@@ -551,14 +547,11 @@ class StartQT4(QMainWindow):
     def change_axe_ou_origine(self):
         """mets à jour le tableau de données"""
         #repaint axes and define origine
-        print self.origine, self.label_video.origine, self.label_trajectoire.origine_mvt
         self.label_trajectoire.origine_mvt=self.origine
         self.label_trajectoire.update()
         
         self.label_video.origine = self.origine
         self.label_video.update()
-        print self.origine, self.label_video.origine, self.label_trajectoire.origine_mvt
-        
         
         #construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
         if self.points_ecran != {}:
@@ -909,14 +902,11 @@ class StartQT4(QMainWindow):
         self.cree_tableau()
         if self.ui.checkBox_auto.isChecked():
             ###############
-            #get motif to track
+            
             reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
 
-            print "BIPM"
-            self.label_auto = Label_Auto(self.label_video,self)
+            self.label_auto = Label_Auto(self.label_video,self) #in this label, matif is defined.
             self.label_auto.show()
-            
-            
                 
 
     def cree_tableau(self):
@@ -1215,7 +1205,7 @@ class StartQT4(QMainWindow):
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
-        print "rentre ds clic_sur_label_video"
+
         
         if liste_points==None:
             liste_points = self.label_video.liste_points
@@ -1227,7 +1217,7 @@ class StartQT4(QMainWindow):
             point_attendu=1+len(liste_points)
             self.affiche_point_attendu(point_attendu)
             self.affiche_image()
-            print "affiche", self.index_de_l_image
+
 
 
 
@@ -1271,7 +1261,7 @@ class StartQT4(QMainWindow):
         Ajuste l'interface utilisateur pour attendre un nouveau clic
         @param point_attendu le numéro du point qui est à cliquer
         """
-        print "rentre dans ajouste_ui"
+
         self.lance_capture = True
         self.enableDefaire(len(self.tousLesClics) > 0)
         self.enableRefaire(self.tousLesClics.nextCount() > 0)
@@ -1325,11 +1315,11 @@ class StartQT4(QMainWindow):
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
 #        try :
         if hasattr(self, "label_video"):
-            print "et pourtant"
             self.label_video.setMouseTracking(True)
             self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
             self.label_video.met_a_jour_crop()
             self.label_video.update()
+            self.label_video.repaint()
             self.label_video.show()
             self.ui.horizontalSlider.setValue(self.index_de_l_image)
             self.ui.spinBox_image.setValue(self.index_de_l_image)
