@@ -23,15 +23,15 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from vitesse import Vitesse
 
-class label_numero(QLabel):
-    def __init__(self, text, parent, point):
-        QLabel.__init__(self, text,parent)
-        self.setGeometry(point.x(), point.y(), 30, 15)
-        self.setMouseTracking(True) 
-    def mouseMoveEvent(self, event):
-        event.ignore()
-    def mouseReleaseEvent(self, event):
-        event.ignore()
+#class label_numero(QLabel):
+    #def __init__(self, text, parent, point):
+        #QLabel.__init__(self, text,parent)
+        #self.setGeometry(point.x(), point.y(), 30, 15)
+        #self.setMouseTracking(True) 
+    #def mouseMoveEvent(self, event):
+        #event.ignore()
+    #def mouseReleaseEvent(self, event):
+        #event.ignore()
 
 ##class Point(QLabel):
     ##def __init__(self, parent, point, color, numero, app, pred=None, showVelocity=True):
