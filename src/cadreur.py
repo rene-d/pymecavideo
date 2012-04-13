@@ -129,20 +129,25 @@ class Cadreur(QObject):
            
             #rembobine
             self.capture=cv.CreateFileCapture(self.app.filename)
-
+            
+            #have to move to first picture clicked
+            cv.SetCaptureProperty(self.capture,cv.CV_CAP_PROP_POS_FRAMES,self.app.premiere_image-1)
+            
             for i in self.app.points.keys():
                 p=self.app.points[i][self.numpoint]
-                #hautgauche=(p+self.decal-self.rayons)*ech
-                hautgauche=(p-self.tl)*ech
+                hautgauche=(p+self.decal-self.rayons)*ech
+                #hautgauche=(p-self.tl)*ech
+                #print "@@@haut gauche", hautgauche
                 #taille=self.rayons*2*ech
                 taille=self.sz*ech
                 img=self.queryFrame()
                 x,y = int(hautgauche.x()), int(hautgauche.y())
                 w,h = int(taille.x()), int(taille.y())
+                #print "x,y,w,h", x,y,w,h
                 isub = cv.GetSubRect(img, (x,y,w,h))
                 cv.ShowImage(self.titre,isub)
                 k= cv.WaitKey(int(self.delay*self.ralenti))
-                if k ==1048603:
+                if k ==0x10001b:
                     fini=True
                     cv.DestroyAllWindows() 
                     break
