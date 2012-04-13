@@ -42,8 +42,9 @@ class Cadreur(QObject):
         @param app l'application Pymecavideo
         @param titre le titre désiré pour la fenêtre
         """
+        self.app=app
         if titre==None:
-            self.titre="Presser la touche ESC pour sortir"
+            self.titre=str(self.app.tr("Presser la touche ESC pour sortir"))
 
         self.numpoint=numpoint
         self.app=app
@@ -151,8 +152,6 @@ class Cadreur(QObject):
                     fini=True
                     cv.DestroyAllWindows() 
                     break
-
-        # ferme la fenêtre
 
         cv.DestroyWindow(self.titre)
         fini = True

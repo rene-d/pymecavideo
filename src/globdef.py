@@ -87,7 +87,7 @@ if sys.platform == 'win32':
         (value,keytype) = win32api.RegQueryValueEx(regkey, 'DataFolder' ) 
         APP_DATA_PATH = value
         if not os.path.exists(APP_DATA_PATH):
-            os.mkdir(APP_DATA_PATH)
+            os.makedirs(APP_DATA_PATH)
     except:
         APP_DATA_PATH = PATH
     sys.path.append(os.path.join(PATH, 'bin'))
@@ -103,7 +103,7 @@ else:
 IMG_PATH = os.path.join(APP_DATA_PATH, "images_extraites")
 NEWVID_PATH = os.path.join(APP_DATA_PATH, "videos_recodees")
 if not os.path.exists(NEWVID_PATH):
-    os.mkdir(NEWVID_PATH)
+    os.makedirs(NEWVID_PATH)
 
 #
 # Dossier gnuplot

@@ -62,7 +62,7 @@ from math import sqrt
 from label_video import Label_Video
 from point import Point, Repere
 from label_trajectoire import Label_Trajectoire
-from label_origine import Label_Origine, Label_Origine_Trace
+from label_origine import Label_Origine
 from cadreur import Cadreur, openCvReader
 from preferences import Preferences
 from dbg import Dbg
@@ -478,7 +478,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_video,SIGNAL("clicked()"),self.lance_logiciel_video)
         QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.change_sens_X )
         QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
-        QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_origine)
+        QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_ou_origine)
         QObject.connect(self,SIGNAL('selection_done()'),self.picture_detect)
         ## QObject.connect(self.ui.calcButton,SIGNAL("clicked()"),self.oooCalc)
         ## QObject.connect(self.ui.qtiplotButton,SIGNAL("clicked()"),self.qtiplot)
@@ -518,14 +518,24 @@ class StartQT4(QMainWindow):
         label = Label_Origine(parent=self.ui.label, app=self)
         label.show()
 
-        self.emit(SIGNAL('change_axe_origine()'))
+        #self.emit(SIGNAL('change_axe_origine()'))
 
     def lance_logiciel_video(self):
         #lance un logiciel externe de capture vidéo. Par défaut, qastrocam-g2, possibiltié de changer dans les préférences.
         lance_logiciel = subprocess.Popen(args=[self.logiciel_acquisition], stderr=PIPE)
 
-    def change_axe_origine(self):
+    def change_axe_ou_origine(self):
         """mets à jour le tableau de données"""
+        #repaint axes and define origine
+        print self.origine, self.label_video.origine, self.label_trajectoire.origine_mvt
+        self.label_trajectoire.origine_mvt=self.origine
+        self.label_trajectoire.update()
+        
+        self.label_video.origine = self.origine
+        self.label_video.update()
+        print self.origine, self.label_video.origine, self.label_trajectoire.origine_mvt
+        
+        
         #construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
         if self.points_ecran != {}:
             liste_clef=[]
@@ -833,9 +843,9 @@ class StartQT4(QMainWindow):
             del self.origine_trace
         except :
             pass
-        self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
-        self.origine_trace.show()
-        self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
+        #self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
+        #self.origine_trace.show()
+        #self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
         self.label_video.setFocus()
         self.label_video.show()
         self.label_video.activateWindow()
@@ -844,7 +854,7 @@ class StartQT4(QMainWindow):
         #self.origine_trace.show()
 
         self.label_echelle_trace.lower()  #nécessaire sinon, label_video n'est pas actif.
-        self.origine_trace.lower() 
+        #self.origine_trace.lower() 
 
         self.nb_de_points = self.ui.spinBox_nb_de_points.value()
         self.affiche_nb_points(False)
@@ -867,7 +877,7 @@ class StartQT4(QMainWindow):
         
         self.ui.group_advanced.setEnabled(0)
         
-        self.label_trajectoire = Label_Trajectoire(self.ui.label_3,self)
+        
         self.ui.comboBox_referentiel.clear()
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points) :
@@ -1086,7 +1096,7 @@ class StartQT4(QMainWindow):
                 if len(ref)==0 : return
                 if ref != "camera":
                     bc=self.mediane_trajectoires(int(ref)-1)
-                    origine=vecteur(340,260)-bc
+                    origine=vecteur(320,240)-bc
                     self.label_trajectoire.origine = origine
 
                     self.label_trajectoire.referentiel = ref
@@ -1348,8 +1358,7 @@ class StartQT4(QMainWindow):
         from echelle import Label_Echelle_Trace
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1,p2)
         self.label_echelle_trace.show()
-        self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
-        self.origine_trace.show()
+
 
     def reinitialise_environnement(self):
         for filename in glob(os.path.join(IMG_PATH,"*.jpg")):

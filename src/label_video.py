@@ -43,6 +43,11 @@ class Label_Video(QtGui.QLabel):
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
+        self.origine=vecteur(self.geometry().width()/2,self.geometry().height()/2)
+        print self.origine
+        #####################TODO
+        self.decal = vecteur(0,0) #if video is not 4:3, center video
+        
         self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green","red", "blue", "cyan", "magenta", "yellow", "gray", "green"]
     def reinit(self):
         try :
@@ -57,7 +62,7 @@ class Label_Video(QtGui.QLabel):
         if self.app.lance_capture==True and self.app.auto==False:
             self.liste_points.append(vecteur(event.x(), event.y()))
             self.pos_avant=self.pos
-            self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
+            self.app.emit(SIGNAL('clic_sur_video()'))
             self.update()
             self.met_a_jour_crop()
     def enterEvent(self, event):
@@ -81,12 +86,26 @@ class Label_Video(QtGui.QLabel):
         pass
 
     def paintEvent(self,event):
-        
+               
         self.painter = QPainter()
         self.painter.begin(self)
-        self.painter.drawPixmap(0,0,self.pixmap())
-
-        for points in self.app.points.values() :      
+        try : 
+            self.painter.drawPixmap(self.decal.x(),self.decal.y(),self.pixmap())
+        except TypeError:#pixmap is not declare yet
+            pass
+        
+        ############################################################
+        #paint the origin
+        self.painter.setPen(Qt.green)
+        self.painter.drawLine(self.origine.x()-5, self.origine.y(), self.origine.x()+5, self.origine.y())
+        self.painter.drawLine(self.origine.x(), self.origine.y()-5, self.origine.x(), self.origine.y()+5)
+        self.painter.drawText(self.origine.x(), self.origine.y()+15, "O")
+        
+        
+        
+        ############################################################
+        #draw points
+        for points in self.app.points.values() : #all points clicked are stored here, but updated every "number of point to click" frames
             color=0
  
             for point in points:
@@ -105,7 +124,7 @@ class Label_Video(QtGui.QLabel):
         color=0
         if self.liste_points != []:
 
-            for point in self.liste_points:
+            for point in self.liste_points: #points clicked in a "number of point to click" sequence.
                     
                 self.painter.setPen(QColor(self.couleurs[color]))
                 self.painter.setFont(QFont("", 10))
@@ -117,7 +136,22 @@ class Label_Video(QtGui.QLabel):
                 
                 self.painter.translate(-point.x()+10, -point.y()-10)
                 color+=1    
-                        
+        ############################################################
+        
+        ############################################################
+        #paint repere
+        self.painter.setPen(Qt.green)
+        self.painter.translate(0,0)
+        self.painter.translate(self.origine.x(), self.origine.y())
+        p1=QPoint(self.app.sens_X*(-40),0)
+        p2=QPoint(self.app.sens_X*(40),0)
+        p3=QPoint(self.app.sens_X*(36),2)
+        p4=QPoint(self.app.sens_X*(36),-2)
+        self.painter.scale(1,1)
+        self.painter.drawPolyline(p1,p2,p3,p4,p2)
+        self.painter.rotate(self.app.sens_X*self.app.sens_Y*(-90))
+        self.painter.drawPolyline(p1,p2,p3,p4,p2)
+        ############################################################
                         
                     
         self.painter.end()
