@@ -384,7 +384,7 @@ class StartQT4(QMainWindow):
             self.init_variables(None, filename=self.filename)
   
         self.init_interface()
-        self.affiche_fonctionnalites_avancees()
+        #self.affiche_fonctionnalites_avancees()
         self.ui.pushButton_origine.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
@@ -512,8 +512,7 @@ class StartQT4(QMainWindow):
         if self.index_de_l_image<=self.image_max:
             self.label_video.pos_avant=self.label_video.pos
             self.label_video.storePoint(vecteur(point[0], point[1]))
-            self.label_video.raise_()
-            #self.emit(SIGNAL('clic_sur_video()'))
+            self.label_video.repaint()
             self.clic_sur_label_video()
             
 
@@ -1213,7 +1212,7 @@ class StartQT4(QMainWindow):
         if self.nb_de_points > len(liste_points) :
             point_attendu=1+len(liste_points)
             self.affiche_point_attendu(point_attendu)
-            self.affiche_image()
+            #self.affiche_image()
 
 
 
@@ -1316,7 +1315,7 @@ class StartQT4(QMainWindow):
             self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
             self.label_video.met_a_jour_crop()
             self.label_video.update()
-            self.label_video.repaint()
+
             self.label_video.show()
             self.ui.horizontalSlider.setValue(self.index_de_l_image)
             self.ui.spinBox_image.setValue(self.index_de_l_image)
