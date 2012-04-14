@@ -357,7 +357,7 @@ class StartQT4(QMainWindow):
         permet le défaire/refaire :
         @param echelle_image évite de ressaisir l'échelle de l'image
         @param nb_de_points évite de ressaisir le nombre de points à suivre
-        @param tousLesClics permet de conserver une liste de poinst à refaire
+        @param tousLesClics permet de conserver une liste de points à refaire
         @param index_point_actuel permet de réinitialiser à partir de l'image de départ.
         """
         self.dbg.p(2,"Dans reinitialise_tout: echelle_image=%s, nb_de_points=None%s, tousLesClics=%s,index_point_actuel=%s" %(echelle_image, nb_de_points, tousLesClics,index_point_actuel))
@@ -925,13 +925,20 @@ class StartQT4(QMainWindow):
     def traiteSouris(self,p):
         """
         cette fonction est rappelée par label_trajectoire quand la souris
-        bouge au-dessus : p est un vecteur.
+        bouge au-dessus : p est un vecteur, position de la souris.
         """
-        if not self.prefs.proximite: return
+        print self.points
+        print "################"
+        self.dbg.p(2,"entre dans traiteSouris")
+        if not self.prefs.proximite: 
+	  self.dbg.p(2,"dans traiteSouris, self.prefs.proximite = True")
+	  return
+	self.dbg.p(2,"dans traiteSouris, self.prefs.proximite = false")
         portee=30
         try:
             pX=set()
             pY=set()
+            self.dbg.p(2,"dans traiteSouris, créer 2 sets")
         except:
             import sets # for Python << 2.5
             pX=sets.Set()
@@ -939,14 +946,21 @@ class StartQT4(QMainWindow):
         for x in self.pX.keys():
             if p.x()-portee<x<p.x()+portee:
                 for a in self.pX[x]: pX.add(a)
+                self.dbg.p(2,"dans traiteSouris, 1")
             else:
                 for a in self.pX[x]: a.montre_vitesse(False)
+                self.dbg.p(2,"dans traiteSouris, 2")
         for y in self.pY.keys():
             if p.y()-portee<y<p.y()+portee:
                 for a in self.pY[y]: pY.add(a)
+                self.dbg.p(2,"dans traiteSouris, 3")
             else:
-                for a in self.pY[y]: a.montre_vitesse(False)
+                for a in self.pY[y]:
+		  a.montre_vitesse(False)
+		  self.dbg.p(2,"dans traiteSouris, 4")
         intersection=list(pX & pY)
+        print pX, pY
+	print intersection
         if intersection:
             # précaution au cas où on a plus d'un point dans l'intersection
             # définie par la variable portee
@@ -1021,27 +1035,29 @@ class StartQT4(QMainWindow):
         """
         change le critère de visibilité des vitesses selon self.prefs
         """
-        if not self.prefs.proximite:
-            #choix par défaut
-            self.label_trajectoire.setMouseTracking(0)
-            self.montre_vitesses(True)
-        else:
-            self.montre_vitesses(False)
-            self.label_trajectoire.setMouseTracking(1)
-            self.label_trajectoire.setFocus()
-            self.label_trajectoire.update()
+        #if not self.prefs.proximite:
+            ##choix par défaut
+            #self.label_trajectoire.setMouseTracking(0)
+            #self.montre_vitesses(True)
+        #else:
+            #self.montre_vitesses(False)
+            #self.label_trajectoire.setMouseTracking(1)
+            #self.label_trajectoire.setFocus()
+            #self.label_trajectoire.update()
+        pass
 
                 
-    def montre_vitesses(self, show=True):
-        """
-        montre ou cache les vitesses, selon le paramètre show
-        """
-        for index in self.trajectoire.keys():
-            if index[:6]=="point-":
-                [p,point] = self.trajectoire[index]
-                point.montre_vitesse(show)
-        if not show:
-            self.label_trajectoire.update()
+    #def montre_vitesses(self, show=True):
+        #"""
+        #montre ou cache les vitesses, selon le paramètre show
+        #"""
+        #for index in self.trajectoire.keys():
+            #if index[:6]=="point-":
+                #[p,point] = self.trajectoire[index]
+                #point.montre_vitesse(show)
+        #if not show:
+            #self.label_trajectoire.update()
+            
     def efface_point_precedent(self):
         """revient au point précédent
         """
@@ -1271,7 +1287,7 @@ class StartQT4(QMainWindow):
         
     def stock_coordonnees_image(self, ligne, liste_points, interactif=True, index_image = False):
         """
-        place les données dans le tableau.
+        place les données dans le tableau, rempli les dictionnaires de 
         @param ligne le numérode la ligne où placer les données (commence à 0)
         @param liste_points la liste des points cliqués sur l'image courante
         @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
@@ -1280,6 +1296,9 @@ class StartQT4(QMainWindow):
             index_image = self.index_de_l_image
         t = "%4f" %((ligne)*self.deltaT)
         self.points[ligne]=[t]+liste_points
+       
+        
+        
         #rentre le temps dans la première colonne
         self.ui.tableWidget.insertRow(ligne)
         self.ui.tableWidget.setItem(ligne,0,QTableWidgetItem(t))
@@ -1287,6 +1306,21 @@ class StartQT4(QMainWindow):
         i=0
         #Pour chaque point dans liste_points, insère les valeur dans la ligne
         for point in liste_points :
+        #ajoute les coordonnées "en pixel" des points dans des dictionnaires de coordonnées
+            x=point.x()
+            y=point.y()
+            if x in self.pX.keys():
+                self.pX[x].append(point)
+            else:
+                self.pX[x]=[point]
+                
+            if y in self.pY.keys():
+                self.pY[y].append(point)
+            else:
+                self.pY[y]=[point]
+            
+	    
+	    
             pm=self.pointEnMetre(point)
             self.ui.tableWidget.setItem(ligne,i+1,QTableWidgetItem(str(pm.x())))
             self.ui.tableWidget.setItem(ligne,i+2,QTableWidgetItem(str(pm.y())))
