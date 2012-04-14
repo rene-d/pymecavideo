@@ -466,6 +466,10 @@ class StartQT4(QMainWindow):
         #QObject.connect(self.ui.echelle_v,SIGNAL("editTextChanged (int)"),self.refait_vitesses)
         
         QObject.connect(self.ui.checkBoxVectorSpeed,SIGNAL("stateChanged(int)"),self.enableSpeed)
+        QObject.connect(self.ui.radioButtonSpeedEveryWhere,SIGNAL("toggled()"),self.enableSpeed)
+        QObject.connect(self.ui.radioButtonNearMouse,SIGNAL("toggled()"),self.enableSpeed)
+        QObject.connect(self.ui.radioButtonSpeedEveryWhere,SIGNAL("clicked()"),self.enableSpeed)
+        QObject.connect(self.ui.radioButtonNearMouse,SIGNAL("clicked()"),self.enableSpeed)
         QObject.connect(self.ui.button_video,SIGNAL("clicked()"),self.video)
         QObject.connect(self.ui.pushButton_select_all_table,SIGNAL("clicked()"),self.presse_papier)
         QObject.connect(self.ui.pushButton_reinit,SIGNAL("clicked()"),self.reinitialise_capture)
@@ -488,11 +492,15 @@ class StartQT4(QMainWindow):
         
         
     def enableSpeed(self):
+        self.dbg.p(2,"In enableSpeed")
         self.ui.checkBoxScale.setEnabled(1)
         self.ui.checkBoxScale.insertItem(0,"1")
-        self.ui.checkBoxScale.setItemText(1,"2")
+        
         self.ui.radioButtonNearMouse.show()
         self.ui.radioButtonSpeedEveryWhere.show()
+        self.label_trajectoire.giveCoordonatesToPaint()
+        self.label_trajectoire.repaint()
+        self.label_trajectoire.update()
         
     def storeMotif(self):
         

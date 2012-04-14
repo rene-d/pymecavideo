@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pymecavideo_mini.ui'
 #
-# Created: Sat Apr 14 19:10:28 2012
+# Created: Sat Apr 14 21:00:18 2012
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
