@@ -83,6 +83,7 @@ class Preferences:
         #########################################################
         ui.spinBoxDbg.setValue(self.niveauDbg)
         p=ui.comboBoxProximite
+        
         p.addItem(self.app.tr("Visibles partout"))
         p.addItem(self.app.tr("Visible pres de la souris"))
         if self.proximite:

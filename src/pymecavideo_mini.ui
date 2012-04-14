@@ -64,7 +64,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -621,13 +621,13 @@
          </property>
         </widget>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>10</x>
           <y>360</y>
-          <width>123</width>
-          <height>132</height>
+          <width>138</width>
+          <height>153</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -761,10 +761,10 @@ vers le bas</string>
        <widget class="QGroupBox" name="groupBox_4">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>40</y>
+          <x>0</x>
+          <y>60</y>
           <width>141</width>
-          <height>141</height>
+          <height>321</height>
          </rect>
         </property>
         <property name="title">
@@ -775,6 +775,33 @@ vers le bas</string>
           <number>0</number>
          </property>
          <item>
+          <widget class="QCheckBox" name="checkBoxVectorSpeed">
+           <property name="text">
+            <string>Montrer 
+les vecteurs
+vitesses</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButtonNearMouse">
+           <property name="text">
+            <string>près de
+la souris</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButtonSpeedEveryWhere">
+           <property name="text">
+            <string>partout</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QLabel" name="label_7">
            <property name="text">
             <string>Échelle de vitesses</string>
@@ -782,7 +809,10 @@ vers le bas</string>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="echelle_v">
+          <widget class="QComboBox" name="checkBoxScale">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>61</width>
@@ -810,6 +840,19 @@ vers le bas</string>
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item>
           <widget class="QLabel" name="label_2">
@@ -958,7 +1001,7 @@ vers le bas</string>
      <x>0</x>
      <y>0</y>
      <width>833</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

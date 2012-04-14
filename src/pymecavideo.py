@@ -248,7 +248,7 @@ class StartQT4(QMainWindow):
         self.nb_de_points = 1        # nombre de points suivis
         self.premiere_image = 1      # n° de la première image cliquée
         self.index_de_l_image = 1    # image à afficher
-        self.echelle_v = 0
+        #self.echelle_v = 0
         self.filename=filename
         self.opts=opts
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
@@ -288,8 +288,10 @@ class StartQT4(QMainWindow):
         
         self.affiche_nb_points(False)
         self.ui.Bouton_Echelle.setEnabled(False)
-        self.ui.echelle_v.setDuplicatesEnabled(False)
-        self.setEchelle_v()
+        self.ui.checkBoxScale.setDuplicatesEnabled(False)
+        self.ui.radioButtonNearMouse.hide()
+        self.ui.radioButtonSpeedEveryWhere.hide()
+        #self.setEchelle_v()
 
         if not self.pyuno :
             self.desactiveExport("Oo.o Calc")
@@ -361,7 +363,7 @@ class StartQT4(QMainWindow):
         @param index_point_actuel permet de réinitialiser à partir de l'image de départ.
         """
         self.dbg.p(2,"Dans reinitialise_tout: echelle_image=%s, nb_de_points=None%s, tousLesClics=%s,index_point_actuel=%s" %(echelle_image, nb_de_points, tousLesClics,index_point_actuel))
-        self.montre_vitesses(False)
+        self.montre_vitesses=False
         #self.oubliePoints()
         self.label_trajectoire.update()
         self.ui.label.update()
@@ -405,7 +407,7 @@ class StartQT4(QMainWindow):
         Efface toutes les données de la capture en cours et prépare une nouvelle
         session de capture.
         """
-        self.montre_vitesses(False)
+        self.montre_vitesses=False
         
         #self.oubliePoints()
         self.label_trajectoire.update()
@@ -460,8 +462,10 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.comboBox_referentiel,SIGNAL("currentIndexChanged (int)"),self.tracer_trajectoires)
         QObject.connect(self.ui.comboBox_mode_tracer,SIGNAL("currentIndexChanged (int)"),self.tracer_courbe)
         QObject.connect(self.ui.tabWidget,SIGNAL("currentChanged (int)"),self.tracer_trajectoires)
-        QObject.connect(self.ui.echelle_v,SIGNAL("currentIndexChanged (int)"),self.refait_vitesses)
-        QObject.connect(self.ui.echelle_v,SIGNAL("editTextChanged (int)"),self.refait_vitesses)
+        #QObject.connect(self.ui.echelle_v,SIGNAL("currentIndexChanged (int)"),self.refait_vitesses)
+        #QObject.connect(self.ui.echelle_v,SIGNAL("editTextChanged (int)"),self.refait_vitesses)
+        
+        QObject.connect(self.ui.checkBoxVectorSpeed,SIGNAL("stateChanged(int)"),self.enableSpeed)
         QObject.connect(self.ui.button_video,SIGNAL("clicked()"),self.video)
         QObject.connect(self.ui.pushButton_select_all_table,SIGNAL("clicked()"),self.presse_papier)
         QObject.connect(self.ui.pushButton_reinit,SIGNAL("clicked()"),self.reinitialise_capture)
@@ -482,6 +486,13 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
         QObject.connect(self,SIGNAL("mplWindowClosed()"),self.mplwindowclosed)
         
+        
+    def enableSpeed(self):
+        self.ui.checkBoxScale.setEnabled(1)
+        self.ui.checkBoxScale.insertItem(0,"1")
+        self.ui.checkBoxScale.setItemText(1,"2")
+        self.ui.radioButtonNearMouse.show()
+        self.ui.radioButtonSpeedEveryWhere.show()
         
     def storeMotif(self):
         
@@ -1011,25 +1022,25 @@ class StartQT4(QMainWindow):
         else:
             return vecteur(320,240)
 
-    def refait_vitesses(self, newText=""):
-        """
-        recalcule les vitesses de tous les points tracés.
-        """
-        for index in self.trajectoire.keys():
-            if index[:6]=="point-":
-                [p,point] = self.trajectoire[index]
-                self.echelle_v=self.ui.echelle_v.currentText()
-                show=True
-                point.calcule_vitesse(self.echelle_v,show)
+    #def refait_vitesses(self, newText=""):
+        #"""
+        #recalcule les vitesses de tous les points tracés.
+        #"""
+        #for index in self.trajectoire.keys():
+            #if index[:6]=="point-":
+                #[p,point] = self.trajectoire[index]
+                #self.echelle_v=self.ui.echelle_v.currentText()
+                #show=True
+                #point.calcule_vitesse(self.echelle_v,show)
 
-    def setEchelle_v(self):
-        ech_v="%s" %self.echelle_v
-        index=self.ui.echelle_v.findText(ech_v)
-        if index <0:
-            self.ui.echelle_v.addItem(ech_v)
-            index=self.ui.echelle_v.findText(ech_v)
-        self.ui.echelle_v.setCurrentIndex(index)
-        self.refait_vitesses()
+    #def setEchelle_v(self):
+        #ech_v="%s" %self.echelle_v
+        #index=self.ui.echelle_v.findText(ech_v)
+        #if index <0:
+            #self.ui.echelle_v.addItem(ech_v)
+            #index=self.ui.echelle_v.findText(ech_v)
+        #self.ui.echelle_v.setCurrentIndex(1)
+        #self.refait_vitesses()
         
     def visibilite_vitesses(self):
         """
