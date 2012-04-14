@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from math import sqrt
+from math import sqrt, atan
 from vecteur import vecteur
 
 class Label_Trajectoire(QLabel):
@@ -43,22 +43,20 @@ class Label_Trajectoire(QLabel):
                     if distance.manhattanLength() < near :
                         self.app.dbg.p(2,"mouse near a point")           
                         ##compute speed
-                        ##coordonnates of n-1 point
-                        if key != 0:
-                            pointBefore = self.app.points[key-1][i]
+                        
+                        if key != 0:##coordonnates of n-1 and n+1 point
+                            pointBefore = QPoint(self.app.points[key-1][i].x(), self.app.points[key-1][i].y())
                             try : 
-                                pointAfter = self.app.points[key+1][i]
+                                pointAfter = QPoint(self.app.points[key+1][i].x(), self.app.points[key+1][i].y())
                                 
                                 vector_speed = pointAfter-pointBefore
                                 #speed = sqrt(vector_speed.x()**2+vector_speed.y()**2)
-                                #print "DRAW",pointBefore, pointAfter,vector_speed, speed
-                                self.speedToDraw = (point, vector_speed)
+                                #print "DRAW",pointBefore, pointAfter,vector_speed
+                                self.speedToDraw = (QPoint(point.x(),point.y()), vector_speed)
                                 self.repaint()
                             except KeyError: #last point -> can't compute speed
                                 pass
-                        ##coordonnates of n+1 point
-                        
-                        #self.pointSpeedToDraw = [point, vitesse]
+
                     
                     
         
@@ -68,6 +66,29 @@ class Label_Trajectoire(QLabel):
         self.painter = QPainter()
         self.painter.begin(self)
         self.painter.fillRect(QRect(0,0,640,480),QColor("grey"))
+        
+        ############################################################
+        #paint speed vectors if asked
+        if self.speedToDraw!=[]:
+            try: 
+                self.painter.setPen(Qt.black)
+                p, vector_speed = self.speedToDraw[0],self.speedToDraw[1]
+                print p, vector_speed
+                #self.painter.translate(p.x()+self.origine.x()-ptreferentiel.x(), p.y()+self.origine.y()-ptreferentiel.y())
+                #self.painter.drawLine(p,p+vector_speed)
+                speed = sqrt(vector_speed.x()**2+vector_speed.y()**2)
+                p1=p
+                p2=p+QPoint(speed,0)
+                p3=p+QPoint(speed-10,0)+QPoint(0,10)
+                p4=p+QPoint(speed-10,0)+QPoint(0,-10)
+                angle = atan(float(vector_speed.y())/vector_speed.x())
+                self.painter.rotate(angle)
+                self.painter.drawPolyline(p1,p2,p3,p4,p2)
+                self.painter.rotate(-angle)
+            except IndexError:
+                pass #catch an undifined error TODO
+        
+        
         ############################################################
         #paint the origin
         self.painter.setPen(Qt.green)
@@ -96,6 +117,12 @@ class Label_Trajectoire(QLabel):
                     self.painter.drawText(0,0,str(color+1))
                     self.painter.translate(-point.x()-self.origine.x()+ptreferentiel.x()+10, -point.y()-10-self.origine.y()+ptreferentiel.y())
                     color+=1
+                    
+ 
+            
+            #self.painter.translate(-p.x()-self.origine.x()+ptreferentiel.x(), -p.y()-self.origine.y()+ptreferentiel.y())
+            
+                    
         ############################################################
         #paint repere
         self.painter.setPen(Qt.green)
@@ -111,9 +138,7 @@ class Label_Trajectoire(QLabel):
         self.painter.drawPolyline(p1,p2,p3,p4,p2)
         ############################################################
         
-        ############################################################
-        #paint speed vectors if asked
-        if speedToDraw!=[]:
+
             
         
         
