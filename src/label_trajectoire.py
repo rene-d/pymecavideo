@@ -21,9 +21,14 @@ class Label_Trajectoire(QLabel):
         self.speedtest = []
         self.pos=None
         
+    def reDraw(self):
+        """call when somthing change as repere, origine ..."""
+        self.giveCoordonatesToPaint()
+        self.repaint
+        
         
     def giveCoordonatesToPaint(self):
-        
+        print "recalcul vitesse"
         if self.app.ui.radioButtonNearMouse.isChecked() and self.pos!=None:
             near=20
             pos = self.pos
@@ -33,9 +38,17 @@ class Label_Trajectoire(QLabel):
                     point=points[i]
                     if self.referentiel !=0:
                         ptreferentiel = points[int(self.referentiel)]
+                        
+                        try : 
+                            ptreferentielAfter = self.app.points[key+1][int(self.referentiel)]
+                            ptreferentielBefore = self.app.points[key-1][int(self.referentiel)]
+                        except KeyError: #last point -> can't compute speed
+                            break
 
                     else :
                         ptreferentiel = vecteur(0,0)
+                        ptreferentielBefore = vecteur(0,0)
+                        ptreferentielAfter = vecteur(0,0)
                         
                     if type(point)!= type(""): 
                         #self.app.dbg.p(2,"distance between mouse and a point")
@@ -47,15 +60,15 @@ class Label_Trajectoire(QLabel):
                                 ##compute speed
                                 
                                 if key != 0:##coordonnates of n-1 and n+1 point
-                                    pointBefore = QPoint(self.app.points[key-1][i].x(), self.app.points[key-1][i].y())
+                                    pointBefore = QPoint(self.app.points[key-1][i].x()+self.origine.x()-ptreferentielBefore.x(), self.app.points[key-1][i].y()+self.origine.y()-ptreferentielBefore.y())
                                     try : 
-                                        pointAfter = QPoint(self.app.points[key+1][i].x(), self.app.points[key+1][i].y())
+                                        pointAfter = QPoint(self.app.points[key+1][i].x()+self.origine.x()-ptreferentielAfter.x(), self.app.points[key+1][i].y()+self.origine.y()-ptreferentielAfter.y())
                                         
                                         vector_speed = pointAfter-pointBefore
                                         #speed = sqrt(vector_speed.x()**2+vector_speed.y()**2)
                                         #print "DRAW",pointBefore, pointAfter,vector_speed
                                         self.speedToDraw = [(QPoint(point.x(),point.y()), vector_speed,i)] #i give the color
-                                        self.speedtest.append((QPoint(point.x(),point.y()), vector_speed,i))
+                                        self.speedtest.append((QPoint(point.x()+self.origine.x()-ptreferentiel.x(), point.y()+self.origine.y()-ptreferentiel.y()), vector_speed,i))
 
                                         self.repaint()
                                     except KeyError: #last point -> can't compute speed
@@ -68,22 +81,31 @@ class Label_Trajectoire(QLabel):
                     point=points[i]
                     if self.referentiel !=0:
                         ptreferentiel = points[int(self.referentiel)]
-
+                        try : 
+                            ptreferentielBefore = self.app.points[key-1][int(self.referentiel)]
+                        
+                            ptreferentielAfter = self.app.points[key+1][int(self.referentiel)]
+                        except KeyError: #last point -> can't compute speed
+                            break
+                        
+                        print "referentiel : point : ",self.referentiel
                     else :
                         ptreferentiel = vecteur(0,0)
+                        ptreferentielBefore = vecteur(0,0)
+                        ptreferentielAfter = vecteur(0,0)
                         
                     if type(point)!= type(""): 
                         #self.app.dbg.p(2,"distance between mouse and a point")
                         
                         if key != 0:##coordonnates of n-1 and n+1 point
-                            pointBefore = QPoint(self.app.points[key-1][i].x(), self.app.points[key-1][i].y())
+                            pointBefore = QPoint(self.app.points[key-1][i].x()+self.origine.x()-ptreferentielBefore.x(), self.app.points[key-1][i].y()+self.origine.y()-ptreferentielBefore.y())
                             try : 
-                                pointAfter = QPoint(self.app.points[key+1][i].x(), self.app.points[key+1][i].y())
+                                pointAfter = QPoint(self.app.points[key+1][i].x()+self.origine.x()-ptreferentielAfter.x(), self.app.points[key+1][i].y()+self.origine.y()-ptreferentielAfter.y())
                                 
                                 vector_speed = pointAfter-pointBefore
                                 #speed = sqrt(vector_speed.x()**2+vector_speed.y()**2)
                                 #print "DRAW",pointBefore, pointAfter,vector_speed
-                                self.speedToDraw.append((QPoint(point.x(),point.y()), vector_speed,i)) #i give the color)
+                                self.speedToDraw.append((QPoint(point.x()+self.origine.x()-ptreferentiel.x(), point.y()+self.origine.y()-ptreferentiel.y()), vector_speed,i)) #i give the color)
                                 
                                 self.repaint()
 
@@ -97,10 +119,8 @@ class Label_Trajectoire(QLabel):
         #print self.app.points
         ####Look if mouse is near a point
         self.pos = event.pos()
-        self.giveCoordonatesToPaint()
-        
-            
-                    
+        if self.app.ui.radioButtonNearMouse.isChecked():
+            self.giveCoordonatesToPaint()
         
 
     
@@ -178,6 +198,7 @@ class Label_Trajectoire(QLabel):
             try: 
                 for vector in self.speedToDraw: 
                     p, vector_speed,i = vector
+                    print vector
                     self.painter = QPainter()
                     self.painter.begin(self)
                     self.painter.setPen(QColor(self.couleurs[i-1]))
@@ -200,7 +221,7 @@ class Label_Trajectoire(QLabel):
                     #p4=QPoint(speed-10,0)+QPoint(0,-10)
                     
                     angle = atan2(float(vector_speed.y()),float(vector_speed.x()))
-                    self.painter.translate(p)
+                    self.painter.translate(p.x(), p.y())
                     self.painter.rotate(degrees(angle))
                     #self.painter.drawPolyline(p1,p2,p3,p4,p2)
                     self.painter.drawPath(path)

@@ -517,15 +517,23 @@ class StartQT4(QMainWindow):
         self.qmsgboxencode.updateProgressBar()
         
     def enableSpeed(self):
-        self.dbg.p(2,"In enableSpeed")
-        self.ui.checkBoxScale.setEnabled(1)
-        self.ui.checkBoxScale.insertItem(0,"1")
+        if self.ui.checkBoxVectorSpeed.isChecked() : 
+            self.dbg.p(2,"In enableSpeed")
+            self.ui.checkBoxScale.setEnabled(1)
+            self.ui.checkBoxScale.insertItem(0,"1")
+            
+            self.ui.radioButtonNearMouse.show()
+            self.ui.radioButtonSpeedEveryWhere.show()
+            self.label_trajectoire.reDraw()
         
-        self.ui.radioButtonNearMouse.show()
-        self.ui.radioButtonSpeedEveryWhere.show()
-        self.label_trajectoire.giveCoordonatesToPaint()
-        self.label_trajectoire.repaint()
-        self.label_trajectoire.update()
+            #self.label_trajectoire.update()
+        else : 
+            self.ui.checkBoxScale.setEnabled(0)
+            self.ui.checkBoxScale.insertItem(0,"1")
+            
+            self.ui.radioButtonNearMouse.hide()
+            self.ui.radioButtonSpeedEveryWhere.hide()
+            self.label_trajectoire.reDraw()
         
     def storeMotif(self):
         
@@ -1195,7 +1203,7 @@ class StartQT4(QMainWindow):
         """
 
         try : 
-            self.label_trajectoire.update()
+            self.label_trajectoire.reDraw()
             if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
                 
                 origine = vecteur(0,0)

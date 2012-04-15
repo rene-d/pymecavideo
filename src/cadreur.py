@@ -132,7 +132,9 @@ class Cadreur(QObject):
             self.capture=cv.CreateFileCapture(self.app.filename)
             
             #have to move to first picture clicked
+            print "premiere Image", self.app.premiere_image
             cv.SetCaptureProperty(self.capture,cv.CV_CAP_PROP_POS_FRAMES,self.app.premiere_image-1)
+            
             
             for i in self.app.points.keys():
                 p=self.app.points[i][self.numpoint]
@@ -142,6 +144,7 @@ class Cadreur(QObject):
                 #taille=self.rayons*2*ech
                 taille=self.sz*ech
                 img=self.queryFrame()
+                
                 x,y = int(hautgauche.x()), int(hautgauche.y())
                 w,h = int(taille.x()), int(taille.y())
                 #print "x,y,w,h", x,y,w,h
