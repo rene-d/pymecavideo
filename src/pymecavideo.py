@@ -68,7 +68,8 @@ from dbg import Dbg
 from listes import listePointee
 from version import Version
 from label_auto import Label_Auto
-import altvideo
+#from altvideo import AltVideo
+from dialogencode import QMessageBoxEncode
 
 import qtiplotexport
 from subprocess import *
@@ -251,6 +252,9 @@ class StartQT4(QMainWindow):
         #self.echelle_v = 0
         self.filename=filename
         self.opts=opts
+        self.stdout_file = '/tmp/stdout'
+        self.exitDecode = False
+        
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
         self.init_interface()
 
@@ -270,6 +274,11 @@ class StartQT4(QMainWindow):
 
     def init_interface(self):
         self.cree_tableau()
+        try : 
+            self.label_trajectoire.close()
+            del self.label_trajectoire
+        except AttributeError:
+            pass
         self.label_trajectoire=Label_Trajectoire(self.ui.label_3, self)
         self.ui.horizontalSlider.setEnabled(0)
         
@@ -301,6 +310,11 @@ class StartQT4(QMainWindow):
             self.desactiveExport("SciDAVis")
 
         #création du label qui contiendra la vidéo.
+        try : 
+            self.label_video.close()
+            del self.label_video
+        except AttributeError:
+            pass
         self.label_video = Label_Video(parent=self.ui.label, app=self)
 
         #self.ui.group_advanced.hide()
@@ -455,7 +469,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.actionScidavis,SIGNAL("triggered()"), self.scidavis)
         QObject.connect(self.ui.actionRouvrirMecavideo,SIGNAL("triggered()"), self.rouvre_ui)
         QObject.connect(self.ui.Bouton_Echelle,SIGNAL("clicked()"), self.demande_echelle)
-        QObject.connect(self.ui.horizontalSlider,SIGNAL("valueChanged(int)"), self.affiche_image_slider)
+        QObject.connect(self.ui.horizontalSlider,SIGNAL("sliderReleased()"), self.affiche_image_slider)
         QObject.connect(self.ui.spinBox_image,SIGNAL("valueChanged(int)"),self.affiche_image_spinbox)
         QObject.connect(self.ui.Bouton_lance_capture,SIGNAL("clicked()"),self.debut_capture)
         QObject.connect(self,SIGNAL("clic_sur_video()"),self.clic_sur_label_video)
@@ -482,6 +496,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_ou_origine)
         QObject.connect(self,SIGNAL('selection_done()'),self.picture_detect)
         QObject.connect(self,SIGNAL('selection_motif_done()'),self.storeMotif)
+        QObject.connect(self,SIGNAL('updateProgressBar()'),self.updatePB)
 
         ## QObject.connect(self.ui.calcButton,SIGNAL("clicked()"),self.oooCalc)
         ## QObject.connect(self.ui.qtiplotButton,SIGNAL("clicked()"),self.qtiplot)
@@ -490,6 +505,8 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
         QObject.connect(self,SIGNAL("mplWindowClosed()"),self.mplwindowclosed)
         
+    def updatePB(self):
+        self.qmsgboxencode.updateProgressBar()
         
     def enableSpeed(self):
         self.dbg.p(2,"In enableSpeed")
@@ -534,7 +551,34 @@ class StartQT4(QMainWindow):
             self.label_video.repaint()
             self.clic_sur_label_video()
             
-
+    def readStdout(self):
+        
+        try : 
+            if not self.time.isActive():
+                self.timer = QTimer(self)
+                QObject.connect(self.timer, SIGNAL("timeout()"), self, SLOT(self.readStdout()))
+                self.timer.start(100);
+            else : 
+                while not self.exitDecode:
+                    print "while"
+                    stdout_file = open(self.stdout_file, 'w+')
+                    stdout = stdout_file.readlines()  ##a gloabliser poru windows
+                    #print stdout
+                    if not self.exitDecode:
+                        try : 
+                            pct = stdout[-1].split()[3].replace('%','').replace(')','').replace('(','')
+                            print stdout[-1].split()[3].replace('%','').replace(')','').replace('(','')
+                            assert(pct.isalnum())
+                            exit=True
+                        except IndexError:
+                            print "indexerror"
+                            exit=False
+                
+        except :
+            pass
+        
+            
+        
     def refait_echelle(self):
         #"""Permet de retracer une échelle et de recalculer les points"""
         #self.recommence_echelle()
@@ -724,12 +768,25 @@ class StartQT4(QMainWindow):
         et recode la vidéo si nécessaire.
         """
         self.cvReader=openCvReader(self.filename)
-        if not self.cvReader:
-            new=altvideo.altVideo(self.filename, NEWVID_PATH)
-            if new:
-                self.filename=new
-                self.cvReader=openCvReader(self.filename)
-                self.newVideos.append(new)
+        if not self.cvReader : 
+            
+            sansSuffixe=os.path.basename(self.filename)
+            match=re.match("(.*)\.(.*)$",sansSuffixe)
+            sansSuffixe=match.group(1)
+            dest=os.path.join(NEWVID_PATH,sansSuffixe+".avi")
+            self.qmsgboxencode = QMessageBoxEncode(self,dest)
+            self.qmsgboxencode.show()
+            
+            return False
+        else : 
+            try: 
+                self.qmsgboxencode.close()
+            except AttributeError:
+                pass
+            
+            return True
+            
+
 
     def rouvre_ui(self):
         dir_ = self._dir("home")
@@ -918,7 +975,7 @@ class StartQT4(QMainWindow):
         if self.ui.checkBox_auto.isChecked():
             ###############
             
-            reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de l'objet que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
+            reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de(s) l'objet(s) que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
 
             self.label_auto = Label_Auto(self.label_video,self) #in this label, matif is defined.
             self.label_auto.show()
@@ -946,7 +1003,7 @@ class StartQT4(QMainWindow):
         cette fonction est rappelée par label_trajectoire quand la souris
         bouge au-dessus : p est un vecteur, position de la souris.
         """
-        print self.points
+        #print self.points
         print "################"
         self.dbg.p(2,"entre dans traiteSouris")
         if not self.prefs.proximite: 
@@ -978,7 +1035,7 @@ class StartQT4(QMainWindow):
 		  a.montre_vitesse(False)
 		  self.dbg.p(2,"dans traiteSouris, 4")
         intersection=list(pX & pY)
-        print pX, pY
+        #print pX, pY
 	print intersection
         if intersection:
             # précaution au cas où on a plus d'un point dans l'intersection
@@ -1388,6 +1445,7 @@ class StartQT4(QMainWindow):
         self.demande_echelle()
         
     def affiche_image_slider(self):
+        print self.index_de_l_image
         self.index_de_l_image = self.ui.horizontalSlider.value()
         self.affiche_image()
 
@@ -1529,17 +1587,21 @@ class StartQT4(QMainWindow):
             filename = filename.toUtf8()
             data = filename.data()
             self.filename = data.decode('utf-8')
-            self.init_cvReader()
-            self.prefs.lastVideo=self.filename
-            self.init_image()
-            self.mets_a_jour_label_infos(self.tr(u"Veuillez choisir une image et définir l'échelle"))
-            self.ui.Bouton_Echelle.setEnabled(True)
-            self.ui.spinBox_nb_de_points.setEnabled(True)
-            self.ui.horizontalSlider.setEnabled(1)
-            self.label_video.show()
+            goOn = self.init_cvReader()
+            if goOn : #video is in goo format
+                
+                self.prefs.lastVideo=self.filename
+                self.init_image()
+                self.mets_a_jour_label_infos(self.tr(u"Veuillez choisir une image et définir l'échelle"))
+                self.ui.Bouton_Echelle.setEnabled(True)
+                self.ui.spinBox_nb_de_points.setEnabled(True)
+                self.ui.horizontalSlider.setEnabled(1)
+                self.label_video.show()
 
-            self.prefs.videoDir=os.path.dirname(self.filename)
-            self.prefs.save()
+                self.prefs.videoDir=os.path.dirname(self.filename)
+                self.prefs.save()
+
+                
 
     def propos(self):
         try:
@@ -1568,6 +1630,7 @@ class StartQT4(QMainWindow):
     def init_image(self):
         """intialise certaines variables lors le la mise en place d'une nouvelle image"""
         self.index_de_l_image = 1
+        self.init_interface()
         self.trajectoire = {}
         self.ui.spinBox_image.setMinimum(1)
         self.defini_barre_avancement()
@@ -1583,6 +1646,7 @@ class StartQT4(QMainWindow):
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
         framerate, self.image_max = self.cvReader.recupere_avi_infos()
+        #print framerate, self.image_max
         self.deltaT = float(1.0/framerate)
         self.ui.horizontalSlider.setMinimum(1)
         

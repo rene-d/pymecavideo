@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pymecavideo_mini.ui'
 #
-# Created: Sat Apr 14 21:00:18 2012
+# Created: Sun Apr 15 17:16:02 2012
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -85,7 +85,7 @@ class Ui_pymecavideo(object):
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
         self.frame.setObjectName(_fromUtf8("frame"))
         self.label_numero_image = QtGui.QLabel(self.frame)
-        self.label_numero_image.setGeometry(QtCore.QRect(190, 0, 61, 26))
+        self.label_numero_image.setGeometry(QtCore.QRect(170, 0, 81, 26))
         self.label_numero_image.setAutoFillBackground(False)
         self.label_numero_image.setAlignment(QtCore.Qt.AlignCenter)
         self.label_numero_image.setObjectName(_fromUtf8("label_numero_image"))
@@ -429,7 +429,7 @@ class Ui_pymecavideo(object):
         self.menubar.addAction(self.menuAide.menuAction())
 
         self.retranslateUi(pymecavideo)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(pymecavideo)
 
     def retranslateUi(self, pymecavideo):

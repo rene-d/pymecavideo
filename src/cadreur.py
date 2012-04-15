@@ -168,11 +168,13 @@ class openCvReader:
         isolé dans un sous-shell
         @param filename le nom d'un fichier vidéo
         """
+        #print "in opencvreader"
         self.filename=filename
         self.autoTest()
         self.rembobine()
         
     def autoTest(self):
+        #print "in autotest"
         cmd="python %s %s" %(os.path.join(PYMECA_SHARE, 'testfilm.py'),
                              self.filename)
         retcode=subprocess.call(cmd, shell=True)
