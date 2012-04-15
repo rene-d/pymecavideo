@@ -256,7 +256,7 @@ class StartQT4(QMainWindow):
         self.exitDecode = False
         
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
-        self.init_interface()
+        #self.init_interface()
 
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture']:
@@ -275,11 +275,17 @@ class StartQT4(QMainWindow):
     def init_interface(self):
         self.cree_tableau()
         try : 
-            self.label_trajectoire.close()
-            del self.label_trajectoire
+            
+            self.label_trajectoire.clear()
         except AttributeError:
-            pass
-        self.label_trajectoire=Label_Trajectoire(self.ui.label_3, self)
+            self.label_trajectoire=Label_Trajectoire(self.ui.label_3, self)
+            self.label_trajectoire.show()
+            
+        #for child in self.ui.label.children():
+            #child.hide()
+            #child.deleteLater()
+        self.update()
+        
         self.ui.horizontalSlider.setEnabled(0)
         
 
@@ -300,7 +306,6 @@ class StartQT4(QMainWindow):
         self.ui.checkBoxScale.setDuplicatesEnabled(False)
         self.ui.radioButtonNearMouse.hide()
         self.ui.radioButtonSpeedEveryWhere.hide()
-        #self.setEchelle_v()
 
         if not self.pyuno :
             self.desactiveExport("Oo.o Calc")
@@ -310,12 +315,16 @@ class StartQT4(QMainWindow):
             self.desactiveExport("SciDAVis")
 
         #création du label qui contiendra la vidéo.
+
+        print "cree"
         try : 
-            self.label_video.close()
-            del self.label_video
+            
+            self.label_video.clear()
         except AttributeError:
-            pass
-        self.label_video = Label_Video(parent=self.ui.label, app=self)
+            self.label_video = Label_Video(parent=self.ui.label, app=self)
+            self.label_video.show()
+
+        print self.ui.label.children()
 
         #self.ui.group_advanced.hide()
 
@@ -404,9 +413,9 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_origine.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
-        for enfant in self.label_video.children():
-              enfant.hide()
-              del enfant
+        #for enfant in self.label_video.children():
+              #enfant.hide()
+              #del enfant
         if echelle_image:
             self.echelle_image=echelle_image
             self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
@@ -428,12 +437,12 @@ class StartQT4(QMainWindow):
         self.ui.label.update()
         self.label_video.update()
         self.label_video.setCursor(Qt.ArrowCursor)
-        for enfant in self.label_video.children():
-              enfant.hide()
-              del enfant
-        del self.label_video.zoom_croix
+        #for enfant in self.label_video.children():
+              #enfant.hide()
+              #del enfant
+        #del self.label_video.zoom_croix
         
-        del self.label_video
+        #del self.label_video
         self.init_variables(None, filename=self.filename)
         self.affiche_image()
 
@@ -977,7 +986,7 @@ class StartQT4(QMainWindow):
             
             reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de(s) l'objet(s) que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
 
-            self.label_auto = Label_Auto(self.label_video,self) #in this label, matif is defined.
+            self.label_auto = Label_Auto(self.label_video,self) #in this label, motif is defined.
             self.label_auto.show()
                 
 
@@ -1466,6 +1475,7 @@ class StartQT4(QMainWindow):
                 self.mets_a_jour_label_infos(self.tr(u" Merci d'indiquer une échelle valable"))
             else :
                 self.echelle_image.etalonneReel(echelle_result[0])
+                
                 self.job = Label_Echelle(self.label_video,self)
                 self.job.setPixmap(QPixmap(self.chemin_image))
                 self.job.show()
