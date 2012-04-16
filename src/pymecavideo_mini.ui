@@ -910,9 +910,9 @@ la souris</string>
        <widget class="QLabel" name="label_8">
         <property name="geometry">
          <rect>
-          <x>219</x>
+          <x>180</x>
           <y>10</y>
-          <width>181</width>
+          <width>211</width>
           <height>20</height>
          </rect>
         </property>

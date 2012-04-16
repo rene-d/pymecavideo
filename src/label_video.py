@@ -57,7 +57,7 @@ class Label_Video(QtGui.QLabel):
         self.setMouseTracking(True)
         
     def storePoint(self,point):
-        if self.app.lance_capture==True and self.app.auto==False:
+        if self.app.lance_capture==True:
             self.liste_points.append(point)
             self.pos_avant=self.pos
             self.app.emit(SIGNAL('clic_sur_video()'))

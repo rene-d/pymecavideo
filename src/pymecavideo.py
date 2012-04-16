@@ -101,10 +101,13 @@ class MonThreadDeCalcul(QThread):
         self.image = image
 
     def run(self):
-
+        #print "run"
         point = filter_picture(self.motif,self.image)
-        return point
-
+        #print "point OK"
+        self.parent.pointFind = point
+        #print "passé à self OK"
+        self.parent.emit(SIGNAL('pointFind()'))
+        #print "emit OK"
 
 
 class StartQT4(QMainWindow):
@@ -316,7 +319,7 @@ class StartQT4(QMainWindow):
 
         #création du label qui contiendra la vidéo.
 
-        print "cree"
+        #print "cree"
         try : 
             
             self.label_video.clear()
@@ -324,7 +327,7 @@ class StartQT4(QMainWindow):
             self.label_video = Label_Video(parent=self.ui.label, app=self)
             self.label_video.show()
 
-        print self.ui.label.children()
+        #print self.ui.label.children()
 
         #self.ui.group_advanced.hide()
 
@@ -486,10 +489,10 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.tabWidget,SIGNAL("currentChanged (int)"),self.tracer_trajectoires)
         #QObject.connect(self.ui.echelle_v,SIGNAL("currentIndexChanged (int)"),self.refait_vitesses)
         #QObject.connect(self.ui.echelle_v,SIGNAL("editTextChanged (int)"),self.refait_vitesses)
-        
+        QObject.connect(self.ui.checkBoxScale,SIGNAL("currentIndexChanged(int)"),self.enableSpeed)
         QObject.connect(self.ui.checkBoxVectorSpeed,SIGNAL("stateChanged(int)"),self.enableSpeed)
-        QObject.connect(self.ui.radioButtonSpeedEveryWhere,SIGNAL("toggled()"),self.enableSpeed)
-        QObject.connect(self.ui.radioButtonNearMouse,SIGNAL("toggled()"),self.enableSpeed)
+        #QObject.connect(self.ui.radioButtonSpeedEveryWhere,SIGNAL("toggled()"),self.enableSpeed)
+        #QObject.connect(self.ui.radioButtonNearMouse,SIGNAL("toggled()"),self.enableSpeed)
         QObject.connect(self.ui.radioButtonSpeedEveryWhere,SIGNAL("clicked()"),self.enableSpeed)
         QObject.connect(self.ui.radioButtonNearMouse,SIGNAL("clicked()"),self.enableSpeed)
         QObject.connect(self.ui.button_video,SIGNAL("clicked()"),self.video)
@@ -498,13 +501,14 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_defait,SIGNAL("clicked()"),self.efface_point_precedent)
         QObject.connect(self.ui.pushButton_refait,SIGNAL("clicked()"),self.refait_point_suivant)
         QObject.connect(self.ui.pushButton_origine,SIGNAL("clicked()"),self.choisi_nouvelle_origine)
-        QObject.connect(self.ui.pushButton_video,SIGNAL("clicked()"),self.lance_logiciel_video)
+        #QObject.connect(self.ui.pushButton_video,SIGNAL("clicked()"),self.lance_logiciel_video)
         QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.change_sens_X )
         QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
         QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_ou_origine)
         QObject.connect(self,SIGNAL('selection_done()'),self.picture_detect)
         QObject.connect(self,SIGNAL('selection_motif_done()'),self.storeMotif)
-        QObject.connect(self,SIGNAL('updateProgressBar()'),self.updatePB)
+        #QObject.connect(self,SIGNAL('updateProgressBar()'),self.updatePB)
+        QObject.connect(self,SIGNAL('pointFind()'),self.onePointFind)
 
         ## QObject.connect(self.ui.calcButton,SIGNAL("clicked()"),self.oooCalc)
         ## QObject.connect(self.ui.qtiplotButton,SIGNAL("clicked()"),self.qtiplot)
@@ -513,14 +517,16 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
         QObject.connect(self,SIGNAL("mplWindowClosed()"),self.mplwindowclosed)
         
-    def updatePB(self):
-        self.qmsgboxencode.updateProgressBar()
+    #def updatePB(self):
+        #print "UPB"
+        #self.qmsgboxencode.updateProgressBar()
         
     def enableSpeed(self):
         if self.ui.checkBoxVectorSpeed.isChecked() : 
             self.dbg.p(2,"In enableSpeed")
             self.ui.checkBoxScale.setEnabled(1)
-            self.ui.checkBoxScale.insertItem(0,"1")
+            if self.ui.checkBoxScale.count()<1 : 
+                self.ui.checkBoxScale.insertItem(0,"1")
             
             self.ui.radioButtonNearMouse.show()
             self.ui.radioButtonSpeedEveryWhere.show()
@@ -538,6 +544,7 @@ class StartQT4(QMainWindow):
     def storeMotif(self):
         
         if len(self.motif)==self.nb_de_points:
+            
             self.label_auto.hide()
             self.label_auto.close()
             self.picture_detect()    
@@ -549,23 +556,40 @@ class StartQT4(QMainWindow):
         
         
     def picture_detect(self):
-        
-        while self.index_de_l_image<self.image_max:
+        #print "PDetect"
+        if self.index_de_l_image<self.image_max:
             for motif in self.motif:
                 self.run_detect(motif,self.image_640_480)
-            
+    def stopComputing(self):
+        self.auto=False
+        self.ui.pushButton_video.hide()
             
     def run_detect(self,motif, image):
-        myThread = MonThreadDeCalcul(self,motif,image)
-        point = myThread.run()
+        if self.auto:
+            self.ui.pushButton_video.setText("STOP CALCULS")
+            self.ui.pushButton_video.setEnabled(1)
+            self.ui.pushButton_video.show()
+            self.ui.pushButton_video.setFocus()
+            QObject.connect(self.ui.pushButton_video,SIGNAL('clicked()'),self.stopComputing)
+            self.myThread = MonThreadDeCalcul(self,motif,image)
+            #print "TUTU"
+            self.myThread.start()
+            #print "TOTO"
+        #else : 
+            #self.ui.spinBox_image.setEnabled(1)
+            #self.ui.slider.setEnabled(1)
+            
+    def onePointFind(self):
         
-        ##itère d'un cran et lance la détection
-        #self.label_video.liste_points.append(vecteur(point[0], point[1]))
         if self.index_de_l_image<=self.image_max:
             self.label_video.pos_avant=self.label_video.pos
-            self.label_video.storePoint(vecteur(point[0], point[1]))
+            self.label_video.storePoint(vecteur(self.pointFind[0],self.pointFind[1]))
             self.label_video.repaint()
+            
             self.clic_sur_label_video()
+            self.picture_detect()
+            #myThread.terminate()
+        
             
     def readStdout(self):
         
@@ -576,18 +600,18 @@ class StartQT4(QMainWindow):
                 self.timer.start(100);
             else : 
                 while not self.exitDecode:
-                    print "while"
+                    #print "while"
                     stdout_file = open(self.stdout_file, 'w+')
                     stdout = stdout_file.readlines()  ##a gloabliser poru windows
                     #print stdout
                     if not self.exitDecode:
                         try : 
                             pct = stdout[-1].split()[3].replace('%','').replace(')','').replace('(','')
-                            print stdout[-1].split()[3].replace('%','').replace(')','').replace('(','')
+                            #print stdout[-1].split()[3].replace('%','').replace(')','').replace('(','')
                             assert(pct.isalnum())
                             exit=True
                         except IndexError:
-                            print "indexerror"
+                            #print "indexerror"
                             exit=False
                 
         except :
@@ -990,8 +1014,8 @@ class StartQT4(QMainWindow):
         self.cree_tableau()
         if self.ui.checkBox_auto.isChecked():
             ###############
-            
-            reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de(s) l'objet(s) que vous voulez suivre"), QMessageBox.Ok,QMessageBox.Ok)
+            self.auto=True
+            reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de(s) l'objet(s) que vous voulez suivre.\nVous pouvez arrêter à tous moments la capture en appuyant sur le bouton"), QMessageBox.Ok,QMessageBox.Ok)
 
             self.label_auto = Label_Auto(self.label_video,self) #in this label, motif is defined.
             self.label_auto.show()
@@ -1014,59 +1038,59 @@ class StartQT4(QMainWindow):
             self.ui.tableWidget.setHorizontalHeaderItem(1+2*i,QTableWidgetItem(x))
             self.ui.tableWidget.setHorizontalHeaderItem(2+2*i,QTableWidgetItem(y))
 
-    def traiteSouris(self,p):
-        """
-        cette fonction est rappelée par label_trajectoire quand la souris
-        bouge au-dessus : p est un vecteur, position de la souris.
-        """
-        #print self.points
-        print "################"
-        self.dbg.p(2,"entre dans traiteSouris")
-        if not self.prefs.proximite: 
-	  self.dbg.p(2,"dans traiteSouris, self.prefs.proximite = True")
-	  return
-	self.dbg.p(2,"dans traiteSouris, self.prefs.proximite = false")
-        portee=30
-        try:
-            pX=set()
-            pY=set()
-            self.dbg.p(2,"dans traiteSouris, créer 2 sets")
-        except:
-            import sets # for Python << 2.5
-            pX=sets.Set()
-            pY=sets.Set()
-        for x in self.pX.keys():
-            if p.x()-portee<x<p.x()+portee:
-                for a in self.pX[x]: pX.add(a)
-                self.dbg.p(2,"dans traiteSouris, 1")
-            else:
-                for a in self.pX[x]: a.montre_vitesse(False)
-                self.dbg.p(2,"dans traiteSouris, 2")
-        for y in self.pY.keys():
-            if p.y()-portee<y<p.y()+portee:
-                for a in self.pY[y]: pY.add(a)
-                self.dbg.p(2,"dans traiteSouris, 3")
-            else:
-                for a in self.pY[y]:
-		  a.montre_vitesse(False)
-		  self.dbg.p(2,"dans traiteSouris, 4")
-        intersection=list(pX & pY)
-        #print pX, pY
-	print intersection
-        if intersection:
-            # précaution au cas où on a plus d'un point dans l'intersection
-            # définie par la variable portee
-            min=1000 # plus que la dimension du widget
-            index=0
-            for i in range(len(intersection)):
-                distance=(intersection[i].point-p).norme()
-                if distance<min:
-                    min=distance
-                    index=i
-            # montre la vitesse seulement pour le widget le plus
-            # proche de la souris
-            for i in range(len(intersection)):
-                intersection[i].montre_vitesse(index==i)
+    #def traiteSouris(self,p):
+        #"""
+        #cette fonction est rappelée par label_trajectoire quand la souris
+        #bouge au-dessus : p est un vecteur, position de la souris.
+        #"""
+        ##print self.points
+        #print "################"
+        #self.dbg.p(2,"entre dans traiteSouris")
+        #if not self.prefs.proximite: 
+	  #self.dbg.p(2,"dans traiteSouris, self.prefs.proximite = True")
+	  #return
+	#self.dbg.p(2,"dans traiteSouris, self.prefs.proximite = false")
+        #portee=30
+        #try:
+            #pX=set()
+            #pY=set()
+            #self.dbg.p(2,"dans traiteSouris, créer 2 sets")
+        #except:
+            #import sets # for Python << 2.5
+            #pX=sets.Set()
+            #pY=sets.Set()
+        #for x in self.pX.keys():
+            #if p.x()-portee<x<p.x()+portee:
+                #for a in self.pX[x]: pX.add(a)
+                #self.dbg.p(2,"dans traiteSouris, 1")
+            #else:
+                #for a in self.pX[x]: a.montre_vitesse(False)
+                #self.dbg.p(2,"dans traiteSouris, 2")
+        #for y in self.pY.keys():
+            #if p.y()-portee<y<p.y()+portee:
+                #for a in self.pY[y]: pY.add(a)
+                #self.dbg.p(2,"dans traiteSouris, 3")
+            #else:
+                #for a in self.pY[y]:
+		  #a.montre_vitesse(False)
+		  #self.dbg.p(2,"dans traiteSouris, 4")
+        #intersection=list(pX & pY)
+        ##print pX, pY
+	#print intersection
+        #if intersection:
+            ## précaution au cas où on a plus d'un point dans l'intersection
+            ## définie par la variable portee
+            #min=1000 # plus que la dimension du widget
+            #index=0
+            #for i in range(len(intersection)):
+                #distance=(intersection[i].point-p).norme()
+                #if distance<min:
+                    #min=distance
+                    #index=i
+            ## montre la vitesse seulement pour le widget le plus
+            ## proche de la souris
+            #for i in range(len(intersection)):
+                #intersection[i].montre_vitesse(index==i)
 
     def barycentre_trajectoires(self,referentiel):
         """
@@ -1203,12 +1227,11 @@ class StartQT4(QMainWindow):
         """
 
         try : 
-            self.label_trajectoire.reDraw()
+            
             if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
                 
                 origine = vecteur(0,0)
                 self.label_video.zoom_croix.hide()
-                #self.oubliePoints()
                 if newValue=="absolu":
                     ref="camera"
                 else:
@@ -1221,8 +1244,10 @@ class StartQT4(QMainWindow):
                     self.label_trajectoire.origine = origine
 
                     self.label_trajectoire.referentiel = ref
-                else : 
+                else :
+                    self.label_trajectoire.referentiel = 0
                     self.label_trajectoire.origine = vecteur(0,0)
+                    
                 # garnit le menu des courbes à tracer
                 self.ui.comboBox_mode_tracer.clear()
                 self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
@@ -1232,10 +1257,13 @@ class StartQT4(QMainWindow):
                     combo.addItem(QString("y%d(t)" %(i+1)))
                     combo.addItem(QString("v%d(t)" %(i+1)))
                             
-                            
+                #print "ref,origine" ,ref,origine           
         except ZeroDivisionError:
             print "pb self.tracer_trajectoires"
-
+        self.label_trajectoire.reDraw()
+        
+        
+        
     def tracer_courbe(self,itemChoisi):
         if self.ui.comboBox_mode_tracer.isEnabled():
 #            try:
@@ -1461,7 +1489,7 @@ class StartQT4(QMainWindow):
         self.demande_echelle()
         
     def affiche_image_slider(self):
-        print self.index_de_l_image
+        #print self.index_de_l_image
         self.index_de_l_image = self.ui.horizontalSlider.value()
         self.affiche_image()
 
