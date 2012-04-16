@@ -806,7 +806,7 @@ class StartQT4(QMainWindow):
             for d in ("conf", "images"):
                 dd=StartQT4._dir(str(d))
                 if not os.path.exists(dd):
-                    self.dbg.p(1,"cree le repertoires %s" %dd)
+
                     os.makedirs(dd)
 
     _dir=staticmethod(_dir)
@@ -1147,7 +1147,7 @@ class StartQT4(QMainWindow):
             if self.ui.tabWidget.currentIndex()!=0 :#Pas le premier onglet
                 
                 origine = vecteur(0,0)
-                self.label_video.zoom_croix.hide()
+                #self.label_video.zoom_croix.hide()
                 if newValue=="absolu":
                     ref="camera"
                 else:
