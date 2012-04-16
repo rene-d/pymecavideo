@@ -23,11 +23,14 @@
 import cv
 from cv import *
 from globdef import *
-import os.path
+import os.path, tempfile
 
 def filter_picture(part,image):
-    partImg=os.path.join(IMG_PATH,"part.png")
-    img=os.path.join(IMG_PATH,"image.png")
+    imgPref=tempfile.NamedTemporaryFile(delete=False).name
+    partImg=os.path.join(imgPref+"part.png")
+    
+    img=os.path.join(imgPref+"image.png")
+    print imgPref, partImg
     if type(image)==type("") and type(part)==type("") :
         image=cv.LoadImage(image,1)
         part=cv.LoadImage(part,1)
@@ -42,10 +45,14 @@ def filter_picture(part,image):
         image=cv.LoadImage(img,1)
         part=cv.LoadImage(partImg,1)
         point1, point2 = detect_part(part,image)
+        print point2
+        #os.remove(img)
+        #os.remove(partImg)
         return point2
         
     else :
         return "Type Error"
+    
 
 def detect_part(part,image):
 

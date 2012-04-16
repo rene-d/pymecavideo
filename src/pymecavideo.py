@@ -100,11 +100,11 @@ class MonThreadDeCalcul(QThread):
         self.motif = motif
         self.image = image
 
+
     def run(self):
         #print "run"
-        point = filter_picture(self.motif,self.image)
-        #print "point OK"
-        self.parent.pointFind = point
+        self.pointFound = filter_picture(self.motif,self.image)
+        
         #print "passé à self OK"
         self.parent.emit(SIGNAL('pointFind()'))
         #print "emit OK"
@@ -235,6 +235,7 @@ class StartQT4(QMainWindow):
         self.sens_X=1
         self.sens_Y=1
         self.repere=0
+        self.myThreads=[]
         self.origine = vecteur(320,240)
         self.auto=False
         self.motif = []
@@ -544,7 +545,7 @@ class StartQT4(QMainWindow):
     def storeMotif(self):
         
         if len(self.motif)==self.nb_de_points:
-            
+            print "selection finie"
             self.label_auto.hide()
             self.label_auto.close()
             self.picture_detect()    
@@ -556,39 +557,60 @@ class StartQT4(QMainWindow):
         
         
     def picture_detect(self):
-        #print "PDetect"
+        print "PDetect"
+        
         if self.index_de_l_image<self.image_max:
+            self.iterateMotif  = 0
+            self.pointsFound = []
             for motif in self.motif:
-                self.run_detect(motif,self.image_640_480)
+                if self.auto:
+                    print "self.iterateMotif", self.iterateMotif
+                    self.ui.pushButton_video.setText("STOP CALCULS")
+                    self.ui.pushButton_video.setEnabled(1)
+                    self.ui.pushButton_video.show()
+                    self.ui.pushButton_video.setFocus()
+                    QObject.connect(self.ui.pushButton_video,SIGNAL('clicked()'),self.stopComputing)
+                    self.myThreadsDone=0
+                    self.myThreads.append(MonThreadDeCalcul(self,motif,self.image_640_480))
+                    #print "TUTU"
+                    self.myThreads[self.iterateMotif].start()
+                    self.iterateMotif+=1
+                
+                
     def stopComputing(self):
         self.auto=False
         self.ui.pushButton_video.hide()
             
-    def run_detect(self,motif, image):
-        if self.auto:
-            self.ui.pushButton_video.setText("STOP CALCULS")
-            self.ui.pushButton_video.setEnabled(1)
-            self.ui.pushButton_video.show()
-            self.ui.pushButton_video.setFocus()
-            QObject.connect(self.ui.pushButton_video,SIGNAL('clicked()'),self.stopComputing)
-            self.myThread = MonThreadDeCalcul(self,motif,image)
-            #print "TUTU"
-            self.myThread.start()
-            #print "TOTO"
-        #else : 
-            #self.ui.spinBox_image.setEnabled(1)
-            #self.ui.slider.setEnabled(1)
+    #def run_detect(self,motif, image):
+        #pass
+            ##print "TOTO"
+        ##else : 
+            ##self.ui.spinBox_image.setEnabled(1)
+            ##self.ui.slider.setEnabled(1)
             
     def onePointFind(self):
-        
+        self.myThreadsDone+=1
         if self.index_de_l_image<=self.image_max:
-            self.label_video.pos_avant=self.label_video.pos
-            self.label_video.storePoint(vecteur(self.pointFind[0],self.pointFind[1]))
-            self.label_video.repaint()
+            #self.label_video.pos_avant=self.label_video.pos
+
             
-            self.clic_sur_label_video()
-            self.picture_detect()
-            #myThread.terminate()
+            
+            if self.myThreadsDone == self.nb_de_points:
+
+                for thread in self.myThreads :
+
+                    self.pointsFound.append(thread.pointFound)
+                    
+                    thread.terminate()
+                    del thread
+                self.myThreads = []
+                for point in self.pointsFound :
+
+                    self.label_video.storePoint(vecteur(point[0],point[1]))
+                self.label_video.repaint()
+                self.clic_sur_label_video()
+                self.picture_detect()
+
         
             
     def readStdout(self):
@@ -1461,7 +1483,7 @@ class StartQT4(QMainWindow):
     def affiche_image(self):
         self.extract_image(self.filename, self.index_de_l_image)
         image=QImage(self.chemin_image)
-     
+        print "~~~~~~~~~~~~~~~nouvelle image"
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
 #        try :
         if hasattr(self, "label_video"):
