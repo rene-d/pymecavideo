@@ -46,8 +46,9 @@ def filter_picture(part,image):
         part=cv.LoadImage(partImg,1)
         point1, point2 = detect_part(part,image)
         print point2
-        #os.remove(img)
-        #os.remove(partImg)
+        os.remove(img)
+        os.remove(partImg)
+        os.remove(imgPref)
         return point2
         
     else :
