@@ -806,7 +806,8 @@ class StartQT4(QMainWindow):
             for d in ("conf", "images"):
                 dd=StartQT4._dir(str(d))
                 if not os.path.exists(dd):
-                    call("mkdir -p %s" %dd, shell=True)
+                    self.dbg.p(1,"cree le repertoires %s" %dd)
+                    os.makedirs(dd)
 
     _dir=staticmethod(_dir)
 

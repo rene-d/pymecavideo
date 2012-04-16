@@ -68,6 +68,7 @@ class Preferences:
                 f.close()
             except:
                 self.app.dbg.p(2,"erreur en lisant %s" %self.conffile)
+                self.app.dbg.p(2,"effacement du répertoire temporaire de pymecavideo")
                 pass
         
         
