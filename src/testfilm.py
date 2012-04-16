@@ -28,8 +28,8 @@ class film:
             self.num=0
             self.fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
             self.framecount=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FRAME_COUNT)
-            print self.framecount, self.fps
-            print self.filesize, 1.0*self.filesize/self.framecount
+            #print self.framecount, self.fps
+            #print self.filesize, 1.0*self.filesize/self.framecount
             assert 1.0*self.filesize/self.framecount > 1800.0, "fichier aberrant en taille"
             self.ok=True
         except AssertionError:

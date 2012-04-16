@@ -113,6 +113,7 @@ class MonThreadDeCalcul(QThread):
 class StartQT4(QMainWindow):
     def __init__(self, parent, opts):
         #Données principales du logiciel : 
+
         if "maxi" in str(opts) :
             self.mini=False
         else :
@@ -125,7 +126,7 @@ class StartQT4(QMainWindow):
             Error._ = self.tr
         except:
             pass
-#        Error._ = self.tr
+
         #### Mode plein écran
         self.plein_ecran = False
         QShortcut(QKeySequence(Qt.Key_F11),self, self.basculer_plein_ecran )
@@ -149,6 +150,11 @@ class StartQT4(QMainWindow):
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
         self.dbg=Dbg(0)
+        for o in opts:
+            if ('-d' in o[0]) or ('--debug' in o[0]):
+                self.dbg=Dbg(o[1])
+                self.dbg.p(1,"Niveau de débogage"+o[1])
+        
         self.cvReader=None
         self.newVideos=[]            # les vidéos créées par recodage
 
@@ -207,6 +213,7 @@ class StartQT4(QMainWindow):
         
     # Basculer en mode plein écran / mode fenétré    
     def basculer_plein_ecran(self):
+        self.dbg.p(1,"rentre dans 'basculer_plein_ecran'")
         if not self.plein_ecran :
             self.showFullScreen()
         else:
@@ -215,6 +222,7 @@ class StartQT4(QMainWindow):
         
         
     def splashVideo(self):
+        self.dbg.p(1,"rentre dans 'splashVideo'")
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
                 return
@@ -228,7 +236,7 @@ class StartQT4(QMainWindow):
        
 
     def init_variables(self, opts, filename=""):
-
+        self.dbg.p(1,"rentre dans 'init_variables'")
         self.logiciel_acquisition = False
         self.points_ecran={}
         self.index_max = 1
@@ -253,14 +261,14 @@ class StartQT4(QMainWindow):
         self.nb_de_points = 1        # nombre de points suivis
         self.premiere_image = 1      # n° de la première image cliquée
         self.index_de_l_image = 1    # image à afficher
-        #self.echelle_v = 0
+        
         self.filename=filename
         self.opts=opts
         self.stdout_file = '/tmp/stdout'
         self.exitDecode = False
         
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
-        #self.init_interface()
+        
 
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture']:
@@ -277,6 +285,7 @@ class StartQT4(QMainWindow):
              
 
     def init_interface(self):
+        self.dbg.p(1,"rentre dans 'init_interface'")
         self.cree_tableau()
         try : 
             
@@ -285,9 +294,7 @@ class StartQT4(QMainWindow):
             self.label_trajectoire=Label_Trajectoire(self.ui.label_3, self)
             self.label_trajectoire.show()
             
-        #for child in self.ui.label.children():
-            #child.hide()
-            #child.deleteLater()
+        
         self.update()
         
         self.ui.horizontalSlider.setEnabled(0)
@@ -320,17 +327,13 @@ class StartQT4(QMainWindow):
 
         #création du label qui contiendra la vidéo.
 
-        #print "cree"
+        self.dbg.p(3,"cree Label_Video")
         try : 
             
             self.label_video.clear()
         except AttributeError:
             self.label_video = Label_Video(parent=self.ui.label, app=self)
             self.label_video.show()
-
-        #print self.ui.label.children()
-
-        #self.ui.group_advanced.hide()
 
         self.ui.tabWidget.setCurrentIndex(0) # montre l'onglet video
 
@@ -341,17 +344,20 @@ class StartQT4(QMainWindow):
         text.
         @param text le texte exact dans l'exportCombo qu'il faut inactiver
         """
+        self.dbg.p(1,"rentre dans 'desactiveExport'")
         index=self.ui.exportCombo.findText(text)
         if index > 0:
             self.ui.exportCombo.setItemData(index,Qt.blue,Qt.BackgroundRole)
             self.ui.exportCombo.setItemText(index,QString(self.tr(u"NON DISPO : "+text)))
             self.ui.exportCombo.setItemData(index,Qt.blue,Qt.BackgroundRole)
         return
+        
     def affiche_lance_capture (self,active=False):
         """
         Met à jour l'affichage du bouton pour lancer la capture
         @param active vrai si le bouton doit être activé
         """
+        self.dbg.p(1,"rentre dans 'affiche_lance_capture'")
         self.ui.Bouton_lance_capture.setEnabled(active)
         
     def affiche_nb_points(self, active=False):
@@ -359,6 +365,7 @@ class StartQT4(QMainWindow):
         Met à jour l'afficheur de nombre de points à saisir
         @param active vrai si on doit permettre la saisie du nombre de points
         """
+        self.dbg.p(1,"rentre dans 'affiche_nb_points'")
         self.ui.spinBox_nb_de_points.setEnabled(active)
         self.ui.spinBox_nb_de_points.setValue(self.nb_de_points)
         
@@ -366,6 +373,7 @@ class StartQT4(QMainWindow):
         """
         affiche l'échelle courante pour les distances sur l'image
         """
+        self.dbg.p(1,"rentre dans 'affiche_echelle'")
         if self.echelle_image.isUndef():
             self.ui.echelleEdit.setText(self.tr(unicode("indéf.","utf8")))
             self.ui.Bouton_Echelle.setEnabled(True)
@@ -389,6 +397,7 @@ class StartQT4(QMainWindow):
         @param tousLesClics permet de conserver une liste de points à refaire
         @param index_point_actuel permet de réinitialiser à partir de l'image de départ.
         """
+        self.dbg.p(1,"rentre dans 'reinitialise_tout'")
         self.dbg.p(2,"Dans reinitialise_tout: echelle_image=%s, nb_de_points=None%s, tousLesClics=%s,index_point_actuel=%s" %(echelle_image, nb_de_points, tousLesClics,index_point_actuel))
         self.montre_vitesses=False
         self.label_trajectoire.update()
@@ -433,6 +442,7 @@ class StartQT4(QMainWindow):
         Efface toutes les données de la capture en cours et prépare une nouvelle
         session de capture.
         """
+        self.dbg.p(1,"rentre dans 'reinitialise_capture'")
         self.montre_vitesses=False
         
         #self.oubliePoints()
@@ -466,11 +476,12 @@ class StartQT4(QMainWindow):
 
     def ui_connections(self):
         """connecte les signaux de QT"""
+        self.dbg.p(1,"rentre dans 'ui_connections'")
         QObject.connect(self.ui.actionOuvrir_un_fichier,SIGNAL("triggered()"), self.openfile)
         QObject.connect(self.ui.actionExemples,SIGNAL("triggered()"), self.openexample)
         QObject.connect(self.ui.action_propos,SIGNAL("triggered()"), self.propos)
         QObject.connect(self.ui.actionAide,SIGNAL("triggered()"), self.aide)
-        QObject.connect(self.ui.actionPreferences,SIGNAL("triggered()"), self.prefs.setFromDialog)
+        #QObject.connect(self.ui.actionPreferences,SIGNAL("triggered()"), self.prefs.setFromDialog)
         QObject.connect(self.ui.actionDefaire,SIGNAL("triggered()"), self.efface_point_precedent)
         QObject.connect(self.ui.actionRefaire,SIGNAL("triggered()"), self.refait_point_suivant)
         QObject.connect(self.ui.actionQuitter,SIGNAL("triggered()"), self.close)
@@ -482,18 +493,17 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.actionRouvrirMecavideo,SIGNAL("triggered()"), self.rouvre_ui)
         QObject.connect(self.ui.Bouton_Echelle,SIGNAL("clicked()"), self.demande_echelle)
         QObject.connect(self.ui.horizontalSlider,SIGNAL("sliderReleased()"), self.affiche_image_slider)
+        QObject.connect(self.ui.horizontalSlider,SIGNAL("valueChanged(int)"), self.affiche_image_slider_move)
         QObject.connect(self.ui.spinBox_image,SIGNAL("valueChanged(int)"),self.affiche_image_spinbox)
         QObject.connect(self.ui.Bouton_lance_capture,SIGNAL("clicked()"),self.debut_capture)
         QObject.connect(self,SIGNAL("clic_sur_video()"),self.clic_sur_label_video)
         QObject.connect(self.ui.comboBox_referentiel,SIGNAL("currentIndexChanged (int)"),self.tracer_trajectoires)
         QObject.connect(self.ui.comboBox_mode_tracer,SIGNAL("currentIndexChanged (int)"),self.tracer_courbe)
         QObject.connect(self.ui.tabWidget,SIGNAL("currentChanged (int)"),self.tracer_trajectoires)
-        #QObject.connect(self.ui.echelle_v,SIGNAL("currentIndexChanged (int)"),self.refait_vitesses)
-        #QObject.connect(self.ui.echelle_v,SIGNAL("editTextChanged (int)"),self.refait_vitesses)
+        
         QObject.connect(self.ui.checkBoxScale,SIGNAL("currentIndexChanged(int)"),self.enableSpeed)
         QObject.connect(self.ui.checkBoxVectorSpeed,SIGNAL("stateChanged(int)"),self.enableSpeed)
-        #QObject.connect(self.ui.radioButtonSpeedEveryWhere,SIGNAL("toggled()"),self.enableSpeed)
-        #QObject.connect(self.ui.radioButtonNearMouse,SIGNAL("toggled()"),self.enableSpeed)
+        
         QObject.connect(self.ui.radioButtonSpeedEveryWhere,SIGNAL("clicked()"),self.enableSpeed)
         QObject.connect(self.ui.radioButtonNearMouse,SIGNAL("clicked()"),self.enableSpeed)
         QObject.connect(self.ui.button_video,SIGNAL("clicked()"),self.video)
@@ -502,27 +512,25 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_defait,SIGNAL("clicked()"),self.efface_point_precedent)
         QObject.connect(self.ui.pushButton_refait,SIGNAL("clicked()"),self.refait_point_suivant)
         QObject.connect(self.ui.pushButton_origine,SIGNAL("clicked()"),self.choisi_nouvelle_origine)
-        #QObject.connect(self.ui.pushButton_video,SIGNAL("clicked()"),self.lance_logiciel_video)
+        
         QObject.connect(self.ui.checkBox_abscisses,SIGNAL("stateChanged(int)"),self.change_sens_X )
         QObject.connect(self.ui.checkBox_ordonnees,SIGNAL("stateChanged(int)"),self.change_sens_Y )
         QObject.connect(self,SIGNAL('change_axe_origine()'),self.change_axe_ou_origine)
         QObject.connect(self,SIGNAL('selection_done()'),self.picture_detect)
         QObject.connect(self,SIGNAL('selection_motif_done()'),self.storeMotif)
-        #QObject.connect(self,SIGNAL('updateProgressBar()'),self.updatePB)
+        
         QObject.connect(self,SIGNAL('pointFind()'),self.onePointFind)
+        QObject.connect(self.ui.pushButton_video,SIGNAL('clicked()'),self.stopComputing)
 
-        ## QObject.connect(self.ui.calcButton,SIGNAL("clicked()"),self.oooCalc)
-        ## QObject.connect(self.ui.qtiplotButton,SIGNAL("clicked()"),self.qtiplot)
+        
         QObject.connect(self.ui.exportCombo,SIGNAL("currentIndexChanged(int)"),self.export)
-        #### il faut connecter le combo exportCombo ####
+        
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
         QObject.connect(self,SIGNAL("mplWindowClosed()"),self.mplwindowclosed)
         
-    #def updatePB(self):
-        #print "UPB"
-        #self.qmsgboxencode.updateProgressBar()
-        
+            
     def enableSpeed(self):
+        self.dbg.p(1,"rentre dans 'enableSpeed'")
         if self.ui.checkBoxVectorSpeed.isChecked() : 
             self.dbg.p(2,"In enableSpeed")
             self.ui.checkBoxScale.setEnabled(1)
@@ -533,7 +541,7 @@ class StartQT4(QMainWindow):
             self.ui.radioButtonSpeedEveryWhere.show()
             self.label_trajectoire.reDraw()
         
-            #self.label_trajectoire.update()
+            
         else : 
             self.ui.checkBoxScale.setEnabled(0)
             self.ui.checkBoxScale.insertItem(0,"1")
@@ -543,7 +551,7 @@ class StartQT4(QMainWindow):
             self.label_trajectoire.reDraw()
         
     def storeMotif(self):
-        
+        self.dbg.p(1,"rentre dans 'storeMotif'")
         if len(self.motif)==self.nb_de_points:
             print "selection finie"
             self.label_auto.hide()
@@ -553,60 +561,53 @@ class StartQT4(QMainWindow):
         
         
     def mplwindowclosed(self):
+        self.dbg.p(1,"rentre dans 'mplwindowclosed'")
         self.canvas.effacerTousLesPlots()
         
         
     def picture_detect(self):
-        print "PDetect"
+        self.dbg.p(1,"rentre dans 'picture_detect'")
         
         if self.index_de_l_image<self.image_max:
             self.iterateMotif  = 0
             self.pointsFound = []
             for motif in self.motif:
                 if self.auto:
-                    print "self.iterateMotif", self.iterateMotif
                     self.ui.pushButton_video.setText("STOP CALCULS")
                     self.ui.pushButton_video.setEnabled(1)
                     self.ui.pushButton_video.show()
                     self.ui.pushButton_video.setFocus()
-                    QObject.connect(self.ui.pushButton_video,SIGNAL('clicked()'),self.stopComputing)
+
                     self.myThreadsDone=0
                     self.myThreads.append(MonThreadDeCalcul(self,motif,self.image_640_480))
-                    #print "TUTU"
+
                     self.myThreads[self.iterateMotif].start()
                     self.iterateMotif+=1
                 
                 
     def stopComputing(self):
+        self.dbg.p(1,"rentre dans 'stopComputing'")
+
         self.auto=False
         self.ui.pushButton_video.hide()
             
-    #def run_detect(self,motif, image):
-        #pass
-            ##print "TOTO"
-        ##else : 
-            ##self.ui.spinBox_image.setEnabled(1)
-            ##self.ui.slider.setEnabled(1)
+    
             
     def onePointFind(self):
-        self.myThreadsDone+=1
+        self.dbg.p(1,"rentre dans 'onePointFind'")
+
+        self.myThreadsDone+=1 #allow counting finished threads
         if self.index_de_l_image<=self.image_max:
-            #self.label_video.pos_avant=self.label_video.pos
-
-            
-            
-            if self.myThreadsDone == self.nb_de_points:
-
+            if self.myThreadsDone == self.nb_de_points: #if all threads are finished
                 for thread in self.myThreads :
-
-                    self.pointsFound.append(thread.pointFound)
-                    
+                    self.pointsFound.append(thread.pointFound) #stock all points found
                     thread.terminate()
                     del thread
-                self.myThreads = []
+                    
+                self.myThreads = [] #reinit thread. Hack. del is to slow. 
                 for point in self.pointsFound :
-
                     self.label_video.storePoint(vecteur(point[0],point[1]))
+                    
                 self.label_video.repaint()
                 self.clic_sur_label_video()
                 self.picture_detect()
@@ -614,7 +615,7 @@ class StartQT4(QMainWindow):
         
             
     def readStdout(self):
-        
+        self.dbg.p(1,"rentre dans 'readStdout'")
         try : 
             if not self.time.isActive():
                 self.timer = QTimer(self)
@@ -622,18 +623,15 @@ class StartQT4(QMainWindow):
                 self.timer.start(100);
             else : 
                 while not self.exitDecode:
-                    #print "while"
                     stdout_file = open(self.stdout_file, 'w+')
                     stdout = stdout_file.readlines()  ##a gloabliser poru windows
-                    #print stdout
                     if not self.exitDecode:
                         try : 
                             pct = stdout[-1].split()[3].replace('%','').replace(')','').replace('(','')
-                            #print stdout[-1].split()[3].replace('%','').replace(')','').replace('(','')
                             assert(pct.isalnum())
                             exit=True
                         except IndexError:
-                            #print "indexerror"
+
                             exit=False
                 
         except :
@@ -644,30 +642,24 @@ class StartQT4(QMainWindow):
     def refait_echelle(self):
         #"""Permet de retracer une échelle et de recalculer les points"""
         #self.recommence_echelle()
-
-        
+        self.dbg.p(1,"rentre dans 'refait_echelle'")
         self.cree_tableau()
         index=0
         for point in  self.tousLesClics:
             self.stock_coordonnees_image(index,point)
             index+=1
 
-
     def choisi_nouvelle_origine(self):
+        self.dbg.p(1,"rentre dans 'choisi_nouvelle_origine'")
         nvl_origine=QMessageBox.information(self,QString("NOUVELLE ORIGINE"),\
                                             QString("Choisissez, en cliquant sur la video le point qui sera la nouvelle origine"))
                                             
         label = Label_Origine(parent=self.ui.label, app=self)
         label.show()
 
-        #self.emit(SIGNAL('change_axe_origine()'))
-
-    def lance_logiciel_video(self):
-        #lance un logiciel externe de capture vidéo. Par défaut, qastrocam-g2, possibiltié de changer dans les préférences.
-        lance_logiciel = subprocess.Popen(args=[self.logiciel_acquisition], stderr=PIPE)
-
     def change_axe_ou_origine(self):
         """mets à jour le tableau de données"""
+        self.dbg.p(1,"rentre dans 'change_axe_ou_origine'")
         #repaint axes and define origine
         self.label_trajectoire.origine_mvt=self.origine
         self.label_trajectoire.update()
@@ -690,7 +682,9 @@ class StartQT4(QMainWindow):
             del self.repere_camera
         except AttributeError:
             pass
+        
     def change_sens_X(self):
+        self.dbg.p(1,"rentre dans 'change_sens_X'")
         if self.ui.checkBox_abscisses.isChecked():
             self.sens_X = -1
         else :
@@ -698,23 +692,12 @@ class StartQT4(QMainWindow):
         self.emit(SIGNAL('change_axe_origine()'))
 
     def change_sens_Y(self):
+        self.dbg.p(1,"rentre dans 'change_sens_Y'")
         if self.ui.checkBox_ordonnees.isChecked():
             self.sens_Y = -1
-
         else :
             self.sens_Y = 1
         self.emit(SIGNAL('change_axe_origine()'))
-
-    #def affiche_fonctionnalites_avancees(self):
-        #"""
-        #met à jour l'affichage des fonctions avancées, selon l'état
-        #coché ou décoché de la case de choix
-        #"""
-        #if self.ui.checkBox_avancees.isChecked() :
-            #self.ui.group_advanced.setEnabled(1)
-            #self.ui.group_advanced.show()
-        #else :
-            #self.ui.group_advanced.hide()
 
 
     def pointEnMetre(self,p):
@@ -723,6 +706,7 @@ class StartQT4(QMainWindow):
         référentiel "à l\'endroit"
         @param point un point en "coordonnées d\'écran"
         """
+        self.dbg.p(1,"rentre dans 'pointEnMetre'")
         return vecteur(self.sens_X*(float(p.x()-self.origine.x())*self.echelle_image.mParPx()),self.sens_Y*
                        float(self.origine.y()-p.y())*self.echelle_image.mParPx())
     
@@ -733,6 +717,7 @@ class StartQT4(QMainWindow):
         séparateurs décimaux sont automatiquement remplacés par des virgules
         si la locale est française.
         """
+        self.dbg.p(1,"rentre dans 'presse_papier'")
         trange=QTableWidgetSelectionRange(0,0,
                                           self.ui.tableWidget.rowCount()-1,
                                           self.ui.tableWidget.columnCount()-1)
@@ -740,6 +725,7 @@ class StartQT4(QMainWindow):
         self.ui.tableWidget.selection()
 
     def export(self):
+        self.dbg.p(1,"rentre dans 'export'")
         """
         Traite le signal venu de exportCombo, puis remet l\'index de ce 
         combo à zéro.
@@ -756,6 +742,7 @@ class StartQT4(QMainWindow):
         """
         Exporte directement les données vers OpenOffice.org Calc
         """
+        self.dbg.p(1,"rentre dans 'oooCalc'")
         if self.pyuno==True :
             import oooexport
         calc=oooexport.Calc()
@@ -765,6 +752,7 @@ class StartQT4(QMainWindow):
         """
         Exporte directement les données vers Qtiplot
         """
+        self.dbg.p(1,"rentre dans 'qtiplot'")
         plot=qtiplotexport.Qtiplot(self)
         f=tempfile.NamedTemporaryFile(prefix='pymecaTmp-',suffix=".qti")
         fname=f.name
@@ -780,6 +768,7 @@ class StartQT4(QMainWindow):
         """
         Exporte directement les données vers SciDAVis
         """
+        self.dbg.p(1,"rentre dans 'scidavis'")
         plot=qtiplotexport.Qtiplot(self)
         f=tempfile.NamedTemporaryFile(prefix='pymecaTmp-',suffix=".qti")
         fname=f.name
@@ -790,9 +779,6 @@ class StartQT4(QMainWindow):
         t=threading.Thread(target=lanceSciDAVis, args=(fname,))
         t.setDaemon(True) # Scidavis peut survivre à pymecavideo
         t.start()
-
-    
-    
     
     def _dir(lequel=None,install=None):
         """renvoie les répertoires utiles.
@@ -829,16 +815,15 @@ class StartQT4(QMainWindow):
         Initialise le lecteur de flux vidéo pour OpenCV
         et recode la vidéo si nécessaire.
         """
+        self.dbg.p(1,"rentre dans 'init_cvReader'")
         self.cvReader=openCvReader(self.filename)
         if not self.cvReader : 
-            
             sansSuffixe=os.path.basename(self.filename)
             match=re.match("(.*)\.(.*)$",sansSuffixe)
             sansSuffixe=match.group(1)
             dest=os.path.join(NEWVID_PATH,sansSuffixe+".avi")
-            self.qmsgboxencode = QMessageBoxEncode(self,dest)
+            self.qmsgboxencode = QMessageBoxEncode(self,dest) #in this, thread to encode
             self.qmsgboxencode.show()
-            
             return False
         else : 
             try: 
@@ -847,10 +832,9 @@ class StartQT4(QMainWindow):
                 pass
             
             return True
-            
-
 
     def rouvre_ui(self):
+        self.dbg.p(1,"rentre dans 'rouvre_ui'")
         dir_ = self._dir("home")
         fichier = QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir un projet Pymecavideo","utf8")), dir_,self.tr(unicode("fichiers pymecavideo ( *.mecavideo)","utf8")))
         
@@ -858,11 +842,13 @@ class StartQT4(QMainWindow):
             self.rouvre(fichier)
 
     def loads(self,s):
+        self.dbg.p(1,"rentre dans 'loads'")
         s=s[1:-1].replace("\n#","\n")
         self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points = pickle.loads(s)
         self.init_cvReader()
         
     def rouvre(self,fichier):
+        self.dbg.p(1,"rentre dans 'rouvre'")
         lignes=open(fichier,"r").readlines()
         i=0
         self.points={}
@@ -920,6 +906,7 @@ class StartQT4(QMainWindow):
         self.prefs.save()
 
     def entete_fichier(self, msg=""):
+        self.dbg.p(1,"rentre dans 'entete_fichier'")
         result=u"""#pymecavideo
 #video = %s
 #index de depart = %d
@@ -932,8 +919,11 @@ class StartQT4(QMainWindow):
         return result
 
     def dumps(self):
+        self.dbg.p(1,"rentre dans 'dumps'")
         return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points)).replace("\n","\n#")
+        
     def enregistre(self, fichier):
+        self.dbg.p(1,"rentre dans 'enregistre'")
         sep_decimal="."
         try:
             if locale.getdefaultlocale()[0][0:2]=='fr':
@@ -980,11 +970,13 @@ class StartQT4(QMainWindow):
             self.modifie=False
         
     def enregistre_ui(self):
+        self.dbg.p(1,"rentre dans 'enregistre_ui'")
         if self.points!={}:
             fichier = QFileDialog.getSaveFileName(self,"FileDialog", "data.csv","*.csv *.txt *.asc *.dat")
             self.enregistre(fichier)
 
     def debut_capture(self, departManuel=True):
+        self.dbg.p(1,"rentre dans 'debut_capture'")
         """
         permet de mettre en place le nombre de point à acquérir
         @param departManuel vrai si on a fixé à la main la première image.
@@ -995,18 +987,13 @@ class StartQT4(QMainWindow):
             del self.origine_trace
         except :
             pass
-        #self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
-        #self.origine_trace.show()
-        #self.origine_trace = Label_Origine_Trace(parent=self.label_video, origine=self.origine)
+        
         self.label_video.setFocus()
         self.label_video.show()
         self.label_video.activateWindow()
         self.label_video.setVisible(True)
 
-        #self.origine_trace.show()
-
         self.label_echelle_trace.lower()  #nécessaire sinon, label_video n'est pas actif.
-        #self.origine_trace.lower() 
 
         self.nb_de_points = self.ui.spinBox_nb_de_points.value()
         self.affiche_nb_points(False)
@@ -1024,22 +1011,20 @@ class StartQT4(QMainWindow):
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
         self.ui.comboBox_referentiel.setEnabled(1)
         self.ui.pushButton_select_all_table.setEnabled(1)
-
-        
-        #self.ui.group_advanced.setEnabled(0)
-        
         
         self.ui.comboBox_referentiel.clear()
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points) :
             self.ui.comboBox_referentiel.insertItem(-1, QString(self.tr(u"point N°")+" "+str(i+1)))
         self.cree_tableau()
+        
+        #######automatic capture
         if self.ui.checkBox_auto.isChecked():
-            ###############
+
             self.auto=True
             reponse=QMessageBox.warning(None,"Capture Automatique",QString(u"Veuillez sélectionner un cadre autour de(s) l'objet(s) que vous voulez suivre.\nVous pouvez arrêter à tous moments la capture en appuyant sur le bouton"), QMessageBox.Ok,QMessageBox.Ok)
 
-            self.label_auto = Label_Auto(self.label_video,self) #in this label, motif is defined.
+            self.label_auto = Label_Auto(self.label_video,self) #in this label, motif(s) are defined.
             self.label_auto.show()
                 
 
@@ -1047,6 +1032,7 @@ class StartQT4(QMainWindow):
         """
         Crée un tableau de coordonnées neuf dans l'onglet idoine.
         """
+        self.dbg.p(1,"rentre dans 'cree_tableau'")
         self.ui.tableWidget.clear()
         self.ui.tab_coord.setEnabled(1)
         self.ui.tableWidget.setRowCount(1)
@@ -1060,65 +1046,14 @@ class StartQT4(QMainWindow):
             self.ui.tableWidget.setHorizontalHeaderItem(1+2*i,QTableWidgetItem(x))
             self.ui.tableWidget.setHorizontalHeaderItem(2+2*i,QTableWidgetItem(y))
 
-    #def traiteSouris(self,p):
-        #"""
-        #cette fonction est rappelée par label_trajectoire quand la souris
-        #bouge au-dessus : p est un vecteur, position de la souris.
-        #"""
-        ##print self.points
-        #print "################"
-        #self.dbg.p(2,"entre dans traiteSouris")
-        #if not self.prefs.proximite: 
-	  #self.dbg.p(2,"dans traiteSouris, self.prefs.proximite = True")
-	  #return
-	#self.dbg.p(2,"dans traiteSouris, self.prefs.proximite = false")
-        #portee=30
-        #try:
-            #pX=set()
-            #pY=set()
-            #self.dbg.p(2,"dans traiteSouris, créer 2 sets")
-        #except:
-            #import sets # for Python << 2.5
-            #pX=sets.Set()
-            #pY=sets.Set()
-        #for x in self.pX.keys():
-            #if p.x()-portee<x<p.x()+portee:
-                #for a in self.pX[x]: pX.add(a)
-                #self.dbg.p(2,"dans traiteSouris, 1")
-            #else:
-                #for a in self.pX[x]: a.montre_vitesse(False)
-                #self.dbg.p(2,"dans traiteSouris, 2")
-        #for y in self.pY.keys():
-            #if p.y()-portee<y<p.y()+portee:
-                #for a in self.pY[y]: pY.add(a)
-                #self.dbg.p(2,"dans traiteSouris, 3")
-            #else:
-                #for a in self.pY[y]:
-		  #a.montre_vitesse(False)
-		  #self.dbg.p(2,"dans traiteSouris, 4")
-        #intersection=list(pX & pY)
-        ##print pX, pY
-	#print intersection
-        #if intersection:
-            ## précaution au cas où on a plus d'un point dans l'intersection
-            ## définie par la variable portee
-            #min=1000 # plus que la dimension du widget
-            #index=0
-            #for i in range(len(intersection)):
-                #distance=(intersection[i].point-p).norme()
-                #if distance<min:
-                    #min=distance
-                    #index=i
-            ## montre la vitesse seulement pour le widget le plus
-            ## proche de la souris
-            #for i in range(len(intersection)):
-                #intersection[i].montre_vitesse(index==i)
+    
 
     def barycentre_trajectoires(self,referentiel):
         """
         calcule le barycentre de tous les points constituant les trajectoires
         rapportées à un référentiel.
         """
+        self.dbg.p(1,"rentre dans 'barycentre_trajectoires'")
         bc=vecteur(0,0)
         compte=0
         for n in range(self.nb_de_points):
@@ -1135,6 +1070,7 @@ class StartQT4(QMainWindow):
         calcule le barycentre de tous les points constituant les trajectoires
         rapportées à un référentiel.
         """
+        self.dbg.p(1,"rentre dans 'mediane_trajectoires'")
         min=None
         max=None
         for n in range(self.nb_de_points):
@@ -1148,57 +1084,11 @@ class StartQT4(QMainWindow):
             return (min+max)*0.5
         else:
             return vecteur(320,240)
-
-    #def refait_vitesses(self, newText=""):
-        #"""
-        #recalcule les vitesses de tous les points tracés.
-        #"""
-        #for index in self.trajectoire.keys():
-            #if index[:6]=="point-":
-                #[p,point] = self.trajectoire[index]
-                #self.echelle_v=self.ui.echelle_v.currentText()
-                #show=True
-                #point.calcule_vitesse(self.echelle_v,show)
-
-    #def setEchelle_v(self):
-        #ech_v="%s" %self.echelle_v
-        #index=self.ui.echelle_v.findText(ech_v)
-        #if index <0:
-            #self.ui.echelle_v.addItem(ech_v)
-            #index=self.ui.echelle_v.findText(ech_v)
-        #self.ui.echelle_v.setCurrentIndex(1)
-        #self.refait_vitesses()
         
-    def visibilite_vitesses(self):
-        """
-        change le critère de visibilité des vitesses selon self.prefs
-        """
-        #if not self.prefs.proximite:
-            ##choix par défaut
-            #self.label_trajectoire.setMouseTracking(0)
-            #self.montre_vitesses(True)
-        #else:
-            #self.montre_vitesses(False)
-            #self.label_trajectoire.setMouseTracking(1)
-            #self.label_trajectoire.setFocus()
-            #self.label_trajectoire.update()
-        pass
-
-                
-    #def montre_vitesses(self, show=True):
-        #"""
-        #montre ou cache les vitesses, selon le paramètre show
-        #"""
-        #for index in self.trajectoire.keys():
-            #if index[:6]=="point-":
-                #[p,point] = self.trajectoire[index]
-                #point.montre_vitesse(show)
-        #if not show:
-            #self.label_trajectoire.update()
-            
     def efface_point_precedent(self):
         """revient au point précédent
         """
+        self.dbg.p(1,"rentre dans 'efface_point_precedent'")
         self.tousLesClics.decPtr()
 
         self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics,self.index_de_l_image-1)
@@ -1209,6 +1099,7 @@ class StartQT4(QMainWindow):
     def refait_point_suivant(self):
         """rétablit le point suivant après un effacement
         """
+        self.dbg.p(1,"rentre dans 'refait_point_suivant'")
         self.tousLesClics.incPtr()
         self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics,self.index_de_l_image-1)
         self.repasseTousLesClics()
@@ -1219,18 +1110,19 @@ class StartQT4(QMainWindow):
         repasse en mode non-interactif toute la liste des clics
         sur l'image, jusqu'au pointeur courant de cette liste pointée.
         """
+        self.dbg.p(1,"rentre dans 'repasseTousLesClics'")
 
         self.affiche_echelle()
         self.affiche_nb_points()
         self.ui.tab_traj.setEnabled(1)
         
-
         for clics in self.tousLesClics:
             self.clic_sur_label_video(liste_points=clics, interactif=False)
         self.clic_sur_label_video_ajuste_ui(1)
 
 
     def video(self):
+        self.dbg.p(1,"rentre dans 'videos'")
         ref=self.ui.comboBox_referentiel.currentText().split(" ")[-1]
         if len(ref)==0 or ref == "camera": return
         c=Cadreur(int(ref),self)
@@ -1247,6 +1139,7 @@ class StartQT4(QMainWindow):
         trace les trajectoires en fonction du référentiel choisi.
        
         """
+        self.dbg.p(1,"rentre dans 'tracer_trajectoires'")
 
         try : 
             
@@ -1266,11 +1159,11 @@ class StartQT4(QMainWindow):
                     self.label_trajectoire.origine = origine
 
                     self.label_trajectoire.referentiel = ref
-                else :
+                else : #if camera, all tranlsations are disabled
                     self.label_trajectoire.referentiel = 0
                     self.label_trajectoire.origine = vecteur(0,0)
                     
-                # garnit le menu des courbes à tracer
+                # rempli le menu des courbes à tracer
                 self.ui.comboBox_mode_tracer.clear()
                 self.ui.comboBox_mode_tracer.insertItem(-1, QString(self.tr("Choisir ...")))
                 for i in range(self.nb_de_points) :
@@ -1279,7 +1172,7 @@ class StartQT4(QMainWindow):
                     combo.addItem(QString("y%d(t)" %(i+1)))
                     combo.addItem(QString("v%d(t)" %(i+1)))
                             
-                #print "ref,origine" ,ref,origine           
+                self.dbg.p(3,"origine %s, ref %s" %(str(origine),str(ref)))
         except ZeroDivisionError:
             print "pb self.tracer_trajectoires"
         self.label_trajectoire.reDraw()
@@ -1287,6 +1180,7 @@ class StartQT4(QMainWindow):
         
         
     def tracer_courbe(self,itemChoisi):
+        self.dbg.p(1,"rentre dans 'tracer_courbe'")
         if self.ui.comboBox_mode_tracer.isEnabled():
 #            try:
             self.ui.comboBox_mode_tracer.setCurrentIndex(0)
@@ -1350,6 +1244,7 @@ class StartQT4(QMainWindow):
 
     
     def affiche_point_attendu(self,n):
+        self.dbg.p(1,"rentre dans 'affiche_point_attendu'")
         """
         Renseigne sur le numéro du point attendu
         affecte la ligne de statut et la ligne sous le zoom
@@ -1359,22 +1254,17 @@ class StartQT4(QMainWindow):
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
-
+        self.dbg.p(1,"rentre dans 'clic_sur_label_video'")
         
         if liste_points==None:
             liste_points = self.label_video.liste_points
         ### on fait des marques pour les points déjà visités
         etiquette="@abcdefghijklmnopqrstuvwxyz"[len(liste_points)]
 
-
         if self.nb_de_points > len(liste_points) :
             point_attendu=1+len(liste_points)
             self.affiche_point_attendu(point_attendu)
-            #self.affiche_image()
-
-
-
-
+            
         else:
 
             point_attendu=1
@@ -1387,18 +1277,17 @@ class StartQT4(QMainWindow):
                 if interactif:
                     self.modifie=True
                 self.clic_sur_label_video_ajuste_ui(point_attendu)
-                
                        
             elif self.index_de_l_image==self.image_max :
 
                 self.mets_a_jour_label_infos(self.tr(u"Vous avez atteint la fin de la vidéo"))
-        
         
     def enableDefaire(self, value):
         """
         Contrôle la possibilité de défaire un clic
         @param value booléen
         """
+        self.dbg.p(1,"rentre dans 'enableDefaire'")
         self.ui.pushButton_defait.setEnabled(value)
         self.ui.actionDefaire.setEnabled(value)
         
@@ -1407,6 +1296,7 @@ class StartQT4(QMainWindow):
         Contrôle la possibilité de refaire un clic
         @param value booléen
         """
+        self.dbg.p(1,"rentre dans 'enableRefaire'")
         self.ui.pushButton_refait.setEnabled(value)
         self.ui.actionRefaire.setEnabled(value)
         
@@ -1415,6 +1305,7 @@ class StartQT4(QMainWindow):
         Ajuste l'interface utilisateur pour attendre un nouveau clic
         @param point_attendu le numéro du point qui est à cliquer
         """
+        self.dbg.p(1,"rentre dans 'clic_sur_label_video_ajuste_ui'")
 
         self.lance_capture = True
         self.enableDefaire(len(self.tousLesClics) > 0)
@@ -1434,12 +1325,11 @@ class StartQT4(QMainWindow):
         @param liste_points la liste des points cliqués sur l'image courante
         @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
         """
+        self.dbg.p(1,"rentre dans 'stock_coordonnees_image'")
         if not index_image :
             index_image = self.index_de_l_image
         t = "%4f" %((ligne)*self.deltaT)
         self.points[ligne]=[t]+liste_points
-       
-        
         
         #rentre le temps dans la première colonne
         self.ui.tableWidget.insertRow(ligne)
@@ -1460,8 +1350,6 @@ class StartQT4(QMainWindow):
                 self.pY[y].append(point)
             else:
                 self.pY[y]=[point]
-            
-	    
 	    
             pm=self.pointEnMetre(point)
             self.ui.tableWidget.setItem(ligne,i+1,QTableWidgetItem(str(pm.x())))
@@ -1474,16 +1362,18 @@ class StartQT4(QMainWindow):
             self.ui.tableWidget.removeRow(1)
 
     def transforme_index_en_temps(self, index):
+        self.dbg.p(1,"rentre dans 'transforme_index_en_temps'")
         return float(self.deltaT*(index))
     
     def affiche_image_spinbox(self):
+        self.dbg.p(1,"rentre dans 'affiche_image_spinbox'")
         self.index_de_l_image = self.ui.spinBox_image.value()
         self.affiche_image()
     
     def affiche_image(self):
+        self.dbg.p(1,"rentre dans 'affiche_image'")
         self.extract_image(self.filename, self.index_de_l_image)
         image=QImage(self.chemin_image)
-        print "~~~~~~~~~~~~~~~nouvelle image"
         self.image_640_480 = image.scaled(640,480,Qt.KeepAspectRatio)
 #        try :
         if hasattr(self, "label_video"):
@@ -1498,6 +1388,7 @@ class StartQT4(QMainWindow):
 
         
     def recommence_echelle(self):
+        self.dbg.p(1,"rentre dans 'recommence_echelle'")
         self.ui.tabWidget.setCurrentIndex(0)
         self.echelle_image=echelle()
         self.affiche_echelle()
@@ -1507,18 +1398,23 @@ class StartQT4(QMainWindow):
         except AttributeError:
             pass
 
-
         self.demande_echelle()
         
     def affiche_image_slider(self):
-        #print self.index_de_l_image
+        self.dbg.p(1,"rentre dans 'affiche_image_slider'")
         self.index_de_l_image = self.ui.horizontalSlider.value()
         self.affiche_image()
+
+    def affiche_image_slider_move(self):
+        """only change spinBox value"""
+        self.dbg.p(1,"rentre dans 'affiche_image_slider_move'")
+        self.ui.spinBox_image.setValue(self.ui.horizontalSlider.value())
 
     def demande_echelle(self):
         """
         demande l'échelle interactivement
         """
+        self.dbg.p(1,"rentre dans 'demande_echelle'")
         echelle_result_raw = QInputDialog.getText(None,
                                                   self.tr(u"Définir une échelle"), 
                                                   self.tr(u"Quelle est la longueur en mètre de votre étalon sur l'image ?"),
@@ -1546,16 +1442,19 @@ class StartQT4(QMainWindow):
         affiche une trace au-dessus du self.job, qui reflète les positions
         retenues pour l'échelle
         """
+        self.dbg.p(1,"rentre dans 'feedbackEchelle'")
         from echelle import Label_Echelle_Trace
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1,p2)
         self.label_echelle_trace.show()
 
 
     def reinitialise_environnement(self):
+        self.dbg.p(1,"rentre dans 'reinitialise_environnement'")
         for filename in glob(os.path.join(IMG_PATH,"*.jpg")):
             os.remove(filename)
                 
     def on_closeCanvas(self, event):
+        self.dbg.p(1,"rentre dans 'on_closeCanvas'")
         self.canvas.fig.clear()
         
     def closeEvent(self,event):
@@ -1563,6 +1462,7 @@ class StartQT4(QMainWindow):
         Un crochet pour y mettre toutes les procédures à faire lors
         de la fermeture de l'application.
         """
+        self.dbg.p(1,"rentre dans 'closeEvent'")
         from tempfile import gettempdir
         if hasattr(self,'canvas'):
             self.canvas.close()
@@ -1585,10 +1485,12 @@ class StartQT4(QMainWindow):
         """
         Retire les vidéos recodées automatiquement
         """
+        self.dbg.p(1,"rentre dans 'nettoieVideosRecodees'")
         for f in self.newVideos:
             subprocess.call("rm -f %s" %f, shell=True)
 
     def verifie_donnees_sauvegardees(self):
+        self.dbg.p(1,"rentre dans 'verifie_donnees_sauvegardees'")
         if self.modifie:
             retour = QMessageBox.warning(self,QString(self.tr(unicode("Les données seront perdues","utf8"))),QString(self.tr(unicode("Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?","utf8"))),QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel )
             if retour == QMessageBox.Yes :
@@ -1602,6 +1504,7 @@ class StartQT4(QMainWindow):
             return True
     
     def aller_a_l_image(self, increment):
+        self.dbg.p(1,"rentre dans 'aller_a_l_image'")
         increment = int(increment)
         self.index_de_l_image = self.index_de_l_image + increment
         if self.index_de_l_image <= self.image_max :
@@ -1613,11 +1516,13 @@ class StartQT4(QMainWindow):
             self.affiche_image()
     
     def mets_a_jour_label_infos(self, message):
-    ### On utilise la barre de status pour afficher les messages : permet de ganager un la place en envelant le label_infos_image ###
+        """On utilise la barre de status pour afficher les messages : permet de ganager un la place en envelant le label_infos_image """
+        self.dbg.p(1,"rentre dans 'mets_a_jour_label_infos'")
         self.statusBar().showMessage(message)
 
 
     def openexample(self):
+        self.dbg.p(1,"rentre dans 'openexample'")
         dir_="%s" %(self._dir("videos"))
         self.reinitialise_tout()
         filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)","utf8")))
@@ -1627,6 +1532,7 @@ class StartQT4(QMainWindow):
         """
         Ouvre un dialogue pour choisir un fichier vidéo puis le charge
         """
+        self.dbg.p(1,"rentre dans 'openfile'")
         dir_=self._dir("videos")
         filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), dir_,self.tr(unicode("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)","utf8")))
         self.openTheFile(filename)
@@ -1636,6 +1542,7 @@ class StartQT4(QMainWindow):
             pass
         
     def renomme_le_fichier(self):
+        self.dbg.p(1,"rentre dans 'renomme_le_fichier'")
         renomme_fichier = QMessageBox.warning(self,self.tr("Nom de fichier non conforme"),QString(self.tr(unicode("Le nom de votre fichier contient des caractères accentués ou des espaces.\n Merci de bien vouloir le renommer avant de continuer","utf8"))), QMessageBox.Ok,QMessageBox.Ok)
         filename=QFileDialog.getOpenFileName(self,self.tr(unicode("Ouvrir une vidéo","utf8")), self._dir("videos"),"*.avi")
         self.openTheFile(filename)
@@ -1649,6 +1556,7 @@ class StartQT4(QMainWindow):
          N.B.: l'attribut self.prefs.lastVideo sera qui sera enregistré est de
          type string et d'encodage unicode.
         """
+        self.dbg.p(1,"rentre dans 'openTheFile'")
         if filename != "" : 
             filename = QString(filename)
             filename = filename.toUtf8()
@@ -1671,6 +1579,7 @@ class StartQT4(QMainWindow):
                 
 
     def propos(self):
+        self.dbg.p(1,"rentre dans 'propos'")
         try:
             loc = locale.getdefaultlocale()[0][0:2]
         except TypeError:
@@ -1682,6 +1591,7 @@ class StartQT4(QMainWindow):
         QMessageBox.warning(None,"Licence",QString(licence_XX), QMessageBox.Ok,QMessageBox.Ok)
         
     def aide(self):
+        self.dbg.p(1,"rentre dans 'aide'")
         lang=locale.getdefaultlocale()[0][0:2]
         helpfile="%s/help-%s.xhtml" %(self._dir("help"),lang)
         if os.path.exists(helpfile):
@@ -1696,6 +1606,7 @@ class StartQT4(QMainWindow):
         
     def init_image(self):
         """intialise certaines variables lors le la mise en place d'une nouvelle image"""
+        self.dbg.p(1,"rentre dans 'init_image'")
         self.index_de_l_image = 1
         self.init_interface()
         self.trajectoire = {}
@@ -1712,6 +1623,7 @@ class StartQT4(QMainWindow):
         
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
+        self.dbg.p(1,"rentre dans 'defini_barre_avancement'")
         framerate, self.image_max = self.cvReader.recupere_avi_infos()
         #print framerate, self.image_max
         self.deltaT = float(1.0/framerate)
@@ -1736,12 +1648,14 @@ class StartQT4(QMainWindow):
         @param index le numéro de l'image
         @param force permet de forcer l'écriture d'une image
         """
+        self.dbg.p(1,"rentre dans 'extract_image'")
         imfilename=os.path.join(IMG_PATH, VIDEO + SUFF %index)
         if force or not os.path.isfile(imfilename):
             self.cvReader.writeImage(index,imfilename)
         self.chemin_image = imfilename
           
     def traiteOptions(self):
+        self.dbg.p(1,"rentre dans 'traiteOptions'")
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
                 if os.path.isfile(val) and os.path.splitext(val)[1] == ".mecavideo":
@@ -1754,14 +1668,14 @@ class StartQT4(QMainWindow):
                     
         
 def usage():
-    print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--maxi]")
+    print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--maxi] [-d | --debug=verbosityLevel(1-3)")
 
 def run():
     global app
     
     args=sys.argv[1:]
     try:
-        opts, args = getopt.getopt(args, "f:m:", ["fichier_mecavideo=","maxi"] )
+        opts, args = getopt.getopt(args, "f:md:", ["fichier_mecavideo=","maxi","debug="] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)

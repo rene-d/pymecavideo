@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pymecavideo_mini.ui'
 #
-# Created: Sun Apr 15 17:16:02 2012
+# Created: Mon Apr 16 21:05:59 2012
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -192,7 +192,7 @@ class Ui_pymecavideo(object):
         self.Bouton_Echelle.setGeometry(QtCore.QRect(10, 20, 125, 22))
         self.Bouton_Echelle.setObjectName(_fromUtf8("Bouton_Echelle"))
         self.label_4 = QtGui.QLabel(self.groupBox)
-        self.label_4.setGeometry(QtCore.QRect(70, 40, 31, 26))
+        self.label_4.setGeometry(QtCore.QRect(70, 40, 41, 26))
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.echelleEdit = QtGui.QLineEdit(self.groupBox)
         self.echelleEdit.setGeometry(QtCore.QRect(10, 40, 55, 26))
@@ -201,13 +201,13 @@ class Ui_pymecavideo(object):
         self.echelleEdit.setReadOnly(True)
         self.echelleEdit.setObjectName(_fromUtf8("echelleEdit"))
         self.spinBox_nb_de_points = QtGui.QSpinBox(self.groupBox)
-        self.spinBox_nb_de_points.setGeometry(QtCore.QRect(70, 70, 71, 26))
+        self.spinBox_nb_de_points.setGeometry(QtCore.QRect(90, 70, 51, 26))
         self.spinBox_nb_de_points.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.spinBox_nb_de_points.setMinimum(1)
         self.spinBox_nb_de_points.setMaximum(10)
         self.spinBox_nb_de_points.setObjectName(_fromUtf8("spinBox_nb_de_points"))
         self.label_5 = QtGui.QLabel(self.groupBox)
-        self.label_5.setGeometry(QtCore.QRect(10, 60, 51, 41))
+        self.label_5.setGeometry(QtCore.QRect(10, 60, 81, 41))
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.layoutWidget = QtGui.QWidget(self.tab_acq)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 360, 138, 153))
@@ -315,7 +315,7 @@ class Ui_pymecavideo(object):
         self.comboBox_referentiel.setMinimumSize(QtCore.QSize(130, 25))
         self.comboBox_referentiel.setObjectName(_fromUtf8("comboBox_referentiel"))
         self.label_8 = QtGui.QLabel(self.tab_traj)
-        self.label_8.setGeometry(QtCore.QRect(219, 10, 181, 20))
+        self.label_8.setGeometry(QtCore.QRect(180, 10, 211, 20))
         self.label_8.setObjectName(_fromUtf8("label_8"))
         self.tabWidget.addTab(self.tab_traj, _fromUtf8(""))
         self.tab_coord = QtGui.QWidget()
@@ -423,7 +423,6 @@ class Ui_pymecavideo(object):
         self.menu_dition.addAction(self.actionDefaire)
         self.menu_dition.addAction(self.actionRefaire)
         self.menu_dition.addSeparator()
-        self.menu_dition.addAction(self.actionPreferences)
         self.menubar.addAction(self.menuFichier.menuAction())
         self.menubar.addAction(self.menu_dition.menuAction())
         self.menubar.addAction(self.menuAide.menuAction())

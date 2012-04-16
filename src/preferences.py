@@ -28,7 +28,10 @@ import pickle, os, os.path
 
 class Preferences:
     def __init__(self, parent):
+        
         self.app=parent
+        self.app.dbg.p(3,"In : Preferences, preferences.py")
+
         self.conffile=os.path.join(self.app._dir("conf"),"pymecavideo.conf")
         # ajuste les valeurs par défaut
         self.proximite=False
@@ -45,7 +48,6 @@ class Preferences:
         result=self.app.tr("Proximite de la souris %1").arg(self.proximite)
         result +=self.app.tr("; derniere video %1").arg(self.lastVideo)
         result +=self.app.tr("; videoDir %1").arg(self.videoDir)
-        result +=self.app.tr("; niveau courant de debogage %1").arg(self.niveauDbg)
         return "%s" %result
 
     def save(self):
@@ -55,52 +57,17 @@ class Preferences:
         f=open(self.conffile,"w")
         self.app.dbg.p(9,"sauvegarde des preferences dans  %s" %self.conffile)
         self.app.dbg.p(9, "%s" %self)
-        pickle.dump((self.proximite,self.lastVideo,self.videoDir,self.niveauDbg),f)
+        pickle.dump((self.proximite,self.lastVideo,self.videoDir),f)
         f.close()
         
     def load(self):
         if os.path.exists(self.conffile):
             try:
                 f=open(self.conffile,"r")
-                (self.proximite,self.lastVideo,self.videoDir,self.niveauDbg) = pickle.load(f)
+                (self.proximite,self.lastVideo,self.videoDir) = pickle.load(f)
                 f.close()
-                self.app.dbg=Dbg(self.niveauDbg)
             except:
                 self.app.dbg.p(2,"erreur en lisant %s" %self.conffile)
                 pass
         
-    def setFromDialog(self):
-        """
-        Règle les préférences à l'aide d'un dialogue
-        """
-        self.app.dbg.p(2,"appel du dialogue des preferences")
-        import Ui_preferences
-        d=QDialog()
-        ui=Ui_Dialog()
-        ui.setupUi(d)
-        #########################################################
-        # envoie les valeurs courantes dans le dialogue
-        #########################################################
-        ui.spinBoxDbg.setValue(self.niveauDbg)
-        p=ui.comboBoxProximite
-        
-        p.addItem(self.app.tr("Visibles partout"))
-        p.addItem(self.app.tr("Visible pres de la souris"))
-        if self.proximite:
-            p.setCurrentIndex(1)
-        else:
-            p.setCurrentIndex(0)
-        retval=d.exec_()
-        if retval:
-            ######################################################
-            # prend les valeurs depuis le dialogue
-            ######################################################
-            self.niveauDbg=ui.spinBoxDbg.value()
-            self.app.dbg=Dbg(self.niveauDbg)
-            
-            self.proximite=(ui.comboBoxProximite.currentIndex() == 1)
-            self.app.visibilite_vitesses()
-            
-            self.save()
-        return
         
