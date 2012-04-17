@@ -27,9 +27,12 @@ from math import sqrt, acos, asin, pi, cos, sin, atan2
 from vecteur import vecteur
 
 class Zoom_Croix(QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent,app):
+
         QWidget.__init__(self, parent)
         self.parent = parent
+        self.app = app
+        
         self.setEnabled(True)
         self.setGeometry(QRect(0, 0, 100, 100))
         self.setAutoFillBackground(False)
