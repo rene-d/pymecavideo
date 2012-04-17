@@ -21,7 +21,7 @@ licence="""
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from Ui_preferences import Ui_Dialog
+#from Ui_preferences import Ui_Dialog
 from dbg import Dbg
 import vecteur, commands
 import pickle, os, os.path
