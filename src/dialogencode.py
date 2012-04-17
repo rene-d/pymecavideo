@@ -65,17 +65,26 @@ class MyReaderThread(QThread):
 
             
             while not self.exit:
-                stdout_file = open(self.stdout_file, 'r')       
-                self.stdout = stdout_file.readlines()
                 try:
-                    if self.pct == '99':
+                    stdout_file = open(self.stdout_file, 'r')       
+                    self.stdout = stdout_file.readlines()
+                    if self.stdout[-1].split()[0]=='Video':
+                        self.exit=True
+                        self.app.dbg.p(4,"In Thread Reader, exit==True, end of encoding")
+
+
+                
+                    pct__=self.stdout[-1].split('\r')[-2]
+                    self.pct = pct__.split()[3].replace('%','').replace(')','').replace('(','')
+                    self.app.dbg.p(4,"In Thread Reader, pct = %s" %self.pct)
+                    if self.pct == '99' or self.pct=='100':
                         #print "EXIT"
                         self.exit=True
 
                     pct__=self.stdout[-1].split('\r')[-2]
                     self.pct = pct__.split()[3].replace('%','').replace(')','').replace('(','')
                     
-                    #pct = self.stdout[-1].split()[3].replace('%','').replace(')','').replace('(','')
+                    self.app.dbg.p(4,"In Thread Reader, pct = %s" %self.pct)
                     time.sleep(0.1)
 
                      
@@ -93,7 +102,7 @@ class MyReaderThread(QThread):
                         
                         
                 except TypeError :
-                    print "typerreor"
+                    self.app.dbg.p(4,"In Thread Reader, typError")
                 finally :
                     stdout_file.close()
             self.parent.value_ = 100
@@ -105,9 +114,12 @@ class MyEncodeThread(QThread):
     """mon Thread"""
     def __init__(self,parent,app,cmd,dest):
         QThread.__init__(self,parent)
-        self.cmd = cmd
-        self.dest=dest
         self.app = app
+        self.app.dbg.p(4,"In MyEncodeThread, __init__")
+        self.cmd = cmd
+        self.app.dbg.p(4,"In MyEncodeThread, cmd = %s" %cmd)
+        self.dest=dest
+        
         
 
 

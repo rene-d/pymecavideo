@@ -148,7 +148,13 @@ class StartQT4(QMainWindow):
             #self.basculer_plein_ecran
         #changer ici le pichier adéquat pour les petites résolutions.
         self.ui = Ui_pymecavideo()
+        
+        
         self.ui.setupUi(self)
+        
+        
+        
+        
         self.dbg=Dbg(0)
         for o in opts:
             if ('-d' in o[0]) or ('--debug' in o[0]):
@@ -178,7 +184,15 @@ class StartQT4(QMainWindow):
         except ImportError :
             self.dbg.p(2,"In init_variables no pyuno package")
             self.pyuno=False
-        #variables àﾠ initialiser
+        #variables à initialiser
+        #disable UI at beginning
+        self.ui.tabWidget.setEnabled(0)
+        self.ui.actionDefaire.setEnabled(0)
+        self.ui.actionRefaire.setEnabled(0)
+        self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
+        self.ui.menuE_xporter_vers.setEnabled(0)
+        self.ui.actionSaveData.setEnabled(0)
+        self.ui.actionExemples.setEnabled(0)
 
         #Ooo export
         self.exe_ooo = False
@@ -285,7 +299,15 @@ class StartQT4(QMainWindow):
              
 
     def init_interface(self):
-        self.dbg.p(1,"rentre dans 'init_interface'")
+        self.ui.tabWidget.setEnabled(1)
+        self.ui.tabWidget.setEnabled(1)
+        self.ui.actionDefaire.setEnabled(1)
+        self.ui.actionRefaire.setEnabled(1)
+        self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
+        self.ui.menuE_xporter_vers.setEnabled(1)
+        self.ui.actionSaveData.setEnabled(1)
+        self.ui.actionExemples.setEnabled(1)
+        
         self.cree_tableau()
         try : 
             
@@ -521,13 +543,16 @@ class StartQT4(QMainWindow):
         
         QObject.connect(self,SIGNAL('pointFind()'),self.onePointFind)
         QObject.connect(self.ui.pushButton_video,SIGNAL('clicked()'),self.stopComputing)
-
+        QObject.connect(self,SIGNAL('updateProgressBar()'),self.updatePB)
         
         QObject.connect(self.ui.exportCombo,SIGNAL("currentIndexChanged(int)"),self.export)
         
         QObject.connect(self.ui.pushButton_nvl_echelle,SIGNAL("clicked()"),self.recommence_echelle)
         QObject.connect(self,SIGNAL("mplWindowClosed()"),self.mplwindowclosed)
         
+        
+    def updatePB(self):
+        self.qmsgboxencode.updateProgressBar()
             
     def enableSpeed(self):
         self.dbg.p(1,"rentre dans 'enableSpeed'")
