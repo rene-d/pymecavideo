@@ -1149,6 +1149,7 @@ class StartQT4(QMainWindow):
         
         for clics in self.tousLesClics:
             self.clic_sur_label_video(liste_points=clics, interactif=False)
+            self.updatePicture = False
         self.clic_sur_label_video_ajuste_ui(1)
 
 
@@ -1294,7 +1295,7 @@ class StartQT4(QMainWindow):
 
         if self.nb_de_points > len(liste_points) :
             point_attendu=1+len(liste_points)
-            self.affiche_point_attendu(point_attendu)
+            self.affiche_point_attendu(point_attendu) #peut etre ici un update de l'image a optimiser
             
         else:
 
@@ -1346,7 +1347,10 @@ class StartQT4(QMainWindow):
             if len(self.label_video.liste_points) > 0:
                 self.tousLesClics.append(self.label_video.liste_points)
             self.label_video.liste_points=[]
-            self.affiche_image()
+            self.dbg.p(1,"self.nb_image_deja_analysees >= len(self.points) ? %s %s" %(len(self.tousLesClics),len(self.points)))
+            
+            if len(self.tousLesClics) == len(self.points):
+                self.affiche_image()
             self.tracer_trajectoires("absolu")
         
     def stock_coordonnees_image(self, ligne, liste_points, interactif=True, index_image = False):

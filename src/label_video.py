@@ -108,7 +108,7 @@ class Label_Video(QtGui.QLabel):
         
         ############################################################
         #draw points
-        
+        self.app.dbg.p(5,"In label_video, paintEvent, self.app.points :%s" %self.app.points)
         for points in self.app.points.values() : #all points clicked are stored here, but updated every "number of point to click" frames
             color=0
  
