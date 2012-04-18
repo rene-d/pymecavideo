@@ -43,6 +43,7 @@ class Cadreur(QObject):
         @param titre le titre désiré pour la fenêtre
         """
         self.app=app
+        self.app.dbg.p(1,"In : Cadreur, __init__")
         if titre==None:
             self.titre=str(self.app.tr("Presser la touche ESC pour sortir"))
 
@@ -51,6 +52,9 @@ class Cadreur(QObject):
         self.capture=cv.CreateFileCapture(self.app.filename)
         self.fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
         self.delay=int(1000.0/self.fps)
+        
+        self.app.dbg.p(3,"In : Label_Video, __inti__, fps = %s and delay = %s" %self.fps, self.delay)
+        
         self.ralenti=3
         self.fini=False
         self.maxcadre()

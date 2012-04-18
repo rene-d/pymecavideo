@@ -349,11 +349,12 @@ class StartQT4(QMainWindow):
 
         #création du label qui contiendra la vidéo.
 
-        self.dbg.p(3,"cree Label_Video")
+        
         try : 
-            
+            self.dbg.p(3,"In : init_interface, clear Label_Video")
             self.label_video.clear()
         except AttributeError:
+            self.dbg.p(3,"In : init_interface, cree Label_Video")
             self.label_video = Label_Video(parent=self.ui.label, app=self)
             self.label_video.show()
 
@@ -443,13 +444,12 @@ class StartQT4(QMainWindow):
             self.init_variables(None, filename=self.filename)
   
         self.init_interface()
-        #self.affiche_fonctionnalites_avancees()
+
         self.ui.pushButton_origine.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
-        #for enfant in self.label_video.children():
-              #enfant.hide()
-              #del enfant
+
+
         if echelle_image:
             self.echelle_image=echelle_image
             self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
@@ -637,7 +637,11 @@ class StartQT4(QMainWindow):
                 self.clic_sur_label_video()
                 self.picture_detect()
 
-        
+        if self.index_de_l_image==self.image_max:
+                self.ui.pushButton_video.setEnabled(0)
+                self.ui.pushButton_video.hide()
+                self.dbg.p(1,"In 'onePointFind', #######end of automatique Capture")
+
             
     def readStdout(self):
         self.dbg.p(1,"rentre dans 'readStdout'")
@@ -894,6 +898,7 @@ class StartQT4(QMainWindow):
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         framerate, self.image_max = self.cvReader.recupere_avi_infos()
+        self.dbg.p(3,"In :  'rouvre', framerate, self.image_max = ",framerate, self.image_max )
         self.defini_barre_avancement()
         self.affiche_echelle()       # on met à jour le widget d'échelle
         n=len(self.points.keys())
@@ -1651,6 +1656,7 @@ class StartQT4(QMainWindow):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
         self.dbg.p(1,"rentre dans 'defini_barre_avancement'")
         framerate, self.image_max = self.cvReader.recupere_avi_infos()
+        self.dbg.p(3,"In :  'defini_barre_avancement', framerate, self.image_max = %s, %s" %(framerate, self.image_max) )
         #print framerate, self.image_max
         self.deltaT = float(1.0/framerate)
         self.ui.horizontalSlider.setMinimum(1)

@@ -32,11 +32,13 @@ from zoom import Zoom_Croix
 class Label_Video(QtGui.QLabel):
     def __init__(self, parent, app):
         QtGui.QLabel.__init__(self,parent)
+        
         self.setGeometry(QtCore.QRect(0,0,640,480))
         #self.setStyleSheet("background-color: grey");
         self.parent=parent
         self.liste_points = []
         self.app=app
+        self.app.dbg.p(1,"In : Label_Video, __init__")
         self.cropX2=None
         self.setCursor(QtCore.Qt.ArrowCursor)
         self.pos=self.pos_avant=vecteur(0,0)
