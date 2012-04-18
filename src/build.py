@@ -58,7 +58,7 @@ options = {    "py2exe" : { "compressed": 2,
 
 icon = "D:\\Documents\\Developpement\\pymecavideo\\data\\icones\\pymecavideo.ico"
 setup(name='pyMecaVideo',
-      version='5.2',
+      version='6.0b1',
       description='Analyse Mécanique des videos',
       author='Jean-Baptiste Butet ; Georges Khaznadar',
       author_email='ashashiwa@gmail.com ; georgesk@ofset.org',

@@ -19,12 +19,12 @@
 
 [Setup]
 ;Informations générales sur l'application
-AppName=pymecavideo 5
-AppVerName=pymecavideo 5.3
-AppVersion=5.3
+AppName=pymecavideo 6
+AppVerName=pymecavideo 6.0b1
+AppVersion=6.0b1
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
 AppCopyright=Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org> Jean-Baptiste Butet <ashashiwa@gmail.com>
-VersionInfoVersion = 5.3.0.0
+VersionInfoVersion = 6.0.1.0
 
 ;Répertoire de base contenant les fichiers
 SourceDir=D:\Documents\Developpement\pymecavideo
@@ -43,7 +43,7 @@ SolidCompression=yes
 PrivilegesRequired=none
 
 ;Nom du fichier généré et répertoire de destination
-OutputBaseFilename=pymecavideo_5.3_setup
+OutputBaseFilename=pymecavideo_6.0b1_setup
 OutputDir=releases
 
 ;Dans le panneau de configuration de Windows2000/NT/XP, c'est l'icone de pymecavideo.exe qui
@@ -66,7 +66,7 @@ Name: fr; MessagesFile: "compiler:Languages\French.isl"
 ;Name: fr; MessagesFile: "compiler:Languages\French.isl"
 
 [Messages]
-BeveledLabel=pymecavideo 5.3 installation
+BeveledLabel=pymecavideo 6.0b1 installation
 
 
 [CustomMessages]

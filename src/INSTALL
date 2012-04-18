@@ -10,11 +10,13 @@ svn co svn://svn.tuxfamily.org/svnroot/oppl/pymecavideo
 puis vérifiez que soit installés :
 -> python-qt4-devel
 -> make
-(-> vlc)
+-> python-opencv
+-> python-matplotlib-qt4
 -> ffmpeg
+
 optionnels mais utiles: 
 gnuplot, pyuno (si vous voulez utiliser les fonctions d'import pour Ooo)
-ffplay, mplayer
+
 
 aller dans la version que vous voulez (4.0, trunk, detect..)
 cd src
