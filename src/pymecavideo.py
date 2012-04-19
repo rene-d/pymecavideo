@@ -441,7 +441,6 @@ class StartQT4(QMainWindow):
         self.ui.checkBox_ordonnees.setEnabled(1)
 
         if index_point_actuel :
-            print '@@@@@@@ repmière image', self.premiere_image
             index = self.premiere_image
             self.init_variables(None, filename=self.filename)
 
@@ -452,14 +451,18 @@ class StartQT4(QMainWindow):
         else :
             self.init_variables(None, filename=self.filename)
         if echelle_image:
+            
             self.echelle_image=echelle_image
             self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-            
+        else : #destroy scale
+            self.label_echelle_trace.hide()
+            del self.label_echelle_trace
+        
         if nb_de_points:
             self.nb_de_points=nb_de_points
         if tousLesClics!=None and tousLesClics.count():
             self.tousLesClics=tousLesClics
-        print "@@@@@@@rinitilaise tout", self.index_de_l_image
+
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
@@ -577,9 +580,9 @@ class StartQT4(QMainWindow):
             self.label_trajectoire.reDraw()
         
     def storeMotif(self):
-        self.dbg.p(1,"rentre dans 'storeMotif'")
+        "rentre dans 'storeMotif'")
         if len(self.motif)==self.nb_de_points:
-            print "selection finie"
+            self.dbg.p(3,"selection des motifs finie")
             self.label_auto.hide()
             self.label_auto.close()
             self.picture_detect()    
@@ -1351,7 +1354,6 @@ class StartQT4(QMainWindow):
             self.dbg.p(1,"self.nb_image_deja_analysees >= len(self.points) ? %s %s" %(len(self.tousLesClics),len(self.points)))
             
             if len(self.tousLesClics) == len(self.points):
-                print "##########",self.index_de_l_image
                 self.affiche_image()
             self.tracer_trajectoires("absolu")
         
