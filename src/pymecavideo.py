@@ -432,7 +432,16 @@ class StartQT4(QMainWindow):
         # tout mais qu'on doit garder la position de départ. Cas quand
         #on revient en arrière d'un cran ou que l'on refait le point.
         #############
+
+  
+        self.init_interface()
+
+        self.ui.pushButton_origine.setEnabled(1)
+        self.ui.checkBox_abscisses.setEnabled(1)
+        self.ui.checkBox_ordonnees.setEnabled(1)
+
         if index_point_actuel :
+            print '@@@@@@@ repmière image', self.premiere_image
             index = self.premiere_image
             self.init_variables(None, filename=self.filename)
 
@@ -442,14 +451,6 @@ class StartQT4(QMainWindow):
             ############
         else :
             self.init_variables(None, filename=self.filename)
-  
-        self.init_interface()
-
-        self.ui.pushButton_origine.setEnabled(1)
-        self.ui.checkBox_abscisses.setEnabled(1)
-        self.ui.checkBox_ordonnees.setEnabled(1)
-
-
         if echelle_image:
             self.echelle_image=echelle_image
             self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
@@ -458,7 +459,7 @@ class StartQT4(QMainWindow):
             self.nb_de_points=nb_de_points
         if tousLesClics!=None and tousLesClics.count():
             self.tousLesClics=tousLesClics
-
+        print "@@@@@@@rinitilaise tout", self.index_de_l_image
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
@@ -1350,6 +1351,7 @@ class StartQT4(QMainWindow):
             self.dbg.p(1,"self.nb_image_deja_analysees >= len(self.points) ? %s %s" %(len(self.tousLesClics),len(self.points)))
             
             if len(self.tousLesClics) == len(self.points):
+                print "##########",self.index_de_l_image
                 self.affiche_image()
             self.tracer_trajectoires("absolu")
         
