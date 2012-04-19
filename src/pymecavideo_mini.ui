@@ -1041,7 +1041,6 @@ la souris</string>
     <addaction name="actionDefaire"/>
     <addaction name="actionRefaire"/>
     <addaction name="separator"/>
-    <addaction name="actionPreferences"/>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menu_dition"/>

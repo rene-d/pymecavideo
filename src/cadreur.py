@@ -53,7 +53,7 @@ class Cadreur(QObject):
         self.fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
         self.delay=int(1000.0/self.fps)
         
-        self.app.dbg.p(3,"In : Label_Video, __inti__, fps = %s and delay = %s" %self.fps, self.delay)
+        self.app.dbg.p(3,"In : Label_Video, __inti__, fps = %s and delay = %s" %(self.fps, self.delay))
         
         self.ralenti=3
         self.fini=False

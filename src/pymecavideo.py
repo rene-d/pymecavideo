@@ -303,9 +303,6 @@ class StartQT4(QMainWindow):
         self.ui.tabWidget.setEnabled(1)
         self.ui.actionDefaire.setEnabled(1)
         self.ui.actionRefaire.setEnabled(1)
-        self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
-        self.ui.menuE_xporter_vers.setEnabled(1)
-        self.ui.actionSaveData.setEnabled(1)
         self.ui.actionExemples.setEnabled(1)
         
         self.cree_tableau()
@@ -580,7 +577,7 @@ class StartQT4(QMainWindow):
             self.label_trajectoire.reDraw()
         
     def storeMotif(self):
-        "rentre dans 'storeMotif'")
+        self.dbg.p(1,"rentre dans 'storeMotif'")
         if len(self.motif)==self.nb_de_points:
             self.dbg.p(3,"selection des motifs finie")
             self.label_auto.hide()
@@ -882,6 +879,7 @@ class StartQT4(QMainWindow):
         self.init_cvReader()
         
     def rouvre(self,fichier):
+        """Open a mecavideo file"""
         self.dbg.p(1,"rentre dans 'rouvre'")
         lignes=open(fichier,"r").readlines()
         i=0
@@ -1017,6 +1015,7 @@ class StartQT4(QMainWindow):
         @param departManuel vrai si on a fixé à la main la première image.
 
         """
+
         try :
             self.origine_trace.hide()
             del self.origine_trace
@@ -1291,7 +1290,8 @@ class StartQT4(QMainWindow):
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
         self.dbg.p(1,"rentre dans 'clic_sur_label_video'")
-        
+        self.lance_capture=True
+
         if liste_points==None:
             liste_points = self.label_video.liste_points
         ### on fait des marques pour les points déjà visités
@@ -1306,7 +1306,7 @@ class StartQT4(QMainWindow):
             point_attendu=1
             self.affiche_point_attendu(point_attendu)
             if self.index_de_l_image<self.image_max : ##si on atteint la fin de la vidéo
-                
+                self.lance_capture=True
                 self.stock_coordonnees_image(self.nb_image_deja_analysees,liste_points, interactif)
                 self.nb_image_deja_analysees += 1
                 self.index_de_l_image += 1
@@ -1315,8 +1315,11 @@ class StartQT4(QMainWindow):
                 self.clic_sur_label_video_ajuste_ui(point_attendu)
                        
             elif self.index_de_l_image==self.image_max :
-
+                self.lance_capture=False
                 self.mets_a_jour_label_infos(self.tr(u"Vous avez atteint la fin de la vidéo"))
+        
+        
+            
         
     def enableDefaire(self, value):
         """
@@ -1353,7 +1356,7 @@ class StartQT4(QMainWindow):
             self.label_video.liste_points=[]
             self.dbg.p(1,"self.nb_image_deja_analysees >= len(self.points) ? %s %s" %(len(self.tousLesClics),len(self.points)))
             
-            if len(self.tousLesClics) == len(self.points):
+            if len(self.tousLesClics) == len(self.points): #update image only at last point. use to optimise undo/redo fucntions.
                 self.affiche_image()
             self.tracer_trajectoires("absolu")
         
@@ -1606,6 +1609,9 @@ class StartQT4(QMainWindow):
                 
                 self.prefs.lastVideo=self.filename
                 self.init_image()
+                self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
+                self.ui.menuE_xporter_vers.setEnabled(1)
+                self.ui.actionSaveData.setEnabled(1)
                 self.mets_a_jour_label_infos(self.tr(u"Veuillez choisir une image et définir l'échelle"))
                 self.ui.Bouton_Echelle.setEnabled(True)
                 self.ui.spinBox_nb_de_points.setEnabled(True)
