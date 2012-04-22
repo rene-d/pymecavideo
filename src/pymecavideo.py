@@ -278,7 +278,7 @@ class StartQT4(QMainWindow):
         
         self.filename=filename
         self.opts=opts
-        self.stdout_file = os.join(APP_DATA_PATH,"stdout")
+        self.stdout_file = os.path.join(APP_DATA_PATH,"stdout")
         self.exitDecode = False
         
         self.tousLesClics=listePointee() # tous les clics faits sur l'image
