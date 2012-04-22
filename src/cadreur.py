@@ -119,17 +119,18 @@ class Cadreur:
             print "erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile
             sys.exit(1)
         
-    def montrefilm(self):
+    def montrefilm(self,fini=False):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
-        ech, w, h=self.echelleTaille ()
-        self.fini=False
-        while not self.fini:
+        ech, w, h=self.echelleTaille()
+        print "NUT1"
+        while not fini:
+            print "NUT2"
             #rembobine
             self.capture=cv.CreateFileCapture(self.app.filename)
             for i in self.app.points.keys():
-                if self.fini: break # valeur volatile à examiner souvent
+                if fini: break # valeur volatile à examiner souvent
                 p=self.app.points[i][self.numpoint]
                 #hautgauche=(p+self.decal-self.rayons)*ech
                 hautgauche=(p-self.tl)*ech
@@ -142,7 +143,9 @@ class Cadreur:
                 cv.ShowImage(self.titre,isub)
                 cv.WaitKey(self.delay*self.ralenti)
         # ferme la fenêtre
+        print "NUT3"
         cv.DestroyWindow(self.titre)
+        fini = True
 
 class openCvReader:
     """
