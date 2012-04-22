@@ -43,8 +43,8 @@ licence['fr']=u"""
 # Le module de gestion des erreurs n'est chargé que si on execute le fichier .exe ou si on est sous Linux
 #
 import sys
-if sys.platform == "win32" or sys.argv[0].endswith(".exe"):
-    import Error
+#if sys.platform == "win32" or sys.argv[0].endswith(".exe"):
+#    import Error
     
 from vecteur import vecteur
 import os, thread, time, commands, linecache, codecs, re
@@ -848,6 +848,7 @@ class StartQT4(QMainWindow):
         """
         self.dbg.p(1,"rentre dans 'init_cvReader'")
         self.cvReader=openCvReader(self.filename)
+        print self.cvReader
         if not self.cvReader : 
             sansSuffixe=os.path.basename(self.filename)
             match=re.match("(.*)\.(.*)$",sansSuffixe)
@@ -1620,7 +1621,8 @@ msg)
                 self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
                 self.ui.menuE_xporter_vers.setEnabled(1)
                 self.ui.actionSaveData.setEnabled(1)
-                self.mets_a_jour_label_infos(self.tr(QString(u"Veuillez choisir une image et définir l'échelle")))
+#                self.mets_a_jour_label_infos(self.tr(QString(u"Veuillez choisir une image et définir l'échelle")))
+                self.mets_a_jour_label_infos(QString(u"Veuillez choisir une image et définir l'échelle"))
                 self.ui.Bouton_Echelle.setEnabled(True)
                 self.ui.spinBox_nb_de_points.setEnabled(True)
                 self.ui.horizontalSlider.setEnabled(1)

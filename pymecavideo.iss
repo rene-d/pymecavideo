@@ -1,7 +1,7 @@
 
 ;This file is part of pymecavideo.
 ;
-; Copyright (C) 2009-2010 Cédrick FAURY
+; Copyright (C) 2009-2012 Cédrick FAURY
 ;
 ;pymecavideo is free software; you can redistribute it and/or modify
 ;it under the terms of the GNU General Public License as published by
@@ -19,15 +19,15 @@
 
 [Setup]
 ;Informations générales sur l'application
-AppName=pymecavideo 5
-AppVerName=pymecavideo 5.3
-AppVersion=5.3
+AppName=pymecavideo 6
+AppVerName=pymecavideo 6.0beta1
+AppVersion=6.0
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
-AppCopyright=Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org> Jean-Baptiste Butet <ashashiwa@gmail.com>
-VersionInfoVersion = 5.3.0.0
+AppCopyright=Copyright (C) 2007-2012 Georges Khaznadar <georgesk@ofset.org> Jean-Baptiste Butet <ashashiwa@gmail.com>
+VersionInfoVersion = 6.0.0.1
 
 ;Répertoire de base contenant les fichiers
-SourceDir=D:\Documents\Developpement\pymecavideo
+SourceDir=D:\Developpement\pymecavideo_6
 
 ;Repertoire d'installation
 DefaultDirName={pf}\pymecavideo
@@ -43,7 +43,7 @@ SolidCompression=yes
 PrivilegesRequired=none
 
 ;Nom du fichier généré et répertoire de destination
-OutputBaseFilename=pymecavideo_5.3_setup
+OutputBaseFilename=pymecavideo_6.0beta1_setup
 OutputDir=releases
 
 ;Dans le panneau de configuration de Windows2000/NT/XP, c'est l'icone de pymecavideo.exe qui
@@ -66,7 +66,7 @@ Name: fr; MessagesFile: "compiler:Languages\French.isl"
 ;Name: fr; MessagesFile: "compiler:Languages\French.isl"
 
 [Messages]
-BeveledLabel=pymecavideo 5.3 installation
+BeveledLabel=pymecavideo 6.0 installation
 
 
 [CustomMessages]
@@ -85,7 +85,7 @@ fr.AllUsers=Tous les utilisateurs
 fr.JustMe=Seulement moi
 fr.ShortCut=Raccourcis :
 fr.Association=Association de fichier :
-fr.ffmpeg_ffplay = Outils video : ffmpeg et ffplay
+;fr.ffmpeg_ffplay = Outils video : ffmpeg et ffplay
 fr.HelpFiles = Fichiers d'aide
 fr.ExampleFiles = Fichiers d'exemple
 
@@ -104,7 +104,7 @@ en.AllUsers=All users
 en.JustMe=Just me
 en.ShortCut=Short cuts :
 en.Association=File association :
-en.ffmpeg_ffplay = ffmpeg and ffplay video tools
+;en.ffmpeg_ffplay = ffmpeg and ffplay video tools
 en.HelpFiles = Help Files
 en.ExampleFiles = Example Files
 
@@ -116,7 +116,7 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 
 [Components]
 Name: "program"; Description: "pymecavideo"; Types: custom; Flags: fixed
-Name: "ff"; Description: {cm:ffmpeg_ffplay}; Types: custom
+;Name: "ff"; Description: {cm:ffmpeg_ffplay}; Types: custom
 Name: "help"; Description: {cm:HelpFiles}; Types: custom
 Name: "exemple"; Description: {cm:ExampleFiles}; Types: custom
 ;Name: "readme\en"; Description: "English"; Flags: exclusive
@@ -132,7 +132,7 @@ Source: data\help\*.*; DestDir: {app}\data\help; Flags : ignoreversion recursesu
 Source: data\video\*.*; DestDir: {app}\data\video; Flags : ignoreversion recursesubdirs; Components : exemple
 Source: data\icones\*.*; DestDir: {app}\data\icones; Flags : ignoreversion recursesubdirs
 Source: data\lang\*.*; DestDir: {app}\data\lang; Flags : ignoreversion recursesubdirs
-Source: ff*.exe; DestDir: {app}; Flags : ignoreversion; Components : ff
+;Source: ff*.exe; DestDir: {app}; Flags : ignoreversion; Components : ff
 
 
 [Tasks]
@@ -147,7 +147,7 @@ Name: {group}\{cm:uninstall} pymecavideo; Filename: {app}\unins000.exe;IconFileN
 ;
 ; On ajoute sur le Bureau l'icône pymecavideo
 ;
-Name: {code:DefDesktop}\pymecavideo 5.3;   Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; MinVersion: 4,4; Tasks: desktopicon2; IconFileName: {app}\bin\pymecavideo.exe
+Name: {code:DefDesktop}\pymecavideo 6.0;   Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; MinVersion: 4,4; Tasks: desktopicon2; IconFileName: {app}\bin\pymecavideo.exe
 
 
 [_ISTool]

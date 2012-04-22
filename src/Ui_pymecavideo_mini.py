@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'pymecavideo_mini.ui'
 #
-# Created: Sun Apr 22 12:50:10 2012
-#      by: PyQt4 UI code generator 4.8.3
+# Created: Sun Apr 22 14:08:07 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -68,7 +68,7 @@ class Ui_pymecavideo(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         self.label.setPalette(palette)
-        self.label.setCursor(QtCore.Qt.ArrowCursor)
+        self.label.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.label.setAutoFillBackground(True)
         self.label.setFrameShape(QtGui.QFrame.StyledPanel)
         self.label.setFrameShadow(QtGui.QFrame.Sunken)
@@ -254,7 +254,7 @@ class Ui_pymecavideo(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         self.label_3.setPalette(palette)
-        self.label_3.setCursor(QtCore.Qt.ArrowCursor)
+        self.label_3.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.label_3.setAutoFillBackground(True)
         self.label_3.setText(_fromUtf8(""))
         self.label_3.setObjectName(_fromUtf8("label_3"))
