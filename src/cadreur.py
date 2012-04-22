@@ -182,10 +182,14 @@ class openCvReader:
         
     def autoTest(self):
         #print "in autotest"
-        cmd="python %s %s" %(os.path.join(PYMECA_SHARE, 'testfilm.py'),
-                             self.filename)
-        retcode=subprocess.call(cmd, shell=True)
-        self.ok = retcode==0
+        if sys.platform == 'win32':
+            import testfilm
+            self.ok = testfilm.film(self.filename).ok
+        else:
+            cmd="python %s %s" %(os.path.join(PYMECA_SHARE, 'testfilm.py'),
+                                 self.filename)
+            retcode=subprocess.call(cmd, shell=True)
+            self.ok = retcode==0
 
     def __int__(self):
         return int(self.ok)
