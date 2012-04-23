@@ -15,6 +15,7 @@ shutil.rmtree("dist", ignore_errors=True)
 from glob import glob
 data_files = [("Microsoft.VC90.CRT", glob(r'msvcr90.dll')), 
               ("Microsoft.VC90.CRT", glob(r'Microsoft.VC90.CRT.manifest')),
+              ('C:\\OpenCV2.3\\build\\bin\\opencv_ffmpeg.dll'),
 #              ("", glob(r'ff*.exe')),
               
               ('imageformats', [os.path.join(os.path.dirname(PyQt4.__file__), 
