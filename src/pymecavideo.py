@@ -99,14 +99,14 @@ class MonThreadDeCalcul(QThread):
         self.parent=parent
         self.motif = motif
         self.image = image
+        time.sleep(0.1)
 
 
     def run(self):
         #print "run"
         self.pointFound = filter_picture(self.motif,self.image)
-        
         #print "passé à self OK"
-        self.parent.emit(SIGNAL('pointFind()'))
+        self.emit(SIGNAL('pointFind()'))
         #print "emit OK"
 
 
@@ -542,7 +542,6 @@ class StartQT4(QMainWindow):
         QObject.connect(self,SIGNAL('selection_done()'),self.picture_detect)
         QObject.connect(self,SIGNAL('selection_motif_done()'),self.storeMotif)
         
-        QObject.connect(self,SIGNAL('pointFind()'),self.onePointFind)
         QObject.connect(self.ui.pushButton_video,SIGNAL('clicked()'),self.stopComputing)
         QObject.connect(self,SIGNAL('updateProgressBar()'),self.updatePB)
         
@@ -605,9 +604,13 @@ class StartQT4(QMainWindow):
                     self.ui.pushButton_video.setFocus()
 
                     self.myThreadsDone=0
-                    self.myThreads.append(MonThreadDeCalcul(self,motif,self.image_640_480))
 
+                    self.myThreads.append(MonThreadDeCalcul(self,motif,self.image_640_480))
+                    QObject.connect(self.myThreads[self.iterateMotif],SIGNAL('pointFind()'),self.onePointFind)
                     self.myThreads[self.iterateMotif].start()
+                    
+
+                    
                     self.iterateMotif+=1
                 
                 
