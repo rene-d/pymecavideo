@@ -155,7 +155,7 @@ class Cadreur(QObject):
                 isub = cv.GetSubRect(img, (x,y,w,h))
                 cv.ShowImage(self.titre,isub)
                 k= cv.WaitKey(int(self.delay*self.ralenti))
-                if k ==0x10001b:
+                if k ==0x10001b or k==27:
                     fini=True
                     cv.DestroyAllWindows() 
                     break

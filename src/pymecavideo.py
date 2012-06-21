@@ -1356,8 +1356,7 @@ msg)
         self.dbg.p(1,"rentre dans 'clic_sur_label_video_ajuste_ui'")
 
         self.lance_capture = True
-        self.enableDefaire(len(self.tousLesClics) > 0)
-        self.enableRefaire(self.tousLesClics.nextCount() > 0)
+
 
         if point_attendu==1 : # pour une acquisition sur une nouvelle image
             if len(self.label_video.liste_points) > 0:
@@ -1368,6 +1367,9 @@ msg)
             if len(self.tousLesClics) == len(self.points): #update image only at last point. use to optimise undo/redo fucntions.
                 self.affiche_image()
             self.tracer_trajectoires("absolu")
+            
+        self.enableDefaire(len(self.tousLesClics) > 0)
+        self.enableRefaire(self.tousLesClics.nextCount() > 0)
         
     def stock_coordonnees_image(self, ligne, liste_points, interactif=True, index_image = False):
         """
