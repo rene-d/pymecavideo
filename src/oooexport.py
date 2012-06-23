@@ -41,7 +41,8 @@ class Calc:
         ####### but issue in timeout. More portable btw..
         
         #print self.exe_ooo+' -nodefault -accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager"' %(HOST, PORT)
-        os.system(self.exe_ooo+' -nodefault -accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager"' %(HOST, PORT))
+        cmd='(%s --nodefault --accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager" &)' %(self.exe_ooo, HOST, PORT)
+        subprocess.call(cmd, shell=True)
         time.sleep(2)
         self.ooo = oootools.OOoTools(HOST, PORT)
         self.ctx = self.ooo.ctx

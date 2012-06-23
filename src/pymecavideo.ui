@@ -18,6 +18,10 @@
   <property name="windowTitle">
    <string>PyMecaVideo, analyse mécanique des vidéos</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../data/icones/pymecavideo-48.png</normaloff>../data/icones/pymecavideo-48.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="enabled">
     <bool>true</bool>
@@ -53,7 +57,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -776,16 +780,9 @@ automatique</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QPushButton" name="button_video">
-             <property name="text">
-              <string>Voir la vidéo</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QLabel" name="label_8">
              <property name="text">
-              <string>Depuis ce référentiel</string>
+              <string>Choisir le référentiel</string>
              </property>
             </widget>
            </item>
@@ -796,6 +793,13 @@ automatique</string>
                <width>130</width>
                <height>25</height>
               </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="button_video">
+             <property name="text">
+              <string>Voir la vidéo</string>
              </property>
             </widget>
            </item>
