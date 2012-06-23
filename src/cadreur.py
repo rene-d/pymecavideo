@@ -49,7 +49,9 @@ class Cadreur(QObject):
 
         self.numpoint=numpoint
         self.app=app
-        self.capture=cv.CreateFileCapture(self.app.filename)
+        print "hhhhhhhhhhh", type(self.app.filename)
+        
+        self.capture=cv.CreateFileCapture(self.app.filename.encode('utf8'))
         self.fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
         self.delay=int(1000.0/self.fps)
         
@@ -133,7 +135,7 @@ class Cadreur(QObject):
             
            
             #rembobine
-            self.capture=cv.CreateFileCapture(self.app.filename)
+            self.capture=cv.CreateFileCapture(self.app.filename.encode('utf8'))
             
             #have to move to first picture clicked
             print "premiere Image", self.app.premiere_image
@@ -200,7 +202,13 @@ class openCvReader:
         """
         Recharge le fichier vidéo
         """
-        self.capture=cv.CreateFileCapture(self.filename)
+        print type(self.filename)
+        print self.filename
+        try : 
+	    self.filename = unicode(self.filename,'utf8')
+	except TypeError:
+	    pass
+        self.capture=cv.CreateFileCapture(self.filename.encode('utf8'))
         self.nextImage=1
         
 

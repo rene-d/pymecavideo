@@ -55,8 +55,13 @@ class Preferences:
         Sauvegarde des préférences dans le fichier de configuration.
         """
         f=open(self.conffile,"w")
-        self.app.dbg.p(9,"sauvegarde des preferences dans  %s" %self.conffile)
-        self.app.dbg.p(9, "%s" %self)
+        self.app.dbg.p(6,"sauvegarde des preferences dans  %s" %self.conffile)
+        self.app.dbg.p(6, "%s" %self)
+        try : 
+	    self.lastVideo = unicode(self.lastVideo,'utf8')
+	except TypeError:
+	    pass
+        print "llllll", self.lastVideo, type(self.lastVideo)
         pickle.dump((self.proximite,self.lastVideo,self.videoDir),f)
         f.close()
         

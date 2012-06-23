@@ -13,9 +13,11 @@ class film:
         le constructeur
         @param filename le nom d'un fichier video
         """
+        filename = unicode(filename,'utf8')
         self.filename=filename
-        self.filesize=os.path.getsize(filename)
-        self.capture=cv.CreateFileCapture(self.filename)
+        print "yyyyyyy", type(self.filename)
+        self.filesize=os.path.getsize(filename.encode('utf8'))
+        self.capture=cv.CreateFileCapture(self.filename.encode('utf8'))
         t=threading.Thread(target=self.autoTest)
         t.start()
         t.join(5.0) # attente de 5 secondes au plus

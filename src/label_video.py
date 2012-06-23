@@ -113,7 +113,7 @@ class Label_Video(QtGui.QLabel):
             color=0
  
             for point in points:
-                if type(point)!= type(""): 
+	        if type(point)!= type(""): 
                     self.painter.setPen(QColor(self.couleurs[color]))
                     self.painter.setFont(QFont("", 10))
                     self.painter.translate(point.x(), point.y())

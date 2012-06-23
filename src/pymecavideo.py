@@ -249,7 +249,7 @@ class StartQT4(QMainWindow):
                 pass
        
 
-    def init_variables(self, opts, filename=""):
+    def init_variables(self, opts, filename=u""):
         self.dbg.p(1,"rentre dans 'init_variables'")
         self.logiciel_acquisition = False
         self.points_ecran={}
@@ -731,7 +731,16 @@ class StartQT4(QMainWindow):
         else :
             self.sens_Y = 1
         self.emit(SIGNAL('change_axe_origine()'))
-
+        
+    def check_uncheck_direction_axes(self):
+	if self.sens_X == -1 : 
+	    self.ui.checkBox_abscisses.setChecked(1)
+	else : 
+	    self.ui.checkBox_abscisses.setChecked(0)
+	if self.sens_Y == -1 : 
+	    self.ui.checkBox_ordonnees.setChecked(1)
+	else : 
+	    self.ui.checkBox_ordonnees.setChecked(0)
 
     def pointEnMetre(self,p):
         """
@@ -851,7 +860,7 @@ class StartQT4(QMainWindow):
         """
         self.dbg.p(1,"rentre dans 'init_cvReader'")
         self.cvReader=openCvReader(self.filename)
-        print self.cvReader
+        #print self.cvReader
         if not self.cvReader : 
             sansSuffixe=os.path.basename(self.filename)
             match=re.match("(.*)\.(.*)$",sansSuffixe)
@@ -871,20 +880,36 @@ class StartQT4(QMainWindow):
     def rouvre_ui(self):
         self.dbg.p(1,"rentre dans 'rouvre_ui'")
         dir_ = self._dir("home")
-        fichier = QFileDialog.getOpenFileName(self,self.tr(QString(u"Ouvrir un projet Pymecavideo")), dir_,self.tr(QString(u"fichiers pymecavideo ( *.mecavideo)")))
+        fichier = QFileDialog.getOpenFileName(self,self.tr(QString(u"Ouvrir un projet Pymecavideo")), dir_,self.tr(QString(u"fichiers pymecavideo(*.csv)")))
         
         if fichier != "":
             self.rouvre(fichier)
 
     def loads(self,s):
         self.dbg.p(1,"rentre dans 'loads'")
-        s=s[1:-1].replace("\n#","\n")
-        self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points = pickle.loads(s)
+        s=s[1:-2].replace("\n#","\n")
+        
+        self.filename,self.sens_X,self.sens_Y,self.origine,\
+        self.premiere_image,self.echelle_image.longueur_reelle_etalon\
+        ,point,self.deltaT,self.nb_de_points = s.splitlines()[1:-1]
+        self.filename = self.filename.split()[-1]
+        self.sens_X = int(self.sens_X.split()[-1])
+        self.sens_Y = int(self.sens_Y.split()[-1])
+        self.origine = vecteur(self.origine.split()[-2][1:-1],self.origine.split()[-1][:-1] )
+        self.premiere_image = int(self.premiere_image.split()[-1])
+        self.echelle_image.longueur_reelle_etalon = float(self.echelle_image.longueur_reelle_etalon.split()[-2])
+        self.echelle_image.p1,self.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]), vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
+        self.deltaT = float(self.deltaT.split()[-1])
+        self.nb_de_points = int(self.nb_de_points.split()[-2])
+        
+        print "self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,point,self.deltaT,self.nb_de_points", self.filename,self.sens_X, self.sens_Y, self.origine,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points
+        
         self.init_cvReader()
         
     def rouvre(self,fichier):
         """Open a mecavideo file"""
         self.dbg.p(1,"rentre dans 'rouvre'")
+        
         lignes=open(fichier,"r").readlines()
         i=0
         self.points={}
@@ -892,19 +917,29 @@ class StartQT4(QMainWindow):
         for l in lignes:
             if l[0]=="#":
                 dd+=l
+	self.echelle_image=echelle() # on réinitialise l'échelle
+        self.loads(dd)               # on récupère les données importantes
+        self.check_uncheck_direction_axes() #check or uncheck axes Checkboxes
+	for l in lignes:
+            if l[0]=="#":
+                pass
             else:
                 l=l.strip('\t\n')
                 d=l.split("\t")
-                self.points[i]=[d[0]]
+                self.points[i]=[d[0].replace(",",".")]
                 for j in range(1,len(d),2):
-                    self.points[i].append(vecteur(d[j],d[j+1]))
+		    
+                    self.points[i].append(vecteur(float(d[j].replace(",","."))*self.echelle_image.longueur_reelle_etalon\
+                    +self.origine.x(),float(d[j+1].replace(",","."))*self.echelle_image.longueur_reelle_etalon+self.origine.y()))
+                    print self.points[i]
+                    
                 i+=1
-        self.echelle_image=echelle() # on réinitialise l'échelle
-        self.loads(dd)               # on récupère les données importantes
+        
+        self.init_interface()        
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         framerate, self.image_max = self.cvReader.recupere_avi_infos()
-        self.dbg.p(3,"In :  'rouvre', framerate, self.image_max = ",framerate, self.image_max )
+        
         self.defini_barre_avancement()
         self.affiche_echelle()       # on met à jour le widget d'échelle
         n=len(self.points.keys())
@@ -946,21 +981,25 @@ class StartQT4(QMainWindow):
         self.dbg.p(1,"rentre dans 'entete_fichier'")
         result=u"""#pymecavideo
 #video = %s
+#sens axe des X = %d
+#sens axe des Y = %d
+#origine de pointage = %s
 #index de depart = %d
 #echelle %5f m pour %5f pixel
 #echelle pointee en %s %s
 #intervalle de temps : %f
 #suivi de %s point(s)
 #%s
-#"""%(self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon(),self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points,
-msg)
+#"""%(self.filename,self.sens_X, self.sens_Y,self.origine,self.premiere_image\
+,self.echelle_image.longueur_reelle_etalon,self.echelle_image.longueur_pixel_etalon(),self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points,msg)
         return result
 
-    def dumps(self):
-        self.dbg.p(1,"rentre dans 'dumps'")
+    #def dumps(self):
+        #self.dbg.p(1,"rentre dans 'dumps'")
        
-        return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon\
-                ,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points)).replace("\n","\n#")
+        #return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon\
+                #,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points\
+                #,self.origine, self.sens_X,self.sens_Y)).replace("\n","\n#")
 
 
     def enregistre(self, fichier):
@@ -973,27 +1012,29 @@ msg)
         except TypeError:
             pass
         if fichier != "":
-            fichierMecavideo=""+fichier # on force une copie !
-            fichierMecavideo.replace(".csv",".mecavideo")
-            file = open(fichierMecavideo, 'w')
+            #fichierMecavideo=unicode(""+fichier) # on force une copie !
+            ##fichierMecavideo.replace(".csv",".mecavideo")
+            #file = open(fichierMecavideo, 'w')
             liste_des_cles = []
-            try :
-                file.write(self.dumps())
-                for key in self.points:
-                    liste_des_cles.append(key)
-                liste_des_cles.sort()
-                for cle in liste_des_cles:
-                    donnee=self.points[cle]
-                    t=float(donnee[0])
-                    a = "\n%.2f\t" %t
-                    for p in donnee[1:]:
-                        a+= "%d\t" %p.x()
-                        a+= "%d\t" %p.y()
-                    file.write(a)
-            finally:
-                file.close()
-            ################# fin du fichier mecavideo ################
-            file = codecs.open(fichier, 'w', 'utf8')
+            #try :
+                #file.write(self.dumps())
+            for key in self.points:
+                liste_des_cles.append(key)
+                #liste_des_cles.sort()
+                #for cle in liste_des_cles:
+                    #donnee=self.points[cle]
+                    #t=float(donnee[0])
+                    #a = "\n%.2f\t" %t
+                    #for p in donnee[1:]:
+                        #a+= "%d\t" %p.x()
+                        #a+= "%d\t" %p.y()
+                    #file.write(a)
+            #finally:
+                #file.close()
+            ################## fin du fichier mecavideo ################
+            fichier = unicode(fichier)
+            fichier = fichier.encode('utf8')
+            file = codecs.open(fichier, 'w','utf8')
             try :
                 file.write(self.entete_fichier(self.tr(QString(u"temps en seconde, positions en mètre"))))
                 for cle in liste_des_cles:
@@ -1014,6 +1055,7 @@ msg)
         self.dbg.p(1,"rentre dans 'enregistre_ui'")
         if self.points!={}:
             fichier = QFileDialog.getSaveFileName(self,"FileDialog", "data.csv","*.csv *.txt *.asc *.dat")
+            
             self.enregistre(fichier)
 
     def debut_capture(self, departManuel=True):
@@ -1580,6 +1622,7 @@ msg)
         dir_="%s" %(self._dir("videos"))
         self.reinitialise_tout()
         filename=QFileDialog.getOpenFileName(self,self.tr(QString(u"Ouvrir une vidéo")), dir_,self.tr(QString(u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)")))
+        print "###########",type(filename)
         self.openTheFile(filename)
         
     def openfile(self):
@@ -1589,6 +1632,7 @@ msg)
         self.dbg.p(1,"rentre dans 'openfile'")
         dir_=self._dir("videos")
         filename=QFileDialog.getOpenFileName(self,self.tr(QString(u"Ouvrir une vidéo")), dir_,self.tr(QString(u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)")))
+        print "###########",type(filename)
         self.openTheFile(filename)
         try :
             self.reinitialise_capture()
@@ -1633,6 +1677,7 @@ msg)
                 self.label_video.show()
 
                 self.prefs.videoDir=os.path.dirname(self.filename)
+                print "IJJJ", "pref saved"
                 self.prefs.save()
 
                 
@@ -1718,7 +1763,7 @@ msg)
         self.dbg.p(1,"rentre dans 'traiteOptions'")
         for opt,val in self.opts:
             if opt in ['-f','--fichier_mecavideo']:
-                if os.path.isfile(val) and os.path.splitext(val)[1] == ".mecavideo":
+                if os.path.isfile(val) and os.path.splitext(val)[1] == ".csv":
                     try:
                         self.rouvre(val)
                     except:
