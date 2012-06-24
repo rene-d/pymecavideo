@@ -61,7 +61,6 @@ class Preferences:
 	    self.lastVideo = unicode(self.lastVideo,'utf8')
 	except TypeError:
 	    pass
-        print "llllll", self.lastVideo, type(self.lastVideo)
         pickle.dump((self.proximite,self.lastVideo,self.videoDir),f)
         f.close()
         

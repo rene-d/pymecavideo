@@ -902,8 +902,6 @@ class StartQT4(QMainWindow):
         self.deltaT = float(self.deltaT.split()[-1])
         self.nb_de_points = int(self.nb_de_points.split()[-2])
         
-        print "self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon,point,self.deltaT,self.nb_de_points", self.filename,self.sens_X, self.sens_Y, self.origine,self.premiere_image,self.echelle_image.longueur_reelle_etalon,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points
-        
         self.init_cvReader()
         
     def rouvre(self,fichier):
@@ -931,7 +929,6 @@ class StartQT4(QMainWindow):
 		    
                     self.points[i].append(vecteur(float(d[j].replace(",","."))*self.echelle_image.longueur_reelle_etalon\
                     +self.origine.x(),float(d[j+1].replace(",","."))*self.echelle_image.longueur_reelle_etalon+self.origine.y()))
-                    print self.points[i]
                     
                 i+=1
         
@@ -1260,7 +1257,7 @@ class StartQT4(QMainWindow):
                             
                 self.dbg.p(3,"origine %s, ref %s" %(str(origine),str(ref)))
         except ZeroDivisionError:
-            print "pb self.tracer_trajectoires"
+            self.dbg.p(1,"ERROR : ZeroDivisionError in Self.tracer_trajectoires")
         self.label_trajectoire.reDraw()
         
         
@@ -1622,7 +1619,6 @@ class StartQT4(QMainWindow):
         dir_="%s" %(self._dir("videos"))
         self.reinitialise_tout()
         filename=QFileDialog.getOpenFileName(self,self.tr(QString(u"Ouvrir une vidéo")), dir_,self.tr(QString(u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)")))
-        print "###########",type(filename)
         self.openTheFile(filename)
         
     def openfile(self):
@@ -1632,7 +1628,6 @@ class StartQT4(QMainWindow):
         self.dbg.p(1,"rentre dans 'openfile'")
         dir_=self._dir("videos")
         filename=QFileDialog.getOpenFileName(self,self.tr(QString(u"Ouvrir une vidéo")), dir_,self.tr(QString(u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)")))
-        print "###########",type(filename)
         self.openTheFile(filename)
         try :
             self.reinitialise_capture()
@@ -1677,7 +1672,6 @@ class StartQT4(QMainWindow):
                 self.label_video.show()
 
                 self.prefs.videoDir=os.path.dirname(self.filename)
-                print "IJJJ", "pref saved"
                 self.prefs.save()
 
                 

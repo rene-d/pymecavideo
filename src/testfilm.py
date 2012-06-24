@@ -18,8 +18,13 @@ class film:
         except TypeError: 
             pass
         self.filename=filename
-        self.filesize=os.path.getsize(filename.encode('utf8'))
-        self.capture=cv.CreateFileCapture(self.filename.encode('utf8'))
+        try : 
+            self.filesize=os.path.getsize(filename.encode('utf8'))
+            self.capture=cv.CreateFileCapture(self.filename.encode('utf8'))
+        except WindowsError : 
+            self.filesize=os.path.getsize(filename.encode('utf8').encode('cp1252'))
+            self.capture=cv.CreateFileCapture(self.filename.encode('utf8').encode('cp1252'))
+        
         t=threading.Thread(target=self.autoTest)
         t.start()
         t.join(5.0) # attente de 5 secondes au plus
