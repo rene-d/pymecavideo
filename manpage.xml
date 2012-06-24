@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+"file:///usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd" [
 
 <!--
 
@@ -17,7 +17,7 @@ XP=xsltproc -''-nonet
 
 manpage.1: manpage.dbk
         $(XP) $(DB2MAN) $<
-    
+
 The xsltproc binary is found in the xsltproc package.  The
 XSL files are in docbook-xsl.  Please remember that if you
 create the nroff version in one of the debian/rules file
@@ -30,7 +30,7 @@ and docbook-xsl in your Build-Depends control field.
   <!ENTITY dhfirstname "<firstname>FIRSTNAME</firstname>">
   <!ENTITY dhsurname   "<surname>SURNAME</surname>">
   <!-- Please adjust the date whenever revising the manpage. -->
-  <!ENTITY dhdate      "<date>December 26, 2007</date>">
+  <!ENTITY dhdate      "<date>24 June 2012</date>">
   <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
        allowed: see man(7), man(1). -->
   <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
@@ -50,7 +50,7 @@ and docbook-xsl in your Build-Depends control field.
       &dhemail;
     </address>
     <copyright>
-      <year>2007</year>
+      <year>2007-2012</year>
       <holder>&dhusername;</holder>
     </copyright>
     &dhdate;
@@ -59,6 +59,8 @@ and docbook-xsl in your Build-Depends control field.
     &dhucpackage;
 
     &dhsection;
+    <refmiscinfo class="source">Pymecavideo</refmiscinfo>
+    <refmiscinfo class="manual">Pymecavideo</refmiscinfo>
   </refmeta>
   <refnamediv>
     <refname>&dhpackage;</refname>
@@ -69,7 +71,26 @@ and docbook-xsl in your Build-Depends control field.
     <cmdsynopsis>
       <command>&dhpackage;</command>
 
-      <arg><option><replaceable>filename.{avi|mpg|...}</replaceable></option></arg>
+      <arg choice="opt">
+        <group choice="req">
+          <arg choice="plain"><option>-f</option></arg>
+          <arg choice="plain"><option>--fichier_pymecavideo=</option></arg>
+        </group>
+        <replaceable class="option">file</replaceable>
+      </arg>
+      <arg choice="opt">
+        <group choice="req">
+          <arg choice="plain"><option>--maxi</option></arg>
+        </group>
+      </arg>
+      <arg choice="opt">
+        <group choice="req">
+          <arg choice="plain"><option>-d</option></arg>
+          <arg choice="plain"><option>--debug=</option></arg>
+        </group>
+        <replaceable class="option">verbosity (level from 1 to 3)</replaceable>
+      </arg>
+      <arg><option><replaceable>nomDeFichier.{avi|mpg|...}</replaceable></option></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   <refsect1>
@@ -82,6 +103,36 @@ the timecode and the coordinates, to be analyzed by some other standard
 software.
 </para>
 
+  </refsect1>
+  <refsect1 id="options">
+    <title>OPTIONS</title>
+    <variablelist>
+      <!-- Use the variablelist.term.separator and the
+           variablelist.term.break.after parameters to
+           control the term elements. -->
+      <varlistentry>
+        <term><option>-f <replaceable>file</replaceable></option></term>
+        <term><option>--fichier_pymecavideo=<replaceable>file</replaceable></option></term>
+        <listitem>
+          <para>Declares a previous snapshot file made by pymecavideo. Allows to continue 
+	  just after the snapshot point.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--maxi</option></term>
+        <listitem>
+          <para>Use the bigger user interface.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-d <replaceable>level</replaceable></option></term>
+        <term><option>--debug=<replaceable>level</replaceable></option></term>
+        <listitem>
+          <para>Declares the level of verbosity to debug the application. This level is zero by
+	  default (no messages emitted), it can take values between 1 and 3.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
   </refsect1>
   <refsect1>
     <title>ARGUMENTS</title>
@@ -102,12 +153,12 @@ software.
     <para>This manual page was written by &dhusername; &dhemail; for
       the &debian; system (but may be used by others).  Permission is
       granted to copy, distribute and/or modify this document under
-      the terms of the &gnu; General Public License, Version 2 any 
+      the terms of the &gnu; General Public License, Version 3 any 
 	  later version published by the Free Software Foundation.
     </para>
 	<para>
 	  On Debian systems, the complete text of the GNU General Public
-	  License can be found in /usr/share/common-licenses/GPL.
+	  License can be found in /usr/share/common-licenses/GPL-3.
 	</para>
 
   </refsect1>

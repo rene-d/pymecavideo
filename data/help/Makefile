@@ -8,8 +8,8 @@ all: $(TARGETS) images
 images: $(GENERATED_W32)
 
 %-w32.png: %.svg
-	if [ -x /usr/bin/rsvg ]; then \
-	  rsvg -w 32 $< $@; \
+	if [ -x /usr/bin/rsvg-convert ]; then \
+	  rsvg-convert -w 32 $< -o $@; \
 	else \
 	  inkscape --export-png=$@ --export-width=32 $<; \
 	fi

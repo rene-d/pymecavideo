@@ -33,20 +33,21 @@ class Calc:
         for exe_ooo in ["soffice","ooffice3.2"]:
             if  any(os.access(os.path.join(p,exe_ooo), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
                 self.exe_ooo = exe_ooo
-        #print "lanching an OOo server ..."
-        
-        ####try with subprocess  :
-        #serv = subprocess.Popen(['ooffice3.2','-nodefault','-accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager'%(HOST, PORT)] )
-        #serv.wait()
-        ####### but issue in timeout. More portable btw..
-        
-        #print self.exe_ooo+' -nodefault -accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager"' %(HOST, PORT)
         cmd='(%s --nodefault --accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager" &)' %(self.exe_ooo, HOST, PORT)
         subprocess.call(cmd, shell=True)
-        time.sleep(2)
-        self.ooo = oootools.OOoTools(HOST, PORT)
-        self.ctx = self.ooo.ctx
-        self.desktop = self.ooo.desktop
+        maxduration=10
+        delay=2
+        ok=False
+        t=0
+        while not ok and t < maxduration:
+            time.sleep(delay)
+            t+=delay
+            self.ooo = oootools.OOoTools(HOST, PORT)
+            self.ctx = self.ooo.ctx
+            self.desktop = self.ooo.desktop
+            ok = self.desktop != None
+        if not ok:
+            raise IOError, "Pas possible de communiquer avec {libre|open}office."
         if Hidden:
             props=PropertyValue()
             props.Name="Hidden"
