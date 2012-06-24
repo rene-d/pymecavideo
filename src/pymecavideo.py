@@ -938,7 +938,7 @@ class StartQT4(QMainWindow):
                 t="%4f" %(float(d[0].replace(",",".")))
                 print "OOOOOO", t
                 self.ui.tableWidget.insertRow(i)
-                self.ui.tableWidget.setItem(i,0,QTableWidgetItem(str(t)))
+                self.ui.tableWidget.setItem(i,0,QTableWidgetItem(t))
                 self.points[i]=[t]
                 
                 for j in range(1,len(d),2):    

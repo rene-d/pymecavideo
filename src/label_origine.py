@@ -35,7 +35,7 @@ class Label_Origine(QLabel):
         self.app = app
         self.setCursor(Qt.CrossCursor)
         self.cropX2=None
-        self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom)
+        self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom,self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
         

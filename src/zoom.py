@@ -32,6 +32,7 @@ class Zoom_Croix(QWidget):
         QWidget.__init__(self, parent)
         self.parent = parent
         self.app = app
+        print app, parent
         
         self.setEnabled(True)
         self.setGeometry(QRect(0, 0, 100, 100))
