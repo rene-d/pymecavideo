@@ -22,8 +22,8 @@ class film:
             self.filesize=os.path.getsize(filename.encode('utf8'))
             self.capture=cv.CreateFileCapture(self.filename.encode('utf8'))
         except WindowsError : 
-            self.filesize=os.path.getsize(filename.encode('utf8').encode('cp1252'))
-            self.capture=cv.CreateFileCapture(self.filename.encode('utf8').encode('cp1252'))
+            self.filesize=os.path.getsize(filename.decode('utf8').encode('cp1252'))
+            self.capture=cv.CreateFileCapture(self.filename.decode('utf8').encode('cp1252'))
         
         t=threading.Thread(target=self.autoTest)
         t.start()
