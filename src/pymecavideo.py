@@ -898,6 +898,7 @@ class StartQT4(QMainWindow):
         self.origine = vecteur(self.origine.split()[-2][1:-1],self.origine.split()[-1][:-1] )
         self.premiere_image = int(self.premiere_image.split()[-1])
         self.echelle_image.longueur_reelle_etalon = float(self.echelle_image.longueur_reelle_etalon.split()[-2])
+        print "GGGgg",point.split()[-4][1:-1], point.split()[-3][:-1], point.split()[-2][1:-1], point.split()[-1][:-1]
         self.echelle_image.p1,self.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]), vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
         self.deltaT = float(self.deltaT.split()[-1])
         self.nb_de_points = int(self.nb_de_points.split()[-2])
