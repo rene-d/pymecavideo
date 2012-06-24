@@ -983,7 +983,7 @@ class StartQT4(QMainWindow):
 #origine de pointage = %s
 #index de depart = %d
 #echelle %5f m pour %5f pixel
-#echelle pointee en %s  %s
+#echelle pointee en %s %s
 #intervalle de temps : %f
 #suivi de %s point(s)
 #%s
