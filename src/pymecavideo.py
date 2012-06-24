@@ -892,7 +892,7 @@ class StartQT4(QMainWindow):
         self.filename,self.sens_X,self.sens_Y,self.origine,\
         self.premiere_image,self.echelle_image.longueur_reelle_etalon\
         ,point,self.deltaT,self.nb_de_points = s.splitlines()[1:-1]
-        self.filename = self.filename.split('=')[-1]
+        self.filename = self.filename.split('=')[-1][1:]
         self.sens_X = int(self.sens_X.split()[-1])
         self.sens_Y = int(self.sens_Y.split()[-1])
         self.origine = vecteur(self.origine.split()[-2][1:-1],self.origine.split()[-1][:-1] )
