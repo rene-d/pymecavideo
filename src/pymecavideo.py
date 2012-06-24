@@ -893,16 +893,25 @@ class StartQT4(QMainWindow):
         self.premiere_image,self.echelle_image.longueur_reelle_etalon\
         ,point,self.deltaT,self.nb_de_points = s.splitlines()[1:-1]
         self.filename = self.filename.split('=')[-1][1:]
+        self.dbg.p(3,"rentre dans 'loads' %s" %(self.filename))
         self.sens_X = int(self.sens_X.split()[-1])
+        self.dbg.p(3,"rentre dans 'loads' %s" %(self.sens_X))
         self.sens_Y = int(self.sens_Y.split()[-1])
+        self.dbg.p(3,"rentre dans 'loads' %s" %(self.sens_Y))
         self.origine = vecteur(self.origine.split()[-2][1:-1],self.origine.split()[-1][:-1] )
+        self.dbg.p(3,"rentre dans 'loads' %s" %(self.origine))
         self.premiere_image = int(self.premiere_image.split()[-1])
+        self.dbg.p(3,"rentre dans 'loads' %s" %(self.filename))
         self.echelle_image.longueur_reelle_etalon = float(self.echelle_image.longueur_reelle_etalon.split()[-2])
-        print "GGGgg",point.split()[-4][1:-1], point.split()[-3][:-1], point.split()[-2][1:-1], point.split()[-1][:-1]
-        self.echelle_image.p1,self.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]), vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
+        self.dbg.p(3,"rentre dans 'loads' %s" %(self.filename))
+        self.echelle_image.p1,self.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1])\
+        ,vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
+        self.dbg.p(3,"rentre dans 'loads' %s" %(self.filename))
         self.deltaT = float(self.deltaT.split()[-1])
+        self.dbg.p(3,"rentre dans 'loads' %s" %(self.filename))
         self.nb_de_points = int(self.nb_de_points.split()[-2])
-        
+        self.dbg.p(3,"rentre dans 'loads' %s" %(self.filename))
+	  
         self.init_cvReader()
         
     def rouvre(self,fichier):
@@ -919,21 +928,29 @@ class StartQT4(QMainWindow):
 	self.echelle_image=echelle() # on réinitialise l'échelle
         self.loads(dd)               # on récupère les données importantes
         self.check_uncheck_direction_axes() #check or uncheck axes Checkboxes
+        self.init_interface()
 	for l in lignes:
             if l[0]=="#":
                 pass
             else:
                 l=l.strip('\t\n')
                 d=l.split("\t")
-                self.points[i]=[d[0].replace(",",".")]
-                for j in range(1,len(d),2):
-		    
+                t="%4f" %(float(d[0].replace(",",".")))
+                print "OOOOOO", t
+                self.ui.tableWidget.insertRow(i)
+                self.ui.tableWidget.setItem(i,0,QTableWidgetItem(str(t)))
+                self.points[i]=[t]
+                
+                for j in range(1,len(d),2):    
                     self.points[i].append(vecteur(float(d[j].replace(",","."))*self.echelle_image.longueur_reelle_etalon\
-                    +self.origine.x(),float(d[j+1].replace(",","."))*self.echelle_image.longueur_reelle_etalon+self.origine.y()))
-                    
+                    +self.origine.x(),self.origine.y()-float(d[j+1].replace(",","."))*self.echelle_image.longueur_reelle_etalon))  
+                    self.ui.tableWidget.setItem(i,j,QTableWidgetItem(str(float(d[j].replace(",",".")))))
+                    self.ui.tableWidget.setItem(i,j+1,QTableWidgetItem(str(float(d[j+1].replace(",",".")))))
+                    print 'IIIIIII', t,i,j,str(float(d[j].replace(",","."))),i,j+1, float(d[j+1].replace(",","."))
+                
                 i+=1
         
-        self.init_interface()        
+                
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         framerate, self.image_max = self.cvReader.recupere_avi_infos()
@@ -953,20 +970,17 @@ class StartQT4(QMainWindow):
         self.affiche_image() # on affiche l'image
         self.debut_capture(departManuel=False)
         # On regénère le tableau d'après les points déjà existants.
-        self.cree_tableau()
-        ligne=0
-        for k in self.points.keys():
-            data=self.points[k]
-            t="%4f" %(float(data[0]))
-            self.ui.tableWidget.insertRow(ligne)
-            self.ui.tableWidget.setItem(ligne,0,QTableWidgetItem(t))
-            i=1
-            for vect in data[1:]:
-                vect=self.pointEnMetre(vect)
-                self.ui.tableWidget.setItem(ligne,i,QTableWidgetItem(str(vect.x())))
-                self.ui.tableWidget.setItem(ligne,i+1,QTableWidgetItem(str(vect.y())))
-                i+=2
-            ligne+=1
+        
+       
+        #for k in self.points.keys():
+            #data=self.points[k]
+            
+            #i=1
+            #for vect in data[1:]:
+                ##vect=self.pointEnMetre(vect)
+                
+                #i+=2
+            #ligne+=1
         self.ui.tableWidget.show()
         # attention à la fonction défaire/refaire : elle est mal initialisée !!!
 
