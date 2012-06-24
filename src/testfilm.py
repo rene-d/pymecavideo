@@ -13,9 +13,11 @@ class film:
         le constructeur
         @param filename le nom d'un fichier video
         """
-        filename = unicode(filename,'utf8')
+        try :
+            filename = unicode(filename,'utf8')
+        except TypeError: 
+            pass
         self.filename=filename
-        print "yyyyyyy", type(self.filename)
         self.filesize=os.path.getsize(filename.encode('utf8'))
         self.capture=cv.CreateFileCapture(self.filename.encode('utf8'))
         t=threading.Thread(target=self.autoTest)
