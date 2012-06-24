@@ -433,9 +433,7 @@ class StartQT4(QMainWindow):
   
         self.init_interface()
 
-        self.ui.pushButton_origine.setEnabled(1)
-        self.ui.checkBox_abscisses.setEnabled(1)
-        self.ui.checkBox_ordonnees.setEnabled(1)
+        
 
         if index_point_actuel :
             index = self.premiere_image
@@ -491,7 +489,13 @@ class StartQT4(QMainWindow):
         self.enableRefaire(False)
         self.affiche_nb_points(1)
         ### Réactiver checkBox_avancees après réinitialisation ###
-        #self.ui.checkBox_avancees.setEnabled(1)
+        self.ui.pushButton_origine.setEnabled(1)
+        self.ui.checkBox_abscisses.setEnabled(1)
+        self.ui.checkBox_ordonnees.setEnabled(1)
+        self.ui.checkBox_auto.setEnabled(1)
+        self.ui.checkBox_abscisses.setCheckState(Qt.Unchecked)
+        self.ui.checkBox_ordonnees.setCheckState(Qt.Unchecked)
+        self.ui.checkBox_auto.setCheckState(Qt.Unchecked)
 
 
         if self.ui.tableWidget:
@@ -1114,6 +1118,11 @@ class StartQT4(QMainWindow):
         for i in range(self.nb_de_points) :
             self.ui.comboBox_referentiel.insertItem(-1, self.tr(QString(u"point N°"+" "+str(i+1))))
         self.cree_tableau()
+        
+        self.ui.pushButton_origine.setEnabled(0)
+        self.ui.checkBox_abscisses.setEnabled(0)
+        self.ui.checkBox_ordonnees.setEnabled(0)
+        self.ui.checkBox_auto.setEnabled(0)
         
         #######automatic capture
         if self.ui.checkBox_auto.isChecked():
