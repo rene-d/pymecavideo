@@ -112,8 +112,14 @@ class MonThreadDeCalcul(QThread):
 
 
 class StartQT4(QMainWindow):
-    def __init__(self, parent, opts):
-        #Données principales du logiciel : 
+    def __init__(self, parent=None, opts=[], args=[]):
+        """
+        le constructeur reçoit les données principales du logiciel : 
+        @param parent le widget parent, None pour une fenêtre principale
+        @param opts les options de l'invocation bien rangées en tableau
+        @param args les arguments restants après raitement des options
+        """
+
         if "mini" in str(opts) :
             self.mini=True
         else :
@@ -150,6 +156,8 @@ class StartQT4(QMainWindow):
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
         self.dbg=Dbg(0)
+        self.args = args
+
         self.cvReader=None
         self.newVideos=[]            # les vidéos créées par recodage
 
@@ -157,6 +165,9 @@ class StartQT4(QMainWindow):
 
         self.platform = platform.system()
         self.prefs=Preferences(self)
+        if len(self.args) > 0:
+            # le premier argument éventuel est le nom d'une vidéo
+            self.prefs.lastVideo=args[0]
         ####intialise les répertoires
         self._dir()
         defait_icon=os.path.join(self._dir("icones"),"undo.png")
@@ -1623,7 +1634,7 @@ class StartQT4(QMainWindow):
                     
         
 def usage():
-    print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--mini]")
+    print ("Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--mini] [nom_de_fichier_video.avi]")
 
 def run():
     global app
@@ -1649,7 +1660,7 @@ def run():
     if appTranslator.load(langdir):
         b = app.installTranslator(appTranslator)
     
-    windows = StartQT4(None,opts)
+    windows = StartQT4(None,opts, args)
     
     windows.show()
     

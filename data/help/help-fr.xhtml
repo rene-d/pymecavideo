@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Manuel de PyMecaVideo</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><meta name="description" content="PyMecaVideo est un logiciel facilitant le repérage de points mobiles dans une vidéo et d'en exploiter la cinématique pour des usages de mesure physique." /><link rel="stylesheet" type="text/css" href="help.css" /></head><body><div xml:lang="fr" class="article" title="Manuel de PyMecaVideo" lang="fr"><div class="titlepage"><div><div><h2 class="title"><a id="id445215"></a>Manuel de PyMecaVideo</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Georges</span> <span class="surname">Khaznadar</span></h3></div></div><div><div class="abstract" title="Résumé"><p class="title"><b>Résumé</b></p><p>
+PyMecaVideo est un logiciel facilitant le repérage de points mobiles dans
+une vidéo et d'en exploiter la cinématique pour des usages de mesure physique.
+</p></div></div></div><hr /></div><div class="toc"><p><b>Table des matières</b></p><dl><dt><span class="sect1"><a href="#id478023">PyMecaVideo, pourquoi faire ?</a></span></dt><dt><span class="sect1"><a href="#id445135">Téléchargement et installation</a></span></dt><dt><span class="sect1"><a href="#id446450">Lancement de PyMecaVideo</a></span></dt><dt><span class="sect1"><a href="#id445445">Préparer une vidéo pour pouvoir la traiter</a></span></dt><dt><span class="sect1"><a href="#id445527">Utilisation de PyMecaVideo</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id445560">Régler l'échelle</a></span></dt><dt><span class="sect2"><a href="#id445597">Choix du nombre de points à étudier</a></span></dt><dt><span class="sect2"><a href="#id486996">Pointer les positions</a></span></dt><dt><span class="sect2"><a href="#id487067">Enregistrer le travail</a></span></dt><dt><span class="sect2"><a href="#id487175">Le volet des trajectoires</a></span></dt><dt><span class="sect2"><a href="#id487242">Les préférences de PyMecaVideo</a></span></dt><dt><span class="sect2"><a href="#id487291">Créer une vidéo de synthèse</a></span></dt><dt><span class="sect2"><a href="#id487385">Le volet des coordonnées</a></span></dt><dt><span class="sect2"><a href="#id487411">Exporter des données vers d'autres applications</a></span></dt></dl></dd><dt><span class="sect1"><a href="#id487438">Les logiciels de traitement des données</a></span></dt><dt><span class="sect1"><a href="#id487649">Comment contribuer</a></span></dt><dt><span class="appendix"><a href="#id487719">A. Notice légale concernant PyMecaVideo</a></span></dt><dd><dl><dt><span class="section"><a href="#id487723">Auteurs</a></span></dt><dt><span class="section"><a href="#id487792">Licence du programme</a></span></dt><dt><span class="section"><a href="#id487807">Licence des exemples</a></span></dt></dl></dd></dl></div><div class="sect1" title="PyMecaVideo, pourquoi faire ?"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id478023"></a>PyMecaVideo, pourquoi faire ?</h2></div></div></div><div class="mediaobject" align="left"><img src="snap1.png" align="left" /></div><p>Il est possible de faire des mesures physiques à l'aide d'images,
+dans certaines conditions. <span class="symbol"> PyMecaVideo</span> facilite
+les mesures physiques faites sur des séquences d'images vidéo. Il suffit de
+travailler à partir d'un fichier vidéo
+de type <code class="computeroutput">AVI</code>,
+encodé à l'aide d'un codec libre<sup>[<a id="id478047" href="#ftn.id478047" class="footnote">1</a>]</sup>, 
+qui comporte au moins une image dont on peut
+déterminer l'échelle.
+</p><p><span class="symbol"> PyMecaVideo</span> permet d'ouvrir et de décomposer
+en images la vidéo, et par des pointages successifs, de suivre le mouvement 
+d'un point, et éventuellement le mouvement de l'origine d'un référentiel
+mobile dans le cadre des images. Les données pointées sont ensuite exploitables
+à l'aide de logiciels d'analyse standard.
+</p></div><div class="sect1" title="Téléchargement et installation"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id445135"></a>Téléchargement et installation</h2></div></div></div><p>
+<a class="ulink" href="http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo" target="_top">
+<em class="medialabel"><span class="inlinemediaobject"><img src="snap2-mini.png" align="left" /></span></em>
+</a>  Les sources de <span class="symbol"> PyMecaVideo</span> sont disponibles parmi
+<a class="ulink" href="http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo" target="_top">
+les « Outils Physiques Pour Linux » hébergés sur le
+site <span class="emphasis"><em>tuxfamily.org</em></span></a>. Pour l'installation sous
+<span class="productname"> Linux</span>™, récupérer l'arbre des sources comme
+expliqué à 
+<a class="ulink" href="http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo" target="_top">
+la page d'accueil du projet</a>, entrer dans le
+répertoire <code class="computeroutput">pymecavideo/trunk</code>, et taper la
+commande suivante : <code class="computeroutput">python setup.py install</code>.
+Cela met en place les modules nécessaires pour python. 
+Activer l'attribut exécutable du fichier 
+<code class="computeroutput">pymecavideo</code>, par exemple en tapant la
+commande <code class="computeroutput">chmod +x pymecavideo</code>, puis copier ce
+fichier dans une place où celui-ci sera facile à lancer en tant que commande.
+La liste des répertoires accessibles pour lancer une commande peut être
+obtenue en tapant <code class="computeroutput">echo $PATH</code>.
+</p><p>
+Il est possible aussi d'obtenir des fichiers binaires, qui sont pris en charge
+par le gestionnaire de paquets de votre distribution préférée. Actuellement
+on trouve des paquets RPM et DEB.
+</p><p>Les paquets pour Debian et Ubuntu sont maintenus dans le 
+<a class="ulink" href="http://debian.ofset.org" target="_top">dépôt debian</a>
+de l'association <a class="ulink" href="http://www.ofset.org" target="_top">OFSET</a>.
+Les instructions de téléchargement sont expliquées dans la 
+<a class="ulink" href="http://debian.ofset.org" target="_top">page d'accueil du dépôt</a>.
+</p></div><div class="sect1" title="Lancement de PyMecaVideo"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id446450"></a>Lancement de PyMecaVideo</h2></div></div></div><div class="mediaobject" align="left"><img src="snap3-mini.png" align="left" /></div><p>
+    Il est possible de lancer <span class="symbol">PyMecaVideo</span> de diverses
+    façons : en ligne, on peut taper 
+    <code class="computeroutput">pymecavideo</code>
+    ou <code class="computeroutput">pymecavideo nom_de_fichier_video.avi</code>.
+    On peut aussi le lancer à partir du menu graphique de votre gestionnaire
+    de fenêtre : <span class="symbol">KDE</span> et <span class="symbol">Gnome</span> intègrent
+    l'application dans le menu si vous faites une installation à l'aide d'un
+    paquet. 
+    </p><div class="variablelist"><dl><dt><span class="term">Dans le cas de KDE,</span></dt><dd><p>l'application devrait être accessible 
+      par les menus 
+      Éducatif -&gt; Science -&gt; PyMecaVideo.
+    </p></dd><dt><span class="term">Dans le cas de Gnome,</span></dt><dd><p>l'application devrait être accessible 
+      par les menus 
+      Éducation -&gt; PyMecaVideo.
+    </p></dd></dl></div><p>
+  </p><p>
+    <a class="ulink" href="/usr/share/icons/pymecavideo.svg" target="_top">
+    Voici l'icône de l'application :
+    <span class="inlinemediaobject"><img src="/usr/share/icons/pymecavideo.png" width="25" /></span>
+    </a>
+  </p></div><div class="sect1" title="Préparer une vidéo pour pouvoir la traiter"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id445445"></a>Préparer une vidéo pour pouvoir la traiter</h2></div></div></div><p>
+La préparation de la vidéo commence dès la prise de vues. Les points-clés
+sont les suivants :
+</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+    Choisir un bon éclairage. Les éclairages fluorescents posent parfois
+    problème, car leur intensité varie très rapidement, et cela peut donner
+    quelquefois naissance à des phénomènes stroboscopiques. D'autre part, pour
+    les caméras vidéo disposant de bons automatismes, un éclairage suffisant
+    facilite le choix de temps de pose courts, qui sont favorables à
+    l'acquisition de données.
+  </p></li><li class="listitem"><p>
+    La scène doit posséder un bon contraste. En particulier les points à
+    suivre doivent se distinguer aisément par valeur, sinon par la couleur, 
+    de leur environnement.
+  </p></li><li class="listitem"><p>
+    Il faut penser à laisser un objet de taille connue, dans le même plan
+    focal que la scène qui sera filmée. Il est bon de documenter la dimension
+    de l'objet-étalon.
+  </p></li><li class="listitem"><p>
+    L'axe optique de la caméra doit être perpendiculaire au plan dans lequel
+    se déplace l'objet étudié. Il doit pointer environ vers le milieu de
+    la trajectoire probable.
+  </p></li><li class="listitem"><p>
+    On commence à filmer avant l'évènement, on arrête après l'évènement.
+    Il est préférable de fixer le début et la fin de la séquence vidéo
+    à l'étape de montage.
+  </p></li><li class="listitem"><p>
+    Utiliser un logiciel libre de montage, et couper la séquence pertinente.
+    Quelques dizaines d'images au plus suffisent. La choix d'un logiciel
+    libre assure que les codecs utilisés ne poseront pas de problème à
+    l'avenir. Exemples de logiciels utilisables : 
+    <a class="ulink" href="http://fr.wikipedia.org/wiki/Kino_(logiciel)" target="_top">Kino</a>, 
+    <a class="ulink" href="http://fr.wikipedia.org/wiki/Cinelerra" target="_top">Cinelerra</a>.
+    La vidéo sera enregistrée dans un conteneur au format 
+    <code class="computeroutput">.avi</code>.
+  </p></li></ul></div><p>
+</p></div><div class="sect1" title="Utilisation de PyMecaVideo"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id445527"></a>Utilisation de PyMecaVideo</h2></div></div></div><div class="mediaobject" align="left"><img src="snap4.png" align="left" /></div><p>
+Il faut bien sûr commencer par charger une vidéo avant de pouvoir en faire 
+quoi que ce soit. Ça peut se faire au lancement de la commande, en tapant
+en ligne de commande :
+<code class="computeroutput">pymecavideo nom_de_fichier_video.avi</code>, ou
+en mode graphique quand <span class="symbol">PyMecaVideo</span> est lancé, par le
+menu Fichier -&gt; Ouvrir une vidéo, ou encore si on veut une
+des vidéos d'exemple, par le menu Aide -&gt; Exemples ...
+</p><div class="sect2" title="Régler l'échelle"><div class="titlepage"><div><div><h3 class="title"><a id="id445560"></a>Régler l'échelle</h3></div></div></div><p>Quand on dispose d'un fichier vidéo ouvert, le bouton 
+« Définir l'échelle » est actif, mais la valeur de 
+l'échelle est encore indéfinie. On peut utiliser le curseur ou le champ de
+numéro d'image pour faire apparaître une image autre que la première
+de la séquence vidéo. Il faut que l'objet étalon soit dans le champ, et il
+faut connaître sa longueur en mètre.
+</p><p>
+On clique alors sur ce bouton, on renseigne la longueur de l'objet-étalon
+dans le dialogue qui surgit (on utilise la virgule ou le point 
+comme séparateur décimal, indifféremment :
+par exemple 0,60 m pour signifier 60 cm), on valide, puis lorsque
+le curseur de la souris devient une crois de Malte, on réalise un tirer-glisser
+d'une extrémité à l'autre de l'objet-étalon. 
+</p><div class="mediaobject" align="left"><img src="snap7.png" align="left" /></div><p>
+Quand l'échelle est définie, c'est pour toute l'acquisition de données.
+En cas d'erreur, on peut tout réinitialiser à l'aide du bouton
+« Tout réinitialiser »
+</p></div><div class="sect2" title="Choix du nombre de points à étudier"><div class="titlepage"><div><div><h3 class="title"><a id="id445597"></a>Choix du nombre de points à étudier</h3></div></div></div><p>Par défaut, on étudie le mouvement d'un seul point, le référentiel
+étant celui de la caméra.
+</p><div class="mediaobject" align="left"><img src="snap8.png" align="left" /></div><p>Il est possible de faire porter l'étude sur deux points ou plus.
+Un des points de la série pourra plus tard être utilisé comme nouvelle origine
+du référentiel à volonté.
+</p><p>Pour étudier plus d'un point, il faut modifier la valeur affichée dans
+la boîte intitulée « Nombre de points à étudier »
+</p></div><div class="sect2" title="Pointer les positions"><div class="titlepage"><div><div><h3 class="title"><a id="id486996"></a>Pointer les positions</h3></div></div></div><div class="mediaobject" align="left"><img src="snap6.png" align="left" /></div><p>
+  On peut décider de ne pas commencer le pointage dès la première image. 
+  Dans ce cas, il faut choisir manuellement l'image initiale à l'aide du 
+  curseur en haut à gauche, ou du champ de sélection de numéro d'image.
+  Le pointage commence quand on clique sur le bouton
+  « Démarrer l'acquisition ». 
+</p><div class="mediaobject" align="left"><img src="snap9.png" align="left" /></div><p>Quand l'acquisition est en cours, une petite phrase au-dessus de la 
+vidéo rappelle le numéro du point qu'on est censé cliquer en suivant. Les traces
+des points cliqués dans les images précédentes de la vidéo apparaissent en 
+couleurs. Les couleurs doivent se suivre sans discontinuité, sinon c'est la
+marque d'une faute de pointage.
+</p><div class="sect3" title="Défaire et refaire"><div class="titlepage"><div><div><h4 class="title"><a id="id487031"></a>Défaire et refaire</h4></div></div></div><div class="mediaobject" align="left"><img src="snap10.png" align="left" /></div><p>Les icônes  « défaire » et 
+« refaire » permettent éventuellement de rattraper
+une faute de pointage quand celle-ci est reconnue.
+</p><p>Il n'est possible de refaire des pointages antérieurs que tant qu'on n'a
+apporté aucune modification aux pointages précédemment défaits. Dès qu'un
+des pointages est corrigé à l'aide de la souris sur la vidéo, les pointages
+suivants disparaissent de la liste à refaire, et le bouton 
+« refaire » est aussitôt inactivé (grisé).
+</p><p>
+  Il est possible d'arrêter le pointage à tout moment, éventuellement avant 
+  la fin de la séquence vidéo.
+</p></div></div><div class="sect2" title="Enregistrer le travail"><div class="titlepage"><div><div><h3 class="title"><a id="id487067"></a>Enregistrer le travail</h3></div></div></div><p>
+Après que des points aient été repérés, il devient possible d'enregistrer 
+le travail grâce au menu Fichier -&gt; Enregistrer les données.
+On choisit alors un fichier de type <code class="computeroutput">.csv</code>,
+<code class="computeroutput">.dat</code>,<code class="computeroutput">.txt</code>
+ou <code class="computeroutput">.asc</code><sup>[<a id="id487091" href="#ftn.id487091" class="footnote">2</a>]</sup>
+</p><p><span class="emphasis"><em>NB :</em></span>en même temps que le fichier que vous 
+choisissez est enregistré, un autre le sera automatiquement. Si vous choisissez
+par exemple d'enregistrer un fichier de nom 
+<code class="computeroutput">data.csv</code>, un autre fichier de nom
+<code class="computeroutput">data.csv.mecavideo</code> sera enregistré.
+Voici les caractéristiques de ces deux fichiers :
+</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+  Le fichier choisi explicitement (de nom <code class="computeroutput">data.csv</code>
+  par exemple) contient les données en unités seconde pour le temps et mètre
+  pour les distances. C'est ce fichier qui est pertinent pour un traitement
+  des données physiques à l'aide de logiciels d'analyse.
+</p></li><li class="listitem"><p>
+  Le fichier créé en plus (de nom <code class="computeroutput">data.csv.mecavideo</code>
+  pour l'exemple) contient des données différentes : ce sont uniquement 
+  des nombres entiers pour les positions, c'est à dire qu'on enregistre les
+  lieux des pointages en unité pixel. De plus, les données permettant de
+  reconstituer l'échelle font partie de ce fichier. Ce dernier fichier est
+  plutôt destiné à l'usage interne de l'application.
+</p></li></ul></div><p>
+</p></div><div class="sect2" title="Le volet des trajectoires"><div class="titlepage"><div><div><h3 class="title"><a id="id487175"></a>Le volet des trajectoires</h3></div></div></div><div class="mediaobject" align="left"><img src="snap12.png" align="left" /></div><p>Quand les pointages sont faits, il est intéressant d'activer le 
+volet des trajectoires. Celui-ci permet d'attirer l'attention plus précisément
+sur le mouvement et la vitesse des objets étudiés, en faisant apparaître 
+ceux-ci sans la vidéo où on les avait capturés.
+</p><div class="sect3" title="Représentation absolue ou relative"><div class="titlepage"><div><div><h4 class="title"><a id="id487195"></a>Représentation absolue ou relative</h4></div></div></div><div class="mediaobject" align="left"><img src="snap11.png" align="left" /></div><p>Sitôt que plus d'un point fait partie de l'étude, il est possible de
+faire afficher les positions et les vitesses de plusieurs façons :
+soit les positions et les vitesses « absolues », 
+c'est-à-dire relatives au référentiel de la caméra, soit les positions 
+et les vitesses « relatives » par rapport à un 
+des points étudiés, choisi comme origine d'un nouveau référentiel.
+</p></div><div class="sect3" title="L'échelle pour les vecteurs vitesse"><div class="titlepage"><div><div><h4 class="title"><a id="id487211"></a>L'échelle pour les vecteurs vitesse</h4></div></div></div><div class="mediaobject" align="left"><img src="snap13.png" align="left" /></div><p>L'échelle des vecteurs vitesse se règle à l'aide d'une zone de saisie
+intitulée « Échelle de vitesses ». Modifiez sa valeur
+et appuyez sur la touche Entrée pour obtenir une autre taille des vecteurs
+vitesse.
+</p></div></div><div class="sect2" title="Les préférences de PyMecaVideo"><div class="titlepage"><div><div><h3 class="title"><a id="id487242"></a>Les préférences de PyMecaVideo</h3></div></div></div><div class="mediaobject" align="left"><img src="snap14.png" align="left" /></div><p>Par le menu « Édition -&gt; Préférences » ont
+fait apparaître un menu pour les valeurs préférées, qui seront réutilisées
+lors de lancements successifs de PyMecaVideo. Parmi ces préférences figurent
+</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>L'échelle des vitesses ;
+</p></li><li class="listitem"><p>La façon d'afficher les vecteurs vitesse : soit partout,
+soit au voisinage du pointeur de souris quand on l'approche des points ;
+</p></li><li class="listitem"><p>L'afficheur vidéo à utiliser pour visualiser les vidéos de
+synthèse : vlc, xine ou mplayer ... tous des visionneurs que 
+Pymecavideo peut
+contrôler par une ligne de commande ;
+</p></li><li class="listitem"><p>Le niveau de verbosité pour le débogage  si un comportement
+anormal de PyMecaVideo vous gène, augmenter la valeur de ce niveau permet 
+éventuellement d'intercepter des messages informatifs au sujet du déroulement 
+du programme. Ces messages peuvent éventuellement servir pour prendre
+contact utilement avec les auteurs de PyMecaVideo et signaler un 
+dysfonctionnement.
+</p></li></ul></div><p>
+</p></div><div class="sect2" title="Créer une vidéo de synthèse"><div class="titlepage"><div><div><h3 class="title"><a id="id487291"></a>Créer une vidéo de synthèse</h3></div></div></div><div class="mediaobject" align="left"><img src="snap15.png" align="left" /></div><p>Dans le volet des trajectoire, on trouve deux boutons commandant
+la fabrication d'une vidéo « de synthèse », qui
+permet de revoir le film tel qu'il aurait été si la caméra avait été
+solidaire du point sélectionné comme origine du référentiel.
+</p><p>Le bouton du dessous (Vidéo normale .. par défaut) sert à spécifier
+un déroulement normal pour la vidéo de synthèse, ou un ralenti par un facteur
+numérique de 2, 4 ou 8. Le bouton du dessus 
+« Vidéo calculée »
+déclenche un calcul assez long,
+la génération de la vidéo de synthèse. Dès que cette vidéo est calculée, on
+la voit apparaître en boucle dans une nouvelle fenêtre. Le logiciel utilisé
+pour afficher cette vidéo est vlc, xine ou mplayer selon le choix réalisé dans
+les préférences de PyMecaVideo.
+</p><div class="sect3" title="Exemple de vidéo de synthèse"><div class="titlepage"><div><div><h4 class="title"><a id="id487306"></a>Exemple de vidéo de synthèse</h4></div></div></div><p>Les vidéos de synthèse sont intéressantes quand on choisit comme 
+origine de référentiel un point qui se déplace en ligne droite à 
+vitesse constante.
+</p><p>Par exemple, on peut étudier simultanément deux points, dans une vidéo
+d'un cycliste laissant tomber un objet : un point du cadre du vélo
+(P<sub>1</sub>) et un point de l'objet qui tombe 
+(P<sub>2</sub>). Dans le référentiel terrestre, celui de la caméra
+si on est en plan fixe, la trajectoire de P<sub>2</sub> est une
+parabole. Mais dans le référentiel galiléen d'origine P<sub>1</sub>,
+le point P<sub>2</sub> est en chute libre sans vitesse initiale.
+</p><p>Dans ces circonstances, la vidéo de synthèse obtenue après avoir choisi 
+de représenter le volet des trajectoires à partir de l'origine 
+P<sub>1</sub> montre bien une chute libre.
+</p><p><span class="emphasis"><em>NB.</em></span> : quand on choisit de réaliser une vidéo
+de synthèse, il faut garder présent à l'esprit que les images seront en fait
+découpées à l'intérieur des images déjà existantes. Il faut donc éviter de
+traiter des images où le point qui utilisé comme origine se trouve 
+trop près d'un bord de l'image, parce que ça diminue la taille du 
+gabarit de découpe utilisé pour produire la vidéo de
+synthèse.
+</p></div></div><div class="sect2" title="Le volet des coordonnées"><div class="titlepage"><div><div><h3 class="title"><a id="id487385"></a>Le volet des coordonnées</h3></div></div></div><div class="mediaobject" align="left"><img src="snap16.png" align="left" /></div><p>Le troisième et dernier volet de PyMecaVideo est le volet des
+coordonnées. Il présente un tableau dont la première colonne représente des
+dates en seconde, et les suivantes des coordonnées en mètre des points étudiés.
+Ce tableau est juste là pour démystifier le fonctionnement de PyMecaVideo,
+montrer qu'il ne s'agit que de traitement numérique.
+</p><p>Cependant, ce volet des coordonnées est le lieu utile pour envoyer les
+données de PyMecaVideo vers d'autres applications qui serviront à les analyser.
+</p></div><div class="sect2" title="Exporter des données vers d'autres applications"><div class="titlepage"><div><div><h3 class="title"><a id="id487411"></a>Exporter des données vers d'autres applications</h3></div></div></div><div class="mediaobject" align="left"><img src="snap17.png" align="left" /></div><p>Le bouton 
+« Copier les données vers le presse-papiers » permet
+d'exporter la totalité du tableau vers le presse-papiers. De même, il suffit de
+sélectionner (de mettre en surbrillance) une partie du tableau pour que 
+cette partie soit automatiquement copiée vers le presse-papiers. La partie
+sélectionnée peut aussi être tirée-glissée vers d'autres applications. Si
+ces applications sont capables de récupérer les données et d'en faire usage,
+elles accepteront l'exportation. C'est le cas des traitements de texte et
+des tableurs les plus courants.
+</p></div></div><div class="sect1" title="Les logiciels de traitement des données"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id487438"></a>Les logiciels de traitement des données</h2></div></div></div><p>
+</p><div class="mediaobject" align="left"><img src="snap16.png" align="left" /></div><p>
+Le volet « coordonnées » de Pymecavideo permet des exportation automatiques
+vers divers logiciels de traitement de données, en plus du simple export
+vers le presse-papiers. Les exportations automatiques permettent l'ouverture
+des logiciels choisis, avec les données prêtes à l'utilisation. Le tableau 
+suivant signale les logiciels supportés, ainsi que leur disponibilité sous
+GNU/Linux et sous <span class="trademark">Windows</span>™.
+</p><div class="table"><a id="id487463"></a><p class="title"><b>Tableau 1. Logiciels libres de traitement des données</b></p><div class="table-contents"><table summary="Logiciels libres de traitement des données" border="1"><colgroup><col align="center" /><col align="center" /><col align="center" /><col align="center" /></colgroup><thead><tr><th align="center">Logiciel</th><th align="center"><span class="inlinemediaobject"><img src="tux-w32.png" width="32" /></span></th><th align="center"><span class="inlinemediaobject"><img src="win-w32.png" width="32" /></span></th><th align="center">Description</th></tr></thead><tbody><tr><td align="center">OpenOffice.org <span class="strong"><strong>
+  <a class="ulink" href="http://fr.openoffice.org/docs/Calc.html" target="_top">Calc</a>
+  </strong></span></td><td align="center"><span class="strong"><strong>×</strong></span></td><td align="center"><span class="strong"><strong>×</strong></span></td><td align="center">
+    Un tableur plutôt destiné à la bureautique, mais déjà connu par 
+    de nombreuses personnes
+  </td></tr><tr><td align="center"><span class="strong"><strong>
+    <a class="ulink" href="http://soft.proindependent.com/qtiplot_fr.html" target="_top">Qtiplot</a>
+  </strong></span></td><td align="center"><span class="strong"><strong>×</strong></span></td><td align="center"><span class="strong"><strong> </strong></span></td><td align="center">
+    Un véritable outil de traitement de données, très riche en fonctionnalités
+  </td></tr><tr><td align="center"><span class="strong"><strong>
+    <a class="ulink" href="http://scidavis.sourceforge.net/" target="_top"> SciDavis</a>
+  </strong></span></td><td align="center"><span class="strong"><strong>×</strong></span></td><td align="center"><span class="strong"><strong> </strong></span></td><td align="center">
+    Un autre outil de traitement de données, aussi riche en fonctionnalités
+  </td></tr></tbody></table></div></div><p><br class="table-break" />
+</p></div><div class="sect1" title="Comment contribuer"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id487649"></a>Comment contribuer</h2></div></div></div><p>
+</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+  <span class="strong"><strong>En rapportant les bogues</strong></span> 
+  aux auteurs. Celles-ci peuvent être de 
+  diverses natures : disfonction du logiciel, mauvaise présentation de 
+  l'interface, souhait d'amélioration, etc. </p><p>Dans chaque cas, soyez très précis : un rapport de bogue ne permet
+  à l'auteur de réagir que si celui-ci donne une description détaillée.
+  Aussi, n'hésitez pas à jeter un coup d'œil dans les sources du logiciel :
+  vous les avez à disposition ! en fait, plus d'un contributeur s'est déjà
+  joint aux auteurs, à l'occasion d'un rapport de bogue, pour lequel il
+  apportait la solution (une modification de la source).</p><p>Les sources de Pymecavideo sont en langage Python, et en général 
+  assez bien commentées pour être largement compréhensibles.
+</p></li><li class="listitem"><p>
+  Pubiez des 
+  <span class="strong"><strong>vidéos pédagogiques sous licences libres</strong></span> !
+  Les vidéos déjà
+  utilisables ne manquent pas, mais beaucoup d'entre elles sont publiées
+  sans que leur licence permette vraiment de les réutiliser librement.</p><p>Notez bien qu'une vidéo sans licence, en droit français, appartient
+  à son auteur et ne peut pas être redistribuée sans son consentement écrit.
+</p></li><li class="listitem"><p>
+  Une liste de diffusion permet d'échanger des idées de façon constructive,
+  abonnez vous à <a class="ulink" href="mailto:pymecavideo-request@lists.tuxfamily.org?subject=subscribe" target="_top"><code class="email">&lt;<a class="email" href="mailto:pymecavideo@lists.tuxfamily.org">pymecavideo@lists.tuxfamily.org</a>&gt;</code></a>
+</p></li></ul></div><p>
+</p></div><div class="appendix" title="A. Notice légale concernant PyMecaVideo"><h2 class="title" style="clear: both"><a id="id487719"></a>A. Notice légale concernant PyMecaVideo</h2><div class="section" title="Auteurs"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id487723"></a>Auteurs</h2></div></div></div><p>© 2007-2010, 
+<span class="author"><span class="firstname">Jean-Baptiste</span> <span class="surname">Butet</span></span> <code class="email">&lt;<a class="email" href="mailto:ashashiwa@gmail.com">ashashiwa@gmail.com</a>&gt;</code> : initiateur du projet PyMecaVideo
+</p><p>© 2008-2010,
+<span class="author"><span class="firstname">Georges</span> <span class="surname">Khaznadar</span></span> <code class="email">&lt;<a class="email" href="mailto:georgesk@ofset.org">georgesk@ofset.org</a>&gt;</code> : contribution, empaquetage Debian
+</p><p>© 2008-2010,
+<span class="author"><span class="firstname">Benoît</span> <span class="surname">Markey</span></span> <code class="email">&lt;<a class="email" href="mailto:markey@free.fr">markey@free.fr</a>&gt;</code> : vidéos d'exemple
+</p><p>© 2010,
+<span class="author"><span class="firstname">Cédrick</span> <span class="surname">Faury</span></span> <code class="email">&lt;<a class="email" href="mailto:cedrick.faury@laposte.net">cedrick.faury@laposte.net</a>&gt;</code> : portage sous Windows, contributions
+</p></div><div class="section" title="Licence du programme"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id487792"></a>Licence du programme</h2></div></div></div><p>Le programme est sous licence libre, vous pouvez le copier, le distribuer
+et le modifier, dans le respect de la licence 
+<a class="ulink" href="http://www.gnu.org/licenses/quick-guide-gplv3.fr.html" target="_top">GPL-V3</a>
+</p></div><div class="section" title="Licence des exemples"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id487807"></a>Licence des exemples</h2></div></div></div><p>Les vidéos qui accompagnent le programme à titre d'exemple sont
+diffusées sous la licence 
+<a class="ulink" href="http://creativecommons.org/licenses/by-sa/3.0/deed.fr" target="_top">
+  CC-BY-SA 3.0
+</a>.
+</p><p>Selon les termes de cette licence, vous avez le droit de copier et 
+diffuser les vidéos, ainsi que d'en faire des dérivés, et l'obligation 
+de citer l'auteur original, ainsi que d'appliquer la même licence aux 
+travaux dérivés.
+</p></div></div><div class="footnotes"><br /><hr width="100" align="left" /><div class="footnote"><p><sup>[<a id="ftn.id478047" href="#id478047" class="para">1</a>] </sup>Attention, un grand nombre de séquences vidéo sont encodées à l'aide
+de logiciels de codage/décodage (codecs) propriétaires, dont les concepteurs
+interdisent d'étudier le fonctionnement. <span class="symbol"> PyMecaVideo</span>
+est un logiciel libre, il n'incorpore pas de sous-ensemble opaque,
+donc il vous appartient de vérifier la codec utilisé par les séquences vidéo
+que vous voulez utiliser.</p><p>Attention : le format <code class="computeroutput">.avi</code> du fichier
+est un format conteneur, qui autorise différents codecs. On ne peut donc
+pas se baser sur le nom complet du fichier pour deviner le codec de celui-ci.
+Pour déterminer le codec d'un fichier vidéo, vous pouvez utiliser la commande
+<code class="computeroutput">file</code>, par exemple :
+</p><pre class="programlisting">$ file video/g1.avi
+video/g1.avi: RIFF (little-endian) data, AVI, 400 x 300, 25.00 fps, video: DivX 5
+</pre><p>
+</p></div><div class="footnote"><p><sup>[<a id="ftn.id487091" href="#id487091" class="para">2</a>] </sup>
+Les types de fichiers <code class="computeroutput">.csv</code>,
+<code class="computeroutput">.dat</code>,<code class="computeroutput">.txt</code>
+ou <code class="computeroutput">.asc</code> sont par
+convention réservés à des fichiers de données à un format texte pur, c'est
+à dire humainement lisible. Essayez d'ouvrir un fichier que vous produirez
+ainsi à l'aide d'un éditeur de texte, vous vous rendrez compte de sa 
+structure, claire et simple à comprendre.</p></div></div></div></body></html>
