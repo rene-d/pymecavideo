@@ -111,8 +111,7 @@ class MonThreadDeCalcul(QThread):
 
 
 class StartQT4(QMainWindow):
-    def __init__(self, parent, opts,args):
-        #Données principales du logiciel : 
+    def __init__(self, parent=None, opts=[], args=[]):
         """
         le constructeur reçoit les données principales du logiciel : 
         @param parent le widget parent, None pour une fenêtre principale
@@ -167,6 +166,7 @@ class StartQT4(QMainWindow):
                 self.dbg=Dbg(o[1])
                 self.dbg.p(1,"Niveau de débogage"+o[1])
         self.args = args
+
         self.cvReader=None
         self.newVideos=[]            # les vidéos créées par recodage
 
@@ -177,7 +177,6 @@ class StartQT4(QMainWindow):
         if len(self.args) > 0:
             # le premier argument éventuel est le nom d'une vidéo
             self.prefs.lastVideo=args[0]
-        
         ####intialise les répertoires
         self._dir()
         defait_icon=os.path.join(self._dir("icones"),"undo.png")
