@@ -20,11 +20,11 @@
 [Setup]
 ;Informations générales sur l'application
 AppName=pymecavideo 6
-AppVerName=pymecavideo 6.0b1
-AppVersion=6.0b1
+AppVerName=pymecavideo 6.0
+AppVersion=6.0
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
 AppCopyright=Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org> Jean-Baptiste Butet <ashashiwa@gmail.com>
-VersionInfoVersion = 6.0.1.0
+VersionInfoVersion = 6.0.0.1
 
 ;Répertoire de base contenant les fichiers
 SourceDir=D:\Documents\Developpement\pymecavideo
@@ -66,7 +66,7 @@ Name: fr; MessagesFile: "compiler:Languages\French.isl"
 ;Name: fr; MessagesFile: "compiler:Languages\French.isl"
 
 [Messages]
-BeveledLabel=pymecavideo 6.0b1 installation
+BeveledLabel=pymecavideo 6.0 installation
 
 
 [CustomMessages]
