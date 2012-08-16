@@ -20,7 +20,7 @@
 [Setup]
 ;Informations générales sur l'application
 AppName=pymecavideo 6
-AppVerName=pymecavideo 6.0beta1
+AppVerName=pymecavideo 6.0
 AppVersion=6.0
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
 AppCopyright=Copyright (C) 2007-2012 Georges Khaznadar <georgesk@ofset.org> Jean-Baptiste Butet <ashashiwa@gmail.com>
