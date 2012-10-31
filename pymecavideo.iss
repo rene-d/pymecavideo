@@ -1,7 +1,7 @@
 
 ;This file is part of pymecavideo.
 ;
-; Copyright (C) 2009-2012 Cédrick FAURY
+; Copyright (C) 2009-2012 CÃ©drick FAURY
 ;
 ;pymecavideo is free software; you can redistribute it and/or modify
 ;it under the terms of the GNU General Public License as published by
@@ -18,39 +18,39 @@
 ;Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 [Setup]
-;Informations générales sur l'application
+;Informations gÃ©nÃ©rales sur l'application
 AppName=pymecavideo 6
-AppVerName=pymecavideo 6.0
-AppVersion=6.0
+AppVerName=pymecavideo 6.1
+AppVersion=6.1
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
 AppCopyright=Copyright (C) 2007-2012 Georges Khaznadar <georgesk@ofset.org> Jean-Baptiste Butet <ashashiwa@gmail.com>
-VersionInfoVersion = 6.0.0.1
+VersionInfoVersion = 6.1.0.1
 
-;Répertoire de base contenant les fichiers
-SourceDir=C:\Documents and Settings\Administrateur\Mes documents\6.0\
+;RÃ©pertoire de base contenant les fichiers
+SourceDir=C:\Documents and Settings\Administrateur\Mes documents\6.1\
 
 ;Repertoire d'installation
 DefaultDirName={pf}\pymecavideo
 DefaultGroupName=pymecavideo
 LicenseFile=gpl-3.0.txt
 
-;Paramètres de compression
+;ParamÃ¨tres de compression
 ;lzma ou zip
 Compression=lzma/max
 SolidCompression=yes
 
-;Par défaut, pas besoin d'être administrateur pour installer
+;Par dÃ©faut, pas besoin d'Ãªtre administrateur pour installer
 PrivilegesRequired=none
 
-;Nom du fichier généré et répertoire de destination
-OutputBaseFilename=pymecavideo_6.0_setup
+;Nom du fichier gÃ©nÃ©rÃ© et rÃ©pertoire de destination
+OutputBaseFilename=pymecavideo_6.1_setup
 OutputDir=releases
 
 ;Dans le panneau de configuration de Windows2000/NT/XP, c'est l'icone de pymecavideo.exe qui
-;apparaît à gauche du nom du fichier pour la désinstallation
+;apparaÃ®t Ã  gauche du nom du fichier pour la dÃ©sinstallation
 UninstallDisplayIcon={app}\data\icones\pymecavideo.ico
 
-;Fenêtre en background
+;FenÃªtre en background
 WindowResizable=false
 WindowStartMaximized=true
 WindowShowCaption=true
@@ -66,19 +66,19 @@ Name: fr; MessagesFile: "compiler:Languages\French.isl"
 ;Name: fr; MessagesFile: "compiler:Languages\French.isl"
 
 [Messages]
-BeveledLabel=pymecavideo 6.0 installation
+BeveledLabel=pymecavideo 6.1 installation
 
 
 [CustomMessages]
 ;
 ; French
 ;
-fr.uninstall=Désinstaller
+fr.uninstall=DÃ©sinstaller
 fr.gpl_licence=Prendre connaissance du contrat de licence pour le logiciel
-fr.fdl_licence=Prendre connaissance du contrat de licence pour la documentation associée
-fr.CreateDesktopIcon=Créer un raccourci sur le bureau vers
-fr.AssocFileExtension=&Associer le programme pymecavideo à l'extension .mecavideo
-fr.CreateQuickLaunchIcon=Créer un icône dans la barre de lancement rapide
+fr.fdl_licence=Prendre connaissance du contrat de licence pour la documentation associÃ©e
+fr.CreateDesktopIcon=CrÃ©er un raccourci sur le bureau vers
+fr.AssocFileExtension=&Associer le programme pymecavideo Ã  l'extension .mecavideo
+fr.CreateQuickLaunchIcon=CrÃ©er un icÃ´ne dans la barre de lancement rapide
 fr.FileExtensionName=Fichier pymecavideo
 fr.InstallFor=Installer pour :
 fr.AllUsers=Tous les utilisateurs
@@ -116,7 +116,6 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 
 [Components]
 Name: "program"; Description: "pymecavideo"; Types: custom; Flags: fixed
-Name: "mencoder"; Description: {cm:Encoder}; Types: custom
 Name: "help"; Description: {cm:HelpFiles}; Types: custom
 Name: "exemple"; Description: {cm:ExampleFiles}; Types: custom
 ;Name: "readme\en"; Description: "English"; Flags: exclusive
@@ -126,13 +125,13 @@ Name: "exemple"; Description: {cm:ExampleFiles}; Types: custom
 ;
 ; Fichiers de la distribution
 ;
-Source: src\dist\*.*; DestDir: {app}\bin; Flags : ignoreversion recursesubdirs;
+Source: exedist\*.*; DestDir: {app}\bin; Flags : ignoreversion recursesubdirs;
 Source: *.txt; DestDir: {app}; Flags : ignoreversion;
 Source: data\help\*.*; DestDir: {app}\data\help; Flags : ignoreversion recursesubdirs; Components : help
 Source: data\video\*.*; DestDir: {app}\data\video; Flags : ignoreversion recursesubdirs; Components : exemple
 Source: data\icones\*.*; DestDir: {app}\data\icones; Flags : ignoreversion recursesubdirs
 Source: data\lang\*.*; DestDir: {app}\data\lang; Flags : ignoreversion recursesubdirs
-Source: mencoder.exe; DestDir: {app}; Flags : ignoreversion; Components : mencoder
+Source: mencoder.exe; DestDir: {app}; Flags : ignoreversion;
 
 
 [Tasks]
@@ -145,9 +144,9 @@ Name: local;  Description: {cm:JustMe}; GroupDescription: {cm:InstallFor}; Flags
 Name: {group}\pymecavideo;Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; IconFileName: {app}\bin\pymecavideo.exe
 Name: {group}\{cm:uninstall} pymecavideo; Filename: {app}\unins000.exe;IconFileName: {app}\unins000.exe
 ;
-; On ajoute sur le Bureau l'icône pymecavideo
+; On ajoute sur le Bureau l'icÃ´ne pymecavideo
 ;
-Name: {code:DefDesktop}\pymecavideo 6.0;   Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; MinVersion: 4,4; Tasks: desktopicon2; IconFileName: {app}\bin\pymecavideo.exe
+Name: {code:DefDesktop}\pymecavideo 6.1;   Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; MinVersion: 4,4; Tasks: desktopicon2; IconFileName: {app}\bin\pymecavideo.exe
 
 
 [_ISTool]
@@ -192,7 +191,7 @@ begin
 end;
 
 
-{ Renvoie le dossier "Application Data" à utiliser }
+{ Renvoie le dossier "Application Data" Ã  utiliser }
 function DefAppDataFolder(Param: String): String;
 begin
   if IsTaskSelected('common') then
