@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+    #-*- coding: utf-8 -*-
 
 """
     cadreur, a module for pymecavideo:
@@ -49,7 +49,7 @@ class Cadreur(QObject):
 
         self.numpoint=numpoint
         self.app=app
-        print "hhhhhhhhhhh", type(self.app.filename)
+        
         
         self.capture=cv.CreateFileCapture(self.app.filename.encode('utf8'))
         self.fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
@@ -138,7 +138,7 @@ class Cadreur(QObject):
             self.capture=cv.CreateFileCapture(self.app.filename.encode('utf8'))
             
             #have to move to first picture clicked
-            print "premiere Image", self.app.premiere_image
+
             cv.SetCaptureProperty(self.capture,cv.CV_CAP_PROP_POS_FRAMES,self.app.premiere_image-1)
             
             
@@ -184,14 +184,14 @@ class openCvReader:
         
     def autoTest(self):
         #print "in autotest"
-        if sys.platform == 'win32':
-            import testfilm
-            self.ok = testfilm.film(self.filename).ok
-        else:
-            cmd="python %s %s" %(os.path.join(PYMECA_SHARE, 'testfilm.py'),
-                                 self.filename)
-            retcode=subprocess.call(cmd, shell=True)
-            self.ok = retcode==0
+#        if sys.platform == 'win32':
+        import testfilm
+        self.ok = testfilm.film(self.filename).ok
+#        else:
+#            cmd="python %s %s" %(os.path.join(PYMECA_SHARE, 'testfilm.py'),
+#                                 self.filename)
+#            retcode=subprocess.call(cmd, shell=True)
+#            self.ok = retcode==0
 
     def __int__(self):
         return int(self.ok)
@@ -202,12 +202,11 @@ class openCvReader:
         """
         Recharge le fichier vidéo
         """
-        print type(self.filename)
-        print self.filename
+        
         try : 
-	    self.filename = unicode(self.filename,'utf8')
-	except TypeError:
-	    pass
+            self.filename = unicode(self.filename,'utf8')
+        except TypeError:
+            pass
         self.capture=cv.CreateFileCapture(self.filename.encode('utf8'))
         self.nextImage=1
         

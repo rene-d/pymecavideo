@@ -82,17 +82,19 @@ class MyReaderThread(QThread):
                         self.exit=True
 
                     pct__=self.stdout[-1].split('\r')[-2]
-                    self.pct = pct__.split()[3].replace('%','').replace(')','').replace('(','')
+                    self.pct = "".join(pct__.split()).split('(')[-1].split(')')[0][:-1]
                     
                     self.app.dbg.p(4,"In Thread Reader, pct = %s" %self.pct)
                     time.sleep(0.1)
 
                      
-                    if self.pct>0 : 
-                        self.parent.value_ = int(self.pct)
+                    try: 
+                        if self.pct>0 : 
+                            self.parent.value_ = int(self.pct)
                         
-                        self.app.emit(SIGNAL('updateProgressBar()'))
-                        
+                            self.app.emit(SIGNAL('updateProgressBar()'))
+                    except ValueError : 
+                        pass
                     
                 except IndexError : 
                     #
@@ -128,7 +130,10 @@ class MyEncodeThread(QThread):
         #stdout, stderr = ls.communicate()
         #print stdout, stderr
         stdout_file = open(self.app.stdout_file, 'w+')
-        ls = Popen(self.cmd.split(), stdout=stdout_file, stderr=STDOUT)
+        if sys.platform == 'win32':
+            ls = Popen(self.cmd, stdout=stdout_file, stderr=STDOUT)
+        else : 
+            ls = Popen(self.cmd.split(), stdout=stdout_file, stderr=STDOUT)
         ls.communicate()
         self.quit()
 
@@ -136,6 +141,7 @@ class MyEncodeThread(QThread):
 class QMessageBoxEncode(QProgressDialog):
     def __init__(self,app,dest):
         """this qmessagebox is shown when video is not opencv comptible. Then it launch a conversion in a thread"""
+
         QProgressDialog.__init__(self,app)
         self.setLabelText("La vidéo n'est pas compatible avec Pymecavideo.\nPymecavideo l'encode dans un autre format.\n Ceci peut prendre un peu de temps");
         self.setCancelButtonText(QString())
@@ -144,8 +150,10 @@ class QMessageBoxEncode(QProgressDialog):
         self.app = app
         self.dest = dest
         self.value_=0
-        cmd="mencoder %s -nosound -ovc lavc -o %s " %(self.app.filename,dest)
-
+        if sys.platform == 'win32':
+            cmd = "mencoder %s -nosound -ovc lavc -o %s " %('"'+self.app.filename+'"','"'+dest+'"')
+        else : 
+            cmd = "mencoder %s -nosound -ovc lavc -o %s " %(self.app.filename,dest)
         myencodethread=MyEncodeThread(self,app,cmd,self.dest)
         myreadthread = MyReaderThread(self,app,self.app.stdout_file)
         myreadthread.start()
@@ -158,8 +166,9 @@ class QMessageBoxEncode(QProgressDialog):
 
         self.setValue(self.value_)
         if self.value_==100:
+            time.sleep(0.5)
             self.app.openTheFile(self.dest)
-
+            self.close()
 
         
 

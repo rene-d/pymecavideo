@@ -27,7 +27,7 @@ AppCopyright=Copyright (C) 2007-2012 Georges Khaznadar <georgesk@ofset.org> Jean
 VersionInfoVersion = 6.0.0.1
 
 ;Répertoire de base contenant les fichiers
-SourceDir=D:\Developpement\pymecavideo_6
+SourceDir=C:\Documents and Settings\Administrateur\Mes documents\6.0\
 
 ;Repertoire d'installation
 DefaultDirName={pf}\pymecavideo
@@ -43,7 +43,7 @@ SolidCompression=yes
 PrivilegesRequired=none
 
 ;Nom du fichier généré et répertoire de destination
-OutputBaseFilename=pymecavideo_6.0beta1_setup
+OutputBaseFilename=pymecavideo_6.0_setup
 OutputDir=releases
 
 ;Dans le panneau de configuration de Windows2000/NT/XP, c'est l'icone de pymecavideo.exe qui
@@ -116,7 +116,7 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 
 [Components]
 Name: "program"; Description: "pymecavideo"; Types: custom; Flags: fixed
-;Name: "ff"; Description: {cm:ffmpeg_ffplay}; Types: custom
+Name: "mencoder"; Description: {cm:Encoder}; Types: custom
 Name: "help"; Description: {cm:HelpFiles}; Types: custom
 Name: "exemple"; Description: {cm:ExampleFiles}; Types: custom
 ;Name: "readme\en"; Description: "English"; Flags: exclusive
@@ -132,7 +132,7 @@ Source: data\help\*.*; DestDir: {app}\data\help; Flags : ignoreversion recursesu
 Source: data\video\*.*; DestDir: {app}\data\video; Flags : ignoreversion recursesubdirs; Components : exemple
 Source: data\icones\*.*; DestDir: {app}\data\icones; Flags : ignoreversion recursesubdirs
 Source: data\lang\*.*; DestDir: {app}\data\lang; Flags : ignoreversion recursesubdirs
-;Source: ff*.exe; DestDir: {app}; Flags : ignoreversion; Components : ff
+Source: mencoder.exe; DestDir: {app}; Flags : ignoreversion; Components : mencoder
 
 
 [Tasks]

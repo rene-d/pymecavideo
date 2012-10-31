@@ -168,7 +168,7 @@ class StartQT4(QMainWindow):
         self.args = args
 
         self.cvReader=None
-        self.newVideos=[]            # les vidéos créées par recodage
+
 
 
 
@@ -746,14 +746,14 @@ class StartQT4(QMainWindow):
         self.emit(SIGNAL('change_axe_origine()'))
         
     def check_uncheck_direction_axes(self):
-	if self.sens_X == -1 : 
-	    self.ui.checkBox_abscisses.setChecked(1)
-	else : 
-	    self.ui.checkBox_abscisses.setChecked(0)
-	if self.sens_Y == -1 : 
-	    self.ui.checkBox_ordonnees.setChecked(1)
-	else : 
-	    self.ui.checkBox_ordonnees.setChecked(0)
+        if self.sens_X == -1 : 
+            self.ui.checkBox_abscisses.setChecked(1)
+        else : 
+            self.ui.checkBox_abscisses.setChecked(0)
+        if self.sens_Y == -1 : 
+            self.ui.checkBox_ordonnees.setChecked(1)
+        else : 
+            self.ui.checkBox_ordonnees.setChecked(0)
 
     def pointEnMetre(self,p):
         """
@@ -872,22 +872,18 @@ class StartQT4(QMainWindow):
         et recode la vidéo si nécessaire.
         """
         self.dbg.p(1,"rentre dans 'init_cvReader'")
+
         self.cvReader=openCvReader(self.filename)
-        #print self.cvReader
-        if not self.cvReader : 
+        time.sleep(0.1)
+        if not self.cvReader.ok and ("/".join(self.filename.split('/')[:-1])!=NEWVID_PATH): #if video is ever encoded, don't get in
+
             sansSuffixe=os.path.basename(self.filename)
             match=re.match("(.*)\.(.*)$",sansSuffixe)
             sansSuffixe=match.group(1)
             dest=os.path.join(NEWVID_PATH,sansSuffixe+".avi")
             self.qmsgboxencode = QMessageBoxEncode(self,dest) #in this, thread to encode
             self.qmsgboxencode.show()
-            return False
-        else : 
-            try: 
-                self.qmsgboxencode.close()
-            except AttributeError:
-                pass
-            
+        else :
             return True
 
     def rouvre_ui(self):
@@ -924,7 +920,7 @@ class StartQT4(QMainWindow):
         self.dbg.p(3,"rentre dans 'loads' %s" %(self.filename))
         self.nb_de_points = int(self.nb_de_points.split()[-2])
         self.dbg.p(3,"rentre dans 'loads' %s" %(self.filename))
-	
+    
         self.init_cvReader()
         
     def rouvre(self,fichier):
@@ -938,19 +934,18 @@ class StartQT4(QMainWindow):
         for l in lignes:
             if l[0]=="#":
                 dd+=l
-	self.echelle_image=echelle() # on réinitialise l'échelle
+        self.echelle_image=echelle() # on réinitialise l'échelle
         self.loads(dd)               # on récupère les données importantes
         self.check_uncheck_direction_axes() #check or uncheck axes Checkboxes
         self.init_interface()
         self.change_axe_ou_origine()
-	for l in lignes:
+        for l in lignes:
             if l[0]=="#":
                 pass
             else:
                 l=l.strip('\t\n')
                 d=l.split("\t")
                 t="%4f" %(float(d[0].replace(",",".")))
-                print "OOOOOO", t
                 self.ui.tableWidget.insertRow(i)
                 self.ui.tableWidget.setItem(i,0,QTableWidgetItem(t))
                 self.points[i]=[t]
@@ -960,7 +955,7 @@ class StartQT4(QMainWindow):
                     +self.origine.x(),self.origine.y()-float(d[j+1].replace(",","."))*self.echelle_image.longueur_reelle_etalon))  
                     self.ui.tableWidget.setItem(i,j,QTableWidgetItem(str(float(d[j].replace(",",".")))))
                     self.ui.tableWidget.setItem(i,j+1,QTableWidgetItem(str(float(d[j+1].replace(",",".")))))
-                    print 'IIIIIII', t,i,j,str(float(d[j].replace(",","."))),i,j+1, float(d[j+1].replace(",","."))
+
                 
                 i+=1
         
@@ -1476,7 +1471,7 @@ class StartQT4(QMainWindow):
                 self.pY[y].append(point)
             else:
                 self.pY[y]=[point]
-	    
+        
             pm=self.pointEnMetre(point)
             self.ui.tableWidget.setItem(ligne,i+1,QTableWidgetItem(str(pm.x())))
             self.ui.tableWidget.setItem(ligne,i+2,QTableWidgetItem(str(pm.y())))
@@ -1612,8 +1607,11 @@ class StartQT4(QMainWindow):
         Retire les vidéos recodées automatiquement
         """
         self.dbg.p(1,"rentre dans 'nettoieVideosRecodees'")
-        for f in self.newVideos:
-            subprocess.call("rm -f %s" %f, shell=True)
+
+        for fichier in os.listdir(NEWVID_PATH):
+            os.remove(os.path.join(NEWVID_PATH,fichier))
+
+
 
     def verifie_donnees_sauvegardees(self):
         self.dbg.p(1,"rentre dans 'verifie_donnees_sauvegardees'")
@@ -1691,8 +1689,8 @@ class StartQT4(QMainWindow):
             filename = filename.toUtf8()
             data = filename.data()
             self.filename = data.decode('utf-8')
-            goOn = self.init_cvReader()
-            if goOn : #video is in goo format
+            goOn = self.init_cvReader() 
+            if goOn : #video is in good format
                 
                 self.prefs.lastVideo=self.filename
                 self.init_image()
@@ -1826,7 +1824,7 @@ def run():
 
     langdir=os.path.join(StartQT4._dir("langues"),
                          "pymecavideo_"+locale)
-    print langdir
+
     if appTranslator.load(langdir):
         b = app.installTranslator(appTranslator)
     
