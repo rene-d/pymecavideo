@@ -27,7 +27,7 @@ AppCopyright=Copyright (C) 2007-2012 Georges Khaznadar <georgesk@ofset.org> Jean
 VersionInfoVersion = 6.1.0.1
 
 ;Répertoire de base contenant les fichiers
-SourceDir=C:\Documents and Settings\Administrateur\Mes documents\6.1\
+SourceDir=D:\Developpement\pymecavideo_6.1\
 
 ;Repertoire d'installation
 DefaultDirName={pf}\pymecavideo
@@ -125,13 +125,13 @@ Name: "exemple"; Description: {cm:ExampleFiles}; Types: custom
 ;
 ; Fichiers de la distribution
 ;
-Source: exedist\*.*; DestDir: {app}\bin; Flags : ignoreversion recursesubdirs;
+Source: src\dist\*.*; DestDir: {app}\bin; Flags : ignoreversion recursesubdirs;
 Source: *.txt; DestDir: {app}; Flags : ignoreversion;
 Source: data\help\*.*; DestDir: {app}\data\help; Flags : ignoreversion recursesubdirs; Components : help
 Source: data\video\*.*; DestDir: {app}\data\video; Flags : ignoreversion recursesubdirs; Components : exemple
 Source: data\icones\*.*; DestDir: {app}\data\icones; Flags : ignoreversion recursesubdirs
 Source: data\lang\*.*; DestDir: {app}\data\lang; Flags : ignoreversion recursesubdirs
-Source: mencoder.exe; DestDir: {app}; Flags : ignoreversion;
+Source: mencoder.exe; DestDir: {app}\bin; Flags : ignoreversion;
 
 
 [Tasks]

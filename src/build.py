@@ -15,7 +15,11 @@ shutil.rmtree("dist", ignore_errors=True)
 from glob import glob
 data_files = [("Microsoft.VC90.CRT", glob(r'msvcr90.dll')), 
               ("Microsoft.VC90.CRT", glob(r'Microsoft.VC90.CRT.manifest')),
-              ('C:\\OpenCV2.3\\build\\bin\\opencv_ffmpeg.dll'),
+#              ('C:\\Python26\\Lib\\site-packages\\opencv_ffmpeg243.dll'),
+                
+            # Il faut peut-être décommenter cette ligne pour certaines versions de pyOpenCV
+            # Inutile pour la version 2.4.3 !
+#              ('C:\\OpenCV2.3\\build\\bin\\opencv_ffmpeg.dll'),
 #              ("", glob(r'ff*.exe')),
               
               ('imageformats', [os.path.join(os.path.dirname(PyQt4.__file__), 
@@ -57,9 +61,12 @@ options = {    "py2exe" : { "compressed": 2,
 
                                    }     }
 
-icon = "D:\\Developpement\\pymecavideo_6\\data\\icones\\pymecavideo.ico"
+# Adapter le chemin au PC !
+icon = "D:\\Developpement\\pymecavideo_6.1\\data\\icones\\pymecavideo.ico"
+
+
 setup(name='pyMecaVideo',
-      version='6.0b1',
+      version='6.1',
       description='Analyse Mécanique des videos',
       author='Jean-Baptiste Butet ; Georges Khaznadar',
       author_email='ashashiwa@gmail.com ; georgesk@ofset.org',
