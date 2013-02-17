@@ -1,22 +1,229 @@
 #-*- coding: utf-8 -*-
+"""
+    Label_Video, a module for pymecavideo:
+      a program to track moving points in a video frameset
+      
+    Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from math import sqrt, atan2, degrees
+from vecteur import vecteur
 
 class Label_Trajectoire(QLabel):
-    def __init__(self, parent, app):
+    def __init__(self, parent, app, origine = vecteur(0,0), referentiel = 0):
         QLabel.__init__(self,parent)
         self.app=app
         self.setGeometry(QRect(0,0,640,480))
         self.setCursor(Qt.ArrowCursor)
         self.setAutoFillBackground(True)
         self.setMouseTracking(1)
+        self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green","red", "blue", "cyan", "magenta", "yellow", "gray", "green"]
+        self.origine = origine
+        self.referentiel = referentiel
+        self.origine_mvt=vecteur(self.geometry().width()/2,self.geometry().height()/2)
+        self.setMouseTracking(True)
+        self.speedToDraw = []
+        self.speedtest = []
+        self.pos=None
+        
+    def reDraw(self):
+        """call when somthing change as repere, origine ..."""
+        self.giveCoordonatesToPaint()
+        self.repaint()
+        
+        
+    def giveCoordonatesToPaint(self):
+        #print "recalcul vitesse"
+        self.speedToDraw = []
+        if self.app.ui.checkBoxVectorSpeed.isChecked():
+            #print "état des boutons,vecteur,poitn,partout",self.app.ui.checkBoxVectorSpeed.isChecked(),self.app.ui.radioButtonNearMouse.isChecked(),self.app.ui.radioButtonSpeedEveryWhere.isChecked()
+            for key in self.app.points.keys() :
+                points= self.app.points[key]
+                for i in range(len(points)):
+                    wroteSpeed=False
+
+                    point=points[i]
+                    if self.referentiel !=0:
+                        ptreferentiel = points[int(self.referentiel)]
+                        
+                        try : 
+                            ptreferentielAfter = self.app.points[key+1][int(self.referentiel)]
+                            ptreferentielBefore = self.app.points[key-1][int(self.referentiel)]
+                        except KeyError: #last point -> can't compute speed
+                            break
+
+                    else :
+                        ptreferentiel = vecteur(0,0)
+                        ptreferentielBefore = vecteur(0,0)
+                        ptreferentielAfter = vecteur(0,0)
+                        
+                    if type(point)!= type(""): 
+                        #self.app.dbg.p(2,"distance between mouse and a point")
+                        if self.app.ui.radioButtonNearMouse.isChecked() and self.pos!=None:
+                            near=20
+                            pos = self.pos
+                            distance = QPoint(point.x()+self.origine.x()-ptreferentiel.x(), point.y()+self.origine.y()-ptreferentiel.y())-pos
+                            if distance.manhattanLength() < near :
+                                self.app.dbg.p(2,"mouse near a point")           
+                                wroteSpeed=True
+                                ##compute speed
+                                #print "chez souris", wroteSpeed
+                            
+                        elif self.app.ui.radioButtonSpeedEveryWhere.isChecked():
+                            wroteSpeed=True
+                            #print "partout", wroteSpeed
+                                
+                            
+                            
+                        if wroteSpeed :
+                                keyMax = len(self.app.points.keys())
+                                if key != 0 and key!=keyMax-1:##first and last point can't have speed.
+                                    ##coordonnates of n-1 and n+1 point
+                                    pointBefore = QPoint(self.app.points[key-1][i].x()+self.origine.x()-ptreferentielBefore.x(), self.app.points[key-1][i].y()+self.origine.y()-ptreferentielBefore.y())
+                                    try : 
+                                        pointAfter = QPoint(self.app.points[key+1][i].x()+self.origine.x()-ptreferentielAfter.x(), self.app.points[key+1][i].y()+self.origine.y()-ptreferentielAfter.y())
+                                        
+                                        vector_speed = pointAfter-pointBefore
+                        
+                                        #self.speedToDraw = [(QPoint(point.x(),point.y()), vector_speed,i)] #i give the color
+                                        #self.speedtest.append((QPoint(point.x()+self.origine.x()-ptreferentiel.x(), point.y()+self.origine.y()-ptreferentiel.y()), vector_speed,i))
+                                        self.speedToDraw.append((QPoint(point.x()+self.origine.x()-ptreferentiel.x(), point.y()+self.origine.y()-ptreferentiel.y()), vector_speed,i))
+                                        #self.repaint()
+                                    except KeyError: #last point -> can't compute speed
+                                        pass
+
 
     def mouseMoveEvent(self, event):
-        self.app.traiteSouris(event.pos())
+        #self.app.traiteSouris(event.pos())
+        #self.app.dbg.p(2,"in label_trajectoire, mousemoveevent")
+
+        #print self.app.points
+        ####Look if mouse is near a point
+        self.pos = event.pos()
+        if self.app.ui.radioButtonNearMouse.isChecked():
+            self.reDraw()
+        
+
     
     def paintEvent(self,event):
         self.painter = QPainter()
         self.painter.begin(self)
+        self.painter.save()
         self.painter.fillRect(QRect(0,0,640,480),QColor("grey"))
+        self.painter.setRenderHint(QPainter.Antialiasing) 
+        
+
+        
+        
+        ############################################################
+        #paint the origin
+        self.painter.setPen(Qt.green)
+        self.painter.drawLine(self.origine_mvt.x()-5, self.origine_mvt.y(), self.origine_mvt.x()+5, self.origine_mvt.y())
+        self.painter.drawLine(self.origine_mvt.x(), self.origine_mvt.y()-5, self.origine_mvt.x(), self.origine_mvt.y()+5)
+        self.painter.drawText(self.origine_mvt.x(), self.origine_mvt.y()+15, "O")
         self.painter.end()
+        
+        ############################################################
+        #Paint points
+        self.painter = QPainter()
+        self.painter.begin(self)
+        self.painter.setRenderHint(QPainter.Antialiasing)
+        for points in self.app.points.values() :
+            color=0
+            for point in points:
+                if self.referentiel !=0:
+                    ptreferentiel = points[int(self.referentiel)]
+
+                else :
+                    ptreferentiel = vecteur(0,0)
+                if type(point)!= type(""): 
+                    self.painter.setPen(QColor(self.couleurs[color]))
+                    self.painter.setFont(QFont("", 10))
+                    self.painter.translate(point.x()+self.origine.x()-ptreferentiel.x(), point.y()+self.origine.y()-ptreferentiel.y())
+
+                    self.painter.drawLine(-2,0,2,0)
+                    self.painter.drawLine(0,-2,0,2)
+                    self.painter.translate(-10, +10)
+                    self.painter.drawText(0,0,str(color+1))
+                    self.painter.translate(-point.x()-self.origine.x()+ptreferentiel.x()+10, -point.y()-10-self.origine.y()+ptreferentiel.y())
+                    color+=1
+        self.painter.end()
+ 
+            
+            #self.painter.translate(-p.x()-self.origine.x()+ptreferentiel.x(), -p.y()-self.origine.y()+ptreferentiel.y())
+            
+                    
+        ############################################################
+        #paint repere
+        self.painter = QPainter()
+        self.painter.begin(self)
+        self.painter.setRenderHint(QPainter.Antialiasing)
+        self.painter.setPen(Qt.green)
+        #self.painter.translate(0,0)
+        self.painter.translate(self.origine_mvt.x(), self.origine_mvt.y())
+        p1=QPoint(self.app.sens_X*(-40),0)
+        p2=QPoint(self.app.sens_X*(40),0)
+        p3=QPoint(self.app.sens_X*(36),2)
+        p4=QPoint(self.app.sens_X*(36),-2)
+        self.painter.scale(1,1)
+        self.painter.drawPolyline(p1,p2,p3,p4,p2)
+        self.painter.rotate(self.app.sens_X*self.app.sens_Y*(-90))
+        self.painter.drawPolyline(p1,p2,p3,p4,p2)
+        self.painter.rotate(self.app.sens_X*self.app.sens_Y*(90))
+        self.painter.translate(-self.origine_mvt.x(), -self.origine_mvt.y())
+        self.painter.end()
+        ############################################################
+        
+        ############################################################
+        #paint speed vectors if asked
+        
+        #print self.speedToDraw
+        if self.speedToDraw!=[]:
+            for vector in self.speedToDraw: 
+                p, vector_speed,i = vector
+                if vector_speed!=QPoint():#if speed is not null.
+                    self.painter = QPainter()
+                    self.painter.begin(self)
+                    self.painter.setRenderHint(QPainter.Antialiasing)
+                    self.painter.setPen(QColor(self.couleurs[i-1]))
+                    speed = sqrt(vector_speed.x()**2+vector_speed.y()**2)*float(self.app.echelle_image.mParPx())\
+                            /(2*self.app.deltaT)*float(self.app.ui.checkBoxScale.currentText())
+                    path = QPainterPath()
+                    path.moveTo(0, 0)
+                    path.lineTo(speed, 0)
+                    path.lineTo(QPointF(speed-10,0)+QPointF(0,10))
+                    path.lineTo(speed-8, 0)
+                    path.lineTo(QPointF(speed-10,0)+QPointF(0,-10))
+                    path.lineTo(speed, 0)
+                
+                    angle = atan2(float(vector_speed.y()),float(vector_speed.x()))
+                    self.painter.translate(p.x(), p.y())
+                    self.painter.rotate(degrees(angle))
+                    #self.painter.drawPolyline(p1,p2,p3,p4,p2)
+                    self.painter.drawPath(path)
+                    self.painter.fillPath(path, QColor(self.couleurs[i-1]))#VERIFIER COORDONÉES ICI
+                    
+    
+                    path.moveTo(0, 0)
+                    self.painter.end()                
+                else : 
+                    pass #null speed
+ 
+        
+        
+        
         

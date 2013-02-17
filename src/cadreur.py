@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+    #-*- coding: utf-8 -*-
 
 """
     cadreur, a module for pymecavideo:
@@ -29,32 +29,38 @@ from PyQt4.QtGui import *
 from vecteur import vecteur
 from globdef import PYMECA_SHARE
 
-class Cadreur:
+class Cadreur(QObject):
     """
     Un objet capable de recadrer une vidéo en suivant le déplacement
     d'un point donné. La video de départ mesure 640x480
     """
     def __init__(self,numpoint,app, titre=None):
+        QObject.__init__(app)
         """
         Le constructeur.
         @param numpoint le numéro du point qui doit rester immobile
         @param app l'application Pymecavideo
         @param titre le titre désiré pour la fenêtre
         """
+        self.app=app
+        self.app.dbg.p(1,"In : Cadreur, __init__")
         if titre==None:
-            self.titre="Nouveau cadre"
-        quitteLabel="Curseur à droite pour quitter"
-        ralentiLabel="Choisir le ralenti"
+            self.titre=str(self.app.tr("Presser la touche ESC pour sortir"))
+
         self.numpoint=numpoint
         self.app=app
-        self.capture=cv.CreateFileCapture(self.app.filename)
+        
+        
+        self.capture=cv.CreateFileCapture(self.app.filename.encode('utf8'))
         self.fps=cv.GetCaptureProperty(self.capture,cv.CV_CAP_PROP_FPS)
         self.delay=int(1000.0/self.fps)
-        self.ralenti=1
-        wsub=cv.NamedWindow(self.titre)
-        cv.CreateTrackbar(quitteLabel,self.titre, 0, 1, self.controleStop)
-        cv.CreateTrackbar(ralentiLabel,self.titre, 0, 16, self.controleRalenti)
+        
+        self.app.dbg.p(3,"In : Label_Video, __inti__, fps = %s and delay = %s" %(self.fps, self.delay))
+        
+        self.ralenti=3
+        self.fini=False
         self.maxcadre()
+
 
     def echelleTaille(self):
         """
@@ -69,12 +75,6 @@ class Cadreur:
         ech=max(echx,echy)
         return ech, m.width()/ech, m.height()/ech
 
-    def controleStop(self,position):
-        """
-        fonction de rappel commandée par le bouton "Quitte"
-        """
-        if position==1:
-            self.fini=True
             
     def controleRalenti(self,position):
         """
@@ -119,31 +119,49 @@ class Cadreur:
             print "erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile
             sys.exit(1)
         
+        
     def montrefilm(self,fini=False):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
+        wsub=cv.NamedWindow(self.titre)
+
+        ralentiLabel="Choisir le ralenti"
+
+        cv.CreateTrackbar(ralentiLabel,self.titre, 0, 16, self.controleRalenti)
         ech, w, h=self.echelleTaille()
-        print "NUT1"
+        i=0
         while not fini:
-            print "NUT2"
+            
+           
             #rembobine
-            self.capture=cv.CreateFileCapture(self.app.filename)
+            self.capture=cv.CreateFileCapture(self.app.filename.encode('utf8'))
+            
+            #have to move to first picture clicked
+
+            cv.SetCaptureProperty(self.capture,cv.CV_CAP_PROP_POS_FRAMES,self.app.premiere_image-1)
+            
+            
             for i in self.app.points.keys():
-                if fini: break # valeur volatile à examiner souvent
                 p=self.app.points[i][self.numpoint]
-                #hautgauche=(p+self.decal-self.rayons)*ech
-                hautgauche=(p-self.tl)*ech
+                hautgauche=(p+self.decal-self.rayons)*ech
+                #hautgauche=(p-self.tl)*ech
+                #print "@@@haut gauche", hautgauche
                 #taille=self.rayons*2*ech
                 taille=self.sz*ech
                 img=self.queryFrame()
+                
                 x,y = int(hautgauche.x()), int(hautgauche.y())
                 w,h = int(taille.x()), int(taille.y())
+                #print "x,y,w,h", x,y,w,h
                 isub = cv.GetSubRect(img, (x,y,w,h))
                 cv.ShowImage(self.titre,isub)
-                cv.WaitKey(self.delay*self.ralenti)
-        # ferme la fenêtre
-        print "NUT3"
+                k= cv.WaitKey(int(self.delay*self.ralenti))
+                if k ==0x10001b or k==27:
+                    fini=True
+                    cv.DestroyAllWindows() 
+                    break
+
         cv.DestroyWindow(self.titre)
         fini = True
 
@@ -159,15 +177,21 @@ class openCvReader:
         isolé dans un sous-shell
         @param filename le nom d'un fichier vidéo
         """
+        #print "in opencvreader"
         self.filename=filename
         self.autoTest()
         self.rembobine()
         
     def autoTest(self):
-        cmd="python %s %s" %(os.path.join(PYMECA_SHARE, 'testfilm.py'),
-                             self.filename)
-        retcode=subprocess.call(cmd, shell=True)
-        self.ok = retcode==0
+        #print "in autotest"
+#        if sys.platform == 'win32':
+        import testfilm
+        self.ok = testfilm.film(self.filename).ok
+#        else:
+#            cmd="python %s %s" %(os.path.join(PYMECA_SHARE, 'testfilm.py'),
+#                                 self.filename)
+#            retcode=subprocess.call(cmd, shell=True)
+#            self.ok = retcode==0
 
     def __int__(self):
         return int(self.ok)
@@ -178,7 +202,12 @@ class openCvReader:
         """
         Recharge le fichier vidéo
         """
-        self.capture=cv.CreateFileCapture(self.filename)
+        
+        try : 
+            self.filename = unicode(self.filename,'utf8')
+        except TypeError:
+            pass
+        self.capture=cv.CreateFileCapture(self.filename.encode('utf8'))
         self.nextImage=1
         
 

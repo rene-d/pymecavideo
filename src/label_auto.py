@@ -36,6 +36,7 @@ class Label_Auto(QLabel):
         self.app = app
         self.setCursor(Qt.CrossCursor)
         self.setMouseTracking(True)
+        
     def mousePressEvent(self, event):
         self.setMouseTracking(False)
         self.x_1 = event.x()
@@ -64,9 +65,10 @@ class Label_Auto(QLabel):
         
     def mouseReleaseEvent(self,event):
         self.app.zoom = True
-        self.app.motif = self.getMotif()
-        self.app.emit(QtCore.SIGNAL('selection_done()'))
-        self.hide()
+        self.app.motif.append(self.getMotif())
+        self.app.emit(SIGNAL('selection_motif_done()'))
+        
+        
 
     def getMotif(self):
         """

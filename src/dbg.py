@@ -26,7 +26,7 @@ class Dbg:
         
     def p(self,niveau,msg):
         """
-        affiche un message si la rebosité est suffisante
+        affiche un message si la verbosité est suffisante
         """
         if niveau<=self.verbosite:
             print msg

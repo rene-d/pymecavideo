@@ -79,11 +79,9 @@ class Label_Echelle(QLabel):
         self.p1=vecteur()
         self.p2=vecteur()
         self.app = app
-        self.app.ui.label_sous_zoom.setText(self.tr(u"Tire-glisse échelle"))
-        self.app.ui.label_sous_zoom.repaint()
         self.setCursor(Qt.CrossCursor)
         self.cropX2=None
-        self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom)
+        self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom,self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
         self.pressed=False
@@ -99,7 +97,6 @@ class Label_Echelle(QLabel):
     def mousePressEvent(self, event):
         if event.button() != 1:
             self.p1=vecteur(-1,-1)
-            self.app.ui.label_sous_zoom.setText(self.tr(u"Surveillez le zoom"))
             self.close()
         self.p1 = vecteur(event.x(),event.y())
         self.pressed=True
@@ -141,18 +138,17 @@ class Label_Echelle(QLabel):
         self.app.p2=self.p2.copy()
         epxParM=self.app.echelle_image.pxParM()
         self.app.affiche_echelle()
-        self.app.affiche_nb_points(True)
-        self.app.mets_a_jour_label_infos(self.tr(unicode("""Choisir le nombre de points puis « Démarrer l'acquisition » ""","utf8")))
+        #self.app.affiche_nb_points(True)
+        self.app.mets_a_jour_label_infos(self.app.tr("Choisir le nombre de points puis « Démarrer l'acquisition » "))
 
         self.app.affiche_lance_capture(True)
         self.app.feedbackEchelle(self.p1, self.p2)
         if len(self.app.tousLesClics)>0 : #si on appelle l'échelle après avoir déjà pointé
-            self.app.mets_a_jour_label_infos(self.tr(u"""Vous pouvez continuer votre acquisition"""))
+            self.app.mets_a_jour_label_infos(self.app.tr("Vous pouvez continuer votre acquisition"))
             self.app.affiche_nb_points(False)
             self.app.refait_echelle()
             
             
-        self.app.ui.label_sous_zoom.setText(self.tr(u"Surveillez le zoom"))
         self.close()
     
 class Label_Echelle_Trace(QLabel):

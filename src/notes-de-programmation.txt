@@ -18,7 +18,8 @@ On dispose des images, leur nombre et la durée entre les trames est connue. Il 
 * origine du référentiel de caméra (initialement au centre de l'image)
 * directions des axes de la caméra (initialement gauche droit et bas haut)
 * nombre de points à suivre et mode de suivi (manuel ou automatique). Par défaut, un point, en mode manuel.
-* numéro de la première image à considérer pour les mesures (1 par défaut).
+* numéro de la première image à considérer pour les mesures (1 par défaut). //pas sûr que ce soit nécessaire. On doit pouvoir faire commencer la vidéo où l'on souhaite et même se détacher
+complètement de cette "premières image". On doit pouvoir prendre un point quelque soit l'image de départ.
 
 On ne sort de cet état que quand tous les éléments de contexte sont définis.
 

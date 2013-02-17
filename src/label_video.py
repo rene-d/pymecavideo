@@ -32,17 +32,24 @@ from zoom import Zoom_Croix
 class Label_Video(QtGui.QLabel):
     def __init__(self, parent, app):
         QtGui.QLabel.__init__(self,parent)
+        
         self.setGeometry(QtCore.QRect(0,0,640,480))
         #self.setStyleSheet("background-color: grey");
         self.parent=parent
         self.liste_points = []
         self.app=app
+        self.app.dbg.p(1,"In : Label_Video, __init__")
         self.cropX2=None
         self.setCursor(QtCore.Qt.ArrowCursor)
         self.pos=self.pos_avant=vecteur(0,0)
-        self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom)
+        self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom,self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
+        self.origine=vecteur(self.geometry().width()/2,self.geometry().height()/2)
+        #####################TODO
+        self.decal = vecteur(0,0) #if video is not 4:3, center video
+        
+        self.couleurs=["red", "blue", "cyan", "magenta", "yellow", "gray", "green","red", "blue", "cyan", "magenta", "yellow", "gray", "green"]
     def reinit(self):
         try :
             del self.zoom_croix
@@ -51,14 +58,17 @@ class Label_Video(QtGui.QLabel):
         self.met_a_jour_crop()
         self.setMouseTracking(True)
         
-    def mouseReleaseEvent(self, event):
-        
-        if self.app.lance_capture==True and self.app.auto==False:
-            self.liste_points.append(vecteur(event.x(), event.y()))
+    def storePoint(self,point):
+        if self.app.lance_capture==True:
+            self.liste_points.append(point)
             self.pos_avant=self.pos
-            self.app.emit(QtCore.SIGNAL('clic_sur_video()'))
-
+            self.app.emit(SIGNAL('clic_sur_video()'))
+            self.update()
             self.met_a_jour_crop()
+        
+    def mouseReleaseEvent(self, event):
+        self.storePoint(vecteur(event.x(), event.y()))
+        
     def enterEvent(self, event):
         if self.app.lance_capture==True and self.app.auto==False:#ne se lance que si la capture est lancée
             self.setCursor(QtCore.Qt.CrossCursor)
@@ -79,7 +89,78 @@ class Label_Video(QtGui.QLabel):
     def cache_zoom(self):
         pass
 
+    def paintEvent(self,event):
+        self.painter = QPainter()
+        self.painter.begin(self)
+        try : 
+            self.painter.drawPixmap(self.decal.x(),self.decal.y(),self.pixmap())
+        except TypeError:#pixmap is not declare yet
+            pass
+        
+        ############################################################
+        #paint the origin
+        self.painter.setPen(Qt.green)
+        self.painter.drawLine(self.origine.x()-5, self.origine.y(), self.origine.x()+5, self.origine.y())
+        self.painter.drawLine(self.origine.x(), self.origine.y()-5, self.origine.x(), self.origine.y()+5)
+        self.painter.drawText(self.origine.x(), self.origine.y()+15, "O")
+        
+        
+        
+        ############################################################
+        #draw points
+        self.app.dbg.p(5,"In label_video, paintEvent, self.app.points :%s" %self.app.points)
+        for points in self.app.points.values() : #all points clicked are stored here, but updated every "number of point to click" frames
+            color=0
+ 
+            for point in points:
+	        if type(point)!= type(""): 
+                    self.painter.setPen(QColor(self.couleurs[color]))
+                    self.painter.setFont(QFont("", 10))
+                    self.painter.translate(point.x(), point.y())
+                    self.painter.drawLine(-2,0,2,0)
+                    self.painter.drawLine(0,-2,0,2)
+                    self.painter.translate(-10, +10)
+                    self.painter.drawText(0,0,str(color+1))
+                    
+                    self.painter.translate(-point.x()+10, -point.y()-10)
+                    
+                    color+=1
+        color=0
+        if self.liste_points != []:
 
+            for point in self.liste_points: #points clicked in a "number of point to click" sequence.
+                    
+                self.painter.setPen(QColor(self.couleurs[color]))
+                self.painter.setFont(QFont("", 10))
+                self.painter.translate(point.x(), point.y())
+                self.painter.drawLine(-2,0,2,0)
+                self.painter.drawLine(0,-2,0,2)
+                self.painter.translate(-10, +10)
+                self.painter.drawText(0,0,str(color+1))
+                
+                self.painter.translate(-point.x()+10, -point.y()-10)
+                color+=1    
+        ############################################################
+        
+        ############################################################
+        #paint repere
+        self.painter.setPen(Qt.green)
+        self.painter.translate(0,0)
+        self.painter.translate(self.origine.x(), self.origine.y())
+        p1=QPoint(self.app.sens_X*(-40),0)
+        p2=QPoint(self.app.sens_X*(40),0)
+        p3=QPoint(self.app.sens_X*(36),2)
+        p4=QPoint(self.app.sens_X*(36),-2)
+        self.painter.scale(1,1)
+        self.painter.drawPolyline(p1,p2,p3,p4,p2)
+        self.painter.rotate(self.app.sens_X*self.app.sens_Y*(-90))
+        self.painter.drawPolyline(p1,p2,p3,p4,p2)
+        ############################################################
+                        
+                    
+        self.painter.end()
+        
+        
     def fait_crop(self, p):
         rect = QRect(p.x()-25,p.y()-25,50,50)
         crop = self.app.image_640_480.copy(rect)
