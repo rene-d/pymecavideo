@@ -459,8 +459,11 @@ class StartQT4(QMainWindow):
             self.echelle_image=echelle_image
             self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         else : #destroy scale
-            self.label_echelle_trace.hide()
-            del self.label_echelle_trace
+            try : 
+                self.label_echelle_trace.hide()
+                del self.label_echelle_trace
+            except AttributeError: 
+                pass #quand on demande un effacement tout au début. Comme par exemple, ouvrir les exmples.
         
         if nb_de_points:
             self.nb_de_points=nb_de_points
