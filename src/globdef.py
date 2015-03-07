@@ -42,6 +42,7 @@ licence['fr'] = u"""
 
 import sys
 import os
+import subprocess
 
 from PyQt4.QtGui import QDesktopServices
 
@@ -98,6 +99,8 @@ if sys.platform == 'win32':
 else:
     datalocation = os.path.join("%s" % QDesktopServices.storageLocation(QDesktopServices.DataLocation), "pymecavideo")
     PATH = APP_DATA_PATH = datalocation
+    if not os.path.exists(datalocation):
+        subprocess.call("mkdir -p %s" %datalocation, shell=True)
 
 
 #
