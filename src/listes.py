@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
     listes, a module for pymecavideo:
@@ -21,84 +21,99 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+
 class listePointee:
     """Une liste de données avec un pointeur, qui permet de revenir en arrière
     et en avant dans la liste.
     """
+
     def __init__(self):
         """Crée la liste, initialement vide.
         """
-        self.data=[]
-        self.ptr=-1
+        self.data = []
+        self.ptr = -1
+
     def count(self):
         """
         @return le nombre d'éléments existants, indépendamment de la
         position du pointeur
         """
         return len(self.data)
+
     def append(self, val):
         """Ajoute un élément. Si le pointeur n'était pas à la fin, détruit
         les enregistrements qui suivent.
         """
-        if self.ptr < len(self.data)-1:
-            for i in range(len(self.data)-1, self.ptr, -1):
+        if self.ptr < len(self.data) - 1:
+            for i in range(len(self.data) - 1, self.ptr, -1):
                 del self.data[i]
         self.data.append(val)
-        self.ptr=len(self.data)-1
+        self.ptr = len(self.data) - 1
+
     def incPtr(self):
-        if self.ptr < len(self.data)-1:
-            self.ptr+=1
+        if self.ptr < len(self.data) - 1:
+            self.ptr += 1
+
     def decPtr(self):
         if self.ptr > -1:
             self.ptr -= 1
+
     def __iter__(self):
         return listePointeeIterateur(self)
-    def __getitem__(self,i):
-        if i >=0 and i <=self.ptr:
+
+    def __getitem__(self, i):
+        if i >= 0 and i <= self.ptr:
             return self.data[i]
         else:
             raise IndexError
+
     def __len__(self):
-        return self.ptr+1
+        return self.ptr + 1
+
     def nextCount(self):
         """
         renvoie le nombre de données après le pointeur
         """
-        return len(self.data)-self.ptr-1
+        return len(self.data) - self.ptr - 1
+
     def __str__(self):
-        s="liste pointee : ["
+        s = "liste pointee : ["
         for i in range(len(self.data)):
-            if i==self.ptr:
+            if i == self.ptr:
                 s += "@"
-            s += "%s"%self.data[i]
-            if i==self.ptr:
+            s += "%s" % self.data[i]
+            if i == self.ptr:
                 s += "@"
-            if i < len(self.data)-1:
+            if i < len(self.data) - 1:
                 s += ", "
         s += "]"
         return s
+
     def __repr__(self):
         return self.__str__()
+
 
 class listePointeeIterateur:
     """Un itérateur pour le type précédent.
     """
+
     def __init__(self, lp):
-        self.i=0
-        self.lp=lp
+        self.i = 0
+        self.lp = lp
+
     def next(self):
-        i=self.i
-        self.i+=1
+        i = self.i
+        self.i += 1
         if i > self.lp.ptr:
             raise StopIteration
         return self.lp.data[i]
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     print "quelques tests de liste pointée"
-    l1=listePointee()
+    l1 = listePointee()
     l1.append(1)
-    l1.append(['a','b'])
+    l1.append(['a', 'b'])
     l1.append(2)
     l1.append(3)
     l1.decPtr()
@@ -110,8 +125,8 @@ if __name__=="__main__":
     l1.append(3)
     l1.decPtr()
 """
-    print ">>> l1 = %s" %l1
-    print ">>> l1[0] = %s" %l1[0]
+    print ">>> l1 = %s" % l1
+    print ">>> l1[0] = %s" % l1[0]
 
     print """
     for e in l1:
@@ -120,17 +135,17 @@ if __name__=="__main__":
     for e in l1:
         print e
 
-    print "\n>>> len(l1) = %s" %len(l1)
+    print "\n>>> len(l1) = %s" % len(l1)
 
     l1.incPtr()
-    
+
     print """
         l1.incPtr()
 """
     for e in l1:
         print e
 
-    print "\n>>> len(l1) = %s" %len(l1)
+    print "\n>>> len(l1) = %s" % len(l1)
 
     l1.decPtr()
     l1.decPtr()
@@ -140,11 +155,11 @@ if __name__=="__main__":
     l1.decPtr()
     l1.decPtr()
     l1.append('x')
-"""    
+"""
     for e in l1:
         print e
 
-    print "\n>>> len(l1) = %s" %len(l1)
+    print "\n>>> len(l1) = %s" % len(l1)
 
         
     

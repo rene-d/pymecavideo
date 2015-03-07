@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-licence={}
-licence['en']="""
+licence = {}
+licence['en'] = """
     pymecavideo version %s:
 
     a program to track moving points in a video frameset
@@ -23,7 +23,7 @@ licence['en']="""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-licence['fr']=u"""
+licence['fr'] = u"""
     pymecavideo version %s :
 
     un programme pour tracer les trajectoires des points dans une vidéo.
@@ -41,10 +41,11 @@ licence['fr']=u"""
 
 import cv
 from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-import Image, ImageQt
 
-def IPLtoPIL(cv_image, swap = True, mode="RGB"):
+import Image
+
+
+def IPLtoPIL(cv_image, swap=True, mode="RGB"):
     """
     converts :class:`IPLImage` to :class:`PILImage`.
     :param cv_image: Input image
@@ -59,7 +60,7 @@ def IPLtoPIL(cv_image, swap = True, mode="RGB"):
 
     """
 
-  #swaps RGB/BGR
+    # swaps RGB/BGR
 
     if (swap):
         copy_image = cv.CreateImage(cv.GetSize(cv_image), cv_image.depth,
@@ -69,7 +70,8 @@ def IPLtoPIL(cv_image, swap = True, mode="RGB"):
         copy_image = cv_image
     return Image.fromstring(mode, cv.GetSize(copy_image), copy_image.tostring())
 
-def IPLtoQPixmap(cv_image, swap = True, mode="RGB"):
+
+def IPLtoQPixmap(cv_image, swap=True, mode="RGB"):
     """
     converts :class:`IPLImage` to :class:`QPixmap`.
     :param cv_image: input image
@@ -85,17 +87,18 @@ def IPLtoQPixmap(cv_image, swap = True, mode="RGB"):
 
     """
 
-    PILstring = IPLtoPIL(cv_image,swap).convert(mode).tostring()
+    PILstring = IPLtoPIL(cv_image, swap).convert(mode).tostring()
     qimg = QImage(PILstring,
-                        cv_image.width,
-                        cv_image.height,
-                        cv_image.width*3,
-                        QImage.Format_RGB888)
+                  cv_image.width,
+                  cv_image.height,
+                  cv_image.width * 3,
+                  QImage.Format_RGB888)
     pixmap = QPixmap.fromImage(qimg)
     print pixmap.size()
     return pixmap
 
-def PILtoQPixmap(pil_image, swap = True, encoder="jpeg", mode="RGB"):
+
+def PILtoQPixmap(pil_image, swap=True, encoder="jpeg", mode="RGB"):
     """
     converts :class:`PILImage` to :class:`QPixmap`.
 
@@ -111,13 +114,13 @@ def PILtoQPixmap(pil_image, swap = True, encoder="jpeg", mode="RGB"):
     :rtype: :class:`QPixmap`.
 
     """
-    #print pil_image
+    # print pil_image
     PILstring = pil_image.convert(mode).tostring()
     #print "#########",pil_image.size[1], pil_image.size[0]
     qimg = QImage(PILstring,
-                        pil_image.size[0],
-                        pil_image.size[1],
-                        pil_image.size[0]*3,
-                        QImage.Format_RGB888)
+                  pil_image.size[0],
+                  pil_image.size[1],
+                  pil_image.size[0] * 3,
+                  QImage.Format_RGB888)
     pixmap = QPixmap.fromImage(qimg)
     return pixmap

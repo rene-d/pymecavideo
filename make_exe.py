@@ -5,7 +5,7 @@ import shutil,os,sys,urllib, urllib2
 from optparse import Option, OptionParser
 
 # paths
-PYINSTALLERDIR=r"C:\Documents and Settings\Administrateur\Bureau\trunk"
+PYINSTALLERDIR=r"C:\Documents and Settings\Administrateur\Bureau\master"
 PYTHON='c:\Python26\python.exe'
 ZIP7= r'c:\Program Files\7-Zip\7z.exe'
 

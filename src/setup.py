@@ -2,8 +2,8 @@
 ### setup.py ###
 
 from distutils.core import setup
-#import py2exe
-setup (name='pymecavideo',
+# import py2exe
+setup(name='pymecavideo',
       version='6.0b1',
       description=u"pymecavideo permet de tracer des trajectoires issues de videos et d'en exporter les resultats",
       author='Jean-Baptiste BUTET, Georges KHAZNADAR',
@@ -12,7 +12,8 @@ setup (name='pymecavideo',
       license='GPLv3',
       packages=['pymecavideo'],
       package_dir={'pymecavideo': 'src'},
-      package_data={'pymecavideo/data/': ['../data/icones/*', '../data/video/*.avi', '../data/lang/*.ts', '../data/lang/*.qm']}
+      package_data={
+      'pymecavideo/data/': ['../data/icones/*', '../data/video/*.avi', '../data/lang/*.ts', '../data/lang/*.qm']}
       #, 'data/help/*']},
       #data_files=[('share/pymecavideo', ['test.html'])]
 )

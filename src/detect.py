@@ -20,45 +20,48 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import os.path
+import tempfile
+
 import cv
 from cv import *
-from globdef import *
-import os.path, tempfile
 
-def filter_picture(part,image):
-    imgPref=tempfile.NamedTemporaryFile(delete=False).name
-    partImg=os.path.join(imgPref+"part.png")
-    
-    img=os.path.join(imgPref+"image.png")
-    if type(image)==type("") and type(part)==type("") :
-        image=cv.LoadImage(image,1)
-        part=cv.LoadImage(part,1)
-        point1, point2 = detect_part(part,image)
+from globdef import *
+
+
+def filter_picture(part, image):
+    imgPref = tempfile.NamedTemporaryFile(delete=False).name
+    partImg = os.path.join(imgPref + "part.png")
+
+    img = os.path.join(imgPref + "image.png")
+    if type(image) == type("") and type(part) == type(""):
+        image = cv.LoadImage(image, 1)
+        part = cv.LoadImage(part, 1)
+        point1, point2 = detect_part(part, image)
         return point2
     elif "iplimage" in str(type(part)) and "iplimage" in str(type(image)):
-        points = detect_part(part,image)
+        points = detect_part(part, image)
         return points
     elif "QImage" in str(type(part)) and "QImage" in str(type(image)):
         part.save(partImg)
         image.save(img)
-        image=cv.LoadImage(img,1)
-        part=cv.LoadImage(partImg,1)
-        point1, point2 = detect_part(part,image)
-        #print point2
+        image = cv.LoadImage(img, 1)
+        part = cv.LoadImage(partImg, 1)
+        point1, point2 = detect_part(part, image)
+        # print point2
         os.remove(img)
         os.remove(partImg)
         os.remove(imgPref)
         return point2
-        
-    else :
+
+    else:
         return "Type Error"
-    
 
-def detect_part(part,image):
 
+def detect_part(part, image):
     resultW = image.width - part.width + 1
-    resultH = image.height - part.height +1
+    resultH = image.height - part.height + 1
     result = cv.CreateImage((resultW, resultH), IPL_DEPTH_32F, 1)
-    cv.MatchTemplate(image, part,result, cv.CV_TM_SQDIFF)
+    cv.MatchTemplate(image, part, result, cv.CV_TM_SQDIFF)
     m, M, point2, point1 = cv.MinMaxLoc(result)
     return point1, point2

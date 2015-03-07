@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
     dbg.py, a module for pymecavideo:
@@ -20,20 +20,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+
 class Dbg:
-    def __init__(self,verbosite):
-        self.verbosite=verbosite
-        
-    def p(self,niveau,msg):
+    def __init__(self, verbosite):
+        self.verbosite = verbosite
+
+    def p(self, niveau, msg):
         """
         affiche un message si la verbosité est suffisante
         """
-        if niveau<=self.verbosite:
+        if niveau <= self.verbosite:
             print msg
 
     def __str__(self):
         """
         Renvoie une chaîne lisible pour les humains.
         """
-        return "objet debogueur de verbosite %s" %self.verbosite
+        return "objet debogueur de verbosite %s" % self.verbosite
     

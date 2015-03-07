@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-licence={}
-licence['en']="""
+licence = {}
+licence['en'] = """
     pymecavideo version %s:
 
     a program to track moving points in a video frameset
@@ -24,7 +24,7 @@ licence['en']="""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-licence['fr']=u"""
+licence['fr'] = u"""
     pymecavideo version %s :
 
     un programme pour tracer les trajectoires des points dans une vidéo.
@@ -40,10 +40,12 @@ licence['fr']=u"""
     <http://www.gnu.org/licenses/>.
 """
 
+import sys
+import os
 
-import sys, os
 from PyQt4.QtGui import QDesktopServices
-#from PyQt4.QtGui import *
+
+# from PyQt4.QtGui import *
 
 #
 # Version de pymecavideo
@@ -51,12 +53,12 @@ from PyQt4.QtGui import QDesktopServices
 VERSION = "5.3"
 
 
-def testerDossier(listDir, defaut = ""):
+def testerDossier(listDir, defaut=""):
     for dir in listDir:
         if os.path.exists(dir):
             return dir
     return defaut
-    
+
 #
 # Dossier de l'application
 #
@@ -82,9 +84,10 @@ if sys.platform == 'win32':
     #On récupèreﾠ le dossier "Application data" 
     #On lit la clef de registre indiquant le type d'installation
     import win32api, win32con
+
     try:
-        regkey = win32api.RegOpenKeyEx( win32con.HKEY_LOCAL_MACHINE, 'SOFTWARE\\pymecavideo', 0, win32con.KEY_READ )
-        (value,keytype) = win32api.RegQueryValueEx(regkey, 'DataFolder' ) 
+        regkey = win32api.RegOpenKeyEx(win32con.HKEY_LOCAL_MACHINE, 'SOFTWARE\\pymecavideo', 0, win32con.KEY_READ)
+        (value, keytype) = win32api.RegQueryValueEx(regkey, 'DataFolder')
         APP_DATA_PATH = value
         if not os.path.exists(APP_DATA_PATH):
             os.makedirs(APP_DATA_PATH)
@@ -93,7 +96,7 @@ if sys.platform == 'win32':
     sys.path.append(os.path.join(PATH, 'bin'))
 
 else:
-    datalocation=os.path.join("%s"%QDesktopServices.storageLocation(QDesktopServices.DataLocation),"pymecavideo")
+    datalocation = os.path.join("%s" % QDesktopServices.storageLocation(QDesktopServices.DataLocation), "pymecavideo")
     PATH = APP_DATA_PATH = datalocation
 
 
@@ -114,12 +117,14 @@ def GetGnuplotPath():
         paths.append(os.environ['PROGRAMFILES'])
     GNUPLOT_PATH = None
     for p in paths:
-        if os.access(os.path.join(p,"gnuplot"), os.X_OK):
+        if os.access(os.path.join(p, "gnuplot"), os.X_OK):
             GNUPLOT_PATH = p
     if GNUPLOT_PATH != None:
         return os.path.join(GNUPLOT_PATH, "gnuplot", "binary")
     else:
         return ""
+
+
 GNUPLOT_PATH = GetGnuplotPath()
 
 # Dossier "home"
@@ -130,22 +135,22 @@ HOME_PATH = unicode(QDesktopServices.storageLocation(8), 'iso-8859-1')
 # Dossier "video"
 #
 if sys.platform == 'win32':
-    VIDEO_PATH = os.path.join(PATH,"data","video")
+    VIDEO_PATH = os.path.join(PATH, "data", "video")
 else:
-    VIDEO_PATH = testerDossier((os.path.join("..","data","video"),
+    VIDEO_PATH = testerDossier((os.path.join("..", "data", "video"),
                                 '/usr/share/pymecavideo/video',
                                 '/usr/share/python-mecavideo/video'),
-                                APP_DATA_PATH)
+                               APP_DATA_PATH)
 
 #
 # Dossier pour testfilm.py
 #
 
-PYMECA_SHARE =testerDossier(('/usr/share/pymecavideo',
-                             '/usr/share/python-mecavideo',
-                             '.'),
-                            '/usr/share/pymecavideo')
-                             
+PYMECA_SHARE = testerDossier(('/usr/share/pymecavideo',
+                              '/usr/share/python-mecavideo',
+                              '.'),
+                             '/usr/share/pymecavideo')
+
 
 #
 # Dossier de pymecavideo.conf
@@ -159,42 +164,42 @@ else:
 # Dossier des icones
 #
 if sys.platform == 'win32':
-    ICON_PATH = os.path.join(PATH,"data","icones")
+    ICON_PATH = os.path.join(PATH, "data", "icones")
 else:
-    ICON_PATH = testerDossier((os.path.join("..","data","icones"),
-    '/usr/share/python-mecavideo/icones','/usr/share/pymecavideo/icones'))
+    ICON_PATH = testerDossier((os.path.join("..", "data", "icones"),
+                               '/usr/share/python-mecavideo/icones', '/usr/share/pymecavideo/icones'))
 #
 # Dossier des langues
 #
 if sys.platform == 'win32':
-    LANG_PATH = os.path.join(PATH,"..","data","lang")
+    LANG_PATH = os.path.join(PATH, "..", "data", "lang")
 else:
-    LANG_PATH = testerDossier((os.path.join("..","data","lang"),
-    '/usr/share/pyshared/pymecavideo/lang','/usr/share/python-mecavideo/lang','/usr/share/pymecavideo/lang'))
+    LANG_PATH = testerDossier((os.path.join("..", "data", "lang"),
+                               '/usr/share/pyshared/pymecavideo/lang', '/usr/share/python-mecavideo/lang',
+                               '/usr/share/pymecavideo/lang'))
 
 #
 # Dossier "data"
 #
 if sys.platform == 'win32':
-    DATA_PATH = os.path.join(PATH,"data")
+    DATA_PATH = os.path.join(PATH, "data")
 else:
     #DATA_PATH = os.path.join(PATH,"..","data")
-    DATA_PATH = testerDossier((os.path.join("..","data"),
-    '/usr/share/python-mecavideo/','/usr/share/pymecavideo/'))
+    DATA_PATH = testerDossier((os.path.join("..", "data"),
+                               '/usr/share/python-mecavideo/', '/usr/share/pymecavideo/'))
 
 #
 # Dossier de l'aide
 #
 if sys.platform == 'win32':
-    HELP_PATH = os.path.join(PATH,"data", "help")
+    HELP_PATH = os.path.join(PATH, "data", "help")
 else:
-    HELP_PATH = testerDossier((os.path.join("..","data","help"),"/usr/share/doc/python-mecavideo/html",
+    HELP_PATH = testerDossier((os.path.join("..", "data", "help"), "/usr/share/doc/python-mecavideo/html",
                                "/usr/share/doc/HTML/fr/pymecavideo"))
 #
 # Nom du fichier de sortie AVI
 #
 AVI_OUT = os.path.join(IMG_PATH, "out.avi")
-
 
 ERROR_FILE = os.path.join(APP_DATA_PATH, 'pymecavideo.exe' + '.log')
 
@@ -214,6 +219,7 @@ def GetChildStdErr():
     """
     if sys.platform == 'win32':
         import win32process
+
         if hasattr(sys.stderr, 'fileno'):
             childstderr = sys.stderr
         elif hasattr(sys.stderr, '_file') and hasattr(sys.stderr._file, 'fileno'):

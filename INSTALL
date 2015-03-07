@@ -4,14 +4,15 @@ Pour installer pymecavideo.
 Utiliser un paquet pour votre distribution Linux.
 Pour cela RDV sur http://outilsphysiques.tuxfamily.org
 
-2) installation depuis le svn :
-svn co svn://svn.tuxfamily.org/svnroot/oppl/pymecavideo
+2) installation depuis le git :
+https://gitlab.com/oppl/pymecavideo
 
 puis vérifiez que soit installés :
 -> python-qt4-devel
 -> make
-(-> vlc)
+-> vlc
 -> ffmpeg
+-> python-opencv
 optionnels mais utiles: 
 gnuplot, pyuno (si vous voulez utiliser les fonctions d'import pour Ooo)
 ffplay, mplayer

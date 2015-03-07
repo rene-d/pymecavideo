@@ -25,11 +25,13 @@
 
 class version:
     def __init__(self, majeur, mineur, nuance=""):
-        self.majeur=majeur
-        self.mineur=mineur
-        self.nuance=nuance
+        self.majeur = majeur
+        self.mineur = mineur
+        self.nuance = nuance
+
     def __str__(self):
-        return "%s.%s%s" %(self.majeur,self.mineur, self.nuance)
+        return "%s.%s%s" % (self.majeur, self.mineur, self.nuance)
+
     def __repr__(self):
         return self.__str__()
 
@@ -37,10 +39,10 @@ class version:
 ###############################################################
 # la version courante, à incrémenter lors de changements
 ###############################################################
-Version=version(6,0,'')
+Version = version(6, 0, '')
 ###############################################################
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     print Version
     

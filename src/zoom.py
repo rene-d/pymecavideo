@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 """
     videotraj, a module for pymecavideo:
@@ -20,26 +20,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, os, thread, time, commands
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from math import sqrt, acos, asin, pi, cos, sin, atan2
-from vecteur import vecteur
+
 
 class Zoom_Croix(QWidget):
-    def __init__(self, parent,app):
-
+    def __init__(self, parent, app):
         QWidget.__init__(self, parent)
         self.parent = parent
         self.app = app
-        
+
         self.setEnabled(True)
         self.setGeometry(QRect(0, 0, 100, 100))
         self.setAutoFillBackground(False)
-        
+
     def paintEvent(self, event):
-                painter = QPainter()
-                painter.begin(self)
-                painter.setPen(Qt.red)
-                painter.drawLine(50, 0, 50, 100)
-                painter.drawLine(0, 50, 100, 50)
+        painter = QPainter()
+        painter.begin(self)
+        painter.setPen(Qt.red)
+        painter.drawLine(50, 0, 50, 100)
+        painter.drawLine(0, 50, 100, 50)

@@ -19,9 +19,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-import sys, os
+import sys
+import os
+
 import matplotlib
-#if sys.platform == "win32":
+
+# if sys.platform == "win32":
 #    matplotlib.use('Qt4Agg')
 #import matplotlib.pyplot as plt
 
@@ -116,12 +119,14 @@ FONT_SIZE = 8
 def coderISO(text):
     return unicode(text, 'ISO-8859-1')
 
+
 #
 # 
 #
 class MyMplCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
-    def __init__(self,parent=None, width=5, height=4, dpi=100):
+
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
 
         self.fig = fig
@@ -132,22 +137,21 @@ class MyMplCanvas(FigureCanvas):
         # on crée les "axes"
         self.axes_xy = fig.add_subplot(211)
         self.axes_v = fig.add_subplot(212)
-        
+
         # on  sauvegarde les positions
-        self.pos_haut  = self.axes_xy.get_position()
-        self.pos_bas   = self.axes_v.get_position()
+        self.pos_haut = self.axes_xy.get_position()
+        self.pos_bas = self.axes_v.get_position()
         self.pos_tot = [self.pos_haut.xmin, self.pos_bas.ymin,
-                        self.pos_haut.width, self.pos_haut.ymax - self.pos_bas.ymin ]
+                        self.pos_haut.width, self.pos_haut.ymax - self.pos_bas.ymin]
 
         # on affecte des labels (vide) et une taille de police (fait une fois pour toute)
         for ax in [self.axes_xy, self.axes_v]:
-            ax.set_xlabel("t (s)", size = FONT_SIZE)
-            ax.set_ylabel("", size = FONT_SIZE)
-        
-        
+            ax.set_xlabel("t (s)", size=FONT_SIZE)
+            ax.set_ylabel("", size=FONT_SIZE)
+
         for ax in [self.axes_xy, self.axes_v]:
-            setp(ax.get_xaxis().get_ticklabels(), fontsize = FONT_SIZE) 
-            setp(ax.get_yaxis().get_ticklabels(), fontsize = FONT_SIZE) 
+            setp(ax.get_xaxis().get_ticklabels(), fontsize=FONT_SIZE)
+            setp(ax.get_yaxis().get_ticklabels(), fontsize=FONT_SIZE)
 
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
@@ -158,16 +162,16 @@ class MyMplCanvas(FigureCanvas):
         self.toolbar.show()
 
         self.plots = {}
-        
+
     def effacerPlot(self, item):
         for p in self.plots[item]:
             p.remove()
             del self.plots[item]
-        
+
     def effacerTousLesPlots(self):
         for item in self.plots.keys():
             self.effacerPlot(item)
-        
+
     def gererAxes(self):
         xy, v = self.getTypeCourbe()
         if xy == 0:
@@ -185,68 +189,70 @@ class MyMplCanvas(FigureCanvas):
             self.axes_v.set_position(self.pos_bas)
 
     def getTypeCourbe(self):
-        v, xy = 0,0
+        v, xy = 0, 0
         for t in self.plots.keys():
-            typeDeCourbe=("x","y","v")[(t-1)%3]
+            typeDeCourbe = ("x", "y", "v")[(t - 1) % 3]
             if typeDeCourbe == "v":
-                v +=1
+                v += 1
             else:
                 xy += 1
         return xy, v
 
+
 class mplWindow(QDialog):
-    def __init__(self, parent,widget1,widget2):
-        QDialog.__init__(self,parent)
+    def __init__(self, parent, widget1, widget2):
+        QDialog.__init__(self, parent)
         self.parent = parent
         self.layout = QVBoxLayout()
-        self.update_widgets(widget1,widget2)
-        
-    def update_widgets(self,widget1,widget2):
+        self.update_widgets(widget1, widget2)
+
+    def update_widgets(self, widget1, widget2):
         self.layout.addWidget(widget1)
         self.layout.addWidget(widget2)
         self.setLayout(self.layout)
-        
-    def closeEvent(self,event):
+
+    def closeEvent(self, event):
         self.parent.emit(SIGNAL('mplWindowClosed()'))
 
+
 class traceur2d(QObject):
-    def __init__(self,parent,x,y,xlabel="", ylabel="", titre="", style=None, item = None):
+    def __init__(self, parent, x, y, xlabel="", ylabel="", titre="", style=None, item=None):
         print "traceur2d", titre, item
         self.parent = parent
-        self.canvas  = self.parent.canvas
-        self.update_canvas(x,y,xlabel,ylabel,titre,style,item)
+        self.canvas = self.parent.canvas
+        self.update_canvas(x, y, xlabel, ylabel, titre, style, item)
 
     def update(self):
-        self.mpl_window.update_widgets(self.canvas,self.canvas.toolbar)
+        self.mpl_window.update_widgets(self.canvas, self.canvas.toolbar)
         self.mpl_window.show()
 
-    def update_canvas(self,x,y,xlabel="", ylabel="", titre="", style=None, item = None):
-        if hasattr(self,'mpl_window') :
+    def update_canvas(self, x, y, xlabel="", ylabel="", titre="", style=None, item=None):
+        if hasattr(self, 'mpl_window'):
             self.mpl_window.hide()
             del self.mpl_window
-        self.change_canvas(x,y,xlabel,ylabel,titre,style,item)
-        self.mpl_window = mplWindow(self.parent,self.canvas,self.canvas.toolbar)
+        self.change_canvas(x, y, xlabel, ylabel, titre, style, item)
+        self.mpl_window = mplWindow(self.parent, self.canvas, self.canvas.toolbar)
         self.mpl_window.show()
 
-    def change_canvas(self,x,y,xlabel="", ylabel="", titre="", style=None, item = None):
-        typeDeCourbe=("x","y","v")[(item-1)%3]
+    def change_canvas(self, x, y, xlabel="", ylabel="", titre="", style=None, item=None):
+        typeDeCourbe = ("x", "y", "v")[(item - 1) % 3]
         if typeDeCourbe == "v":
             ax = self.canvas.axes_v
         else:
             ax = self.canvas.axes_xy
-#        ax.set_xlabel(coderISO(xlabel), size = FONT_SIZE)
+        #        ax.set_xlabel(coderISO(xlabel), size = FONT_SIZE)
         ax.set_ylabel(coderISO(ylabel))
         if item in self.canvas.plots:
             for p in self.canvas.plots[item]:
                 p.remove()
-        self.canvas.plots[item] = ax.plot(x, y, label = coderISO(str(titre)))
+        self.canvas.plots[item] = ax.plot(x, y, label=coderISO(str(titre)))
         self.canvas.gererAxes()
 
-        leg = ax.legend(shadow = True)
-        if hasattr(leg,"draggable"):
+        leg = ax.legend(shadow=True)
+        if hasattr(leg, "draggable"):
             d1 = leg.draggable()
 
-        frame  = leg.get_frame()
+        frame = leg.get_frame()
         frame.set_facecolor('0.80')
 
         for t in leg.get_texts():
@@ -254,12 +260,11 @@ class traceur2d(QObject):
 
 
 class VMToolbar(NavigationToolbar2QTAgg):
-
     def __init__(self, plotCanvas, parent):
         NavigationToolbar2QTAgg.__init__(self, plotCanvas, parent)
 
     def _icon(self, name):
         #dirty hack to use exclusively .png and thus avoid .svg usage
         #because .exe generation is problematic with .svg
-        name = name.replace('.svg','.png')
+        name = name.replace('.svg', '.png')
         return QIcon(os.path.join(self.basedir, name)) 

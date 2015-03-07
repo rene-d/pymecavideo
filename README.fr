@@ -23,11 +23,11 @@ Cependant, si vous voulez contribuer et formuler des patch, merci de
 mettre vos variables avec des noms français ou francisés :
     exemple : "self.calcul_precis" sera préféré à "self.accurate_compute"
 
-La version SVN est disponible sur ce serveur :
-svn://svn.tuxfamily.org/svnroot/oppl/pymecavideo
-et un trac (wiki + gestion de bugs/tickets) lui est associé :
-    http://gnoulibre.org/trac/pymecavideo n'hésitez pas à
-vous en servir.
+La version git se trouve ici :
+https://gitlab.com/oppl/pymecavideo
+
+Toute la gestion des gbus se fait pr gitlab
+https://gitlab.com/oppl/pymecavideo/issues
 
 pour l'installer : des paquets deb et RPMS sont disponibles sur le site. Voir le fichier INSTALL 
 
