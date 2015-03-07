@@ -4,10 +4,11 @@ pointage d'une vidéo, le tracé des trajectoires du point pointé et
 l'export des positions (temporelles et spatiales) des points choisis.
 
 Installation : 
-    Pymecavideo nécessite 3 dépendances :
+    Pymecavideo nécessite 4 dépendances :
         PyQT4 : python-qt4  (-devel si vous utilisez le svn)
         python-opencv
         python-matplotlib
+	python-odf (ou odfpy)
 
 Contribuer :
 Pymecavideo a été en premier lieu écrit en français et n'a, a l'heure
@@ -26,7 +27,7 @@ mettre vos variables avec des noms français ou francisés :
 La version git se trouve ici :
 https://gitlab.com/oppl/pymecavideo
 
-Toute la gestion des gbus se fait pr gitlab
+Toute la gestion des bugs se fait pr gitlab
 https://gitlab.com/oppl/pymecavideo/issues
 
 pour l'installer : des paquets deb et RPMS sont disponibles sur le site. Voir le fichier INSTALL 
@@ -35,9 +36,10 @@ Enjoy :=)
 
 JB BUTET <ashashiwa@gmail.com>
 
-Il y a un empaquetage Debian, disponible à debian.ofset.org
-Ajoutez la ligne "deb http://debian.ofset.org etch main" dans votre fichier
-sources.list, et vous pourrez installer le paquet python-mecavideo par
-la méthode habituelle.
+Il y a un empaquetage Debian, disponible dans les dépôts officiels de
+Debian, d'Ubuntu et d'autres distributions dérivées.
 
-Georges Khaznadar <georgesk@ofset.org>
+La méthode habituelle pour installer ces paquets fait appel à un
+programme gestionnaire de paquets, qui vient avec la distribution..
+
+Georges Khaznadar <georgesk@debian.org>

@@ -13,11 +13,13 @@ puis vérifiez que soit installés :
 -> vlc
 -> ffmpeg
 -> python-opencv
+-> python-odf
 optionnels mais utiles: 
-gnuplot, pyuno (si vous voulez utiliser les fonctions d'import pour Ooo)
-ffplay, mplayer
+gnuplot, ffplay, mplayer
 
-aller dans la version que vous voulez (4.0, trunk, detect..)
+Récupérez la version que vous voulez (6.1, 6.1a : choisissez le tag),
+un lien vous permet de l'avoir au formats ZIP ou TAR.GZ
+
 cd src
 make
 puis
@@ -30,5 +32,4 @@ python setup.py install
 Enjoy :)
 
 JB BUTET
-
 
