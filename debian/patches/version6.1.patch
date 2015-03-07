@@ -1,0 +1,43 @@
+Description: adjusted the version number (from svn's branch)
+
+--- a/setup.py
++++ b/setup.py
+@@ -4,7 +4,7 @@
+ from distutils.core import setup
+ #import py2exe
+ setup (name='pymecavideo',
+-      version='6.0',
++      version='6.1',
+       description=u"pymecavideo permet de tracer des trajectoires issues de videos et d'en exporter les resultats",
+       author='Jean-Baptiste BUTET, Georges KHAZNADAR',
+       author_email='ashashiwa@gmail.com, georgesk@ofset.org',
+--- a/src/setup.py
++++ b/src/setup.py
+@@ -2,12 +2,14 @@
+ ### setup.py ###
+ 
+ from distutils.core import setup
++import version
++
+ #import py2exe
+ setup (name='pymecavideo',
+-      version='6.0b1',
++      version=str(version.Version),
+       description=u"pymecavideo permet de tracer des trajectoires issues de videos et d'en exporter les resultats",
+       author='Jean-Baptiste BUTET, Georges KHAZNADAR',
+-      author_email='ashashiwa@gmail.com, georgesk@ofset.org',
++      author_email='ashashiwa@gmail.com, georgesk@debian.org',
+       url='http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo',
+       license='GPLv3',
+       packages=['pymecavideo'],
+--- a/src/version.py
++++ b/src/version.py
+@@ -37,7 +37,7 @@
+ ###############################################################
+ # la version courante, à incrémenter lors de changements
+ ###############################################################
+-Version=version(6,0,'')
++Version=version(6,1,'')
+ ###############################################################
+ 
+ 
