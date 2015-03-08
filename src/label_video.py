@@ -98,14 +98,13 @@ class Label_Video(QtGui.QLabel):
             self.fait_crop(self.pos)
             self.app.ui.label_zoom.setPixmap(self.cropX2)
 
-    def paintEvent(self, event):
-        self.fait_crop(self.pos)
-        self.app.ui.label_zoom.setPixmap(self.cropX2)
 
     def cache_zoom(self):
         pass
 
     def paintEvent(self, event):
+        self.fait_crop(self.pos)
+        self.app.ui.label_zoom.setPixmap(self.cropX2)
         self.painter = QPainter()
         self.painter.begin(self)
         try:
