@@ -75,9 +75,7 @@ import qtiplotexport
 from subprocess import *
 import re
 
-from mpl import traceur2d, MyMplCanvas
-# on préfèrera définitivement le module mpl au module traceur ?
-#from traceur import traceur2d
+from pgraph import traceur2d
 
 import threading
 import platform, subprocess
@@ -545,7 +543,6 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.exportCombo, SIGNAL("currentIndexChanged(int)"), self.export)
 
         QObject.connect(self.ui.pushButton_nvl_echelle, SIGNAL("clicked()"), self.recommence_echelle)
-        QObject.connect(self, SIGNAL("mplWindowClosed()"), self.mplwindowclosed)
 
 
     def updatePB(self):
@@ -579,11 +576,6 @@ class StartQT4(QMainWindow):
             self.label_auto.hide()
             self.label_auto.close()
             self.picture_detect()
-
-
-    def mplwindowclosed(self):
-        self.dbg.p(1, "rentre dans 'mplwindowclosed'")
-        self.canvas.effacerTousLesPlots()
 
 
     def picture_detect(self):
@@ -1294,7 +1286,6 @@ class StartQT4(QMainWindow):
             titre = (self.tr(QString(u"Evolution de l'abscisse du point %1").arg(numero + 1)),
                      self.tr(QString(u"Evolution de l'ordonnée du point %1").arg(numero + 1)),
                      self.tr(QString(u"Evolution de la vitesse du point %1").arg(numero + 1)))[(itemChoisi - 1) % 3]
-            titre = titre.toAscii()
             abscisse = []
             ordonnee = []
             t = 0
@@ -1342,15 +1333,10 @@ class StartQT4(QMainWindow):
             else:  # type de courbe "v""
                 styleTrace = "zero"
 
-            if not hasattr(self, 'canvas'):
-                self.canvas = MyMplCanvas(None)
             if not hasattr(self, 'traceur'):
-                self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
-                                         itemChoisi)
+                self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
             else:  #mets juste à jour la fenêtre de matplotlib
-                self.traceur.update_canvas(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
-                                           itemChoisi)
-                self.traceur.update()
+                self.traceur.update(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
 
 
     def affiche_point_attendu(self, n):
@@ -1573,10 +1559,6 @@ class StartQT4(QMainWindow):
         for filename in glob(os.path.join(IMG_PATH, "*.jpg")):
             os.remove(filename)
 
-    def on_closeCanvas(self, event):
-        self.dbg.p(1, "rentre dans 'on_closeCanvas'")
-        self.canvas.fig.clear()
-
     def closeEvent(self, event):
         """
         Un crochet pour y mettre toutes les procédures à faire lors
@@ -1585,9 +1567,6 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'closeEvent'")
         from tempfile import gettempdir
 
-        if hasattr(self, 'canvas'):
-            self.canvas.close()
-            del self.canvas
         self.nettoieVideosRecodees()
         if self.verifie_donnees_sauvegardees():
             self.reinitialise_environnement()
