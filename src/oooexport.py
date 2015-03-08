@@ -5,6 +5,7 @@
       a program to track moving points in a video frameset
       
     Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    Copyright (C) 2015 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,86 +24,142 @@
 import os
 import time
 import subprocess
+import threading
 
-import oootools
+## pour exporter des fichier ODS
+from odf.opendocument import OpenDocumentSpreadsheet
+from odf.text import P
+from odf.table import Table, TableColumn, TableRow, TableCell
+
+## pour les fichiers temporaires
+import tempfile
+## pour étiqueter avec la date
+import time
+
+# nom de la commande qui lance LibreOffice Calc
+tableur="localc"
+
+class CalcThread(threading.Thread):
+    """
+    lance une instance de LibreOffice Calc dans un thread indépendant
+    """
+    def __init__(self, calcFile):
+        """
+        Le constructeur
+        @param calcFile le fichier à ouvrir
+        """
+        threading.Thread.__init__(self)
+        self.calcFile=calcFile
+
+    def run(self):
+        """
+        activité principale du thread
+        """
+        ## on invoque un sous-shell et on le place en tâche de fond
+        cmd="({0} {1})&".format(tableur, self.calcFile)
+        subprocess.call(cmd, shell=True)
+        return
 
 
 class Calc:
     """
-    Crée une instance d'Ooo Calc en mode serveur pour permettre d'y inscrire
-    des données, et fournit des méthodes pour y envoyer des données.
+    Objet capable d'écrire des données textes et numériques dans
+    un fichier au fomat ODS
     """
 
-    def __init__(self, Hidden=False, HOST='localhost', PORT=11111):
-        #find which is the soffice excutable on system. Depends on System.
-        for exe_ooo in ["soffice", "ooffice3.2"]:
-            if any(os.access(os.path.join(p, exe_ooo), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
-                self.exe_ooo = exe_ooo
-        cmd = '(%s --nodefault --accept="socket,host=%s,port=%d;urp;StarOffice.ServiceManager" &)' % (
-        self.exe_ooo, HOST, PORT)
-        subprocess.call(cmd, shell=True)
-        maxduration = 10
-        delay = 2
-        ok = False
-        t = 0
-        while not ok and t < maxduration:
-            time.sleep(delay)
-            t += delay
-            self.ooo = oootools.OOoTools(HOST, PORT)
-            self.ctx = self.ooo.ctx
-            self.desktop = self.ooo.desktop
-            ok = self.desktop != None
-        if not ok:
-            raise IOError, "Pas possible de communiquer avec {libre|open}office."
-        if Hidden:
-            props = PropertyValue()
-            props.Name = "Hidden"
-            props.Value = True
-            self.calc = self.desktop.loadComponentFromURL("private:factory/scalc", '_blank', 0, (props,))
-        else:
-            self.calc = self.desktop.loadComponentFromURL("private:factory/scalc", '_blank', 0, ())
-        self.sheet = self.calc.getSheets().getByIndex(0)
+    def __init__(self):
+        """
+        Crée un fichier temporaire pour y faire l'export et
+        un document
+        """
+        self.outfile = tempfile.NamedTemporaryFile(
+            mode='wb', 
+            suffix='.ods',
+            prefix='pymeca-',
+            delete=False)
+        self.doc=OpenDocumentSpreadsheet()
+        self.table = Table(name="Pymecavideo {0}".format(time.strftime("%Y-%m-%d %Hh%Mm%Ss")))
+        return
 
-    def setFormula(self, x, y, value):
+    def titres (self, lesTitres=[]):
         """
-        Écrit le contenu d'une cellule dans la feuille courante
-        @param x la colonne
-        @param y le numéro de ligne
-        @param value la formule à placer
+        Ajoute une ligne de titres
+        @param les Titres une liste de chaînes
         """
-        self.sheet.getCellByPosition(x, y).setFormula(value)
+        if not lesTitres:
+            return
+        tr = TableRow()
+        self.table.addElement(tr)
+        for t in lesTitres:
+            tc = TableCell()
+            tr.addElement(tc)
+            p = P(text=t)
+            tc.addElement(p)
+        return
+
+    def ligneValeurs(self, val=[]):
+        """
+        Ajoute une ligne de valeurs
+        @param val une liste de flottants
+        """
+        if not val:
+            return
+        tr = TableRow()
+        self.table.addElement(tr)
+        for v in val:
+            tc = TableCell(valuetype="float", value=str(v))
+            tr.addElement(tc)
+        return
 
     def importPymeca(self, app):
         """
         importe les données de pymecavideo
         @param app pointeur vers l'application
         """
-        self.setFormula(0, 0, "t (s)")
+        ## fait une ligne de titres
+        titles=["t (s)"]
         for i in range(app.nb_de_points):
             x = "X%d (m)" % (1 + i)
             y = "Y%d (m)" % (1 + i)
-            self.setFormula(2 * i + 1, 0, x)
-            self.setFormula(2 * i + 2, 0, y)
-        ligne = 1
+            titles.append(x)
+            titles.append(y)
+        self.titres(titles)
+        ## fait les lignes de données
+        t=0
         dt = app.deltaT
         for k in app.points.keys():
+            val=[t]
+            t += app.deltaT
             data = app.points[k]
-            i = 0
-            self.setFormula(0, ligne, "%s" % (dt * (ligne - 1)))
             for vect in data[1:]:
                 vect = app.pointEnMetre(vect)
-                self.setFormula(2 * i + 1, ligne, "%s" % vect.x())
-                self.setFormula(2 * i + 2, ligne, "%s" % vect.y())
-                i += 1
-            ligne += 1
-
+                val.append(vect.x())
+                val.append(vect.y())
+            self.ligneValeurs(val)
+        ## accroche la feuille au document tableur
+        self.doc.spreadsheet.addElement(self.table)
+        ## écrit dans le fichier de sortie
+        self.doc.save(self.outfile)
+        self.outfile.close()
+        CalcThread(self.outfile.name).start()
+        return
+        
 
 if __name__ == "__main__":
     calc = Calc()
-    calc.setFormula(0, 0, "date")
-    calc.setFormula(1, 0, "heure")
-    calc.setFormula(2, 0, "durée")
-    calc.setFormula(3, 0, "salle")
-    calc.setFormula(4, 0, "conférenciers")
-    calc.setFormula(5, 0, "titre")
-    calc.setFormula(6, 0, "lien")
+    calc.titres([u"date",
+                 u"heure",
+                 u"durée", 
+                 u"salle",
+                 u"conférenciers",
+                 u"titre",
+                 u"lien"])
+    ## accroche la feuille au document tableur
+    calc.doc.spreadsheet.addElement(calc.table)
+    ## écrit dans le fichier de sortie
+    calc.doc.save(calc.outfile)
+    calc.outfile.close()
+    thread=CalcThread(calc.outfile.name)
+    thread.start()
+
+    
