@@ -87,8 +87,9 @@ from globdef import PATH, APP_DATA_PATH, GetChildStdErr, IMG_PATH, \
 
 from detect import filter_picture
 
-
-#import Error
+_encoding = QApplication.UnicodeUTF8
+def _translate(context, text, disambig):
+    return QApplication.translate(context, text, disambig, _encoding)
 
 class MonThreadDeCalcul(QThread):
     """mon Thread"""
@@ -275,7 +276,7 @@ class StartQT4(QMainWindow):
                 break
         if self.logiciel_acquisition:
             self.ui.pushButton_video.setText(
-                self.tr(u"Lancer %1\n pour capturer une vidéo")
+                _translate("pymecavideo", "Lancer %1\n pour capturer une vidéo", None)
                 .arg(self.logiciel_acquisition)
                 )
         else:
@@ -305,7 +306,7 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_video.setEnabled(0)
 
         self.ui.echelleEdit.setEnabled(0)
-        self.ui.echelleEdit.setText(self.tr(u"indéf"))
+        self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
         self.affiche_echelle()
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
@@ -349,7 +350,7 @@ class StartQT4(QMainWindow):
         index = self.ui.exportCombo.findText(text)
         if index > 0:
             self.ui.exportCombo.setItemData(index, Qt.blue, Qt.BackgroundRole)
-            self.ui.exportCombo.setItemText(index, self.tr("NON DISPO : %1").arg(text))
+            self.ui.exportCombo.setItemText(index, _translate("pymecavideo", "NON DISPO : %1", None).arg(text))
             self.ui.exportCombo.setItemData(index, Qt.blue, Qt.BackgroundRole)
         return
 
@@ -376,7 +377,7 @@ class StartQT4(QMainWindow):
         """
         self.dbg.p(1, "rentre dans 'affiche_echelle'")
         if self.echelle_image.isUndef():
-            self.ui.echelleEdit.setText(self.tr(u"indéf."))
+            self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf.", None))
             self.ui.Bouton_Echelle.setEnabled(True)
         else:
             epxParM = self.echelle_image.pxParM()
@@ -863,8 +864,8 @@ class StartQT4(QMainWindow):
     def rouvre_ui(self):
         self.dbg.p(1, "rentre dans 'rouvre_ui'")
         dir_ = self._dir("home")
-        fichier = QFileDialog.getOpenFileName(self, self.tr(u"Ouvrir un projet Pymecavideo"), dir_,
-                                              self.tr(u"fichiers pymecavideo(*.csv)"))
+        fichier = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None), dir_,
+                                              _translate("pymecavideo", "fichiers pymecavideo(*.csv)", None))
 
         if fichier != "":
             self.rouvre(fichier)
@@ -1034,7 +1035,7 @@ class StartQT4(QMainWindow):
             fichier = fichier.encode('utf8')
             file = codecs.open(fichier, 'w', 'utf8')
             try:
-                file.write(self.entete_fichier(self.tr(u"temps en seconde, positions en mètre")))
+                file.write(self.entete_fichier(_translate("pymecavideo", "temps en seconde, positions en mètre", None)))
                 for cle in liste_des_cles:
                     donnee = self.points[cle]
                     t = float(donnee[0])
@@ -1097,7 +1098,7 @@ class StartQT4(QMainWindow):
         self.ui.comboBox_referentiel.clear()
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points):
-            self.ui.comboBox_referentiel.insertItem(-1, self.tr(u"point N° %1").arg(str(i + 1)))
+            self.ui.comboBox_referentiel.insertItem(-1, _translate("pymecavideo", "point N° %1", None).arg(str(i + 1)))
         self.cree_tableau()
 
         self.ui.pushButton_origine.setEnabled(0)
@@ -1109,9 +1110,10 @@ class StartQT4(QMainWindow):
         if self.ui.checkBox_auto.isChecked():
             self.auto = True
             reponse = QMessageBox.warning(None, "Capture Automatique", 
-                                          self.tr(u"""\
+                                          _translate("pymecavideo", """\
 Veuillez sélectionner un cadre autour de(s) l'objet(s) que vous voulez suivre.
-Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
+Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
+                                                     None),
                                           QMessageBox.Ok, QMessageBox.Ok)
 
             self.label_auto = Label_Auto(self.label_video, self)  #in this label, motif(s) are defined.
@@ -1255,7 +1257,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
 
                 # rempli le menu des courbes à tracer
                 self.ui.comboBox_mode_tracer.clear()
-                self.ui.comboBox_mode_tracer.insertItem(-1, self.tr(u"Choisir ..."))
+                self.ui.comboBox_mode_tracer.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
                 for i in range(self.nb_de_points):
                     combo = self.ui.comboBox_mode_tracer
                     combo.addItem(QString("x%d(t)" % (i + 1)))
@@ -1276,9 +1278,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
             if itemChoisi <= 0: return  # c'est rien du tout.
             numero = (itemChoisi - 1) / 3
             typeDeCourbe = ("x", "y", "v")[(itemChoisi - 1) % 3]
-            titre = (self.tr(u"Evolution de l'abscisse du point %1").arg(numero + 1),
-                     self.tr(u"Evolution de l'ordonnée du point %1").arg(numero + 1),
-                     self.tr(u"Evolution de la vitesse du point %1").arg(numero + 1))[(itemChoisi - 1) % 3]
+            titre = (_translate("pymecavideo", "Evolution de l'abscisse du point %1", None).arg(numero + 1),
+                     _translate("pymecavideo", "Evolution de l'ordonnée du point %1", None).arg(numero + 1),
+                     _translate("pymecavideo", "Evolution de la vitesse du point %1", None).arg(numero + 1))[(itemChoisi - 1) % 3]
             abscisse = []
             ordonnee = []
             t = 0
@@ -1338,7 +1340,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
         Renseigne sur le numéro du point attendu
         affecte la ligne de statut et la ligne sous le zoom
         """
-        self.mets_a_jour_label_infos(self.tr(u"Pointage des positions : cliquer sur le point N° %1").arg(n))
+        self.mets_a_jour_label_infos(_translate("pymecavideo", "Pointage des positions : cliquer sur le point N° %1", None).arg(n))
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
@@ -1369,7 +1371,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
 
             elif self.index_de_l_image == self.image_max:
                 self.lance_capture = False
-                self.mets_a_jour_label_infos(self.tr(u"Vous avez atteint la fin de la vidéo"))
+                self.mets_a_jour_label_infos(_translate("pymecavideo", "Vous avez atteint la fin de la vidéo", None))
 
 
     def enableDefaire(self, value):
@@ -1512,8 +1514,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
         """
         self.dbg.p(1, "rentre dans 'demande_echelle'")
         echelle_result_raw = QInputDialog.getText(None,
-                                                  self.tr(u"Définir une échelle"),
-                                                  self.tr(u"Quelle est la longueur en mètre de votre étalon sur l'image ?"),
+                                                  _translate("pymecavideo", "Définir une échelle", None),
+                                                  _translate("pymecavideo", "Quelle est la longueur en mètre de votre étalon sur l'image ?", None),
                                                   QLineEdit.Normal, QString("1.0"))
         if echelle_result_raw[1] == False:
             return None
@@ -1521,7 +1523,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
             echelle_result = [float(echelle_result_raw[0].replace(",", ".")), echelle_result_raw[1]]
 
             if echelle_result[0] <= 0 or echelle_result[1] == False:
-                self.mets_a_jour_label_infos(self.tr(u" Merci d'indiquer une échelle valable"))
+                self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une échelle valable", None))
             else:
                 self.echelle_image.etalonneReel(echelle_result[0])
 
@@ -1529,7 +1531,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
                 self.job.setPixmap(QPixmap(self.chemin_image))
                 self.job.show()
         except ValueError:
-            self.mets_a_jour_label_infos(self.tr(u" Merci d'indiquer une échelle valable"))
+            self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une échelle valable", None))
             self.demande_echelle()
         self.ui.pushButton_video.setEnabled(0)
 
@@ -1585,8 +1587,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
     def verifie_donnees_sauvegardees(self):
         self.dbg.p(1, "rentre dans 'verifie_donnees_sauvegardees'")
         if self.modifie:
-            retour = QMessageBox.warning(self, QString(self.tr("Les données seront perdues")), \
-                                         QString(self.tr(u"Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?")),
+            retour = QMessageBox.warning(self, QString(_translate("pymecavideo", "Les données seront perdues", None)), \
+                                         QString(_translate("pymecavideo", "Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?", None)),
                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if retour == QMessageBox.Yes:
                 self.enregistre_ui()
@@ -1607,7 +1609,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
 
         elif self.index_de_l_image == 0:
             self.index_de_l_image = 1
-            self.mets_a_jour_label_infos(self.tr(u"Vous avez atteint le début de la vidéo"))
+            self.mets_a_jour_label_infos(_translate("pymecavideo", "Vous avez atteint le début de la vidéo", None))
             self.affiche_image()
 
     def mets_a_jour_label_infos(self, message):
@@ -1620,7 +1622,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
         self.dbg.p(1, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
         self.reinitialise_tout()
-        filename = QFileDialog.getOpenFileName(self, self.tr(u"Ouvrir une vidéo"), dir_, self.tr(u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)"))
+        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"), dir_, _translate("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)", None))
         self.openTheFile(filename)
 
     def openfile(self):
@@ -1629,7 +1631,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
         """
         self.dbg.p(1, "rentre dans 'openfile'")
         dir_ = self._dir("videos")
-        filename = QFileDialog.getOpenFileName(self, self.tr(u"Ouvrir une vidéo"), dir_, self.tr(u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)"))
+        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"), dir_, _translate("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)", None))
         self.openTheFile(filename)
         try:
             self.reinitialise_capture()
@@ -1638,12 +1640,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
 
     def renomme_le_fichier(self):
         self.dbg.p(1, "rentre dans 'renomme_le_fichier'")
-        renomme_fichier = QMessageBox.warning(self, self.tr(u"Nom de fichier non conforme"), \
-                                              self.tr(u"""\
+        renomme_fichier = QMessageBox.warning(self, _translate("pymecavideo", "Nom de fichier non conforme", None), \
+                                              _translate("pymecavideo", """\
 Le nom de votre fichier contient des caractères accentués ou des espaces.
-Merci de bien vouloir le renommer avant de continuer"""),
+Merci de bien vouloir le renommer avant de continuer""", None),
                                               QMessageBox.Ok, QMessageBox.Ok)
-        filename = QFileDialog.getOpenFileName(self, self.tr("Ouvrir une vidéo"), self._dir("videos"),
+        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"), self._dir("videos", None),
                                                "*.avi")
         self.openTheFile(filename)
 
@@ -1670,7 +1672,7 @@ Merci de bien vouloir le renommer avant de continuer"""),
                 self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
                 self.ui.menuE_xporter_vers.setEnabled(1)
                 self.ui.actionSaveData.setEnabled(1)
-                self.mets_a_jour_label_infos(self.tr(u"Veuillez choisir une image et définir l'échelle"))
+                self.mets_a_jour_label_infos(_translate("pymecavideo", "Veuillez choisir une image et définir l'échelle", None))
                 self.ui.Bouton_Echelle.setEnabled(True)
                 self.ui.spinBox_nb_de_points.setEnabled(True)
                 self.ui.horizontalSlider.setEnabled(1)
@@ -1704,7 +1706,7 @@ Merci de bien vouloir le renommer avant de continuer"""),
                 status, output = commands.getstatusoutput(command)
         else:
             QMessageBox.warning(None, "Aide",
-                                self.tr(u"Désolé pas de fichier d'aide pour le langage %1.").arg(lang))
+                                _translate("pymecavideo", "Désolé pas de fichier d'aide pour le langage %1.", None).arg(lang))
 
 
     def init_image(self):
