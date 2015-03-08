@@ -87,21 +87,24 @@ class Label_Video(QtGui.QLabel):
     def met_a_jour_crop(self):
         self.fait_crop(self.pos_avant)
 
-    def leaveEvent(self, envent):
+    def leaveEvent(self, event):
         if self.app.lance_capture == True:
             self.cache_zoom()
 
     def mouseMoveEvent(self, event):
-        if self.app.lance_capture == True and self.app.auto == False:  #ne se lance que si la capture est lancée
+        if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
             self.zoom_croix.show()
             self.pos = vecteur(event.x(), event.y())
             self.fait_crop(self.pos)
             self.app.ui.label_zoom.setPixmap(self.cropX2)
 
+
     def cache_zoom(self):
         pass
 
     def paintEvent(self, event):
+        self.fait_crop(self.pos)
+        self.app.ui.label_zoom.setPixmap(self.cropX2)
         self.painter = QPainter()
         self.painter.begin(self)
         try:
