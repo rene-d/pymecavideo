@@ -44,7 +44,7 @@ licence['fr'] = u"""
 #
 import sys
 # if sys.platform == "win32" or sys.argv[0].endswith(".exe"):
-#    import Error
+# import Error
 
 from vecteur import vecteur
 import os, thread, time, commands, linecache, codecs, re
@@ -264,6 +264,7 @@ class StartQT4(QMainWindow):
         self.opts = opts
         self.stdout_file = os.path.join(APP_DATA_PATH, "stdout")
         self.exitDecode = False
+        self.echelle_faite = False
 
         self.tousLesClics = listePointee()  # tous les clics faits sur l'image
 
@@ -278,7 +279,7 @@ class StartQT4(QMainWindow):
             self.ui.pushButton_video.setText(
                 _translate("pymecavideo", "Lancer %1\n pour capturer une vidéo", None)
                 .arg(self.logiciel_acquisition)
-                )
+            )
         else:
             self.ui.pushButton_video.setEnabled(0)
             self.ui.pushButton_video.hide()
@@ -402,7 +403,7 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'reinitialise_tout'")
         self.dbg.p(2,
                    "Dans reinitialise_tout: echelle_image=%s, nb_de_points=None%s, tousLesClics=%s,index_point_actuel=%s" % (
-                   echelle_image, nb_de_points, tousLesClics, index_point_actuel))
+                       echelle_image, nb_de_points, tousLesClics, index_point_actuel))
         self.montre_vitesses = False
         self.label_trajectoire.update()
         self.ui.label.update()
@@ -767,6 +768,7 @@ class StartQT4(QMainWindow):
         """
         self.dbg.p(1, "rentre dans 'oooCalc'")
         import oooexport
+
         calc = oooexport.Calc()
         calc.importPymeca(self)
 
@@ -850,7 +852,7 @@ class StartQT4(QMainWindow):
         self.cvReader = openCvReader(self.filename)
         time.sleep(0.1)
         if not self.cvReader.ok and (
-            "/".join(self.filename.split('/')[:-1]) != NEWVID_PATH):  #if video is ever encoded, don't get in
+                    "/".join(self.filename.split('/')[:-1]) != NEWVID_PATH):  #if video is ever encoded, don't get in
 
             sansSuffixe = os.path.basename(self.filename)
             match = re.match("(.*)\.(.*)$", sansSuffixe)
@@ -1329,7 +1331,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 styleTrace = "zero"
 
             if not hasattr(self, 'traceur'):
-                self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
+                self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
+                                         itemChoisi)
             else:  #mets juste à jour la fenêtre de matplotlib
                 self.traceur.update(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
 
@@ -1406,7 +1409,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.tousLesClics.append(self.label_video.liste_points)
             self.label_video.liste_points = []
             self.dbg.p(1, "self.nb_image_deja_analysees >= len(self.points) ? %s %s" % (
-            len(self.tousLesClics), len(self.points)))
+                len(self.tousLesClics), len(self.points)))
 
             if len(self.tousLesClics) == len(
                     self.points):  #update image only at last point. use to optimise undo/redo fucntions.
@@ -1777,7 +1780,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
 def usage():
     print (
-    "Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--maxi] [-d | --debug=verbosityLevel(1-3)] [nom_de_fichier_video.avi]")
+        "Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--maxi] [-d | --debug=verbosityLevel(1-3)] [nom_de_fichier_video.avi]")
 
 
 def run():

@@ -88,7 +88,7 @@ class Label_Echelle(QLabel):
         self.setMouseTracking(True)
         self.pressed = False
         try:
-            self.app.origine_trace.lower()  #origine definition is optionnal but hide scale if defined first
+            self.app.origine_trace.lower()  # origine definition is optionnal but hide scale if defined first
         except AttributeError:
             pass
         try:
@@ -109,7 +109,7 @@ class Label_Echelle(QLabel):
         painter.begin(self)
 
         painter.setPen(Qt.red)
-        if self.p1.x() >= 0:
+        if self.p1.x() > 0:
             painter.drawLine(self.p1.x(), self.p1.y(), self.p2.x(), self.p2.y())
         painter.end()
 
@@ -118,7 +118,7 @@ class Label_Echelle(QLabel):
         self.pos = vecteur(event.x(), event.y())
         self.fait_crop(self.pos)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
-
+        
         if self.pressed:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
             self.update()
@@ -142,7 +142,7 @@ class Label_Echelle(QLabel):
         self.app.p2 = self.p2.copy()
         epxParM = self.app.echelle_image.pxParM()
         self.app.affiche_echelle()
-        #self.app.affiche_nb_points(True)
+        # self.app.affiche_nb_points(True)
         self.app.mets_a_jour_label_infos(self.app.tr("Choisir le nombre de points puis « Démarrer l'acquisition » "))
 
         self.app.affiche_lance_capture(True)
@@ -152,6 +152,7 @@ class Label_Echelle(QLabel):
             self.app.affiche_nb_points(False)
             self.app.refait_echelle()
 
+        self.app.echelle_faite = True
         self.close()
 
 
