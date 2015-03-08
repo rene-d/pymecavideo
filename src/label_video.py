@@ -48,7 +48,7 @@ class Label_Video(QtGui.QLabel):
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
         self.setCursor(QtCore.Qt.ArrowCursor)
-        self.pos = self.pos_avant = vecteur(0, 0)
+        self.pos = self.pos_avant = vecteur(50, 50)
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
