@@ -41,7 +41,7 @@ class Label_Video(QtGui.QLabel):
         QtGui.QLabel.__init__(self, parent)
 
         self.setGeometry(QtCore.QRect(0, 0, 640, 480))
-        #self.setStyleSheet("background-color: grey");
+        # self.setStyleSheet("background-color: grey");
         self.parent = parent
         self.liste_points = []
         self.app = app
@@ -79,7 +79,7 @@ class Label_Video(QtGui.QLabel):
         self.storePoint(vecteur(event.x(), event.y()))
 
     def enterEvent(self, event):
-        if self.app.lance_capture == True and self.app.auto == False:  #ne se lance que si la capture est lancée
+        if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
             self.setCursor(QtCore.Qt.CrossCursor)
         else:
             self.setCursor(QtCore.Qt.ArrowCursor)
@@ -103,17 +103,20 @@ class Label_Video(QtGui.QLabel):
         pass
 
     def paintEvent(self, event):
-        self.fait_crop(self.pos)
-        self.app.ui.label_zoom.setPixmap(self.cropX2)
+
+        if self.app.echelle_faite:
+            self.fait_crop(self.pos)
+            self.app.ui.label_zoom.setPixmap(self.cropX2)
+
         self.painter = QPainter()
         self.painter.begin(self)
         try:
             self.painter.drawPixmap(self.decal.x(), self.decal.y(), self.pixmap())
-        except TypeError:  #pixmap is not declare yet
+        except TypeError:  # pixmap is not declare yet
             pass
 
         ############################################################
-        #paint the origin
+        # paint the origin
         self.painter.setPen(Qt.green)
         self.painter.drawLine(self.origine.x() - 5, self.origine.y(), self.origine.x() + 5, self.origine.y())
         self.painter.drawLine(self.origine.x(), self.origine.y() - 5, self.origine.x(), self.origine.y() + 5)

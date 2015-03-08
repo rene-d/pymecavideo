@@ -44,7 +44,7 @@ licence['fr'] = u"""
 #
 import sys
 # if sys.platform == "win32" or sys.argv[0].endswith(".exe"):
-#    import Error
+# import Error
 
 from vecteur import vecteur
 import os, thread, time, commands, linecache, codecs, re
@@ -263,6 +263,7 @@ class StartQT4(QMainWindow):
         self.opts = opts
         self.stdout_file = os.path.join(APP_DATA_PATH, "stdout")
         self.exitDecode = False
+        self.echelle_faite = False
 
         self.tousLesClics = listePointee()  # tous les clics faits sur l'image
 
@@ -277,7 +278,7 @@ class StartQT4(QMainWindow):
             self.ui.pushButton_video.setText(
                 self.tr(u"Lancer %1\n pour capturer une vidéo")
                 .arg(self.logiciel_acquisition)
-                )
+            )
         else:
             self.ui.pushButton_video.setEnabled(0)
             self.ui.pushButton_video.hide()
@@ -401,7 +402,7 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'reinitialise_tout'")
         self.dbg.p(2,
                    "Dans reinitialise_tout: echelle_image=%s, nb_de_points=None%s, tousLesClics=%s,index_point_actuel=%s" % (
-                   echelle_image, nb_de_points, tousLesClics, index_point_actuel))
+                       echelle_image, nb_de_points, tousLesClics, index_point_actuel))
         self.montre_vitesses = False
         self.label_trajectoire.update()
         self.ui.label.update()
@@ -766,6 +767,7 @@ class StartQT4(QMainWindow):
         """
         self.dbg.p(1, "rentre dans 'oooCalc'")
         import oooexport
+
         calc = oooexport.Calc()
         calc.importPymeca(self)
 
@@ -849,7 +851,7 @@ class StartQT4(QMainWindow):
         self.cvReader = openCvReader(self.filename)
         time.sleep(0.1)
         if not self.cvReader.ok and (
-            "/".join(self.filename.split('/')[:-1]) != NEWVID_PATH):  #if video is ever encoded, don't get in
+                    "/".join(self.filename.split('/')[:-1]) != NEWVID_PATH):  #if video is ever encoded, don't get in
 
             sansSuffixe = os.path.basename(self.filename)
             match = re.match("(.*)\.(.*)$", sansSuffixe)
@@ -1108,7 +1110,7 @@ class StartQT4(QMainWindow):
         #######automatic capture
         if self.ui.checkBox_auto.isChecked():
             self.auto = True
-            reponse = QMessageBox.warning(None, "Capture Automatique", 
+            reponse = QMessageBox.warning(None, "Capture Automatique",
                                           self.tr(u"""\
 Veuillez sélectionner un cadre autour de(s) l'objet(s) que vous voulez suivre.
 Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
@@ -1327,7 +1329,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
                 styleTrace = "zero"
 
             if not hasattr(self, 'traceur'):
-                self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
+                self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
+                                         itemChoisi)
             else:  #mets juste à jour la fenêtre de matplotlib
                 self.traceur.update(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
 
@@ -1404,7 +1407,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
                 self.tousLesClics.append(self.label_video.liste_points)
             self.label_video.liste_points = []
             self.dbg.p(1, "self.nb_image_deja_analysees >= len(self.points) ? %s %s" % (
-            len(self.tousLesClics), len(self.points)))
+                len(self.tousLesClics), len(self.points)))
 
             if len(self.tousLesClics) == len(
                     self.points):  #update image only at last point. use to optimise undo/redo fucntions.
@@ -1513,7 +1516,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
         self.dbg.p(1, "rentre dans 'demande_echelle'")
         echelle_result_raw = QInputDialog.getText(None,
                                                   self.tr(u"Définir une échelle"),
-                                                  self.tr(u"Quelle est la longueur en mètre de votre étalon sur l'image ?"),
+                                                  self.tr(
+                                                      u"Quelle est la longueur en mètre de votre étalon sur l'image ?"),
                                                   QLineEdit.Normal, QString("1.0"))
         if echelle_result_raw[1] == False:
             return None
@@ -1586,7 +1590,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
         self.dbg.p(1, "rentre dans 'verifie_donnees_sauvegardees'")
         if self.modifie:
             retour = QMessageBox.warning(self, QString(self.tr("Les données seront perdues")), \
-                                         QString(self.tr(u"Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?")),
+                                         QString(self.tr(
+                                             u"Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?")),
                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if retour == QMessageBox.Yes:
                 self.enregistre_ui()
@@ -1620,7 +1625,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
         self.dbg.p(1, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
         self.reinitialise_tout()
-        filename = QFileDialog.getOpenFileName(self, self.tr(u"Ouvrir une vidéo"), dir_, self.tr(u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)"))
+        filename = QFileDialog.getOpenFileName(self, self.tr(u"Ouvrir une vidéo"), dir_, self.tr(
+            u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)"))
         self.openTheFile(filename)
 
     def openfile(self):
@@ -1629,7 +1635,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton"""),
         """
         self.dbg.p(1, "rentre dans 'openfile'")
         dir_ = self._dir("videos")
-        filename = QFileDialog.getOpenFileName(self, self.tr(u"Ouvrir une vidéo"), dir_, self.tr(u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)"))
+        filename = QFileDialog.getOpenFileName(self, self.tr(u"Ouvrir une vidéo"), dir_, self.tr(
+            u"fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)"))
         self.openTheFile(filename)
         try:
             self.reinitialise_capture()
@@ -1775,7 +1782,7 @@ Merci de bien vouloir le renommer avant de continuer"""),
 
 def usage():
     print (
-    "Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--maxi] [-d | --debug=verbosityLevel(1-3)] [nom_de_fichier_video.avi]")
+        "Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--maxi] [-d | --debug=verbosityLevel(1-3)] [nom_de_fichier_video.avi]")
 
 
 def run():
