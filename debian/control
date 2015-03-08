@@ -6,13 +6,13 @@ Build-Depends: debhelper (>= 7.0.50~), python-all (>=2.6.6-3 ),
  python-qt4-dev, libqt4-dev, pyqt4-dev-tools, xsltproc, docbook-xsl,
  librsvg2-bin|inkscape, wget, quilt
 X-Python-Version: >= 2.5
-Standards-Version: 3.9.3
+Standards-Version: 3.9.7
 
 Package: python-mecavideo
 Architecture: all
 Depends: ${python:Depends}, ${misc:Depends}, iceweasel|www-browser, 
  python-qt4, xdg-utils, evince|postscript-viewer, python-opencv(>=2.1),
- python-matplotlib, shared-mime-info
+ python-matplotlib, python-odf, python-pyqtgraph, shared-mime-info
 Recommends: mencoder, mplayer|vlc|xine
 Suggests: transcode
 Description: pedagogic tool to analyze video records for mechanics

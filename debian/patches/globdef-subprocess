@@ -24,20 +24,21 @@ Forwarded: <no|not-needed|url proving that it has been forwarded>
 Reviewed-By: <name and email of someone who approved the patch>
 Last-Update: <YYYY-MM-DD>
 
---- pymecavideo-5.5.orig/src/globdef.py
-+++ pymecavideo-5.5/src/globdef.py
-@@ -41,7 +41,7 @@ licence['fr']=u"""
- """
+Index: pymecavideo-6.1a/src/globdef.py
+===================================================================
+--- pymecavideo-6.1a.orig/src/globdef.py
++++ pymecavideo-6.1a/src/globdef.py
+@@ -42,6 +42,7 @@ licence['fr'] = u"""
  
+ import sys
+ import os
++import subprocess
  
--import sys, os
-+import sys, os, os.path, subprocess
  from PyQt4.QtGui import QDesktopServices
- #from PyQt4.QtGui import *
  
-@@ -95,6 +95,8 @@ if sys.platform == 'win32':
+@@ -98,6 +99,8 @@ if sys.platform == 'win32':
  else:
-     datalocation=os.path.join("%s"%QDesktopServices.storageLocation(QDesktopServices.DataLocation),"pymecavideo")
+     datalocation = os.path.join("%s" % QDesktopServices.storageLocation(QDesktopServices.DataLocation), "pymecavideo")
      PATH = APP_DATA_PATH = datalocation
 +    if not os.path.exists(datalocation):
 +        subprocess.call("mkdir -p %s" %datalocation, shell=True)

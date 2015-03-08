@@ -1,19 +1,23 @@
+Index: pymecavideo-6.1a/pymecavideo
+===================================================================
 --- /dev/null
-+++ b/pymecavideo
++++ pymecavideo-6.1a/pymecavideo
 @@ -0,0 +1,5 @@
 +#!/usr/bin/python
 +
 +import pymecavideo.pymecavideo
 +
 +pymecavideo.pymecavideo.run()
+Index: pymecavideo-6.1a/pymecavideo.desktop
+===================================================================
 --- /dev/null
-+++ b/pymecavideo.desktop
++++ pymecavideo-6.1a/pymecavideo.desktop
 @@ -0,0 +1,14 @@
 +[Desktop Entry]
 +Encoding=UTF-8
 +Version=1.0
 +Type=Application
-+Exec=/usr/bin/pymecavideo
++Exec=/usr/bin/pymecavideo %f
 +Icon=/usr/share/pixmaps/pymecavideo-48.png
 +MimeType=application/x-pymecavideo;
 +Terminal=false

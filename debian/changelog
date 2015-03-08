@@ -1,3 +1,20 @@
+pymecavideo (6.2a-1) UNRELEASED; urgency=medium
+
+  * upgraded to the new upstream version
+  * added the dependency python-pyqtgraph
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 08 Mar 2015 11:51:44 +0100
+
+pymecavideo (6.1a-1) unstable; urgency=medium
+
+  * upgraded to the new upstream version
+  * modified the way used to extract the version number, to avoid doubles
+  * upgraded Standards-Version to 3.9.7
+  * added a dependency on python-odf
+  * fixed errors in oooexport.py
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 07 Mar 2015 17:49:29 +0100
+
 pymecavideo (6.1-1) unstable; urgency=low
 
   * changed my DEBEMAIL
@@ -8,7 +25,7 @@ pymecavideo (6.1-1) unstable; urgency=low
 
 pymecavideo (6.0-6) unstable; urgency=low
 
-  * fixed a bad invocation of Zoom_Croix(), thanks to 
+  * fixed a bad invocation of Zoom_Croix(), thanks to
     thomas.lavarenne@free.fr's bug report
 
  -- Georges Khaznadar <georgesk@ofset.org>  Fri, 12 Oct 2012 10:57:13 +0200
