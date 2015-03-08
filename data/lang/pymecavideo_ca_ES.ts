@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1">
+<!DOCTYPE TS><TS version="2.0">
 <context>
     <name>pymecavideo</name>
     <message encoding="UTF-8">
@@ -298,17 +298,17 @@ la souris</source>
 <context>
     <name>self.app</name>
     <message>
-        <location filename="cadreur.py" line="48"/>
+        <location filename="cadreur.py" line="56"/>
         <source>Presser la touche ESC pour sortir</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="echelle.py" line="142"/>
+        <location filename="echelle.py" line="146"/>
         <source>Choisir le nombre de points puis &#xc2;&#xab;&#xc2;&#xa0;D&#xc3;&#xa9;marrer l&apos;acquisition&#xc2;&#xa0;&#xc2;&#xbb; </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="echelle.py" line="147"/>
+        <location filename="echelle.py" line="151"/>
         <source>Vous pouvez continuer votre acquisition</source>
         <translation type="unfinished"></translation>
     </message>
