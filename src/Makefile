@@ -5,6 +5,7 @@ LRELEASE = lrelease-qt4
 all:	Ui_pymecavideo.py Ui_pymecavideo_mini.py helpfiles languages
 
 languages:
+	pylupdate4 pymecavideo_project.pro
 	lrelease ../data/lang/*.ts
 
 helpfiles:
