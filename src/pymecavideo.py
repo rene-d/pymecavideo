@@ -75,7 +75,9 @@ import qtiplotexport
 from subprocess import *
 import re
 
-from mpl import traceur2d
+from mpl import traceur2d, MyMplCanvas
+# on préfèrera définitivement le module mpl au module traceur ?
+#from traceur import traceur2d
 
 import threading
 import platform, subprocess
@@ -1340,6 +1342,8 @@ class StartQT4(QMainWindow):
             else:  # type de courbe "v""
                 styleTrace = "zero"
 
+            if not hasattr(self, 'canvas'):
+                self.canvas = MyMplCanvas(None)
             if not hasattr(self, 'traceur'):
                 self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
                                          itemChoisi)
