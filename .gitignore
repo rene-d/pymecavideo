@@ -3,3 +3,5 @@
 *.qm
 *.pyc
 Ui_*
+*.1
+*.xhtml
