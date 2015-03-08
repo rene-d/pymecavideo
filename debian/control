@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 7.0.50~), python-all (>=2.6.6-3 ),
  python-qt4-dev, libqt4-dev, pyqt4-dev-tools, xsltproc, docbook-xsl,
  librsvg2-bin|inkscape, wget, quilt
 X-Python-Version: >= 2.5
-Standards-Version: 3.9.7
+Standards-Version: 3.9.6
 
 Package: python-mecavideo
 Architecture: all
