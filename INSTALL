@@ -2,7 +2,11 @@ Pour installer pymecavideo.
 
 1) le plus simple
 Utiliser un paquet pour votre distribution Linux.
-Pour cela RDV sur http://outilsphysiques.tuxfamily.org
+
+Pour cela RDV sur http://outilsphysiques.tuxfamily.org, ou encore,
+vous avez des paquets disponible dans les dépôts officiels de
+Debian, d'Ubuntu et d'autres distributions dérivées. Ceux-là sont
+maintenus par Georges Khaznadar <georgesk@debian.org>.
 
 2) installation depuis le git :
 https://gitlab.com/oppl/pymecavideo
@@ -14,6 +18,7 @@ puis vérifiez que soit installés :
 -> ffmpeg
 -> python-opencv
 -> python-odf
+-> python-pyqtgraph
 optionnels mais utiles: 
 gnuplot, ffplay, mplayer
 

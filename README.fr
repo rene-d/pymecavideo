@@ -7,18 +7,13 @@ Installation :
     Pymecavideo nécessite 4 dépendances :
         PyQT4 : python-qt4  (-devel si vous utilisez le svn)
         python-opencv
-        python-matplotlib
+        python-pyqtgraph
 	python-odf (ou odfpy)
 
 Contribuer :
-Pymecavideo a été en premier lieu écrit en français et n'a, a l'heure
-d'aujourd'hui pas la prétention d'être porté en anglais, que ce soit
-les commentaires de code ou le code en lui-même.
-
-Par contre, l'internationalisation pour l'utilisateur est effective
-grâce aux outils de traduction intégés à PyQT4
-
-Si le besoin s'en fait sentir, le logiciel sera modifié en conséquence.
+Pymecavideo a été en premier lieu écrit en français : le code est
+documenté en français, il est internationalisé et des fichiers de
+localisation existent en anglais, espagnol et catalan.
 
 Cependant, si vous voulez contribuer et formuler des patch, merci de
 mettre vos variables avec des noms français ou francisés :
@@ -30,16 +25,9 @@ https://gitlab.com/oppl/pymecavideo
 Toute la gestion des bugs se fait pr gitlab
 https://gitlab.com/oppl/pymecavideo/issues
 
-pour l'installer : des paquets deb et RPMS sont disponibles sur le site. Voir le fichier INSTALL 
+pour l'installer : Voir le fichier INSTALL 
 
 Enjoy :=)
 
 JB BUTET <ashashiwa@gmail.com>
 
-Il y a un empaquetage Debian, disponible dans les dépôts officiels de
-Debian, d'Ubuntu et d'autres distributions dérivées.
-
-La méthode habituelle pour installer ces paquets fait appel à un
-programme gestionnaire de paquets, qui vient avec la distribution..
-
-Georges Khaznadar <georgesk@debian.org>
