@@ -1,4 +1,10 @@
-pymecavideo (6.2a-1) UNRELEASED; urgency=medium
+pymecavideo (6.2b-1) UNRELEASED; urgency=medium
+
+  * upgraded to the new upstream version
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 08 Mar 2015 18:59:01 +0100
+
+pymecavideo (6.2a-1) unstable; urgency=medium
 
   * upgraded to the new upstream version
   * added the dependency python-pyqtgraph

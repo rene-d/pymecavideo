@@ -15,7 +15,6 @@ pymecavideo.1: manpage.xml
 	xsltproc --nonet /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl manpage.xml
 
 clean:
-	rm -f make_exe.py  src/make_exe.py
 	rm -rf build
 	rm -f video_*.jpg *~ src/Ui_* src/*.pyc *.txt *.1 data/lang/*.qm
 	make -C data/help clean
