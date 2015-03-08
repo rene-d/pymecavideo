@@ -296,7 +296,7 @@ class StartQT4(QMainWindow):
                 break
         if self.logiciel_acquisition:
             self.ui.pushButton_video.setText(
-                self.tr(QString(u"Lancer " + self.logiciel_acquisition + "\n pour capturer une vidéo")))
+                self.tr(QString(u"Lancer " + self.logiciel_acquisition + u"\n pour capturer une vidéo")))
         else:
             self.ui.pushButton_video.setEnabled(0)
             self.ui.pushButton_video.hide()
