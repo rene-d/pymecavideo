@@ -180,15 +180,6 @@ class StartQT4(QMainWindow):
         refait_icon = os.path.join(self._dir("icones"), "redo.png")
         self.ui.pushButton_refait.setIcon(QIcon(refait_icon))
 
-        #Openoffice.org export
-        try:
-            import oooexport
-
-            self.pyuno = True
-            self.dbg.p(2, "In init_variables pyuno package found")
-        except ImportError:
-            self.dbg.p(2, "In init_variables no pyuno package")
-            self.pyuno = False
         #variables à initialiser
         #disable UI at beginning
         self.ui.tabWidget.setEnabled(0)
@@ -296,7 +287,7 @@ class StartQT4(QMainWindow):
                 break
         if self.logiciel_acquisition:
             self.ui.pushButton_video.setText(
-                self.tr(QString(u"Lancer " + self.logiciel_acquisition + "\n pour capturer une vidéo")))
+                self.tr(QString(u"Lancer {0}\n pour capturer une vidéo".format(self.logiciel_acquisition))))
         else:
             self.ui.pushButton_video.setEnabled(0)
             self.ui.pushButton_video.hide()
@@ -339,8 +330,6 @@ class StartQT4(QMainWindow):
         self.ui.radioButtonNearMouse.hide()
         self.ui.radioButtonSpeedEveryWhere.hide()
 
-        if not self.pyuno:
-            self.desactiveExport("Oo.o Calc")
         if not self.qtiplot_present:
             self.desactiveExport("Qtiplot")
         if not self.scidavis_present:
@@ -792,8 +781,7 @@ class StartQT4(QMainWindow):
         Exporte directement les données vers OpenOffice.org Calc
         """
         self.dbg.p(1, "rentre dans 'oooCalc'")
-        if self.pyuno == True:
-            import oooexport
+        import oooexport
         calc = oooexport.Calc()
         calc.importPymeca(self)
 
