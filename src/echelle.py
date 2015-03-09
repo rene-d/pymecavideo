@@ -118,7 +118,7 @@ class Label_Echelle(QLabel):
         self.pos = vecteur(event.x(), event.y())
         self.fait_crop(self.pos)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
-        
+
         if self.pressed:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
             self.update()
