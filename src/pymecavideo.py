@@ -103,11 +103,15 @@ class MonThreadDeCalcul(QThread):
 
 
     def run(self):
-        #print "run"
+        """
+        lance le thread.
+        stocke les corrdonnées des points trouvés
+        Envoi un signal quand terminé.
+        """
         self.pointFound = filter_picture(self.motif, self.image)
-        #print "passé à self OK"
+
         self.emit(SIGNAL('pointFind()'))
-        #print "emit OK"
+
 
 
 class StartQT4(QMainWindow):
@@ -573,6 +577,12 @@ class StartQT4(QMainWindow):
 
 
     def picture_detect(self):
+        """
+        Est lancée lors de la détection automatique des points. Gère l'ajout des thread de calcul.
+        self.myThreads : tableau contenant les thread
+        self.motifs : tableau des motifs
+
+        """
         self.dbg.p(1, "rentre dans 'picture_detect'")
 
         if self.index_de_l_image < self.image_max:
@@ -602,6 +612,10 @@ class StartQT4(QMainWindow):
 
 
     def onePointFind(self):
+        """est appelée quand un point a été trouvé lors de la détection automatique
+        self.pointFound : liste des points trouvés
+        """
+
         self.dbg.p(1, "rentre dans 'onePointFind'")
 
         self.myThreadsDone += 1  #allow counting finished threads
@@ -1625,7 +1639,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
         self.reinitialise_tout()
-        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"), dir_, _translate("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)", None))
+        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"), dir_, _translate("pymecavideo","fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)", None))
         self.openTheFile(filename)
 
     def openfile(self):
@@ -1634,7 +1648,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'openfile'")
         dir_ = self._dir("videos")
-        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"), dir_, _translate("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)", None))
+        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo",None), dir_, _translate("pymecavideo","fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)", None))
         self.openTheFile(filename)
         try:
             self.reinitialise_capture()

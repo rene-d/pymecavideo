@@ -48,11 +48,10 @@ def filter_picture(part, image):
         image = cv.LoadImage(img, 1)
         part = cv.LoadImage(partImg, 1)
         point1, point2 = detect_part(part, image)
-        # print point2
         os.remove(img)
         os.remove(partImg)
         os.remove(imgPref)
-        return point2
+        return (point2[0]+part.width/2, point2[1]+part.height/2)
 
     else:
         return "Type Error"
