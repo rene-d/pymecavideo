@@ -10,6 +10,10 @@ Installation :
         python-pyqtgraph
 	python-odf (ou odfpy)
 
+Si pyqtgraph n'est pas packagé, il est très facile de l'installer : 
+pip install pyqtgraph
+
+
 Contribuer :
 Pymecavideo a été en premier lieu écrit en français : le code est
 documenté en français, il est internationalisé et des fichiers de
