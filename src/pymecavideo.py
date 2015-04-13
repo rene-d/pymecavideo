@@ -95,8 +95,11 @@ class MonThreadDeCalcul(QThread):
     """mon Thread"""
 
     def __init__(self, parent, motif, image):
+
         QThread.__init__(self)
+
         self.parent = parent
+        self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
         self.motif = motif
         self.image = image
         time.sleep(0.1)
@@ -108,9 +111,10 @@ class MonThreadDeCalcul(QThread):
         stocke les corrdonnées des points trouvés
         Envoi un signal quand terminé.
         """
-        self.pointFound = filter_picture(self.motif, self.image)
 
-        self.emit(SIGNAL('pointFind()'))
+        self.pointTrouve = filter_picture(self.motif, self.image)
+        self.parent.dbg.p(3, "Point Trouve dans mon Thread : "+str(self.pointTrouve))
+        self.emit(SIGNAL('pointTrouve()'))
 
 
 
@@ -271,6 +275,8 @@ class StartQT4(QMainWindow):
         self.echelle_faite = False
 
         self.tousLesClics = listePointee()  # tous les clics faits sur l'image
+
+        self.goCalcul = True  #Booléen vérifiant la disponibilté du thread de calcul
 
 
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
@@ -573,6 +579,7 @@ class StartQT4(QMainWindow):
             self.dbg.p(3, "selection des motifs finie")
             self.label_auto.hide()
             self.label_auto.close()
+            self.indexMotif = 0
             self.picture_detect()
 
 
@@ -584,30 +591,43 @@ class StartQT4(QMainWindow):
 
         """
         self.dbg.p(1, "rentre dans 'picture_detect'")
+        self.dbg.p(3, "début 'picture_detect'"+str(self.indexMotif))
 
         if self.index_de_l_image < self.image_max:
-            self.iterateMotif = 0
+            # self.iterateMotif = 0
             self.pointsFound = []
-            for motif in self.motif:
-                if self.auto:
+
+            while self.indexMotif < len(self.motif) and self.goCalcul:
+                self.dbg.p(1, "'picture_detect' : While")
+                if self.auto: #TODO : a vérifier si besoin
+                    self.goCalcul=False
                     self.ui.pushButton_video.setText("STOP CALCULS")
                     self.ui.pushButton_video.setEnabled(1)
                     self.ui.pushButton_video.show()
                     self.ui.pushButton_video.setFocus()
 
-                    self.myThreadsDone = 0
-
-                    self.myThreads.append(MonThreadDeCalcul(self, motif, self.image_640_480))
-                    QObject.connect(self.myThreads[self.iterateMotif], SIGNAL('pointFind()'), self.onePointFind)
-                    self.myThreads[self.iterateMotif].start()
-
-                    self.iterateMotif += 1
-
+                    self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.image_640_480)
+                    QObject.connect(self.monThread, SIGNAL('pointTrouve()'), self.onePointFind)
+                    self.monThread.start()
+                    # self.myThreadsDone = 0
+                    # self.myThreads.append(MonThreadDeCalcul(self, motif, self.image_640_480))
+                    # QObject.connect(self.myThreads[self.iterateMotif], SIGNAL('pointTrouve)'), self.onePointFind)
+                    # self.myThreads[self.iterateMotif].start()
+                    # self.iterateMotif += 1
+            if self.indexMotif==(len(self.motif)-1):
+                    self.indexMotif = -1
 
     def stopComputing(self):
         self.dbg.p(1, "rentre dans 'stopComputing'")
 
         self.auto = False
+        self.goCalcul = False
+        try :
+            self.monThread.terminate()
+            del self.monThread
+        except NameError:
+            pass
+
         self.ui.pushButton_video.hide()
 
 
@@ -617,22 +637,20 @@ class StartQT4(QMainWindow):
         """
 
         self.dbg.p(1, "rentre dans 'onePointFind'")
-
-        self.myThreadsDone += 1  #allow counting finished threads
+        self.indexMotif+=1
         if self.index_de_l_image <= self.image_max:
-            if self.myThreadsDone == self.nb_de_points:  #if all threads are finished
-                for thread in self.myThreads:
-                    self.pointsFound.append(thread.pointFound)  #stock all points found
-                    thread.terminate()
-                    del thread
 
-                self.myThreads = []  #reinit thread. Hack. del is to slow.
-                for point in self.pointsFound:
-                    self.label_video.storePoint(vecteur(point[0], point[1]))
+            self.pointsFound.append(self.monThread.pointTrouve)  #stock all points found
+            self.monThread.terminate()
+            del self.monThread
+            #if self.indexMotif==len(self.motif):  #if all threads are finished
+            for point in self.pointsFound:
+                self.label_video.storePoint(vecteur(point[0], point[1]))
 
-                self.label_video.repaint()
-                self.clic_sur_label_video()
-                self.picture_detect()
+            self.label_video.repaint()
+            self.clic_sur_label_video()
+            self.goCalcul=True
+            self.picture_detect()
 
         if self.index_de_l_image == self.image_max:
             self.ui.pushButton_video.setEnabled(0)
