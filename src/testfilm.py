@@ -50,8 +50,8 @@ class film:
             pass
         except ZeroDivisionError:
             pass
-        if self.filename.split('.')[-1].lower() == "ogv":  # never work with ogv. need encoding.
-            self.ok = False
+        #if self.filename.split('.')[-1].lower() == "ogv":  # never work with ogv. need encoding.
+        #    self.ok = False
 
     def __int__(self):
         return int(self.ok)

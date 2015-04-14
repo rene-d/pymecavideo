@@ -195,6 +195,7 @@ class openCvReader:
         import testfilm
 
         self.ok = testfilm.film(self.filename).ok
+        print "#############"+str(self.ok)
 
     #        else:
     #            cmd="python %s %s" %(os.path.join(PYMECA_SHARE, 'testfilm.py'),

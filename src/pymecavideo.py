@@ -600,7 +600,7 @@ class StartQT4(QMainWindow):
 
             while self.indexMotif < len(self.motif) and self.goCalcul:
                 self.dbg.p(1, "'picture_detect' : While")
-                if self.auto:  #TODO : a vérifier si besoin
+                if self.auto:
                     self.goCalcul = False
                     self.ui.pushButton_video.setText("STOP CALCULS")
                     self.ui.pushButton_video.setEnabled(1)
