@@ -5,7 +5,7 @@ import sys
 import threading
 import os.path
 
-import cv
+import cv2.cv as cv
 
 
 class film:
@@ -25,10 +25,10 @@ class film:
         self.filename = filename
         try:
             self.filesize = os.path.getsize(self.filename.encode('utf8'))
-            self.capture = cv.CreateFileCapture(self.filename.encode('utf8'))
+            self.capture = cv.CaptureFromFile(self.filename.encode('utf8'))
         except WindowsError:
             self.filesize = os.path.getsize(self.filename.encode('cp1252'))
-            self.capture = cv.CreateFileCapture(self.filename.encode('cp1252'))
+            self.capture = cv.CaptureFromFile(self.filename.encode('cp1252'))
 
         t = threading.Thread(target=self.autoTest)
         t.start()

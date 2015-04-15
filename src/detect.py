@@ -23,8 +23,8 @@
 import os.path
 import tempfile
 
-import cv
-from cv import *
+import cv2.cv as cv
+import cv2
 
 from globdef import *
 
@@ -35,8 +35,8 @@ def filter_picture(part, image):
 
     img = os.path.join(imgPref + "image.png")
     if type(image) == type("") and type(part) == type(""):
-        image = cv.LoadImage(image, 1)
-        part = cv.LoadImage(part, 1)
+        image = cv.imread(image, 1)
+        part = cv.imread(part, 1)
         point1, point2 = detect_part(part, image)
         return point2
     elif "iplimage" in str(type(part)) and "iplimage" in str(type(image)):
@@ -45,22 +45,19 @@ def filter_picture(part, image):
     elif "QImage" in str(type(part)) and "QImage" in str(type(image)):
         part.save(partImg)
         image.save(img)
-        image = cv.LoadImage(img, 1)
-        part = cv.LoadImage(partImg, 1)
+        image = cv2.imread(img, 1)
+        part = cv2.imread(partImg, 1)
         point1, point2 = detect_part(part, image)
         os.remove(img)
         os.remove(partImg)
         os.remove(imgPref)
-        return (point2[0]+part.width/2, point2[1]+part.height/2)
+        return (point2[0]+part.shape[1]/2, point2[1]+part.shape[0]/2)
 
     else:
         return "Type Error"
 
 
 def detect_part(part, image):
-    resultW = image.width - part.width + 1
-    resultH = image.height - part.height + 1
-    result = cv.CreateImage((resultW, resultH), IPL_DEPTH_32F, 1)
-    cv.MatchTemplate(image, part, result, cv.CV_TM_SQDIFF)
-    m, M, point2, point1 = cv.MinMaxLoc(result)
+    result = cv2.matchTemplate(image, part, cv.CV_TM_SQDIFF)
+    m, M, point2, point1 = cv2.minMaxLoc(result)
     return point1, point2
