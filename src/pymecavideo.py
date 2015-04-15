@@ -141,6 +141,7 @@ class StartQT4(QMainWindow):
         self.plein_ecran = False
         QShortcut(QKeySequence(Qt.Key_F11), self, self.basculer_plein_ecran)
 
+
         height, width = QDesktopWidget().screenGeometry().height(), QDesktopWidget().screenGeometry().width()
 
         if height >= 768 and width >= 1024 and self.mini == False:
@@ -607,11 +608,11 @@ class StartQT4(QMainWindow):
                     self.ui.pushButton_video.show()
                     self.ui.pushButton_video.setFocus()
 
-                    self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.image_640_480)
+                    self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee)
                     QObject.connect(self.monThread, SIGNAL('pointTrouve()'), self.onePointFind)
                     self.monThread.start()
                     # self.myThreadsDone = 0
-                    # self.myThreads.append(MonThreadDeCalcul(self, motif, self.image_640_480))
+                    # self.myThreads.append(MonThreadDeCalcul(self, motif, self.imageAffichee))
                     # QObject.connect(self.myThreads[self.iterateMotif], SIGNAL('pointTrouve)'), self.onePointFind)
                     # self.myThreads[self.iterateMotif].start()
                     # self.iterateMotif += 1
@@ -1511,11 +1512,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'affiche_image'")
         self.extract_image(self.filename, self.index_de_l_image)
         image = QImage(self.chemin_image)
-        self.image_640_480 = image.scaled(640, 480, Qt.KeepAspectRatio)
+
+
+        self.imageAffichee = image.scaled(640, 480, Qt.KeepAspectRatio)
         #        try :
         if hasattr(self, "label_video"):
             self.label_video.setMouseTracking(True)
-            self.label_video.setPixmap(QPixmap.fromImage(self.image_640_480))
+            self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
             self.label_video.met_a_jour_crop()
             self.label_video.update()
 

@@ -44,11 +44,14 @@ class film:
             self.fps = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FPS)
             self.framecount = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_COUNT)
             assert 1.0 * self.filesize / self.framecount > 1800.0, "fichier aberrant en taille"
+            print "##############"+str(self.fps)+str(self.framecount)
             self.ok = True
         except AssertionError:
-
+            print "assertion"+str(self.fps)+str(self.framecount)
             pass
         except ZeroDivisionError:
+            print "szero"+str(self.fps)+str(self.framecount)
+
             pass
         #if self.filename.split('.')[-1].lower() == "ogv":  # never work with ogv. need encoding.
         #    self.ok = False

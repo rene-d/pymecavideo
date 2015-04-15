@@ -78,7 +78,7 @@ class Label_Auto(QLabel):
         #dimension_motif=20
         #rectangle = QRect((self.x_1+self.x_2-dimension_motif)/2,(self.y_1+self.y_2-dimension_motif)/2,dimension_motif,dimension_motif)
         rectangle = QRect(self.x_1, self.y_1, self.x_2 - self.x_1, self.y_2 - self.y_1)
-        return self.app.image_640_480.copy(rectangle)
+        return self.app.imageAffichee.copy(rectangle)
 
 
     def paintEvent(self, event):
