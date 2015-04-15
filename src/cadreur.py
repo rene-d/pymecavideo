@@ -28,7 +28,7 @@ import re
 import subprocess
 import shutil
 
-import cv
+import cv2.cv as cv
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
