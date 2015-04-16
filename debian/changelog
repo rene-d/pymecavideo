@@ -1,4 +1,10 @@
-pymecavideo (6.2c-1) UNRELEASED; urgency=medium
+pymecavideo (6.2cRC2-1) unstable; urgency=medium
+
+  * upgraded to the new upstream version
+
+ -- Georges Khaznadar <georgesk@debian.org>  Thu, 16 Apr 2015 16:04:15 +0200
+
+pymecavideo (6.2cRC1-1) unstable; urgency=medium
 
   * upgraded to the new upstream version
 
