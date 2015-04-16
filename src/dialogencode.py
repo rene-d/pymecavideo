@@ -143,7 +143,7 @@ class QMessageBoxEncode(QProgressDialog):
 
         QProgressDialog.__init__(self, app)
         self.setLabelText(
-            "La vidéo n'est pas compatible avec Pymecavideo.\nPymecavideo l'encode dans un autre format.\n Ceci peut prendre un peu de temps");
+            u"La vidéo n'est pas compatible avec Pymecavideo.\nPymecavideo l'encode dans un autre format.\n Ceci peut prendre un peu de temps");
         self.setCancelButtonText(QString())
         self.setMaximum(100)
         self.setMinimum(0)
