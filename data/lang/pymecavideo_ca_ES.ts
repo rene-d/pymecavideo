@@ -68,7 +68,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo.py" line="380"/>
+        <location filename="pymecavideo.py" line="392"/>
         <source>indéf.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -140,7 +140,7 @@ la souris</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1264"/>
+        <location filename="pymecavideo.py" line="1300"/>
         <source>Choisir ...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -295,127 +295,137 @@ la souris</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="278"/>
+        <location filename="pymecavideo.py" line="290"/>
         <source>Lancer %1
  pour capturer une vid&#xc3;&#xa9;o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="309"/>
+        <location filename="pymecavideo.py" line="321"/>
         <source>ind&#xc3;&#xa9;f</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="353"/>
+        <location filename="pymecavideo.py" line="365"/>
         <source>NON DISPO : %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="870"/>
+        <location filename="pymecavideo.py" line="905"/>
         <source>Ouvrir un projet Pymecavideo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="870"/>
+        <location filename="pymecavideo.py" line="905"/>
         <source>fichiers pymecavideo(*.csv)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1042"/>
+        <location filename="pymecavideo.py" line="1078"/>
         <source>temps en seconde, positions en m&#xc3;&#xa8;tre</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1105"/>
+        <location filename="pymecavideo.py" line="1141"/>
         <source>point N&#xc2;&#xb0; %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1116"/>
+        <location filename="pymecavideo.py" line="1152"/>
         <source>Veuillez s&#xc3;&#xa9;lectionner un cadre autour de(s) l&apos;objet(s) que vous voulez suivre.
 Vous pouvez arr&#xc3;&#xaa;ter &#xc3;&#xa0; tous moments la capture en appuyant sur le bouton</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1285"/>
+        <location filename="pymecavideo.py" line="1321"/>
         <source>Evolution de l&apos;abscisse du point %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1285"/>
+        <location filename="pymecavideo.py" line="1321"/>
         <source>Evolution de l&apos;ordonn&#xc3;&#xa9;e du point %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1285"/>
+        <location filename="pymecavideo.py" line="1321"/>
         <source>Evolution de la vitesse du point %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1347"/>
+        <location filename="pymecavideo.py" line="1385"/>
         <source>Pointage des positions&#xc2;&#xa0;: cliquer sur le point N&#xc2;&#xb0; %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1378"/>
+        <location filename="pymecavideo.py" line="1417"/>
         <source>Vous avez atteint la fin de la vid&#xc3;&#xa9;o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1520"/>
+        <location filename="pymecavideo.py" line="1559"/>
         <source>D&#xc3;&#xa9;finir une &#xc3;&#xa9;chelle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1520"/>
+        <location filename="pymecavideo.py" line="1559"/>
         <source>Quelle est la longueur en m&#xc3;&#xa8;tre de votre &#xc3;&#xa9;talon sur l&apos;image ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1538"/>
+        <location filename="pymecavideo.py" line="1579"/>
         <source> Merci d&apos;indiquer une &#xc3;&#xa9;chelle valable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1594"/>
+        <location filename="pymecavideo.py" line="1635"/>
         <source>Les donn&#xc3;&#xa9;es seront perdues</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1594"/>
+        <location filename="pymecavideo.py" line="1635"/>
         <source>Votre travail n&apos;a pas &#xc3;&#xa9;t&#xc3;&#xa9; sauvegard&#xc3;&#xa9;
 Voulez-vous les sauvegarder ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1616"/>
+        <location filename="pymecavideo.py" line="1659"/>
         <source>Vous avez atteint le d&#xc3;&#xa9;but de la vid&#xc3;&#xa9;o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1652"/>
+        <location filename="pymecavideo.py" line="1701"/>
         <source>Ouvrir une vid&#xc3;&#xa9;o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1647"/>
+        <location filename="pymecavideo.py" line="1696"/>
         <source>Nom de fichier non conforme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1647"/>
+        <location filename="pymecavideo.py" line="1696"/>
         <source>Le nom de votre fichier contient des caract&#xc3;&#xa8;res accentu&#xc3;&#xa9;s ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1679"/>
+        <location filename="pymecavideo.py" line="1729"/>
         <source>Veuillez choisir une image et d&#xc3;&#xa9;finir l&apos;&#xc3;&#xa9;chelle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1713"/>
+        <location filename="pymecavideo.py" line="1764"/>
         <source>D&#xc3;&#xa9;sol&#xc3;&#xa9; pas de fichier d&apos;aide pour le langage %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="pymecavideo.py" line="1672"/>
+        <source>fichiers vid&#xc3;&#xa9;os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="pymecavideo.py" line="1684"/>
+        <source>fichiers vid&#xc3;&#xa9;os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
