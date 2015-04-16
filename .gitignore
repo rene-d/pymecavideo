@@ -5,3 +5,7 @@
 Ui_*
 *.1
 *.xhtml
+debian/files
+debian/*.debhelper*
+debian/*.substvars
+data/help/*w32.png
