@@ -29,6 +29,7 @@ import subprocess
 import shutil
 
 import cv2.cv as cv
+import cv2
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -58,8 +59,8 @@ class Cadreur(QObject):
         self.numpoint = numpoint
         self.app = app
 
-        self.capture = cv.CreateFileCapture(self.app.filename.encode('utf8'))
-        self.fps = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FPS)
+        self.capture = cv2.VideoCapture(self.app.filename.encode('utf8'))
+        self.fps = self.capture.get(cv.CV_CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
 
         self.app.dbg.p(3, "In : Label_Video, __inti__, fps = %s and delay = %s" % (self.fps, self.delay))

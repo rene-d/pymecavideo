@@ -6,6 +6,7 @@ import threading
 import os.path
 
 import cv2.cv as cv
+import cv2
 
 
 class film:
@@ -25,10 +26,10 @@ class film:
         self.filename = filename
         try:
             self.filesize = os.path.getsize(self.filename.encode('utf8'))
-            self.capture = cv.CaptureFromFile(self.filename.encode('utf8'))
+            self.capture = cv2.VideoCapture(self.filename.encode('utf8'))
         except WindowsError:
             self.filesize = os.path.getsize(self.filename.encode('cp1252'))
-            self.capture = cv.CaptureFromFile(self.filename.encode('cp1252'))
+            self.capture = cv2.VideoCapture(self.filename.encode('cp1252'))
 
         t = threading.Thread(target=self.autoTest)
         t.start()
@@ -39,12 +40,13 @@ class film:
         self.ok = False
 
         try:
-            self.frame = cv.QueryFrame(self.capture)
+            self.frame = self.capture.read()
             self.num = 0
-            self.fps = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FPS)
-            self.framecount = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_COUNT)
-            assert 1.0 * self.filesize / self.framecount > 1800.0, "fichier aberrant en taille"
-            print "##############"+str(self.fps)+str(self.framecount)
+            self.fps = self.capture.get(cv.CV_CAP_PROP_FPS)
+
+            self.framecount = self.capture.get(cv.CV_CAP_PROP_FRAME_COUNT)
+            print(self.framecount,self.filesize)
+            assert 1.0 * self.filesize / self.framecount > 1000.0, "fichier aberrant en taille"
             self.ok = True
         except AssertionError:
             print "assertion"+str(self.fps)+str(self.framecount)
