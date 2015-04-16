@@ -3,7 +3,7 @@ HELPFILES = $(shell ls data/help/help-*.xhtml data/help/*.png)
 MAN_LANG = fr
 
 all: manpage
-	for d in help lang src; do DESTDIR=$(DESTDIR) $(MAKE) -C $$d $@ ; done
+	for d in src; do DESTDIR=$(DESTDIR) $(MAKE) -C $$d $@ ; done
 
 manpage: pymecavideo.1
 	for l in $(MAN_LANG); do $(MAKE) pymecavideo.$$l.1; done
