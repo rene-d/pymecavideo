@@ -112,11 +112,8 @@ class MonThreadDeCalcul(threading.Thread):
         lance le thread.
         """
         while not self._stopevent.isSet():
-            print('un point')
             self.parent.picture_detect()
-            self._stopevent.wait(0.1)
-        print "le thread s'est termine proprement"
-
+            self._stopevent.wait(0.01)
 
     def stop(self):
         self._stopevent.set()
@@ -142,9 +139,7 @@ class MonThreadDeCalculQt(QThread):
         Envoi un signal quand terminé.
         """
         while not self.stopped:
-            print('un point')
             self.parent.picture_detect()
-        print('terminé avec succès')
 
     def stop(self):
         self.stopped = True
@@ -644,10 +639,9 @@ class StartQT4(QMainWindow):
                 self.pointTrouve = filter_picture(self.motif[self.indexMotif], self.imageAffichee)
                 self.dbg.p(3, "Point Trouve dans mon Thread : " + str(self.pointTrouve))
                 self.onePointFind()
+
                 self.indexMotif += 1
-                print('hop1', self.indexMotif)
             else:
-                print('hop remise à zéro', self.indexMotif)
                 self.indexMotif = 0
 
         if self.index_de_l_image == self.image_max:
@@ -657,16 +651,20 @@ class StartQT4(QMainWindow):
                 self.goCalcul = False
 
     def stopComputing(self):
-        print "stopComputing"
         self.dbg.p(1, "rentre dans 'stopComputing'")
         self.monThread.stop()
         del self.monThread
         self.label_video.setEnabled(1)
         self.ui.pushButton_video.setEnabled(0)
         self.ui.pushButton_video.hide()
-        self.clic_sur_label_video()
-        self.label_video.repaint()
 
+        #TODO : attention, dernier point à gérer
+
+
+
+        #self.clic_sur_label_video()
+        #self.label_video.repaint()
+        print("nombres de  points", len(self.points), len(self.label_video.liste_points), len(self.pointsFound))
 
     def onePointFind(self):
         """est appelée quand un point a été trouvé lors de la détection automatique
@@ -678,40 +676,8 @@ class StartQT4(QMainWindow):
 
         for point in self.pointsFound:
             self.label_video.storePoint(vecteur(point[0], point[1]))
+        print('nb de pont one poin tfound', len(self.label_video.liste_points), len(self.points))
 
-            # self.goCalcul = True
-            #        self.picture_detect()
-
-            #    def stopComputing_old(self):
-            #        self.dbg.p(1, "rentre dans 'stopComputing'")
-            #
-            #        self.auto = False
-            #        self.goCalcul = False
-            #        try:
-            #            self.monThread.terminate()
-            #            del self.monThread
-            #        except NameError:
-            #            pass
-            #
-            #        self.ui.pushButton_video.hide()
-            #
-            #
-            #    def onePointFind_old(self):
-            #        """est appelée quand un point a été trouvé lors de la détection automatique
-            #        self.pointFound : liste des points trouvés
-            #        """
-            #
-            #        self.dbg.p(1, "rentre dans 'onePointFind'")
-            #        self.indexMotif += 1
-            #        self.pointsFound.append(self.monThread.pointTrouve)  # stock all points found
-            #        self.monThread.terminate()
-            #        del self.monThread
-            #
-            #        for point in self.pointsFound:
-            #            self.label_video.storePoint(vecteur(point[0], point[1]))
-            #
-            #        self.goCalcul = True
-            #        self.picture_detect()
 
     def readStdout(self):
         self.dbg.p(1, "rentre dans 'readStdout'")
