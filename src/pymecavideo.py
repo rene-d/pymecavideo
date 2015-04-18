@@ -437,6 +437,7 @@ class StartQT4(QMainWindow):
         @param tousLesClics permet de conserver une liste de points à refaire
         @param index_point_actuel permet de réinitialiser à partir de l'image de départ.
         """
+
         self.dbg.p(1, "rentre dans 'reinitialise_tout'")
         self.dbg.p(2,
                    "Dans reinitialise_tout: echelle_image=%s, nb_de_points=%s, tousLesClics=%s,index_point_actuel=%s" % (
@@ -459,6 +460,7 @@ class StartQT4(QMainWindow):
             self.init_variables(None, filename=self.filename)
             self.index_de_l_image = index_point_actuel
             self.premiere_image = index_depart
+            self.ui.spinBox_image.setValue(self.index_de_l_image)
         else:
             self.init_variables(None, filename=self.filename)
         if echelle_image:
@@ -475,7 +477,7 @@ class StartQT4(QMainWindow):
             self.nb_de_points = nb_de_points
         if tousLesClics != None and tousLesClics.count():
             self.tousLesClics = tousLesClics
-
+        print('oooreinit_tout',self.index_de_l_image)
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
@@ -1233,7 +1235,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def efface_point_precedent(self):
         """revient au point précédent
         """
-        print('MMMMMMMMMMM')
+        print('oooeff_pt_prec',self.index_de_l_image)
         self.dbg.p(1, "rentre dans 'efface_point_precedent'")
         self.tousLesClics.decPtr()
 
@@ -1261,7 +1263,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.affiche_echelle()
         self.affiche_nb_points()
         self.ui.tab_traj.setEnabled(1)
-
+        print('tous les clics',len(self.tousLesClics), self.index_de_l_image)
         for clics in self.tousLesClics:
             self.clic_sur_label_video(liste_points=clics, interactif=False)
             self.updatePicture = False
@@ -1402,6 +1404,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
+        print('oooclic',self.index_de_l_image)
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
         self.lance_capture = True
 
@@ -1526,27 +1529,35 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def affiche_image_spinbox(self):
         self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
+        print('pppppppp')
         self.index_de_l_image = self.ui.spinBox_image.value()
         self.affiche_image()
 
     def affiche_image(self):
+        print('oooaff_image1',self.index_de_l_image)
         self.dbg.p(1, "rentre dans 'affiche_image'")
-        self.dbg.p(1, "rentre dans 'affiche_image'"+' '+str(self.index_de_l_image)+' '+ str(self.image_max))
-        if self.index_de_l_image<=self.image_max:
-            self.extract_image(self.filename, self.index_de_l_image)
-            image = QImage(self.chemin_image)
-            self.imageAffichee = image.scaled(640, 480, Qt.KeepAspectRatio)
-            if hasattr(self, "label_video"):
-                self.label_video.setMouseTracking(True)
-                self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
-                self.label_video.met_a_jour_crop()
-                self.label_video.update()
+        try :
+            self.dbg.p(1, "rentre dans 'affiche_image'"+' '+str(self.index_de_l_image)+' '+ str(self.image_max))
 
-                self.label_video.show()
-                self.ui.horizontalSlider.setValue(self.index_de_l_image)
-                self.ui.spinBox_image.setValue(self.index_de_l_image)
+            if self.index_de_l_image<=self.image_max:
+                self.extract_image(self.filename, self.index_de_l_image)
+                image = QImage(self.chemin_image)
+                self.imageAffichee = image.scaled(640, 480, Qt.KeepAspectRatio)
+                if hasattr(self, "label_video"):
+                    self.label_video.setMouseTracking(True)
+                    self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
+                    self.label_video.met_a_jour_crop()
+                    self.label_video.update()
 
+                    self.label_video.show()
+                    self.ui.horizontalSlider.setValue(self.index_de_l_image)
+                    self.ui.spinBox_image.setValue(self.index_de_l_image)
+            elif  self.index_de_l_image>self.image_max:
+                self.index_de_l_image=self.image_max
 
+        except AttributeError:
+            pass
+        print('oooaff_image2',self.index_de_l_image)
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
         self.ui.tabWidget.setCurrentIndex(0)
@@ -1564,7 +1575,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'affiche_image_slider'")
         self.index_de_l_image = self.ui.horizontalSlider.value()
         self.affiche_image()
-
+        print('ooo',self.index_de_l_image)
     def affiche_image_slider_move(self):
         """only change spinBox value"""
         self.dbg.p(1, "rentre dans 'affiche_image_slider_move'")
