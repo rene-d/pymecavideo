@@ -57,8 +57,10 @@ class Label_Auto(QLabel):
                 self.y_2 = y
             elif y < self.y_1:
                 self.y_1 = y
-        self.app.label_video.zoom_croix.show()
         self.pos = vecteur(x, y)
+        self.parent.pos = self.pos
+        self.app.label_video.zoom_croix.show()
+
         self.app.label_video.fait_crop(self.pos)
         self.app.ui.label_zoom.setPixmap(self.app.label_video.cropX2)
         self.update()
