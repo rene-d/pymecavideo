@@ -105,7 +105,7 @@ class MyReaderThread(QThread):
             except TypeError:
                 self.app.dbg.p(4, "In Thread Reader, typError")
             finally:
-                self.stdout_file.close()
+                stdout_file.close()
         self.parent.value_ = 100
         self.app.emit(SIGNAL('updateProgressBar()'))
 
