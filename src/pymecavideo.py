@@ -231,7 +231,7 @@ class StartQT4(QMainWindow):
         if any(os.access(os.path.join(p, "scidavis"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
             self.scidavis_present = "scidavis"
 
-        #qtiplot export    
+        # qtiplot export
         self.qtiplot_present = False
         if any(os.access(os.path.join(p, "qtiplot"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
             self.qtiplot_present = "qtiplot"
@@ -501,7 +501,7 @@ class StartQT4(QMainWindow):
         self.label_video.setCursor(Qt.ArrowCursor)
         # for enfant in self.label_video.children():
         # enfant.hide()
-        #del enfant
+        # del enfant
         #del self.label_video.zoom_croix
 
         #del self.label_video
@@ -618,12 +618,15 @@ class StartQT4(QMainWindow):
             self.ui.pushButton_video.setEnabled(1)
             self.ui.pushButton_video.show()
             self.ui.pushButton_video.setFocus()
+            self.label_video.setEnabled(0)
+            self.goCalcul = True
 
-            #TODO : tests avec les différents mode de threading
+            # TODO : tests avec les différents mode de threading
             ##Qthread
             #self.monThread = MonThreadDeCalculQt(self, self.motif[self.indexMotif], self.imageAffichee)
             self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee)
             self.monThread.start()
+
 
     def picture_detect(self):
         """
@@ -634,28 +637,31 @@ class StartQT4(QMainWindow):
         """
         self.dbg.p(1, "rentre dans 'picture_detect'")
         self.dbg.p(3, "début 'picture_detect'" + str(self.indexMotif))
-        if self.index_de_l_image < self.image_max:
+        if self.index_de_l_image <= self.image_max:
             self.pointsFound = []
-            if self.indexMotif <= len(self.motif) - 1:  # and self.goCalcul:
+            if self.indexMotif <= len(self.motif) - 1:
                 self.dbg.p(1, "'picture_detect' : While")
                 self.pointTrouve = filter_picture(self.motif[self.indexMotif], self.imageAffichee)
                 self.dbg.p(3, "Point Trouve dans mon Thread : " + str(self.pointTrouve))
                 self.onePointFind()
                 self.indexMotif += 1
+                print('hop1', self.indexMotif)
             else:
+                print('hop remise à zéro', self.indexMotif)
                 self.indexMotif = 0
-                # if len(self.points) * len(self.motif) == len(self.motif) * (self.image_max - self.premiere_image):
 
-                #     self.stopComputing()
-        else:
-            self.emit(SIGNAL('stopCalculs()'))
-
+        if self.index_de_l_image == self.image_max:
+            if self.indexMotif == 0 and not self.goCalcul:  # dernier passage
+                self.emit(SIGNAL('stopCalculs()'))
+            elif self.indexMotif == 0 and self.goCalcul:  # premier passage, premier calcul de la dernière image
+                self.goCalcul = False
 
     def stopComputing(self):
         print "stopComputing"
         self.dbg.p(1, "rentre dans 'stopComputing'")
         self.monThread.stop()
         del self.monThread
+        self.label_video.setEnabled(1)
         self.ui.pushButton_video.setEnabled(0)
         self.ui.pushButton_video.hide()
         self.clic_sur_label_video()
@@ -673,39 +679,39 @@ class StartQT4(QMainWindow):
         for point in self.pointsFound:
             self.label_video.storePoint(vecteur(point[0], point[1]))
 
-        #        self.goCalcul = True
-        #        self.picture_detect()
+            # self.goCalcul = True
+            #        self.picture_detect()
 
-        #    def stopComputing_old(self):
-        #        self.dbg.p(1, "rentre dans 'stopComputing'")
-        #
-        #        self.auto = False
-        #        self.goCalcul = False
-        #        try:
-        #            self.monThread.terminate()
-        #            del self.monThread
-        #        except NameError:
-        #            pass
-        #
-        #        self.ui.pushButton_video.hide()
-        #
-        #
-        #    def onePointFind_old(self):
-        #        """est appelée quand un point a été trouvé lors de la détection automatique
-        #        self.pointFound : liste des points trouvés
-        #        """
-        #
-        #        self.dbg.p(1, "rentre dans 'onePointFind'")
-        #        self.indexMotif += 1
-        #        self.pointsFound.append(self.monThread.pointTrouve)  # stock all points found
-        #        self.monThread.terminate()
-        #        del self.monThread
-        #
-        #        for point in self.pointsFound:
-        #            self.label_video.storePoint(vecteur(point[0], point[1]))
-        #
-        #        self.goCalcul = True
-        #        self.picture_detect()
+            #    def stopComputing_old(self):
+            #        self.dbg.p(1, "rentre dans 'stopComputing'")
+            #
+            #        self.auto = False
+            #        self.goCalcul = False
+            #        try:
+            #            self.monThread.terminate()
+            #            del self.monThread
+            #        except NameError:
+            #            pass
+            #
+            #        self.ui.pushButton_video.hide()
+            #
+            #
+            #    def onePointFind_old(self):
+            #        """est appelée quand un point a été trouvé lors de la détection automatique
+            #        self.pointFound : liste des points trouvés
+            #        """
+            #
+            #        self.dbg.p(1, "rentre dans 'onePointFind'")
+            #        self.indexMotif += 1
+            #        self.pointsFound.append(self.monThread.pointTrouve)  # stock all points found
+            #        self.monThread.terminate()
+            #        del self.monThread
+            #
+            #        for point in self.pointsFound:
+            #            self.label_video.storePoint(vecteur(point[0], point[1]))
+            #
+            #        self.goCalcul = True
+            #        self.picture_detect()
 
     def readStdout(self):
         self.dbg.p(1, "rentre dans 'readStdout'")
@@ -1045,7 +1051,7 @@ class StartQT4(QMainWindow):
         # for k in self.points.keys():
         # data=self.points[k]
 
-        #i=1
+        # i=1
         #for vect in data[1:]:
         ##vect=self.pointEnMetre(vect)
 
@@ -1080,7 +1086,7 @@ class StartQT4(QMainWindow):
         # def dumps(self):
         # self.dbg.p(1,"rentre dans 'dumps'")
 
-        #return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon\
+        # return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon\
         #,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points\
         #,self.origine, self.sens_X,self.sens_Y)).replace("\n","\n#")
 
@@ -1099,7 +1105,7 @@ class StartQT4(QMainWindow):
             ##fichierMecavideo.replace(".csv",".mecavideo")
             # file = open(fichierMecavideo, 'w')
             liste_des_cles = []
-            #try :
+            # try :
             #file.write(self.dumps())
             for key in self.points:
                 liste_des_cles.append(key)
@@ -1337,7 +1343,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     self.label_trajectoire.origine = origine
 
                     self.label_trajectoire.referentiel = ref
-                else:  #if camera, all tranlsations are disabled
+                else:  # if camera, all tranlsations are disabled
                     self.label_trajectoire.referentiel = 0
                     self.label_trajectoire.origine = vecteur(0, 0)
 
@@ -1525,7 +1531,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         i = 0
         # Pour chaque point dans liste_points, insère les valeur dans la ligne
         for point in liste_points:
-            #ajoute les coordonnées "en pixel" des points dans des dictionnaires de coordonnées
+            # ajoute les coordonnées "en pixel" des points dans des dictionnaires de coordonnées
             x = point.x()
             y = point.y()
             if x in self.pX.keys():
@@ -1544,7 +1550,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             i += 2
         if interactif:
             self.ui.tableWidget.show()
-        #enlève la ligne supplémentaire, une fois qu'une ligne a été remplie
+        # enlève la ligne supplémentaire, une fois qu'une ligne a été remplie
         if ligne == 0:
             self.ui.tableWidget.removeRow(1)
 
