@@ -56,7 +56,7 @@ class film:
 
             pass
         #if self.filename.split('.')[-1].lower() == "ogv":  # never work with ogv. need encoding.
-        #    self.ok = False
+        self.ok = False
 
     def __int__(self):
         return int(self.ok)
