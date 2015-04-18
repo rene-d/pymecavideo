@@ -89,8 +89,8 @@ build_exe_options = {'build_exe': 'build',
 # GUI applications require a different base on Windows (the default is for a
 # console application).
 base = None
-if sys.platform == "win32":
-    base = "Win32GUI"
+#if sys.platform == "win32":
+#    base = "Win32GUI"
 
 
 cible = Executable(

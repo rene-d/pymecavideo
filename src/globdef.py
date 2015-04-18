@@ -63,6 +63,17 @@ def testerDossier(listDir, defaut=""):
 #
 # Dossier de l'application
 #
+FILE_ENCODING = sys.getfilesystemencoding()
+DEFAUT_ENCODING = "utf-8"
+print "FILE_ENCODING", FILE_ENCODING
+
+######################################################################################  
+def toFileEncoding(path):
+    try:
+        path = path.decode(DEFAUT_ENCODING)
+        return path.encode(FILE_ENCODING)
+    except:
+        return path
 
 if sys.platform == 'win32':
     #
@@ -175,7 +186,7 @@ else:
 # Dossier des langues
 #
 if sys.platform == 'win32':
-    LANG_PATH = os.path.join(PATH, "..", "data", "lang")
+    LANG_PATH = os.path.join(PATH, r"data", r"lang")
 else:
     LANG_PATH = testerDossier((os.path.join("..", "data", "lang"),
                                '/usr/share/pyshared/pymecavideo/lang', '/usr/share/python-mecavideo/lang',

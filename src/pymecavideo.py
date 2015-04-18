@@ -83,7 +83,7 @@ import tempfile
 
 from globdef import PATH, APP_DATA_PATH, GetChildStdErr, IMG_PATH, \
     VIDEO, SUFF, VIDEO_PATH, CONF_PATH, IMG_PATH, ICON_PATH, LANG_PATH, \
-    DATA_PATH, HELP_PATH, NEWVID_PATH
+    DATA_PATH, HELP_PATH, NEWVID_PATH, toFileEncoding
 
 from detect import filter_picture
 
@@ -94,7 +94,37 @@ def _translate(context, text, disambig):
     return QApplication.translate(context, text, disambig, _encoding)
 
 
-class MonThreadDeCalcul(QThread):
+class MonThreadDeCalcul(threading.Thread):
+    """mon Thread"""
+
+    def __init__(self, parent, motif, image):
+        threading.Thread.__init__(self)
+
+        self.parent = parent
+        self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
+        self.motif = motif
+        self.image = image
+        time.sleep(0.1)
+        self._stopevent = threading.Event( )
+
+
+    def run(self):
+        """
+        lance le thread.
+        """
+        while not self._stopevent.isSet():
+            self.parent.picture_detect()
+#            self._stopevent.wait(0.1)
+        print "le thread s'est termine proprement" 
+        
+        
+    def stop(self): 
+        self._stopevent.set( ) 
+
+
+
+
+class MonThreadDeCalcul_old(QThread):
     """mon Thread"""
 
     def __init__(self, parent, motif, image):
@@ -581,8 +611,15 @@ class StartQT4(QMainWindow):
             self.label_auto.hide()
             self.label_auto.close()
             self.indexMotif = 0
-            self.picture_detect()
-
+#            self.picture_detect()
+            self.ui.pushButton_video.setText("STOP CALCULS")
+            self.ui.pushButton_video.setEnabled(1)
+            self.ui.pushButton_video.show()
+            self.ui.pushButton_video.setFocus()
+                
+            self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee)
+#            QObject.connect(self.monThread, SIGNAL('pointTrouve()'), self.onePointFind)
+            self.monThread.start()
 
     def picture_detect(self):
         """
@@ -593,67 +630,143 @@ class StartQT4(QMainWindow):
         """
         self.dbg.p(1, "rentre dans 'picture_detect'")
         self.dbg.p(3, "début 'picture_detect'" + str(self.indexMotif))
-
-        if self.index_de_l_image <= self.image_max:
+        if self.index_de_l_image < self.image_max:
             self.pointsFound = []
-
-            if self.indexMotif < len(self.motif) and self.goCalcul:
+            if self.indexMotif <= len(self.motif)-1:# and self.goCalcul:
                 self.dbg.p(1, "'picture_detect' : While")
-                if self.auto:
-                    self.goCalcul = False
-                    self.ui.pushButton_video.setText("STOP CALCULS")
-                    self.ui.pushButton_video.setEnabled(1)
-                    self.ui.pushButton_video.show()
-                    self.ui.pushButton_video.setFocus()
+#                if self.auto:
+#                    self.goCalcul = False
+                
+                
+                self.pointTrouve = filter_picture(self.motif[self.indexMotif], self.imageAffichee)
+                self.dbg.p(3, "Point Trouve dans mon Thread : " + str(self.pointTrouve))
+                self.onePointFind()
+                self.indexMotif += 1
+                    
 
-                    self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee)
-                    QObject.connect(self.monThread, SIGNAL('pointTrouve()'), self.onePointFind)
-                    self.monThread.start()
-
-            if self.indexMotif == (len(self.motif) - 1):
-                self.indexMotif = -1
+#            if self.indexMotif == (len(self.motif) - 1):
+            else:
+                self.indexMotif = 0
                 if len(self.points) * len(self.motif) == len(self.motif) * (self.image_max - self.premiere_image):
-                    if self.arretAuto:
-                        self.ui.pushButton_video.setEnabled(0)
-                        self.ui.pushButton_video.hide()
-                        self.clic_sur_label_video()
-                        self.label_video.repaint()
-                        self.stopComputing()
-                    else:
-                        self.arretAuto = True  # premier passage dans la boucle à la fin du calcul auto
+##                    if self.arretAuto:
+#                    self.ui.pushButton_video.setEnabled(0)
+#                    self.ui.pushButton_video.hide()
+#                    self.clic_sur_label_video()
+#                    self.label_video.repaint()
+                    self.stopComputing()
+#                    else:
+#                        self.arretAuto = True  # premier passage dans la boucle à la fin du calcul auto
+        else:
+            self.monThread.stop()
+            
+                        
+#    def picture_detect_old(self):
+#        """
+#        Est lancée lors de la détection automatique des points. Gère l'ajout des thread de calcul.
+#        self.myThreads : tableau contenant les thread
+#        self.motifs : tableau des motifs
+#
+#        """
+#        self.dbg.p(1, "rentre dans 'picture_detect'")
+#        self.dbg.p(3, "début 'picture_detect'" + str(self.indexMotif))
+#
+#        if self.index_de_l_image <= self.image_max:
+#            self.pointsFound = []
+#
+#            if self.indexMotif < len(self.motif) and self.goCalcul:
+#                self.dbg.p(1, "'picture_detect' : While")
+#                if self.auto:
+#                    self.goCalcul = False
+#                    self.ui.pushButton_video.setText("STOP CALCULS")
+#                    self.ui.pushButton_video.setEnabled(1)
+#                    self.ui.pushButton_video.show()
+#                    self.ui.pushButton_video.setFocus()
+#
+#                    self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee)
+#                    QObject.connect(self.monThread, SIGNAL('pointTrouve()'), self.onePointFind)
+#                    self.monThread.start()
+#
+#            if self.indexMotif == (len(self.motif) - 1):
+#                self.indexMotif = -1
+#                if len(self.points) * len(self.motif) == len(self.motif) * (self.image_max - self.premiere_image):
+#                    if self.arretAuto:
+#                        self.ui.pushButton_video.setEnabled(0)
+#                        self.ui.pushButton_video.hide()
+#                        self.clic_sur_label_video()
+#                        self.label_video.repaint()
+#                        self.stopComputing()
+#                    else:
+#                        self.arretAuto = True  # premier passage dans la boucle à la fin du calcul auto
+
 
     def stopComputing(self):
+        print "stopComputing"
         self.dbg.p(1, "rentre dans 'stopComputing'")
-
-        self.auto = False
-        self.goCalcul = False
-        try:
-            self.monThread.terminate()
-            del self.monThread
-        except NameError:
-            pass
-
+        self.monThread.stop()
+        time.sleep(0.1)
+        self.ui.pushButton_video.setEnabled(0)
         self.ui.pushButton_video.hide()
+        self.clic_sur_label_video()
+        self.label_video.repaint()
+        
+        
+#        self.auto = False
+#        self.goCalcul = False
+#        try:
+#            self.monThread.stop()
+##            del self.monThread
+#        except NameError:
+#            pass
+
+#        self.ui.pushButton_video.hide()
+
 
 
     def onePointFind(self):
         """est appelée quand un point a été trouvé lors de la détection automatique
         self.pointFound : liste des points trouvés
         """
-
         self.dbg.p(1, "rentre dans 'onePointFind'")
-        self.indexMotif += 1
-        self.pointsFound.append(self.monThread.pointTrouve)  # stock all points found
-        self.monThread.terminate()
-        del self.monThread
+        
+        self.pointsFound.append(self.pointTrouve)  # stock all points found
 
         for point in self.pointsFound:
             self.label_video.storePoint(vecteur(point[0], point[1]))
 
-        self.goCalcul = True
-        self.picture_detect()
+#        self.goCalcul = True
+#        self.picture_detect()
 
-
+#    def stopComputing_old(self):
+#        self.dbg.p(1, "rentre dans 'stopComputing'")
+#
+#        self.auto = False
+#        self.goCalcul = False
+#        try:
+#            self.monThread.terminate()
+#            del self.monThread
+#        except NameError:
+#            pass
+#
+#        self.ui.pushButton_video.hide()
+#
+#
+#    def onePointFind_old(self):
+#        """est appelée quand un point a été trouvé lors de la détection automatique
+#        self.pointFound : liste des points trouvés
+#        """
+#
+#        self.dbg.p(1, "rentre dans 'onePointFind'")
+#        self.indexMotif += 1
+#        self.pointsFound.append(self.monThread.pointTrouve)  # stock all points found
+#        self.monThread.terminate()
+#        del self.monThread
+#
+#        for point in self.pointsFound:
+#            self.label_video.storePoint(vecteur(point[0], point[1]))
+#
+#        self.goCalcul = True
+#        self.picture_detect()
+        
     def readStdout(self):
         self.dbg.p(1, "rentre dans 'readStdout'")
         try:
@@ -1841,6 +1954,7 @@ def run():
 
     ###translation##
     locale = "%s" % QLocale.system().name()
+    
     # locale = "%s" %QString("en_EN")
 
     qtTranslator = QTranslator()
@@ -1849,8 +1963,8 @@ def run():
     appTranslator = QTranslator()
 
     langdir = os.path.join(StartQT4._dir("langues"),
-                           "pymecavideo_" + locale)
-
+                           r"pymecavideo_" + locale)
+    
     if appTranslator.load(langdir):
         b = app.installTranslator(appTranslator)
 

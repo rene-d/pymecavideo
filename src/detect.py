@@ -58,6 +58,6 @@ def filter_picture(part, image):
 
 
 def detect_part(part, image):
-    result = cv2.matchTemplate(image, part, cv.CV_TM_SQDIFF)
+    result = cv2.matchTemplate(image, part, cv.CV_TM_SQDIFF) #  CV_TM_CCOEFF
     m, M, point2, point1 = cv2.minMaxLoc(result)
     return point1, point2
