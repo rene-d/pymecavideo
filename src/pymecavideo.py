@@ -322,7 +322,7 @@ class StartQT4(QMainWindow):
             self.ui.pushButton_video.hide()
 
 
-    def init_interface(self):
+    def init_interface(self,refait=0):
         self.ui.tabWidget.setEnabled(1)
         self.ui.tabWidget.setEnabled(1)
         self.ui.actionDefaire.setEnabled(1)
@@ -351,7 +351,8 @@ class StartQT4(QMainWindow):
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
         self.ui.spinBox_image.setEnabled(0)
         self.affiche_lance_capture(False)
-        self.ui.horizontalSlider.setValue(1)
+        if not refait :
+            self.ui.horizontalSlider.setValue(1)
 
         self.affiche_nb_points(False)
         self.ui.Bouton_Echelle.setEnabled(False)
@@ -437,9 +438,10 @@ class StartQT4(QMainWindow):
         @param tousLesClics permet de conserver une liste de points à refaire
         @param index_point_actuel permet de réinitialiser à partir de l'image de départ.
         """
+
         self.dbg.p(1, "rentre dans 'reinitialise_tout'")
         self.dbg.p(2,
-                   "Dans reinitialise_tout: echelle_image=%s, nb_de_points=None%s, tousLesClics=%s,index_point_actuel=%s" % (
+                   "Dans reinitialise_tout: echelle_image=%s, nb_de_points=%s, tousLesClics=%s,index_point_actuel=%s" % (
                        echelle_image, nb_de_points, tousLesClics, index_point_actuel))
         self.montre_vitesses = False
         self.label_trajectoire.update()
@@ -452,21 +454,20 @@ class StartQT4(QMainWindow):
         # on revient en arrière d'un cran ou que l'on refait le point.
         #############
 
-
-        self.init_interface()
-
         if index_point_actuel:
-            index = self.premiere_image
-            self.init_variables(None, filename=self.filename)
-
+            self.init_interface(refait=1)
             ############ permet de récupérer les 2 valeurs souhaitées
-            self.premiere_image = index
-            self.index_de_l_image = index
+
             ############
+            self.init_variables(None, filename=self.filename)
+            self.index_de_l_image = index_point_actuel
+
+            self.premiere_image = index_point_actuel
+            self.ui.spinBox_image.setValue(self.index_de_l_image)
         else:
+            self.init_interface()
             self.init_variables(None, filename=self.filename)
         if echelle_image:
-
             self.echelle_image = echelle_image
             self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         else:  # destroy scale
@@ -480,7 +481,7 @@ class StartQT4(QMainWindow):
             self.nb_de_points = nb_de_points
         if tousLesClics != None and tousLesClics.count():
             self.tousLesClics = tousLesClics
-
+        print('oooreinit_tout',self.index_de_l_image)
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
@@ -489,17 +490,10 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'reinitialise_capture'")
         self.montre_vitesses = False
 
-        # self.oubliePoints()
         self.label_trajectoire.update()
         self.ui.label.update()
         self.label_video.update()
         self.label_video.setCursor(Qt.ArrowCursor)
-        # for enfant in self.label_video.children():
-        # enfant.hide()
-        # del enfant
-        #del self.label_video.zoom_croix
-
-        #del self.label_video
         self.init_variables(None, filename=self.filename)
         self.affiche_image()
 
@@ -511,6 +505,7 @@ class StartQT4(QMainWindow):
         self.enableDefaire(False)
         self.enableRefaire(False)
         self.affiche_nb_points(1)
+        self.ui.Bouton_lance_capture.setEnabled(0)
         ### Réactiver checkBox_avancees après réinitialisation ###
         self.ui.pushButton_origine.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
@@ -617,8 +612,10 @@ class StartQT4(QMainWindow):
             self.goCalcul = True
 
             # TODO : tests avec les différents mode de threading
-            ##Qthread
+            ##Qthread (fonctionne mal)
             #self.monThread = MonThreadDeCalculQt(self, self.motif[self.indexMotif], self.imageAffichee)
+
+            #Python
             self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee)
             self.monThread.start()
 
@@ -659,12 +656,11 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_video.hide()
 
         #TODO : attention, dernier point à gérer
+        #self.points[len(self.points)] = [self.label_video.liste_points]
 
+        print("nombres de  points", len(self.points), len(self.label_video.liste_points), len(self.pointTrouve))
+        print("valeur de  points", self.points, self.label_video.liste_points, self.pointTrouve)
 
-
-        #self.clic_sur_label_video()
-        #self.label_video.repaint()
-        print("nombres de  points", len(self.points), len(self.label_video.liste_points), len(self.pointsFound))
 
     def onePointFind(self):
         """est appelée quand un point a été trouvé lors de la détection automatique
@@ -996,7 +992,7 @@ class StartQT4(QMainWindow):
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         framerate, self.image_max = self.cvReader.recupere_avi_infos()
-
+        print('BOBOBO',self.image_max )
         self.defini_barre_avancement()
         self.affiche_echelle()  # on met à jour le widget d'échelle
         n = len(self.points.keys())
@@ -1237,10 +1233,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def efface_point_precedent(self):
         """revient au point précédent
         """
+        print('EFFACE_pt_prec',self.index_de_l_image)
         self.dbg.p(1, "rentre dans 'efface_point_precedent'")
         self.tousLesClics.decPtr()
 
-        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics, self.index_de_l_image - 1)
+        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics, self.premiere_image)
         self.repasseTousLesClics()
         self.label_echelle_trace.show()
         self.modifie = True
@@ -1250,7 +1247,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'refait_point_suivant'")
         self.tousLesClics.incPtr()
-        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics, self.index_de_l_image - 1)
+        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics, self.premiere_image)
         self.repasseTousLesClics()
         self.modifie = True
 
@@ -1260,11 +1257,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         sur l'image, jusqu'au pointeur courant de cette liste pointée.
         """
         self.dbg.p(1, "rentre dans 'repasseTousLesClics'")
-
+        print('REPASSE', self.index_de_l_image)
         self.affiche_echelle()
         self.affiche_nb_points()
         self.ui.tab_traj.setEnabled(1)
-
+        print('tous les clics',len(self.tousLesClics), self.index_de_l_image)
         for clics in self.tousLesClics:
             self.clic_sur_label_video(liste_points=clics, interactif=False)
             self.updatePicture = False
@@ -1405,6 +1402,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
+        print('oooclic',self.index_de_l_image)
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
         self.lance_capture = True
 
@@ -1421,8 +1419,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
             point_attendu = 1
             self.affiche_point_attendu(point_attendu)
-            if self.index_de_l_image < self.image_max:  ##si on atteint la fin de la vidéo
+            if self.index_de_l_image <= self.image_max:  ##si on atteint la fin de la vidéo
                 self.lance_capture = True
+                print ('STOCKKKKKK')
+                print (self.index_de_l_image,self.image_max )
                 self.stock_coordonnees_image(self.nb_image_deja_analysees, liste_points, interactif)
                 self.nb_image_deja_analysees += 1
                 self.index_de_l_image += 1
@@ -1430,10 +1430,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     self.modifie = True
                 self.clic_sur_label_video_ajuste_ui(point_attendu)
 
-            elif self.index_de_l_image == self.image_max:
+            if self.index_de_l_image > self.image_max:
+                print ('##########')
                 self.lance_capture = False
                 self.mets_a_jour_label_infos(_translate("pymecavideo", "Vous avez atteint la fin de la vidéo", None))
-
+                self.index_de_l_image = self.image_max
 
     def enableDefaire(self, value):
         """
@@ -1443,6 +1444,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'enableDefaire'")
         self.ui.pushButton_defait.setEnabled(value)
         self.ui.actionDefaire.setEnabled(value)
+
+        ##permet de remettre l'interface à zéro
+        if not value :
+            self.init_capture()
+            self.ui.horizontalSlider.setEnabled(True)
+            self.ui.spinBox_image.setEnabled(True)
+
 
     def enableRefaire(self, value):
         """
@@ -1526,25 +1534,35 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def affiche_image_spinbox(self):
         self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
+        print('pppppppp')
         self.index_de_l_image = self.ui.spinBox_image.value()
         self.affiche_image()
 
     def affiche_image(self):
+        print('oooaff_image1',self.index_de_l_image)
         self.dbg.p(1, "rentre dans 'affiche_image'")
-        self.extract_image(self.filename, self.index_de_l_image)
-        image = QImage(self.chemin_image)
-        self.imageAffichee = image.scaled(640, 480, Qt.KeepAspectRatio)
-        if hasattr(self, "label_video"):
-            self.label_video.setMouseTracking(True)
-            self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
-            self.label_video.met_a_jour_crop()
-            self.label_video.update()
+        try :
+            self.dbg.p(1, "rentre dans 'affiche_image'"+' '+str(self.index_de_l_image)+' '+ str(self.image_max))
 
-            self.label_video.show()
-            self.ui.horizontalSlider.setValue(self.index_de_l_image)
-            self.ui.spinBox_image.setValue(self.index_de_l_image)
+            if self.index_de_l_image<=self.image_max:
+                self.extract_image(self.filename, self.index_de_l_image)
+                image = QImage(self.chemin_image)
+                self.imageAffichee = image.scaled(640, 480, Qt.KeepAspectRatio)
+                if hasattr(self, "label_video"):
+                    self.label_video.setMouseTracking(True)
+                    self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
+                    self.label_video.met_a_jour_crop()
+                    self.label_video.update()
 
+                    self.label_video.show()
+                    self.ui.horizontalSlider.setValue(self.index_de_l_image)
+                    self.ui.spinBox_image.setValue(self.index_de_l_image)
+            elif  self.index_de_l_image>self.image_max:
+                self.index_de_l_image=self.image_max
 
+        except AttributeError:
+            pass
+        print('oooaff_image2',self.index_de_l_image)
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
         self.ui.tabWidget.setCurrentIndex(0)
@@ -1562,7 +1580,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'affiche_image_slider'")
         self.index_de_l_image = self.ui.horizontalSlider.value()
         self.affiche_image()
-
+        print('ooo',self.index_de_l_image)
     def affiche_image_slider_move(self):
         """only change spinBox value"""
         self.dbg.p(1, "rentre dans 'affiche_image_slider_move'")
@@ -1740,18 +1758,26 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
                 self.prefs.lastVideo = self.filename
                 self.init_image()
-                self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
-                self.ui.menuE_xporter_vers.setEnabled(1)
-                self.ui.actionSaveData.setEnabled(1)
-                self.mets_a_jour_label_infos(
-                    _translate("pymecavideo", "Veuillez choisir une image et définir l'échelle", None))
-                self.ui.Bouton_Echelle.setEnabled(True)
-                self.ui.spinBox_nb_de_points.setEnabled(True)
-                self.ui.horizontalSlider.setEnabled(1)
+                self.init_capture()
                 self.label_video.show()
-
                 self.prefs.videoDir = os.path.dirname(self.filename)
                 self.prefs.save()
+
+    def init_capture(self):
+        """met le panneaux de capture visible"""
+        self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
+        self.ui.menuE_xporter_vers.setEnabled(1)
+        self.ui.actionSaveData.setEnabled(1)
+        self.mets_a_jour_label_infos(
+            _translate("pymecavideo", "Veuillez choisir une image et définir l'échelle", None))
+        self.ui.Bouton_Echelle.setEnabled(True)
+        self.ui.spinBox_nb_de_points.setEnabled(True)
+        self.ui.horizontalSlider.setEnabled(1)
+        self.ui.checkBox_abscisses.setEnabled(1)
+        self.ui.checkBox_ordonnees.setEnabled(1)
+        self.ui.checkBox_auto.setEnabled(1)
+        if self.label_echelle_trace:
+            self.ui.Bouton_lance_capture.setEnabled(True)
 
 
     def propos(self):
@@ -1803,6 +1829,8 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
         self.dbg.p(1, "rentre dans 'defini_barre_avancement'")
         framerate, self.image_max = self.cvReader.recupere_avi_infos()
+        print('BOBOBO',self.image_max )
+
         self.dbg.p(3,
                    "In :  'defini_barre_avancement', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
         # print framerate, self.image_max
