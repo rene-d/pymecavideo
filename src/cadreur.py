@@ -252,8 +252,8 @@ class openCvReader:
             print "could not retrieve informations from the video file."
             print "assuming fps = 25, frame count = 10."
             return 25, 10
-        return fps, fcount
-        #return fps, fcount - 1
+#        return fps, fcount
+        return fps, fcount - 1
 
     def __str__(self):
         return "<openCvReader instance: filename=%s, nextImage=%d>" % (self.filename, self.nextImage)

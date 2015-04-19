@@ -1754,8 +1754,11 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
         self.ui.checkBox_auto.setEnabled(1)
-        if self.label_echelle_trace:
-            self.ui.Bouton_lance_capture.setEnabled(True)
+        try :
+            if self.label_echelle_trace:
+                self.ui.Bouton_lance_capture.setEnabled(True)
+        except AttributeError:
+            pass #si l'échelle n'est pas défine encore
 
 
     def propos(self):
