@@ -152,15 +152,11 @@ class Cadreur(QObject):
             for i in self.app.points.keys():
                 p = self.app.points[i][self.numpoint]
                 hautgauche = (p + self.decal - self.rayons) * ech
-                #hautgauche=(p-self.tl)*ech
-                #print "@@@haut gauche", hautgauche
-                #taille=self.rayons*2*ech
                 taille = self.sz * ech
                 img = self.queryFrame()
 
                 x, y = int(hautgauche.x()), int(hautgauche.y())
                 w, h = int(taille.x()), int(taille.y())
-                #print "x,y,w,h", x,y,w,h
                 isub = cv.GetSubRect(img, (x, y, w, h))
                 cv.ShowImage(self.titre, isub)
                 k = cv.WaitKey(int(self.delay * self.ralenti))
@@ -185,24 +181,14 @@ class openCvReader:
         isolé dans un sous-shell
         @param filename le nom d'un fichier vidéo
         """
-        #print "in opencvreader"
         self.filename = filename
         self.autoTest()
         self.rembobine()
 
     def autoTest(self):
-        #print "in autotest"
         #        if sys.platform == 'win32':
         import testfilm
-
         self.ok = testfilm.film(self.filename).ok
-        print "#############"+str(self.ok)
-
-    #        else:
-    #            cmd="python %s %s" %(os.path.join(PYMECA_SHARE, 'testfilm.py'),
-    #                                 self.filename)
-    #            retcode=subprocess.call(cmd, shell=True)
-    #            self.ok = retcode==0
 
     def __int__(self):
         return int(self.ok)

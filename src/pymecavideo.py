@@ -481,7 +481,6 @@ class StartQT4(QMainWindow):
             self.nb_de_points = nb_de_points
         if tousLesClics != None and tousLesClics.count():
             self.tousLesClics = tousLesClics
-        print('oooreinit_tout',self.index_de_l_image)
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
@@ -655,13 +654,6 @@ class StartQT4(QMainWindow):
         self.ui.pushButton_video.setEnabled(0)
         self.ui.pushButton_video.hide()
 
-        #TODO : attention, dernier point à gérer
-        #self.points[len(self.points)] = [self.label_video.liste_points]
-
-        print("nombres de  points", len(self.points), len(self.label_video.liste_points), len(self.pointTrouve))
-        print("valeur de  points", self.points, self.label_video.liste_points, self.pointTrouve)
-
-
     def onePointFind(self):
         """est appelée quand un point a été trouvé lors de la détection automatique
         self.pointFound : liste des points trouvés
@@ -672,8 +664,6 @@ class StartQT4(QMainWindow):
 
         for point in self.pointsFound:
             self.label_video.storePoint(vecteur(point[0], point[1]))
-        print('nb de pont one poin tfound', len(self.label_video.liste_points), len(self.points))
-
 
     def readStdout(self):
         self.dbg.p(1, "rentre dans 'readStdout'")
@@ -992,7 +982,6 @@ class StartQT4(QMainWindow):
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         framerate, self.image_max = self.cvReader.recupere_avi_infos()
-        print('BOBOBO',self.image_max )
         self.defini_barre_avancement()
         self.affiche_echelle()  # on met à jour le widget d'échelle
         n = len(self.points.keys())
@@ -1233,7 +1222,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def efface_point_precedent(self):
         """revient au point précédent
         """
-        print('EFFACE_pt_prec',self.index_de_l_image)
         self.dbg.p(1, "rentre dans 'efface_point_precedent'")
         self.tousLesClics.decPtr()
 
@@ -1257,11 +1245,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         sur l'image, jusqu'au pointeur courant de cette liste pointée.
         """
         self.dbg.p(1, "rentre dans 'repasseTousLesClics'")
-        print('REPASSE', self.index_de_l_image)
         self.affiche_echelle()
         self.affiche_nb_points()
         self.ui.tab_traj.setEnabled(1)
-        print('tous les clics',len(self.tousLesClics), self.index_de_l_image)
         for clics in self.tousLesClics:
             self.clic_sur_label_video(liste_points=clics, interactif=False)
             self.updatePicture = False
@@ -1402,7 +1388,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
-        print('oooclic',self.index_de_l_image)
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
         self.lance_capture = True
 
@@ -1421,8 +1406,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.affiche_point_attendu(point_attendu)
             if self.index_de_l_image <= self.image_max:  ##si on atteint la fin de la vidéo
                 self.lance_capture = True
-                print ('STOCKKKKKK')
-                print (self.index_de_l_image,self.image_max )
                 self.stock_coordonnees_image(self.nb_image_deja_analysees, liste_points, interactif)
                 self.nb_image_deja_analysees += 1
                 self.index_de_l_image += 1
@@ -1431,7 +1414,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.clic_sur_label_video_ajuste_ui(point_attendu)
 
             if self.index_de_l_image > self.image_max:
-                print ('##########')
                 self.lance_capture = False
                 self.mets_a_jour_label_infos(_translate("pymecavideo", "Vous avez atteint la fin de la vidéo", None))
                 self.index_de_l_image = self.image_max
@@ -1534,12 +1516,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def affiche_image_spinbox(self):
         self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
-        print('pppppppp')
         self.index_de_l_image = self.ui.spinBox_image.value()
         self.affiche_image()
 
     def affiche_image(self):
-        print('oooaff_image1',self.index_de_l_image)
         self.dbg.p(1, "rentre dans 'affiche_image'")
         try :
             self.dbg.p(1, "rentre dans 'affiche_image'"+' '+str(self.index_de_l_image)+' '+ str(self.image_max))
@@ -1562,7 +1542,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
         except AttributeError:
             pass
-        print('oooaff_image2',self.index_de_l_image)
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
         self.ui.tabWidget.setCurrentIndex(0)
@@ -1580,7 +1559,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'affiche_image_slider'")
         self.index_de_l_image = self.ui.horizontalSlider.value()
         self.affiche_image()
-        print('ooo',self.index_de_l_image)
     def affiche_image_slider_move(self):
         """only change spinBox value"""
         self.dbg.p(1, "rentre dans 'affiche_image_slider_move'")
@@ -1829,11 +1807,8 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
         self.dbg.p(1, "rentre dans 'defini_barre_avancement'")
         framerate, self.image_max = self.cvReader.recupere_avi_infos()
-        print('BOBOBO',self.image_max )
-
         self.dbg.p(3,
                    "In :  'defini_barre_avancement', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
-        # print framerate, self.image_max
         self.deltaT = float(1.0 / framerate)
         self.ui.horizontalSlider.setMinimum(1)
 
