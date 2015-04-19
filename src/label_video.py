@@ -39,12 +39,13 @@ from zoom import Zoom_Croix
 class Label_Video(QtGui.QLabel):
     def __init__(self, parent, app):
         QtGui.QLabel.__init__(self, parent)
-
-        self.setGeometry(QtCore.QRect(0, 0, 640, 480))
-        # self.setStyleSheet("background-color: grey");
         self.parent = parent
-        self.liste_points = []
         self.app = app
+        self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
+        # self.setStyleSheet("background-color: grey");
+
+        self.liste_points = []
+
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
         self.setCursor(QtCore.Qt.ArrowCursor)
@@ -83,6 +84,8 @@ class Label_Video(QtGui.QLabel):
             self.setCursor(QtCore.Qt.CrossCursor)
         else:
             self.setCursor(QtCore.Qt.ArrowCursor)
+    def maj(self):
+        self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
 
     def met_a_jour_crop(self):
         self.fait_crop(self.pos_avant)

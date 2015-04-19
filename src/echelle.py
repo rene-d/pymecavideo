@@ -76,11 +76,11 @@ class Label_Echelle(QLabel):
     def __init__(self, parent, app):
         QLabel.__init__(self, parent)
         self.parent = parent
-        self.setGeometry(QRect(0, 0, 640, 480))
+        self.app = app
+        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
-        self.app = app
         self.setCursor(Qt.CrossCursor)
         self.cropX2 = None
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)

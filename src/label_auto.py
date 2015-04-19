@@ -31,9 +31,10 @@ class Label_Auto(QLabel):
         """make a rectangle near point to be tracked"""
         QLabel.__init__(self, parent)
         self.parent = parent
-        self.setGeometry(QRect(0, 0, 640, 480))
-        self.setAutoFillBackground(False)
         self.app = app
+        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.setAutoFillBackground(False)
+
         self.setCursor(Qt.CrossCursor)
         self.setMouseTracking(True)
 

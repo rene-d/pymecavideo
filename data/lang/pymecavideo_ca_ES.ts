@@ -3,436 +3,438 @@
 <context>
     <name>pymecavideo</name>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="31"/>
+        <location filename="pymecavideo_mini.ui" line="37"/>
         <source>PyMecaVideo, analyse mécanique des vidéos</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="71"/>
+        <location filename="pymecavideo_mini.ui" line="80"/>
         <source>Acquisition des données</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="174"/>
+        <location filename="pymecavideo_mini.ui" line="183"/>
         <source>Pas de vidéos chargées</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="214"/>
+        <location filename="pymecavideo_mini.ui" line="223"/>
         <source>Image n°</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="265"/>
+        <location filename="pymecavideo_mini.ui" line="274"/>
         <source>Acquisition video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="300"/>
+        <location filename="pymecavideo_mini.ui" line="309"/>
         <source>Zoom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="367"/>
+        <location filename="pymecavideo_mini.ui" line="376"/>
         <source>Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="382"/>
+        <location filename="pymecavideo_mini.ui" line="391"/>
         <source>Démarrer</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="416"/>
+        <location filename="pymecavideo_mini.ui" line="425"/>
         <source>efface la série précédente</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="453"/>
+        <location filename="pymecavideo_mini.ui" line="462"/>
         <source>rétablit le point suivant</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="533"/>
+        <location filename="pymecavideo_mini.ui" line="542"/>
         <source>Tout réinitialiser</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="549"/>
+        <location filename="pymecavideo_mini.ui" line="558"/>
         <source>Définir l&apos;échelle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="562"/>
+        <location filename="pymecavideo_mini.ui" line="571"/>
         <source>px/m</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo.py" line="392"/>
+        <location filename="pymecavideo.py" line="425"/>
         <source>indéf.</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="619"/>
+        <location filename="pymecavideo_mini.ui" line="628"/>
         <source>Points à 
  étudier:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="637"/>
+        <location filename="pymecavideo_mini.ui" line="646"/>
         <source>suivi
 automatique</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="648"/>
+        <location filename="pymecavideo_mini.ui" line="657"/>
         <source>Changer d&apos;origine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="658"/>
+        <location filename="pymecavideo_mini.ui" line="667"/>
         <source>Abscisses 
 vers la gauche</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="666"/>
+        <location filename="pymecavideo_mini.ui" line="675"/>
         <source>Ordonnées 
 vers le bas</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="676"/>
+        <location filename="pymecavideo_mini.ui" line="685"/>
         <source>Trajectoires</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="780"/>
+        <location filename="pymecavideo_mini.ui" line="789"/>
         <source>Montrer 
 les vecteurs
 vitesses</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="789"/>
+        <location filename="pymecavideo_mini.ui" line="798"/>
         <source>près de
 la souris</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="800"/>
+        <location filename="pymecavideo_mini.ui" line="809"/>
         <source>partout</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="807"/>
+        <location filename="pymecavideo_mini.ui" line="816"/>
         <source>Échelle de vitesses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="830"/>
+        <location filename="pymecavideo_mini.ui" line="839"/>
         <source>px pour 1 m/s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="860"/>
+        <location filename="pymecavideo_mini.ui" line="869"/>
         <source>Voir un graphique</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1300"/>
+        <location filename="pymecavideo.py" line="1309"/>
         <source>Choisir ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="891"/>
+        <location filename="pymecavideo_mini.ui" line="900"/>
         <source>Voir la vidéo</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="920"/>
+        <location filename="pymecavideo_mini.ui" line="929"/>
         <source>Définir un autre référentiel : </source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="926"/>
+        <location filename="pymecavideo_mini.ui" line="935"/>
         <source>Coordonnées</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="932"/>
+        <location filename="pymecavideo_mini.ui" line="941"/>
         <source>Tableau des dates et des coordonnées</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="938"/>
+        <location filename="pymecavideo_mini.ui" line="947"/>
         <source>Copier les mesures dans le presse papier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="946"/>
+        <location filename="pymecavideo_mini.ui" line="955"/>
         <source>Exporter vers ....</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="951"/>
+        <location filename="pymecavideo_mini.ui" line="960"/>
         <source>Oo.o Calc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="956"/>
+        <location filename="pymecavideo_mini.ui" line="965"/>
         <source>Qtiplot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="961"/>
+        <location filename="pymecavideo_mini.ui" line="970"/>
         <source>SciDAVis</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="969"/>
+        <location filename="pymecavideo_mini.ui" line="978"/>
         <source>changer d&apos;échelle ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1009"/>
+        <location filename="pymecavideo_mini.ui" line="1018"/>
         <source>&amp;Fichier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1013"/>
+        <location filename="pymecavideo_mini.ui" line="1022"/>
         <source>E&amp;xporter vers ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1030"/>
+        <location filename="pymecavideo_mini.ui" line="1039"/>
         <source>&amp;Aide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1039"/>
+        <location filename="pymecavideo_mini.ui" line="1048"/>
         <source>&amp;Edition</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="1056"/>
+        <location filename="pymecavideo_mini.ui" line="1065"/>
         <source>&amp;Ouvrir une vidéo (Ctrl-O)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1064"/>
+        <location filename="pymecavideo_mini.ui" line="1073"/>
         <source>avanceimage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1069"/>
+        <location filename="pymecavideo_mini.ui" line="1078"/>
         <source>reculeimage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1074"/>
+        <location filename="pymecavideo_mini.ui" line="1083"/>
         <source>Quitter (Ctrl-Q)</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="1082"/>
+        <location filename="pymecavideo_mini.ui" line="1091"/>
         <source>Enregistrer les données (Ctrl-S)</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="1090"/>
+        <location filename="pymecavideo_mini.ui" line="1099"/>
         <source>À &amp;propos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1095"/>
+        <location filename="pymecavideo_mini.ui" line="1104"/>
         <source>Aide (F1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1103"/>
+        <location filename="pymecavideo_mini.ui" line="1112"/>
         <source>Exemples ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="1108"/>
+        <location filename="pymecavideo_mini.ui" line="1117"/>
         <source>Ouvrir un projet &amp;mecavidéo</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="1113"/>
+        <location filename="pymecavideo_mini.ui" line="1122"/>
         <source>&amp;Préférences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1118"/>
+        <location filename="pymecavideo_mini.ui" line="1127"/>
         <source>&amp;Copier dans le presse-papier (Ctrl-C)</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="pymecavideo_mini.ui" line="1126"/>
+        <location filename="pymecavideo_mini.ui" line="1135"/>
         <source>Défaire (Ctrl-Z)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1134"/>
+        <location filename="pymecavideo_mini.ui" line="1143"/>
         <source>Refaire (Ctrl-Y)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1142"/>
+        <location filename="pymecavideo_mini.ui" line="1151"/>
         <source>OpenOffice.org &amp;Calc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1147"/>
+        <location filename="pymecavideo_mini.ui" line="1156"/>
         <source>Qti&amp;plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo_mini.ui" line="1152"/>
+        <location filename="pymecavideo_mini.ui" line="1161"/>
         <source>Sci&amp;davis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="290"/>
+        <location filename="pymecavideo.py" line="319"/>
         <source>Lancer %1
  pour capturer une vid&#xc3;&#xa9;o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="321"/>
+        <location filename="pymecavideo.py" line="350"/>
         <source>ind&#xc3;&#xa9;f</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="365"/>
+        <location filename="pymecavideo.py" line="398"/>
         <source>NON DISPO : %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="905"/>
+        <location filename="pymecavideo.py" line="914"/>
         <source>Ouvrir un projet Pymecavideo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="905"/>
+        <location filename="pymecavideo.py" line="914"/>
         <source>fichiers pymecavideo(*.csv)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1078"/>
+        <location filename="pymecavideo.py" line="1087"/>
         <source>temps en seconde, positions en m&#xc3;&#xa8;tre</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1141"/>
+        <location filename="pymecavideo.py" line="1152"/>
         <source>point N&#xc2;&#xb0; %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1152"/>
-        <source>Veuillez s&#xc3;&#xa9;lectionner un cadre autour de(s) l&apos;objet(s) que vous voulez suivre.
-Vous pouvez arr&#xc3;&#xaa;ter &#xc3;&#xa0; tous moments la capture en appuyant sur le bouton</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="pymecavideo.py" line="1321"/>
+        <location filename="pymecavideo.py" line="1330"/>
         <source>Evolution de l&apos;abscisse du point %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1321"/>
+        <location filename="pymecavideo.py" line="1330"/>
         <source>Evolution de l&apos;ordonn&#xc3;&#xa9;e du point %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1321"/>
+        <location filename="pymecavideo.py" line="1330"/>
         <source>Evolution de la vitesse du point %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1385"/>
+        <location filename="pymecavideo.py" line="1394"/>
         <source>Pointage des positions&#xc2;&#xa0;: cliquer sur le point N&#xc2;&#xb0; %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1417"/>
+        <location filename="pymecavideo.py" line="1426"/>
         <source>Vous avez atteint la fin de la vid&#xc3;&#xa9;o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1559"/>
+        <location filename="pymecavideo.py" line="1580"/>
         <source>D&#xc3;&#xa9;finir une &#xc3;&#xa9;chelle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1559"/>
+        <location filename="pymecavideo.py" line="1580"/>
         <source>Quelle est la longueur en m&#xc3;&#xa8;tre de votre &#xc3;&#xa9;talon sur l&apos;image ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1579"/>
+        <location filename="pymecavideo.py" line="1600"/>
         <source> Merci d&apos;indiquer une &#xc3;&#xa9;chelle valable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1635"/>
+        <location filename="pymecavideo.py" line="1656"/>
         <source>Les donn&#xc3;&#xa9;es seront perdues</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1635"/>
+        <location filename="pymecavideo.py" line="1656"/>
         <source>Votre travail n&apos;a pas &#xc3;&#xa9;t&#xc3;&#xa9; sauvegard&#xc3;&#xa9;
 Voulez-vous les sauvegarder ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1659"/>
+        <location filename="pymecavideo.py" line="1680"/>
         <source>Vous avez atteint le d&#xc3;&#xa9;but de la vid&#xc3;&#xa9;o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1701"/>
+        <location filename="pymecavideo.py" line="1722"/>
         <source>Ouvrir une vid&#xc3;&#xa9;o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1696"/>
+        <location filename="pymecavideo.py" line="1717"/>
         <source>Nom de fichier non conforme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1696"/>
-        <source>Le nom de votre fichier contient des caract&#xc3;&#xa8;res accentu&#xc3;&#xa9;s ou des espaces.
-Merci de bien vouloir le renommer avant de continuer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="pymecavideo.py" line="1729"/>
+        <location filename="pymecavideo.py" line="1757"/>
         <source>Veuillez choisir une image et d&#xc3;&#xa9;finir l&apos;&#xc3;&#xa9;chelle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1764"/>
+        <location filename="pymecavideo.py" line="1795"/>
         <source>D&#xc3;&#xa9;sol&#xc3;&#xa9; pas de fichier d&apos;aide pour le langage %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1672"/>
+        <location filename="pymecavideo.py" line="1693"/>
         <source>fichiers vid&#xc3;&#xa9;os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1684"/>
+        <location filename="pymecavideo.py" line="1705"/>
         <source>fichiers vid&#xc3;&#xa9;os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="pymecavideo.py" line="1163"/>
+        <source>
+Veuillez s&#xc3;&#xa9;lectionner un cadre autour de(s) l&apos;objet(s) que vous voulez suivre.
+Vous pouvez arr&#xc3;&#xaa;ter &#xc3;&#xa0; tous moments la capture en appuyant sur le bouton</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="pymecavideo.py" line="1717"/>
+        <source>
+Le nom de votre fichier contient des caract&#xc3;&#xa8;res accentu&#xc3;&#xa9;s ou des espaces.
+Merci de bien vouloir le renommer avant de continuer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>self.app</name>
     <message>
-        <location filename="cadreur.py" line="56"/>
+        <location filename="cadreur.py" line="57"/>
         <source>Presser la touche ESC pour sortir</source>
         <translation type="unfinished"></translation>
     </message>
@@ -447,17 +449,17 @@ Merci de bien vouloir le renommer avant de continuer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="preferences.py" line="48"/>
+        <location filename="preferences.py" line="47"/>
         <source>Proximite de la souris %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="preferences.py" line="49"/>
+        <location filename="preferences.py" line="48"/>
         <source>; derniere video %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="preferences.py" line="50"/>
+        <location filename="preferences.py" line="49"/>
         <source>; videoDir %1</source>
         <translation type="unfinished"></translation>
     </message>

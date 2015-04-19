@@ -10,6 +10,12 @@
     <height>579</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="minimumSize">
    <size>
     <width>833</width>
@@ -18,8 +24,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>833</width>
-    <height>579</height>
+    <width>16000</width>
+    <height>16000</height>
    </size>
   </property>
   <property name="font">
@@ -30,9 +36,12 @@
   <property name="windowTitle">
    <string>PyMecaVideo, analyse mécanique des vidéos</string>
   </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -45,8 +54,8 @@
    </property>
    <property name="maximumSize">
     <size>
-     <width>833</width>
-     <height>540</height>
+     <width>16000</width>
+     <height>16000</height>
     </size>
    </property>
    <property name="font">
@@ -76,7 +85,7 @@
         </property>
         <property name="geometry">
          <rect>
-          <x>153</x>
+          <x>150</x>
           <y>40</y>
           <width>640</width>
           <height>480</height>
@@ -90,8 +99,8 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>640</width>
-          <height>480</height>
+          <width>16000000</width>
+          <height>16000000</height>
          </size>
         </property>
         <property name="palette">
@@ -626,7 +635,7 @@
          <rect>
           <x>10</x>
           <y>360</y>
-          <width>138</width>
+          <width>154</width>
           <height>153</height>
          </rect>
         </property>
@@ -1001,7 +1010,7 @@ la souris</string>
      <x>0</x>
      <y>0</y>
      <width>833</width>
-     <height>26</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

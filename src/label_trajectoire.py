@@ -30,7 +30,8 @@ class Label_Trajectoire(QLabel):
     def __init__(self, parent, app, origine=vecteur(0, 0), referentiel=0):
         QLabel.__init__(self, parent)
         self.app = app
-        self.setGeometry(QRect(0, 0, 640, 480))
+
+        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
         self.setCursor(Qt.ArrowCursor)
         self.setAutoFillBackground(True)
         self.setMouseTracking(1)
@@ -48,7 +49,8 @@ class Label_Trajectoire(QLabel):
         """call when somthing change as repere, origine ..."""
         self.giveCoordonatesToPaint()
         self.repaint()
-
+    def maj(self):
+        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
 
     def giveCoordonatesToPaint(self):
         #print "recalcul vitesse"

@@ -241,19 +241,21 @@ class openCvReader:
 
     def recupere_avi_infos(self):
         """
-        Trouve deux renseignements au sujet d'un fichier vidéo
-        @return une paire (framerate,nombre d'images)
+        Détermine les fps, le nombre de frames, la largeur, la hauteur d'un fichier vidéo
+        @return un quadruplet (framerate,nombre d'images,la largeur, la hauteur)
         """
         try:
             self.rembobine()
             fps = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FPS)
             fcount = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_COUNT)
+            largeur = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_WIDTH)
+            hauteur = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_HEIGHT)
         except:
             print "could not retrieve informations from the video file."
             print "assuming fps = 25, frame count = 10."
             return 25, 10
 #        return fps, fcount
-        return fps, fcount - 1
+        return fps, fcount - 1, largeur, hauteur
 
     def __str__(self):
         return "<openCvReader instance: filename=%s, nextImage=%d>" % (self.filename, self.nextImage)
