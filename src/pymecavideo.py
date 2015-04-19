@@ -322,7 +322,7 @@ class StartQT4(QMainWindow):
             self.ui.pushButton_video.hide()
 
 
-    def init_interface(self):
+    def init_interface(self,refait=0):
         self.ui.tabWidget.setEnabled(1)
         self.ui.tabWidget.setEnabled(1)
         self.ui.actionDefaire.setEnabled(1)
@@ -351,7 +351,8 @@ class StartQT4(QMainWindow):
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
         self.ui.spinBox_image.setEnabled(0)
         self.affiche_lance_capture(False)
-        self.ui.horizontalSlider.setValue(1)
+        if not refait :
+            self.ui.horizontalSlider.setValue(1)
 
         self.affiche_nb_points(False)
         self.ui.Bouton_Echelle.setEnabled(False)
@@ -452,16 +453,19 @@ class StartQT4(QMainWindow):
         # tout mais qu'on doit garder la position de départ. Cas quand
         # on revient en arrière d'un cran ou que l'on refait le point.
         #############
-        self.init_interface()
+
         if index_point_actuel:
+            self.init_interface(refait=1)
             ############ permet de récupérer les 2 valeurs souhaitées
-            index_depart = self.premiere_image
+
             ############
             self.init_variables(None, filename=self.filename)
             self.index_de_l_image = index_point_actuel
-            self.premiere_image = index_depart
+
+            self.premiere_image = index_point_actuel
             self.ui.spinBox_image.setValue(self.index_de_l_image)
         else:
+            self.init_interface()
             self.init_variables(None, filename=self.filename)
         if echelle_image:
             self.echelle_image = echelle_image
@@ -486,17 +490,10 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'reinitialise_capture'")
         self.montre_vitesses = False
 
-        # self.oubliePoints()
         self.label_trajectoire.update()
         self.ui.label.update()
         self.label_video.update()
         self.label_video.setCursor(Qt.ArrowCursor)
-        # for enfant in self.label_video.children():
-        # enfant.hide()
-        # del enfant
-        #del self.label_video.zoom_croix
-
-        #del self.label_video
         self.init_variables(None, filename=self.filename)
         self.affiche_image()
 
@@ -508,6 +505,7 @@ class StartQT4(QMainWindow):
         self.enableDefaire(False)
         self.enableRefaire(False)
         self.affiche_nb_points(1)
+        self.ui.Bouton_lance_capture.setEnabled(0)
         ### Réactiver checkBox_avancees après réinitialisation ###
         self.ui.pushButton_origine.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
@@ -1235,11 +1233,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def efface_point_precedent(self):
         """revient au point précédent
         """
-        print('oooeff_pt_prec',self.index_de_l_image)
+        print('EFFACE_pt_prec',self.index_de_l_image)
         self.dbg.p(1, "rentre dans 'efface_point_precedent'")
         self.tousLesClics.decPtr()
 
-        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics, self.index_de_l_image - 1)
+        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics, self.premiere_image)
         self.repasseTousLesClics()
         self.label_echelle_trace.show()
         self.modifie = True
@@ -1249,7 +1247,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'refait_point_suivant'")
         self.tousLesClics.incPtr()
-        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics, self.index_de_l_image + 1)
+        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics, self.premiere_image)
         self.repasseTousLesClics()
         self.modifie = True
 
@@ -1259,7 +1257,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         sur l'image, jusqu'au pointeur courant de cette liste pointée.
         """
         self.dbg.p(1, "rentre dans 'repasseTousLesClics'")
-
+        print('REPASSE', self.index_de_l_image)
         self.affiche_echelle()
         self.affiche_nb_points()
         self.ui.tab_traj.setEnabled(1)
@@ -1446,6 +1444,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'enableDefaire'")
         self.ui.pushButton_defait.setEnabled(value)
         self.ui.actionDefaire.setEnabled(value)
+
+        ##permet de remettre l'interface à zéro
+        if not value :
+            self.init_capture()
+            self.ui.horizontalSlider.setEnabled(True)
+            self.ui.spinBox_image.setEnabled(True)
+
 
     def enableRefaire(self, value):
         """
@@ -1753,18 +1758,26 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
                 self.prefs.lastVideo = self.filename
                 self.init_image()
-                self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
-                self.ui.menuE_xporter_vers.setEnabled(1)
-                self.ui.actionSaveData.setEnabled(1)
-                self.mets_a_jour_label_infos(
-                    _translate("pymecavideo", "Veuillez choisir une image et définir l'échelle", None))
-                self.ui.Bouton_Echelle.setEnabled(True)
-                self.ui.spinBox_nb_de_points.setEnabled(True)
-                self.ui.horizontalSlider.setEnabled(1)
+                self.init_capture()
                 self.label_video.show()
-
                 self.prefs.videoDir = os.path.dirname(self.filename)
                 self.prefs.save()
+
+    def init_capture(self):
+        """met le panneaux de capture visible"""
+        self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
+        self.ui.menuE_xporter_vers.setEnabled(1)
+        self.ui.actionSaveData.setEnabled(1)
+        self.mets_a_jour_label_infos(
+            _translate("pymecavideo", "Veuillez choisir une image et définir l'échelle", None))
+        self.ui.Bouton_Echelle.setEnabled(True)
+        self.ui.spinBox_nb_de_points.setEnabled(True)
+        self.ui.horizontalSlider.setEnabled(1)
+        self.ui.checkBox_abscisses.setEnabled(1)
+        self.ui.checkBox_ordonnees.setEnabled(1)
+        self.ui.checkBox_auto.setEnabled(1)
+        if self.label_echelle_trace:
+            self.ui.Bouton_lance_capture.setEnabled(True)
 
 
     def propos(self):
