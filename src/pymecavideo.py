@@ -467,6 +467,7 @@ class StartQT4(QMainWindow):
         if tousLesClics != None and tousLesClics.count():
             self.tousLesClics = tousLesClics
 
+
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
@@ -1029,10 +1030,15 @@ class StartQT4(QMainWindow):
             pass  # premier passage
 
     def resizeEvent(self, event):
-        if self.premierResize:
+        self.redimensionne()
+
+    def redimensionne(self, premier=None):
+        if self.premierResize or premier:
+            print('premier resize')
             self.determineHauteurLargeur()
             self.premierResize = False
         else:
+            print('normal resize')
             self.determineHauteurLargeur(self.width())
         rect = self.geometry()
         self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
@@ -1044,6 +1050,9 @@ class StartQT4(QMainWindow):
             self.affiche_image()
         except AttributeError:
             pass  # premier passage si pas de vidéo avant
+
+        print(self.largeur, self.hauteur, self.width())
+
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
@@ -1749,6 +1758,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
                 self.init_image()
                 self.init_capture()
+                self.redimensionne(premier=1)
                 self.label_video.show()
                 self.prefs.videoDir = os.path.dirname(self.filename)
                 self.prefs.save()
