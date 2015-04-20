@@ -233,7 +233,7 @@ class StartQT4(QMainWindow):
 
         self.init_variables(opts)
 
-        #connections internes
+        # connections internes
         self.ui_connections()
 
         #prise en compte d'options de la ligne de commande
@@ -304,10 +304,8 @@ class StartQT4(QMainWindow):
         self.tousLesClics = listePointee()  # tous les clics faits sur l'image
 
         self.goCalcul = True  # Booléen vérifiant la disponibilté du thread de calcul
-
-        #self.largeur = 640
-        #self.hauteur = 480
-
+        self.updatePicture = True
+        self.premierResize = True #arrive quand on ouvre la première fois la fenetre
 
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture', 'wxAstroCapture']:
@@ -325,7 +323,7 @@ class StartQT4(QMainWindow):
             self.ui.pushButton_video.hide()
 
 
-    def init_interface(self,refait=0):
+    def init_interface(self, refait=0):
         self.ui.tabWidget.setEnabled(1)
         self.ui.tabWidget.setEnabled(1)
         self.ui.actionDefaire.setEnabled(1)
@@ -341,6 +339,8 @@ class StartQT4(QMainWindow):
 
         self.update()
 
+
+        self.emit(SIGNAL('OKRedimensionnement'))
         self.ui.horizontalSlider.setEnabled(0)
 
         self.ui.pushButton_video.setEnabled(0)
@@ -353,7 +353,7 @@ class StartQT4(QMainWindow):
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
         self.ui.spinBox_image.setEnabled(0)
         self.affiche_lance_capture(False)
-        if not refait :
+        if not refait:
             self.ui.horizontalSlider.setValue(1)
 
         self.affiche_nb_points(False)
@@ -381,7 +381,7 @@ class StartQT4(QMainWindow):
         self.ui.tabWidget.setCurrentIndex(0)  # montre l'onglet video
 
         print (self.ui.tabWidget.geometry().width(), self.ui.label.geometry().width(), self.geometry().width())
-        #self.setGeometry(0,0,self.ui.tabWidget.geometry().width()+ self.ui.label.geometry().width(),self.ui.label.geometry().height())
+        # self.setGeometry(0,0,self.ui.tabWidget.geometry().width()+ self.ui.label.geometry().width(),self.ui.label.geometry().height())
 
 
     def desactiveExport(self, text):
@@ -486,6 +486,7 @@ class StartQT4(QMainWindow):
             self.nb_de_points = nb_de_points
         if tousLesClics != None and tousLesClics.count():
             self.tousLesClics = tousLesClics
+
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
@@ -568,6 +569,8 @@ class StartQT4(QMainWindow):
         QObject.connect(self, SIGNAL('change_axe_origine()'), self.change_axe_ou_origine)
         QObject.connect(self, SIGNAL('selection_done()'), self.picture_detect)
         QObject.connect(self, SIGNAL('selection_motif_done()'), self.storeMotif)
+        QObject.connect(self, SIGNAL('stopRedimensionnement()'), self.fixeLesDimensions)
+        QObject.connect(self, SIGNAL('OKRedimensionnement()'), self.defixeLesDimensions)
 
         QObject.connect(self, SIGNAL('stopCalculs()'), self.stopComputing)
         QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
@@ -577,6 +580,17 @@ class StartQT4(QMainWindow):
 
         QObject.connect(self.ui.pushButton_nvl_echelle, SIGNAL("clicked()"), self.recommence_echelle)
 
+    def fixeLesDimensions(self):
+        print('RRRRRRRRRR')
+        #self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setMinimumWidth(self.width())
+        self.setMaximumWidth(self.width())
+        #self.setFixedWidth(self.width())
+        #self.setFixedHeight(self.height())
+
+    def defixeLesDimensions(self):
+        self.setMinimumWidth(833)
+        self.setMaximumWidth(16000000)
 
     def updatePB(self):
         self.qmsgboxencode.updateProgressBar()
@@ -619,7 +633,7 @@ class StartQT4(QMainWindow):
 
             # TODO : tests avec les différents mode de threading
             ##Qthread (fonctionne mal)
-            #self.monThread = MonThreadDeCalculQt(self, self.motif[self.indexMotif], self.imageAffichee)
+            # self.monThread = MonThreadDeCalculQt(self, self.motif[self.indexMotif], self.imageAffichee)
 
             #Python
             self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee)
@@ -724,6 +738,7 @@ class StartQT4(QMainWindow):
 
         self.label_video.origine = self.origine
         self.label_video.update()
+        self.emit(SIGNAL('stopRedimensionnement()'))
 
         # construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
         if self.points_ecran != {}:
@@ -986,7 +1001,7 @@ class StartQT4(QMainWindow):
 
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        framerate, self.image_max,self.largeurFilm,self.hauteurFilm  = self.cvReader.recupere_avi_infos()
+        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
 
         self.determineHauteurLargeur()
 
@@ -1013,25 +1028,58 @@ class StartQT4(QMainWindow):
         self.prefs.videoDir = os.path.dirname(self.filename)
         self.prefs.save()
 
-    def determineHauteurLargeur(self,largeur=None):
+    def determineHauteurLargeur(self, largeur=None):
         ##si le film est trop large on le fixe vers les 3/4 de l'écran
         print('determineklargeur')
-        framerate, self.image_max,self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         sizeEcran = QDesktopWidget().screenGeometry()
-        rapportLH = float(self.largeurFilm)/self.hauteurFilm
-        if self.largeurFilm > sizeEcran.width()*3.0/4.0:
-            self.largeur = int(sizeEcran.width()*3.0/4.0)
-        elif self.largeurFilm <640 :
+        rapportLH = float(self.largeurFilm) / self.hauteurFilm
+        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
+            self.largeur = int(sizeEcran.width() * 3.0 / 4.0)
+        elif self.largeurFilm < 640:
             self.largeur = 640
-        else :
+        else:
             self.largeur = self.largeurFilm
+        try :
+            if largeur:
+                print('ttt', self.largeur, self.largeurAvant, self.origine.x(), self.origine.x() * float(self.largeur)/self.largeurAvant)
+                self.largeur = largeur - 190
+                self.hauteur = int(self.largeur / rapportLH)
+                self.origine = vecteur(int(self.largeur/2),int(self.hauteur/2))
+                self.label_video.origine = self.origine
+            self.hauteur = int(self.largeur / rapportLH)
 
-        if largeur:
-            print('ttt',largeur,self.ui.tabWidget.width() )
-            self.largeur = largeur-130
-        self.hauteur = int(self.largeur/rapportLH)
-        print(self.largeurFilm,sizeEcran.width()*3.0/4.0,self.largeur, self.hauteurFilm, self.hauteur)
-        print(self.largeur,self.hauteur)
+        except AttributeError:
+            pass #premier passage
+
+
+        print(self.largeurFilm, sizeEcran.width() * 3.0 / 4.0, self.largeur, self.hauteurFilm, self.hauteur)
+        print("ffffff", self.largeur, self.hauteur, self.origine)
+
+
+    def resizeEvent(self, event):
+        print ('rezise')
+        self.largeurAvant = self.largeur
+        self.hauteurAvant = self.hauteur
+        if self.premierResize:
+            self.determineHauteurLargeur()
+            self.premierResize = False
+        else :
+            self.determineHauteurLargeur(self.width())
+        rect = self.geometry()
+
+        self.setGeometry(rect.x(),rect.y(), self.width(), self.hauteur+130)
+        self.ui.label.setGeometry(QRect(150, 40, self.largeur, self.hauteur))
+        try :
+            self.label_video.maj()
+            self.label_trajectoire.maj()
+
+            self.affiche_image()
+        except AttributeError:
+            pass #premier passage si pas de vidéo avant
+        print("##########",self.geometry(), self.x())
+
+
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
@@ -1051,21 +1099,6 @@ class StartQT4(QMainWindow):
         self.echelle_image.p1, self.echelle_image.p2, self.deltaT, self.nb_de_points, msg)
         return result
 
-        # def dumps(self):
-        # self.dbg.p(1,"rentre dans 'dumps'")
-
-        # return "#"+pickle.dumps((self.filename,self.premiere_image,self.echelle_image.longueur_reelle_etalon\
-        #,self.echelle_image.p1,self.echelle_image.p2,self.deltaT,self.nb_de_points\
-        #,self.origine, self.sens_X,self.sens_Y)).replace("\n","\n#")
-
-    def resizeEvent (self,event):
-        print ('rezise')
-        self.determineHauteurLargeur(self.width())
-        self.ui.label.setGeometry(QRect(150, 40, self.largeur, self.hauteur))
-        self.label_video.maj()
-        self.label_trajectoire.maj()
-
-
     def enregistre(self, fichier):
         self.dbg.p(1, "rentre dans 'enregistre'")
         sep_decimal = "."
@@ -1081,7 +1114,7 @@ class StartQT4(QMainWindow):
             # file = open(fichierMecavideo, 'w')
             liste_des_cles = []
             # try :
-            #file.write(self.dumps())
+            # file.write(self.dumps())
             for key in self.points:
                 liste_des_cles.append(key)
                 #liste_des_cles.sort()
@@ -1272,9 +1305,14 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.affiche_echelle()
         self.affiche_nb_points()
         self.ui.tab_traj.setEnabled(1)
+        compteurClic = 0
         for clics in self.tousLesClics:
+            compteurClic+=1
+            if compteurClic==len(self.tousLesClics) :
+                self.updatePicture = True #afficeh la dernière mage
+            else :
+                self.updatePicture = False #afficeh la dernière mage
             self.clic_sur_label_video(liste_points=clics, interactif=False)
-            self.updatePicture = False
         self.clic_sur_label_video_ajuste_ui(1)
 
 
@@ -1452,7 +1490,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.ui.actionDefaire.setEnabled(value)
 
         ##permet de remettre l'interface à zéro
-        if not value :
+        if not value:
             self.init_capture()
             self.ui.horizontalSlider.setEnabled(True)
             self.ui.spinBox_image.setEnabled(True)
@@ -1545,27 +1583,28 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def affiche_image(self):
         self.dbg.p(1, "rentre dans 'affiche_image'")
-        try :
-            self.dbg.p(1, "rentre dans 'affiche_image'"+' '+str(self.index_de_l_image)+' '+ str(self.image_max))
+        try:
+            self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' + str(self.index_de_l_image) + ' ' + str(self.image_max))
+            if self.updatePicture :
+                if self.index_de_l_image <= self.image_max:
+                    self.extract_image(self.filename, self.index_de_l_image)
+                    image = QImage(self.chemin_image)
+                    self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
+                    if hasattr(self, "label_video"):
+                        self.label_video.setMouseTracking(True)
+                        self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
+                        self.label_video.met_a_jour_crop()
+                        self.label_video.update()
 
-            if self.index_de_l_image<=self.image_max:
-                self.extract_image(self.filename, self.index_de_l_image)
-                image = QImage(self.chemin_image)
-                self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
-                if hasattr(self, "label_video"):
-                    self.label_video.setMouseTracking(True)
-                    self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
-                    self.label_video.met_a_jour_crop()
-                    self.label_video.update()
-
-                    self.label_video.show()
-                    self.ui.horizontalSlider.setValue(self.index_de_l_image)
-                    self.ui.spinBox_image.setValue(self.index_de_l_image)
-            elif  self.index_de_l_image>self.image_max:
-                self.index_de_l_image=self.image_max
+                        self.label_video.show()
+                        self.ui.horizontalSlider.setValue(self.index_de_l_image)
+                        self.ui.spinBox_image.setValue(self.index_de_l_image)
+                elif self.index_de_l_image > self.image_max:
+                    self.index_de_l_image = self.image_max
 
         except AttributeError:
             pass
+
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
         self.ui.tabWidget.setCurrentIndex(0)
@@ -1583,6 +1622,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'affiche_image_slider'")
         self.index_de_l_image = self.ui.horizontalSlider.value()
         self.affiche_image()
+
     def affiche_image_slider_move(self):
         """only change spinBox value"""
         self.dbg.p(1, "rentre dans 'affiche_image_slider_move'")
@@ -1628,6 +1668,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1, p2)
         self.label_echelle_trace.show()
+        self.emit(SIGNAL('stopRedimensionnement()'))
 
 
     def reinitialise_environnement(self):
@@ -1762,7 +1803,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
                 self.prefs.lastVideo = self.filename
                 self.determineHauteurLargeur()
-                self.ui.label.setGeometry(153,40,self.largeur, self.hauteur)
+                self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
                 self.init_image()
                 self.init_capture()
                 self.label_video.show()
@@ -1782,11 +1823,11 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
         self.ui.checkBox_auto.setEnabled(1)
-        try :
+        try:
             if self.label_echelle_trace:
                 self.ui.Bouton_lance_capture.setEnabled(True)
         except AttributeError:
-            pass #si l'échelle n'est pas défine encore
+            pass  # si l'échelle n'est pas défine encore
 
 
     def propos(self):
@@ -1837,7 +1878,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
         self.dbg.p(1, "rentre dans 'defini_barre_avancement'")
-        framerate, self.image_max,self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         self.dbg.p(3,
                    "In :  'defini_barre_avancement', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
         self.deltaT = float(1.0 / framerate)

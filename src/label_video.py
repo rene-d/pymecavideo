@@ -121,6 +121,7 @@ class Label_Video(QtGui.QLabel):
         ############################################################
         # paint the origin
         self.painter.setPen(Qt.green)
+        print('origin', self.origine)
         self.painter.drawLine(self.origine.x() - 5, self.origine.y(), self.origine.x() + 5, self.origine.y())
         self.painter.drawLine(self.origine.x(), self.origine.y() - 5, self.origine.x(), self.origine.y() + 5)
         self.painter.drawText(self.origine.x(), self.origine.y() + 15, "O")
