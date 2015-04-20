@@ -47,18 +47,16 @@ import sys
 # import Error
 
 from vecteur import vecteur
-import os, thread, time, commands, linecache, codecs, re
-import locale, getopt, pickle
+import time, commands, codecs
+import locale, getopt
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import PyQt4.QtXml
 
 # création précoce de l'objet application, déjà nécessaire pour traiter les bugs
 app = QApplication(sys.argv)
 
 from glob import glob
 from echelle import Label_Echelle, echelle
-from math import sqrt
 from label_video import Label_Video
 from label_trajectoire import Label_Trajectoire
 from label_origine import Label_Origine
@@ -78,12 +76,11 @@ import re
 from pgraph import traceur2d
 
 import threading
-import platform, subprocess
+import platform
 import tempfile
 
-from globdef import PATH, APP_DATA_PATH, GetChildStdErr, IMG_PATH, \
-    VIDEO, SUFF, VIDEO_PATH, CONF_PATH, IMG_PATH, ICON_PATH, LANG_PATH, \
-    DATA_PATH, HELP_PATH, NEWVID_PATH, toFileEncoding
+from globdef import APP_DATA_PATH, VIDEO, SUFF, VIDEO_PATH, CONF_PATH, IMG_PATH, ICON_PATH, LANG_PATH, \
+    DATA_PATH, HELP_PATH, NEWVID_PATH
 
 from detect import filter_picture
 
@@ -1025,10 +1022,10 @@ class StartQT4(QMainWindow):
         sizeEcran = QDesktopWidget().screenGeometry()
         rapportLH = float(self.largeurFilm) / self.hauteurFilm
         if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
-            self.dbg.p(2,'film trop grand')
+            self.dbg.p(2, 'film trop grand')
             self.largeur = int(sizeEcran.width() * 3.0 / 4.0)
         elif self.largeurFilm < 640:
-            self.dbg.p(2,'film trop petit')
+            self.dbg.p(2, 'film trop petit')
             self.largeur = 640
         else:
             self.largeur = self.largeurFilm

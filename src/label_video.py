@@ -20,14 +20,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys
-import os
-import thread
-import time
-import commands
-from glob import glob
-from math import sqrt, acos, asin, pi, cos, sin, atan2
-
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
