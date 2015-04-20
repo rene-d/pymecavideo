@@ -89,11 +89,12 @@ _encoding = QApplication.UnicodeUTF8
 def _translate(context, text, disambig):
     return QApplication.translate(context, text, disambig, _encoding)
 
+
 class MonThreadDeCalcul(threading.Thread):
     """Thread permettant le calcul des points automatiquement. Version Python"""
+
     def __init__(self, parent, motif, image):
         threading.Thread.__init__(self)
-
         self.parent = parent
         self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
         self.motif = motif
@@ -170,7 +171,6 @@ class StartQT4(QMainWindow):
 
             message = QMessageBox(self)
         self.ui = Ui_pymecavideo()
-
         self.ui.setupUi(self)
 
         self.dbg = Dbg(0)
@@ -211,7 +211,6 @@ class StartQT4(QMainWindow):
             if any(os.access(os.path.join(p, exe_ooo), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
                 self.exe_ooo = exe_ooo
 
-
         # sciDAVis export
         self.scidavis_present = False
         if any(os.access(os.path.join(p, "scidavis"), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
@@ -230,9 +229,8 @@ class StartQT4(QMainWindow):
         # prise en compte d'options de la ligne de commande
         self.traiteOptions()
 
-        #chargement d'un éventuel premier fichier
+        # chargement d'un éventuel premier fichier
         self.splashVideo()
-
 
     # Basculer en mode plein écran / mode fenétré    
     def basculer_plein_ecran(self):
@@ -242,7 +240,6 @@ class StartQT4(QMainWindow):
         else:
             self.showNormal()
         self.plein_ecran = not (self.plein_ecran)
-
 
     def splashVideo(self):
         self.dbg.p(1, "rentre dans 'splashVideo'")
@@ -256,7 +253,6 @@ class StartQT4(QMainWindow):
                 self.openTheFile(self.prefs.lastVideo)
             except:
                 pass
-
 
     def init_variables(self, opts, filename=u""):
         self.dbg.p(1, "rentre dans 'init_variables'")
@@ -358,8 +354,6 @@ class StartQT4(QMainWindow):
             self.desactiveExport("SciDAVis")
 
         # création du label qui contiendra la vidéo.
-
-
         try:
             self.dbg.p(3, "In : init_interface, clear Label_Video")
             self.label_video.clear()
@@ -1079,25 +1073,9 @@ class StartQT4(QMainWindow):
         except TypeError:
             pass
         if fichier != "":
-            # fichierMecavideo=unicode(""+fichier) # on force une copie !
-            ##fichierMecavideo.replace(".csv",".mecavideo")
-            # file = open(fichierMecavideo, 'w')
             liste_des_cles = []
-            # try :
-            # file.write(self.dumps())
             for key in self.points:
                 liste_des_cles.append(key)
-                # liste_des_cles.sort()
-                #for cle in liste_des_cles:
-                #donnee=self.points[cle]
-                #t=float(donnee[0])
-                #a = "\n%.2f\t" %t
-                #for p in donnee[1:]:
-                #a+= "%d\t" %p.x()
-                #a+= "%d\t" %p.y()
-                #file.write(a)
-                #finally:
-                #file.close()
             ################## fin du fichier mecavideo ################
             fichier = unicode(fichier)
             fichier = fichier.encode('utf8')
@@ -1311,7 +1289,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if self.ui.tabWidget.currentIndex() != 0:  # Pas le premier onglet
 
                 origine = vecteur(0, 0)
-                # self.label_video.zoom_croix.hide()
                 if newValue == "absolu":
                     ref = "camera"
                 else:
@@ -1433,7 +1410,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.affiche_point_attendu(point_attendu)  # peut etre ici un update de l'image a optimiser
 
         else:
-
             point_attendu = 1
             self.affiche_point_attendu(point_attendu)
             if self.index_de_l_image <= self.image_max:  ##si on atteint la fin de la vidéo
@@ -1465,7 +1441,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.ui.horizontalSlider.setEnabled(True)
             self.ui.spinBox_image.setEnabled(True)
 
-
     def enableRefaire(self, value):
         """
         Contrôle la possibilité de refaire un clic
@@ -1481,7 +1456,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         @param point_attendu le numéro du point qui est à cliquer
         """
         self.dbg.p(1, "rentre dans 'clic_sur_label_video_ajuste_ui'")
-
         self.lance_capture = True
 
         if point_attendu == 1:  # pour une acquisition sur une nouvelle image
@@ -1713,7 +1687,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'mets_a_jour_label_infos'")
         self.statusBar().showMessage(message)
 
-
     def openexample(self):
         self.dbg.p(1, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
@@ -1864,7 +1837,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
             os.remove(fichier)
         except OSError:
             pass
-
 
     def extract_image(self, video, index, force=False):
         """
