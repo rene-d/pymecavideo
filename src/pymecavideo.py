@@ -1034,11 +1034,9 @@ class StartQT4(QMainWindow):
 
     def redimensionne(self, premier=None):
         if self.premierResize or premier:
-            print('premier resize')
             self.determineHauteurLargeur()
             self.premierResize = False
         else:
-            print('normal resize')
             self.determineHauteurLargeur(self.width())
         rect = self.geometry()
         self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
@@ -1050,9 +1048,6 @@ class StartQT4(QMainWindow):
             self.affiche_image()
         except AttributeError:
             pass  # premier passage si pas de vidéo avant
-
-        print(self.largeur, self.hauteur, self.width())
-
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
