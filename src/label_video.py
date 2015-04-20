@@ -42,8 +42,6 @@ class Label_Video(QtGui.QLabel):
         self.parent = parent
         self.app = app
         self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
-        # self.setStyleSheet("background-color: grey");
-
         self.liste_points = []
 
         self.app.dbg.p(1, "In : Label_Video, __init__")
@@ -101,7 +99,6 @@ class Label_Video(QtGui.QLabel):
             self.fait_crop(self.pos)
             self.app.ui.label_zoom.setPixmap(self.cropX2)
 
-
     def cache_zoom(self):
         pass
 
@@ -121,12 +118,9 @@ class Label_Video(QtGui.QLabel):
         ############################################################
         # paint the origin
         self.painter.setPen(Qt.green)
-        print('origin', self.origine)
         self.painter.drawLine(self.origine.x() - 5, self.origine.y(), self.origine.x() + 5, self.origine.y())
         self.painter.drawLine(self.origine.x(), self.origine.y() - 5, self.origine.x(), self.origine.y() + 5)
         self.painter.drawText(self.origine.x(), self.origine.y() + 15, "O")
-
-
 
         ############################################################
         #draw points
@@ -178,7 +172,6 @@ class Label_Video(QtGui.QLabel):
         self.painter.rotate(self.app.sens_X * self.app.sens_Y * (-90))
         self.painter.drawPolyline(p1, p2, p3, p4, p2)
         ############################################################
-
 
         self.painter.end()
 

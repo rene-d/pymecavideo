@@ -78,8 +78,6 @@ class Label_Auto(QLabel):
         sur les images successives.
         @result une QImage représentant le motif.
         """
-        #dimension_motif=20
-        #rectangle = QRect((self.x_1+self.x_2-dimension_motif)/2,(self.y_1+self.y_2-dimension_motif)/2,dimension_motif,dimension_motif)
         rectangle = QRect(self.x_1, self.y_1, self.x_2 - self.x_1, self.y_2 - self.y_1)
         return self.app.imageAffichee.copy(rectangle)
 
@@ -89,7 +87,6 @@ class Label_Auto(QLabel):
             painter = QPainter()
             painter.begin(self)
             painter.setPen(Qt.green)
-            #painter.setBrush(Qt.Dense6Pattern)
             painter.drawRect(self.x_1, self.y_1, self.x_2 - self.x_1, self.y_2 - self.y_1)
             painter.end()
 

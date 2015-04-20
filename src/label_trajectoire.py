@@ -53,10 +53,8 @@ class Label_Trajectoire(QLabel):
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
 
     def giveCoordonatesToPaint(self):
-        #print "recalcul vitesse"
         self.speedToDraw = []
         if self.app.ui.checkBoxVectorSpeed.isChecked():
-            #print "état des boutons,vecteur,poitn,partout",self.app.ui.checkBoxVectorSpeed.isChecked(),self.app.ui.radioButtonNearMouse.isChecked(),self.app.ui.radioButtonSpeedEveryWhere.isChecked()
             for key in self.app.points.keys():
                 points = self.app.points[key]
                 for i in range(len(points)):
@@ -78,7 +76,6 @@ class Label_Trajectoire(QLabel):
                         ptreferentielAfter = vecteur(0, 0)
 
                     if type(point) != type(""):
-                        #self.app.dbg.p(2,"distance between mouse and a point")
                         if self.app.ui.radioButtonNearMouse.isChecked() and self.pos != None:
                             near = 20
                             pos = self.pos
@@ -87,12 +84,9 @@ class Label_Trajectoire(QLabel):
                             if distance.manhattanLength() < near:
                                 self.app.dbg.p(2, "mouse near a point")
                                 wroteSpeed = True
-                                ##compute speed
-                                #print "chez souris", wroteSpeed
 
                         elif self.app.ui.radioButtonSpeedEveryWhere.isChecked():
                             wroteSpeed = True
-                            #print "partout", wroteSpeed
 
                         if wroteSpeed:
                             keyMax = len(self.app.points.keys())
@@ -108,21 +102,14 @@ class Label_Trajectoire(QLabel):
 
                                     vector_speed = pointAfter - pointBefore
 
-                                    #self.speedToDraw = [(QPoint(point.x(),point.y()), vector_speed,i)] #i give the color
-                                    #self.speedtest.append((QPoint(point.x()+self.origine.x()-ptreferentiel.x(), point.y()+self.origine.y()-ptreferentiel.y()), vector_speed,i))
                                     self.speedToDraw.append((QPoint(point.x() + self.origine.x() - ptreferentiel.x(),
                                                                     point.y() + self.origine.y() - ptreferentiel.y()),
                                                              vector_speed, i))
-                                    #self.repaint()
                                 except KeyError:  #last point -> can't compute speed
                                     pass
 
 
     def mouseMoveEvent(self, event):
-        #self.app.traiteSouris(event.pos())
-        #self.app.dbg.p(2,"in label_trajectoire, mousemoveevent")
-
-        #print self.app.points
         ####Look if mouse is near a point
         self.pos = event.pos()
         if self.app.ui.radioButtonNearMouse.isChecked():
@@ -176,11 +163,6 @@ class Label_Trajectoire(QLabel):
                                            -point.y() - 10 - self.origine.y() + ptreferentiel.y())
                     color += 1
         self.painter.end()
-
-
-        #self.painter.translate(-p.x()-self.origine.x()+ptreferentiel.x(), -p.y()-self.origine.y()+ptreferentiel.y())
-
-
         ############################################################
         #paint repere
         self.painter = QPainter()
@@ -205,7 +187,6 @@ class Label_Trajectoire(QLabel):
         ############################################################
         #paint speed vectors if asked
 
-        #print self.speedToDraw
         if self.speedToDraw != []:
             for vector in self.speedToDraw:
                 p, vector_speed, i = vector
@@ -227,7 +208,6 @@ class Label_Trajectoire(QLabel):
                     angle = atan2(float(vector_speed.y()), float(vector_speed.x()))
                     self.painter.translate(p.x(), p.y())
                     self.painter.rotate(degrees(angle))
-                    #self.painter.drawPolyline(p1,p2,p3,p4,p2)
                     self.painter.drawPath(path)
                     self.painter.fillPath(path, QColor(self.couleurs[i - 1]))  #VERIFIER COORDONÉES ICI
 

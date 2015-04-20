@@ -43,7 +43,6 @@ class film:
             self.frame = self.capture.read()
             self.num = 0
             self.fps = self.capture.get(cv.CV_CAP_PROP_FPS)
-
             self.framecount = self.capture.get(cv.CV_CAP_PROP_FRAME_COUNT)
             print(self.framecount,self.filesize)
             assert 1.0 * self.filesize / self.framecount > 1000.0, "fichier aberrant en taille"
