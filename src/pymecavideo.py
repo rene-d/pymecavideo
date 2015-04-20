@@ -42,7 +42,7 @@ licence['fr'] = u"""
 #
 # Le module de gestion des erreurs n'est chargé que si on execute le fichier .exe ou si on est sous Linux
 #
-import sys
+import sys, os
 # if sys.platform == "win32" or sys.argv[0].endswith(".exe"):
 # import Error
 
@@ -66,7 +66,6 @@ from dbg import Dbg
 from listes import listePointee
 from version import Version
 from label_auto import Label_Auto
-# from altvideo import AltVideo
 from dialogencode import QMessageBoxEncode
 
 import qtiplotexport
@@ -90,10 +89,8 @@ _encoding = QApplication.UnicodeUTF8
 def _translate(context, text, disambig):
     return QApplication.translate(context, text, disambig, _encoding)
 
-
 class MonThreadDeCalcul(threading.Thread):
-    """mon Thread"""
-
+    """Thread permettant le calcul des points automatiquement. Version Python"""
     def __init__(self, parent, motif, image):
         threading.Thread.__init__(self)
 
@@ -102,7 +99,6 @@ class MonThreadDeCalcul(threading.Thread):
         self.motif = motif
         self.image = image
         self._stopevent = threading.Event()
-
 
     def run(self):
         """
@@ -117,17 +113,15 @@ class MonThreadDeCalcul(threading.Thread):
 
 
 class MonThreadDeCalculQt(QThread):
-    """mon Thread"""
+    """Thread permettant le calcul des points automatiquement. Version Qt. 20/04/2015 : focntionne mal sous windows"""
 
     def __init__(self, parent, motif, image):
         QThread.__init__(self)
-
         self.parent = parent
         self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
         self.motif = motif
         self.image = image
         self.stopped = False
-
 
     def run(self):
         """
