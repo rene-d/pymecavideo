@@ -32,6 +32,7 @@ class Label_Trajectoire(QLabel):
         self.app = app
 
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
+        print('rrrrrrrrrrrr',self.geometry())
         self.setCursor(Qt.ArrowCursor)
         self.setAutoFillBackground(True)
         self.setMouseTracking(1)
@@ -44,11 +45,13 @@ class Label_Trajectoire(QLabel):
         self.speedToDraw = []
         self.speedtest = []
         self.pos = None
+        self.update()
 
     def reDraw(self):
         """call when somthing change as repere, origine ..."""
         self.giveCoordonatesToPaint()
         self.repaint()
+        print('ttttttttttttttttttt', self.geometry())
     def maj(self):
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
 
@@ -120,7 +123,7 @@ class Label_Trajectoire(QLabel):
         self.painter = QPainter()
         self.painter.begin(self)
         self.painter.save()
-        self.painter.fillRect(QRect(0, 0, 640, 480), QColor("grey"))
+        self.painter.fillRect(QRect(0, 0, self.app.largeur, self.app.hauteur), QColor("grey"))
         self.painter.setRenderHint(QPainter.Antialiasing)
 
 

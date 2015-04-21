@@ -1044,6 +1044,7 @@ class StartQT4(QMainWindow):
         try:
             self.label_video.maj()
             self.label_trajectoire.maj()
+            self.ui.label_3.setGeometry(self.ui.label_3.x(), self.ui.label_3.y(), self.largeur, self.hauteur)
 
             self.affiche_image()
         except AttributeError:
@@ -1226,7 +1227,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if min != None and max != None:
             return (min + max) * 0.5
         else:
-            return vecteur(320, 240)
+            return vecteur(self.largeur/2, self.hauteur/2)
 
     def efface_point_precedent(self):
         """revient au point précédent
@@ -1301,7 +1302,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 if len(ref) == 0: return
                 if ref != "camera":
                     bc = self.mediane_trajectoires(int(ref) - 1)
-                    origine = vecteur(320, 240) - bc
+                    origine = vecteur(self.largeur/2, self.hauteur/2) - bc
                     self.label_trajectoire.origine = origine
 
                     self.label_trajectoire.referentiel = ref
@@ -1369,7 +1370,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if typeDeCourbe in ("x", "y"):
                 if ref == "camera":
                     p1 = self.pointEnMetre(vecteur(0, 0))
-                    p2 = self.pointEnMetre(vecteur(640, 480))
+                    p2 = self.pointEnMetre(vecteur(self.largeur, self.hauteur))
                     minx = p1.x();
                     maxx = p2.x()
                     miny = p1.y();

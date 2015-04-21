@@ -61,7 +61,7 @@ class echelle(QObject):
         """
         result = []
         for p in pos:
-            result.append((vecteur(0, 480) - p) * self.mParPx())
+            result.append((vecteur(0, self.app.hauteur) - p) * self.mParPx())
         return result
 
     def etalonneReel(self, l):
@@ -160,7 +160,7 @@ class Label_Echelle_Trace(QLabel):
     def __init__(self, parent, p1, p2):
         QLabel.__init__(self, parent)
         self.parent = parent
-        self.setGeometry(QRect(0, 0, 640, 480))
+        self.setGeometry(QRect(0, 0, self.parent.app.largeur, self.parent.app.hauteur))
         self.setAutoFillBackground(False)
         self.p1 = p1
         self.p2 = p2
