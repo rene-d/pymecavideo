@@ -362,7 +362,9 @@ class StartQT4(QMainWindow):
             self.label_video = Label_Video(parent=self.ui.label, app=self)
             self.label_video.show()
 
+        self.ui.pushButtonEnregistreChrono.setVisible(0)
         self.ui.tabWidget.setCurrentIndex(0)  # montre l'onglet video
+
 
     def desactiveExport(self, text):
         """
@@ -554,6 +556,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self, SIGNAL('stopRedimensionnement()'), self.fixeLesDimensions)
         QObject.connect(self, SIGNAL('OKRedimensionnement()'), self.defixeLesDimensions)
 
+        QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
         QObject.connect(self, SIGNAL('stopCalculs()'), self.stopComputing)
         QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
         QObject.connect(self, SIGNAL('updateProgressBar()'), self.updatePB)
@@ -561,12 +564,20 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.exportCombo, SIGNAL("currentIndexChanged(int)"), self.export)
 
         QObject.connect(self.ui.pushButton_nvl_echelle, SIGNAL("clicked()"), self.recommence_echelle)
+    def enregistreChrono(self):
+        #self.label_trajectoire.render()
+        self.pixmapChrono = QPixmap(self.label_trajectoire.size())
+        self.label_trajectoire.render(self.pixmapChrono)
+        self.pixmapChrono.save('pouet.png')
 
     def chronoPhoto(self):
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         ##ajoute la première image utilisée pour le pointage sur le fond du label
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % self.premiere_image)
-        self.label_trajectoire.setPixmap(QPixmap.fromImage(QImage(imfilename)))
+        print ('---', imfilename)
+        self.imageChrono = QImage(imfilename).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
+        self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
+        self.ui.pushButtonEnregistreChrono.setVisible(1)
 
 
     def fixeLesDimensions(self):

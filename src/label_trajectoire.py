@@ -39,12 +39,13 @@ class Label_Trajectoire(QLabel):
                          "yellow", "gray", "green"]
         self.origine = origine
         self.referentiel = referentiel
-        self.origine_mvt = vecteur(self.geometry().width() / 2, self.geometry().height() / 2)
+        self.origine_mvt = vecteur(self.app.largeur/2,self.app.hauteur/2)
         self.setMouseTracking(True)
         self.speedToDraw = []
         self.speedtest = []
         self.pos = None
         self.update()
+        self.picture = QPicture()
 
     def reDraw(self):
         """call when somthing change as repere, origine ..."""
@@ -53,6 +54,7 @@ class Label_Trajectoire(QLabel):
 
     def maj(self):
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.origine_mvt = self.app.origine
 
     def giveCoordonatesToPaint(self):
         self.speedToDraw = []
@@ -121,12 +123,18 @@ class Label_Trajectoire(QLabel):
     def paintEvent(self, event):
         self.painter = QPainter()
         self.painter.begin(self)
-        self.painter.save()
+       # self.painter.save()
         self.painter.fillRect(QRect(0, 0, self.app.largeur, self.app.hauteur), QColor("grey"))
         self.painter.setRenderHint(QPainter.Antialiasing)
+        print('KO')
+
+        try:
+            print ('OK')
+            self.painter.drawPixmap(0,0,self.pixmap())
 
 
-
+        except TypeError:  # Seulement si on veut une chronophotographie
+            pass
 
         ############################################################
         #paint the origin
