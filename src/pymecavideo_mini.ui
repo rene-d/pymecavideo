@@ -73,7 +73,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -772,8 +772,8 @@ vers le bas</string>
          <rect>
           <x>0</x>
           <y>60</y>
-          <width>141</width>
-          <height>321</height>
+          <width>151</width>
+          <height>371</height>
          </rect>
         </property>
         <property name="title">
@@ -851,6 +851,13 @@ la souris</string>
           </widget>
          </item>
          <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Voir un graphique</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -862,13 +869,6 @@ la souris</string>
             </size>
            </property>
           </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Voir un graphique</string>
-           </property>
-          </widget>
          </item>
          <item>
           <widget class="QComboBox" name="comboBox_mode_tracer">
@@ -885,7 +885,41 @@ la souris</string>
            </item>
           </widget>
          </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonChrono">
+           <property name="text">
+            <string>Chrono
+photographie</string>
+           </property>
+          </widget>
+         </item>
         </layout>
+        <zorder>checkBoxVectorSpeed</zorder>
+        <zorder>radioButtonNearMouse</zorder>
+        <zorder>radioButtonSpeedEveryWhere</zorder>
+        <zorder>label_7</zorder>
+        <zorder>checkBoxScale</zorder>
+        <zorder>label_6</zorder>
+        <zorder>line</zorder>
+        <zorder>label_2</zorder>
+        <zorder>comboBox_mode_tracer</zorder>
+        <zorder>verticalSpacer_2</zorder>
+        <zorder>verticalSpacer</zorder>
+        <zorder>pushButtonChrono</zorder>
+        <zorder>verticalSpacer_2</zorder>
        </widget>
        <widget class="QPushButton" name="button_video">
         <property name="geometry">

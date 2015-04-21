@@ -540,6 +540,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.radioButtonNearMouse, SIGNAL("clicked()"), self.enableSpeed)
         QObject.connect(self.ui.button_video, SIGNAL("clicked()"), self.video)
         QObject.connect(self.ui.pushButton_select_all_table, SIGNAL("clicked()"), self.presse_papier)
+        QObject.connect(self.ui.pushButtonChrono, SIGNAL("clicked()"), self.chronoPhoto)
         QObject.connect(self.ui.pushButton_reinit, SIGNAL("clicked()"), self.reinitialise_capture)
         QObject.connect(self.ui.pushButton_defait, SIGNAL("clicked()"), self.efface_point_precedent)
         QObject.connect(self.ui.pushButton_refait, SIGNAL("clicked()"), self.refait_point_suivant)
@@ -560,6 +561,13 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.exportCombo, SIGNAL("currentIndexChanged(int)"), self.export)
 
         QObject.connect(self.ui.pushButton_nvl_echelle, SIGNAL("clicked()"), self.recommence_echelle)
+
+    def chronoPhoto(self):
+        self.dbg.p(1, "rentre dans 'chronoPhoto'")
+        ##ajoute la première image utilisée pour le pointage sur le fond du label
+        imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % self.premiere_image)
+        self.label_trajectoire.setPixmap(QPixmap.fromImage(QImage(imfilename)))
+
 
     def fixeLesDimensions(self):
         self.setMinimumWidth(self.width())
@@ -1004,6 +1012,8 @@ class StartQT4(QMainWindow):
         self.prefs.lastVideo = self.filename
         self.prefs.videoDir = os.path.dirname(self.filename)
         self.prefs.save()
+
+
 
     def determineHauteurLargeur(self, largeur=None):
         ##si le film est trop large on le fixe vers les 3/4 de l'écran
