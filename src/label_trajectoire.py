@@ -126,15 +126,7 @@ class Label_Trajectoire(QLabel):
        # self.painter.save()
         self.painter.fillRect(QRect(0, 0, self.app.largeur, self.app.hauteur), QColor("grey"))
         self.painter.setRenderHint(QPainter.Antialiasing)
-        print('KO')
 
-        try:
-            print ('OK')
-            self.painter.drawPixmap(0,0,self.pixmap())
-
-
-        except TypeError:  # Seulement si on veut une chronophotographie
-            pass
 
         ############################################################
         #paint the origin
@@ -145,6 +137,25 @@ class Label_Trajectoire(QLabel):
                               self.origine_mvt.y() + 5)
         self.painter.drawText(self.origine_mvt.x(), self.origine_mvt.y() + 15, "O")
         self.painter.end()
+
+
+        ###peint les informations pour le mode chronophotographie
+        if self.app.chrono :
+
+
+            self.painter = QPainter()
+            self.painter.begin(self)
+            self.painter.drawPixmap(0,0,self.pixmap())
+            font = QFont()
+            font.setPointSize(15);
+            self.painter.setFont(font)
+            self.painter.setRenderHint(QPainter.TextAntialiasing)
+            self.painter.setRenderHint(QPainter.Antialiasing)
+            self.painter.setPen(Qt.blue)
+            self.painter.drawText(self.width()-200,50, unicode("{0}T = {1:.3f} s").format(unichr(916), self.app.deltaT))
+            self.painter.end()
+
+
 
         ############################################################
         #Paint points
@@ -225,7 +236,8 @@ class Label_Trajectoire(QLabel):
                     self.painter.end()
                 else:
                     pass  #null speed
- 
+
+
         
         
         

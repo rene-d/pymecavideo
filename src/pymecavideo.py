@@ -293,6 +293,7 @@ class StartQT4(QMainWindow):
         self.goCalcul = True  # Booléen vérifiant la disponibilté du thread de calcul
         self.updatePicture = True
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
+        self.chrono=False
 
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture', 'wxAstroCapture']:
@@ -564,17 +565,23 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.exportCombo, SIGNAL("currentIndexChanged(int)"), self.export)
 
         QObject.connect(self.ui.pushButton_nvl_echelle, SIGNAL("clicked()"), self.recommence_echelle)
+
     def enregistreChrono(self):
         #self.label_trajectoire.render()
         self.pixmapChrono = QPixmap(self.label_trajectoire.size())
         self.label_trajectoire.render(self.pixmapChrono)
-        self.pixmapChrono.save('pouet.png')
+        dir_ = self._dir("home")
+        fichier = QFileDialog.getSaveFileName(self, _translate("pymecavideo", "Enregistrer la chronophotographie", None),
+                                              dir_,
+                                              _translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
+        self.pixmapChrono.save(fichier)
 
     def chronoPhoto(self):
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         ##ajoute la première image utilisée pour le pointage sur le fond du label
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % self.premiere_image)
         print ('---', imfilename)
+        self.chrono=True
         self.imageChrono = QImage(imfilename).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
         self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
         self.ui.pushButtonEnregistreChrono.setVisible(1)
@@ -1322,12 +1329,18 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
                 if len(ref) == 0: return
                 if ref != "camera":
+                    print('kk')
+                    self.ui.pushButtonChrono.setEnabled(0)
+                    self.ui.pushButtonEnregistreChrono.setVisible(0)
+                    self.chrono=False
                     bc = self.mediane_trajectoires(int(ref) - 1)
                     origine = vecteur(self.largeur/2, self.hauteur/2) - bc
                     self.label_trajectoire.origine = origine
 
                     self.label_trajectoire.referentiel = ref
                 else:  # if camera, all tranlsations are disabled
+                    self.ui.pushButtonChrono.setEnabled(1)
+
                     self.label_trajectoire.referentiel = 0
                     self.label_trajectoire.origine = vecteur(0, 0)
 
