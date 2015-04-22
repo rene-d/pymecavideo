@@ -147,12 +147,19 @@ class Label_Trajectoire(QLabel):
             self.painter.begin(self)
             self.painter.drawPixmap(0,0,self.pixmap())
             font = QFont()
-            font.setPointSize(15);
+            font.setPointSize(15)
             self.painter.setFont(font)
             self.painter.setRenderHint(QPainter.TextAntialiasing)
             self.painter.setRenderHint(QPainter.Antialiasing)
             self.painter.setPen(Qt.blue)
             self.painter.drawText(self.width()-200,50, unicode("{0}T = {1:.3f} s").format(unichr(916), self.app.deltaT))
+            #######dessine l'échelle
+            longueur = sqrt((self.app.p1.x()-self.app.p2.x())**2+ (self.app.p1.y()-self.app.p2.y())**2)
+            print ('HHHHHHh', longueur)
+            self.painter.drawLine(100,60,100,80)
+            self.painter.drawLine(100,70, longueur+100,70)
+            self.painter.drawLine(longueur+100,60,longueur+100,80)
+            self.painter.drawText((longueur)/2,120, unicode("D = {0:.2f} m").format(self.app.echelle_image.longueur_reelle_etalon))
             self.painter.end()
 
 
