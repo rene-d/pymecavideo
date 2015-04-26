@@ -556,6 +556,8 @@ class StartQT4(QMainWindow):
         QObject.connect(self, SIGNAL('selection_motif_done()'), self.storeMotif)
         QObject.connect(self, SIGNAL('stopRedimensionnement()'), self.fixeLesDimensions)
         QObject.connect(self, SIGNAL('OKRedimensionnement()'), self.defixeLesDimensions)
+        QObject.connect(self, SIGNAL('redimensionne'), self.redimensionne)
+
 
         QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
         QObject.connect(self, SIGNAL('stopCalculs()'), self.stopComputing)
@@ -1060,7 +1062,7 @@ class StartQT4(QMainWindow):
             pass  # premier passage
 
     def resizeEvent(self, event):
-        self.redimensionne()
+        self.emit(SIGNAL('redimensionne()'))
 
     def redimensionne(self, premier=None):
         if self.premierResize or premier:
