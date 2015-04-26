@@ -580,7 +580,6 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         ##ajoute la première image utilisée pour le pointage sur le fond du label
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % self.premiere_image)
-        print ('---', imfilename)
         self.chrono=True
         self.imageChrono = QImage(imfilename).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
         self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
@@ -1329,7 +1328,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
                 if len(ref) == 0: return
                 if ref != "camera":
-                    print('kk')
                     self.ui.pushButtonChrono.setEnabled(0)
                     self.ui.pushButtonEnregistreChrono.setVisible(0)
                     self.chrono=False
