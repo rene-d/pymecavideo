@@ -253,7 +253,7 @@ class openCvReader:
         except:
             print "could not retrieve informations from the video file."
             print "assuming fps = 25, frame count = 10."
-            return 25, 10
+            return 25, 10, 320, 200
 #        return fps, fcount
         return fps, fcount - 1, largeur, hauteur
 

@@ -1034,7 +1034,10 @@ class StartQT4(QMainWindow):
 
     def determineHauteurLargeur(self, largeur=None):
         ##si le film est trop large on le fixe vers les 3/4 de l'écran
-        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+        if self.cvReader is None:
+            self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
+        else:
+            framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         sizeEcran = QDesktopWidget().screenGeometry()
         rapportLH = float(self.largeurFilm) / self.hauteurFilm
         if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
