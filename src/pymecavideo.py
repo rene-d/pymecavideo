@@ -556,7 +556,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self, SIGNAL('selection_motif_done()'), self.storeMotif)
         QObject.connect(self, SIGNAL('stopRedimensionnement()'), self.fixeLesDimensions)
         QObject.connect(self, SIGNAL('OKRedimensionnement()'), self.defixeLesDimensions)
-        QObject.connect(self, SIGNAL('redimensionne'), self.redimensionne)
+        QObject.connect(self, SIGNAL('redimensionneSignal()'), self.redimensionne)
 
 
         QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
@@ -1062,9 +1062,10 @@ class StartQT4(QMainWindow):
             pass  # premier passage
 
     def resizeEvent(self, event):
-        self.emit(SIGNAL('redimensionne()'))
+        self.emit(SIGNAL('redimensionneSignal()'))
 
     def redimensionne(self, premier=None):
+        print ('kkkk')
         if self.premierResize or premier:
             self.determineHauteurLargeur()
             self.premierResize = False
@@ -1072,6 +1073,7 @@ class StartQT4(QMainWindow):
             self.determineHauteurLargeur(self.width())
         rect = self.geometry()
         self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
+        print(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
         self.ui.label.setGeometry(QRect(150, 40, self.largeur, self.hauteur))
         try:
             self.label_video.maj()
