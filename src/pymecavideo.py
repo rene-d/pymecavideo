@@ -173,6 +173,13 @@ class StartQT4(QMainWindow):
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
 
+
+        print('yyyyyyyyyyyyy()')
+        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy.setHeightForWidth(True)
+        self.setSizePolicy(sizePolicy)
+        self.heightForWidth(0.5)
+
         self.dbg = Dbg(0)
         for o in opts:
             if ('-d' in o[0]) or ('--debug' in o[0]):
@@ -232,7 +239,9 @@ class StartQT4(QMainWindow):
         # chargement d'un éventuel premier fichier
         self.splashVideo()
 
-    # Basculer en mode plein écran / mode fenétré    
+
+    # Basculer en mode plein écran / mode fenétré
+
     def basculer_plein_ecran(self):
         self.dbg.p(1, "rentre dans 'basculer_plein_ecran'")
         if not self.plein_ecran:
@@ -296,19 +305,19 @@ class StartQT4(QMainWindow):
         self.chrono=False
 
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
-        for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture', 'wxAstroCapture']:
-            if any(os.access(os.path.join(p, logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
-                self.logiciel_acquisition = logiciel
-                self.ui.pushButton_video.setEnabled(1)
-                break
-        if self.logiciel_acquisition:
-            self.ui.pushButton_video.setText(
-                _translate("pymecavideo", "Lancer %1\n pour capturer une vidéo", None)
-                    .arg(self.logiciel_acquisition)
-            )
-        else:
-            self.ui.pushButton_video.setEnabled(0)
-            self.ui.pushButton_video.hide()
+        # for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture', 'wxAstroCapture']:
+        #     if any(os.access(os.path.join(p, logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
+        #         self.logiciel_acquisition = logiciel
+        #         # self.ui.pushButton_video.setEnabled(1)
+        #         break
+        # if self.logiciel_acquisition:
+        #     # self.ui.pushButton_video.setText(
+        #         _translate("pymecavideo", "Lancer %1\n pour capturer une vidéo", None)
+        #             .arg(self.logiciel_acquisition)
+        #     )
+        # else:
+        #     self.ui.pushButton_video.setEnabled(0)
+        #     self.ui.pushButton_video.hide()
 
 
     def init_interface(self, refait=0):
@@ -330,7 +339,7 @@ class StartQT4(QMainWindow):
         self.emit(SIGNAL('OKRedimensionnement'))
         self.ui.horizontalSlider.setEnabled(0)
 
-        self.ui.pushButton_video.setEnabled(0)
+        # self.ui.pushButton_video.setEnabled(0)
 
         self.ui.echelleEdit.setEnabled(0)
         self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
@@ -495,6 +504,7 @@ class StartQT4(QMainWindow):
         self.enableRefaire(False)
         self.affiche_nb_points(1)
         self.ui.Bouton_lance_capture.setEnabled(0)
+        self.defixeLesDimensions()
 
         ### Réactiver checkBox_avancees après réinitialisation ###
         self.ui.pushButton_origine.setEnabled(1)
@@ -561,7 +571,7 @@ class StartQT4(QMainWindow):
 
         QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
         QObject.connect(self, SIGNAL('stopCalculs()'), self.stopComputing)
-        QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
+        # QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
         QObject.connect(self, SIGNAL('updateProgressBar()'), self.updatePB)
 
         QObject.connect(self.ui.exportCombo, SIGNAL("currentIndexChanged(int)"), self.export)
@@ -628,10 +638,10 @@ class StartQT4(QMainWindow):
             self.label_auto.close()
             self.indexMotif = 0
             # self.picture_detect()
-            self.ui.pushButton_video.setText("STOP CALCULS")
-            self.ui.pushButton_video.setEnabled(1)
-            self.ui.pushButton_video.show()
-            self.ui.pushButton_video.setFocus()
+            # self.ui.pushButton_video.setText("STOP CALCULS")
+            # self.ui.pushButton_video.setEnabled(1)
+            # self.ui.pushButton_video.show()
+            # self.ui.pushButton_video.setFocus()
             self.label_video.setEnabled(0)
             self.goCalcul = True
 
@@ -676,8 +686,8 @@ class StartQT4(QMainWindow):
         self.monThread.stop()
         del self.monThread
         self.label_video.setEnabled(1)
-        self.ui.pushButton_video.setEnabled(0)
-        self.ui.pushButton_video.hide()
+        # self.ui.pushButton_video.setEnabled(0)
+        # self.ui.pushButton_video.hide()
 
     def onePointFind(self):
         """est appelée quand un point a été trouvé lors de la détection automatique
@@ -1072,7 +1082,8 @@ class StartQT4(QMainWindow):
         else:
             self.determineHauteurLargeur(self.width())
         rect = self.geometry()
-        self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
+        #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
+        self.setFixedHeight(self.hauteur + 130)
         print(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
         self.ui.label.setGeometry(QRect(150, 40, self.largeur, self.hauteur))
         try:
@@ -1083,6 +1094,7 @@ class StartQT4(QMainWindow):
             self.affiche_image()
         except AttributeError:
             pass  # premier passage si pas de vidéo avant
+
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
@@ -1589,6 +1601,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         self.ui.spinBox_image.setValue(self.index_de_l_image)
                 elif self.index_de_l_image > self.image_max:
                     self.index_de_l_image = self.image_max
+                    self.lance_capture = False
 
         except AttributeError:
             pass
@@ -1644,7 +1657,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         except ValueError:
             self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une échelle valable", None))
             self.demande_echelle()
-        self.ui.pushButton_video.setEnabled(0)
+        # self.ui.pushButton_video.setEnabled(0)
 
     def feedbackEchelle(self, p1, p2):
         """

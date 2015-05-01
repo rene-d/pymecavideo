@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -41,7 +41,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -66,6 +66,12 @@
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="autoFillBackground">
        <bool>true</bool>
       </property>
@@ -210,7 +216,7 @@
         <widget class="QLabel" name="label_numero_image">
          <property name="geometry">
           <rect>
-           <x>170</x>
+           <x>40</x>
            <y>0</y>
            <width>81</width>
            <height>26</height>
@@ -229,9 +235,9 @@
         <widget class="QSlider" name="horizontalSlider">
          <property name="geometry">
           <rect>
-           <x>330</x>
-           <y>10</y>
-           <width>281</width>
+           <x>220</x>
+           <y>0</y>
+           <width>381</width>
            <height>21</height>
           </rect>
          </property>
@@ -245,7 +251,7 @@
         <widget class="QSpinBox" name="spinBox_image">
          <property name="geometry">
           <rect>
-           <x>250</x>
+           <x>130</x>
            <y>0</y>
            <width>71</width>
            <height>26</height>
@@ -259,19 +265,6 @@
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="pushButton_video">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>0</y>
-           <width>161</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Acquisition video</string>
          </property>
         </widget>
        </widget>
@@ -630,13 +623,13 @@
          </property>
         </widget>
        </widget>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QWidget" name="">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>360</y>
-          <width>154</width>
-          <height>153</height>
+          <x>0</x>
+          <y>380</y>
+          <width>139</width>
+          <height>121</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -926,7 +919,6 @@ photographie</string>
         <zorder>line</zorder>
         <zorder>label_2</zorder>
         <zorder>comboBox_mode_tracer</zorder>
-        <zorder>verticalSpacer_2</zorder>
         <zorder>verticalSpacer</zorder>
         <zorder>pushButtonChrono</zorder>
         <zorder>verticalSpacer_2</zorder>
@@ -1055,7 +1047,7 @@ photographie</string>
      <x>0</x>
      <y>0</y>
      <width>833</width>
-     <height>24</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

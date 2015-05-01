@@ -35,6 +35,9 @@ class Label_Video(QtGui.QLabel):
         self.app = app
         self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
         self.liste_points = []
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy.setHeightForWidth(True)
+        self.setSizePolicy(sizePolicy)
 
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
