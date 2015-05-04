@@ -21,7 +21,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
+import os, sys
 import time
 import subprocess
 import threading
@@ -55,6 +55,7 @@ class CalcThread(threading.Thread):
         """
         activité principale du thread
         """
+
         ## on invoque un sous-shell et on le place en tâche de fond
         cmd="({0} {1})&".format(tableur, self.calcFile)
         subprocess.call(cmd, shell=True)
@@ -141,9 +142,12 @@ class Calc:
         ## écrit dans le fichier de sortie
         self.doc.save(self.outfile)
         self.outfile.close()
-        CalcThread(self.outfile.name).start()
+        if sys.platform == "win32":
+            os.startfile(self.outfile.name)
+        else:
+            CalcThread(self.outfile.name).start()
         return
-        
+
 
 if __name__ == "__main__":
     calc = Calc()
