@@ -1075,7 +1075,7 @@ class StartQT4(QMainWindow):
         self.emit(SIGNAL('redimensionneSignal()'))
 
     def redimensionne(self, premier=None):
-        print ('kkkk')
+#        print ('kkkk')
         if self.premierResize or premier:
             self.determineHauteurLargeur()
             self.premierResize = False
@@ -1083,8 +1083,9 @@ class StartQT4(QMainWindow):
             self.determineHauteurLargeur(self.width())
         rect = self.geometry()
         #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
-        self.setFixedHeight(self.hauteur + 130)
-        print(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
+        if sys.platform != "win32":
+            self.setFixedHeight(self.hauteur + 130)
+#        print(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
         self.ui.label.setGeometry(QRect(150, 40, self.largeur, self.hauteur))
         try:
             self.label_video.maj()
