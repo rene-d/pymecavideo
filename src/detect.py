@@ -29,27 +29,28 @@ import cv2
 from globdef import *
 
 
-def filter_picture(part, image):
+def filter_picture(parts, num, image):
     imgPref = tempfile.NamedTemporaryFile(delete=False).name
     partImg = os.path.join(imgPref + "part.png")
-
-    img = os.path.join(imgPref + "image.png")
+    
+    part = parts[num]
+    
+    if "QImage" in str(type(part)):
+        part = QImage2CVImage(part, imgPref)
+        
     if type(image) == type("") and type(part) == type(""):
-        image = cv.imread(image, 1)
-        part = cv.imread(part, 1)
+        image = cv2.imread(image, 1)
+        part = cv2.imread(part, 1)
         point1, point2 = detect_part(part, image)
         return point2
+    
     elif "iplimage" in str(type(part)) and "iplimage" in str(type(image)):
         points = detect_part(part, image)
         return points
-    elif "QImage" in str(type(part)) and "QImage" in str(type(image)):
-        part.save(partImg)
-        image.save(img)
-        image = cv2.imread(img, 1)
-        part = cv2.imread(partImg, 1)
+    
+    elif "QImage" in str(type(image)):
+        image = QImage2CVImage(image, imgPref)
         point1, point2 = detect_part(part, image)
-        os.remove(img)
-        os.remove(partImg)
         os.remove(imgPref)
         return (point2[0]+part.shape[1]/2, point2[1]+part.shape[0]/2)
 
@@ -57,7 +58,21 @@ def filter_picture(part, image):
         return "Type Error"
 
 
+
 def detect_part(part, image):
     result = cv2.matchTemplate(image, part, cv.CV_TM_SQDIFF) #  CV_TM_CCOEFF
     m, M, point2, point1 = cv2.minMaxLoc(result)
     return point1, point2
+
+
+
+def QImage2CVImage(img, dossierTemp):
+    """ Converti une QImage en une image CV
+    """
+    fichImg = os.path.join(dossierTemp + "image.png")
+    img.save(fichImg)
+    img = cv2.imread(fichImg, 1)
+    os.remove(fichImg)
+    return img
+    
+    

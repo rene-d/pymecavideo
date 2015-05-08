@@ -667,7 +667,8 @@ class StartQT4(QMainWindow):
             self.pointsFound = []
             if self.indexMotif <= len(self.motif) - 1:
                 self.dbg.p(1, "'picture_detect' : While")
-                self.pointTrouve = filter_picture(self.motif[self.indexMotif], self.imageAffichee)
+#                self.pointTrouve = filter_picture(self.motif[self.indexMotif], self.imageAffichee)
+                self.pointTrouve = filter_picture(self.motif, self.indexMotif, self.imageAffichee)
                 self.dbg.p(3, "Point Trouve dans mon Thread : " + str(self.pointTrouve))
                 self.onePointFind()
 
