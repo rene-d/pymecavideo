@@ -241,6 +241,8 @@ class StartQT4(QMainWindow):
 
         # chargement d'un éventuel premier fichier
         self.splashVideo()
+        
+        
 
 
     # Basculer en mode plein écran / mode fenétré
@@ -1059,20 +1061,20 @@ class StartQT4(QMainWindow):
             framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         
 #        sizeEcran = QDesktopWidget().screenGeometry()
-        posVideo = self.ui.label.mapTo(self, QPoint(0,0))
-        
+#        posVideo = self.ui.label.mapTo(self, QPoint(0,0))
+
         ratioFilm = self.largeurFilm / self.hauteurFilm
         ratioLabel = 1.0*self.ui.label.width() / self.ui.label.height()
-
+        
         if ratioFilm > ratioLabel:
-            self.largeur = self.width() - posVideo.x()
+            self.largeur = 1.0*(self.ui.label.width())
             self.hauteur = int(self.largeur / ratioFilm)
         else:
-            self.hauteur = self.height() - posVideo.y()
+            self.hauteur = 1.0*(self.ui.label.height())
             self.largeur = int(self.hauteur * ratioFilm)
-        
+            
+        self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
         try:
-            self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
             self.label_video.origine = self.origine
         except AttributeError:
             pass  # premier passage
@@ -1102,9 +1104,11 @@ class StartQT4(QMainWindow):
     def resizeEvent(self, event):
         self.emit(SIGNAL('redimensionneSignal()'))
 
+    def showEvent(self, event):
+        self.emit(SIGNAL('redimensionneSignal()'))
         
     def redimensionne(self, premier=None):
-#        print ('kkkk')
+        self.layout()
         if self.premierResize or premier:
             self.determineHauteurLargeur()
             self.premierResize = False
@@ -1116,17 +1120,13 @@ class StartQT4(QMainWindow):
             #rect = self.geometry()
             #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
             self.setFixedHeight(self.hauteur + posVideo.y())
-#        print(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
-#        self.ui.label.setGeometry(QRect(150, 40, self.largeur, self.hauteur))
-        try:
+
+        
+        if hasattr(self, 'label_video'):
             self.label_video.maj()
             self.label_trajectoire.maj()
-#            self.ui.label_3.setGeometry(self.ui.label_3.x(), self.ui.label_3.y(), self.largeur, self.hauteur)
-
             self.affiche_image()
-        except AttributeError:
-            pass  # premier passage si pas de vidéo avant
-
+            
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
