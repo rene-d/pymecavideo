@@ -93,12 +93,13 @@ def _translate(context, text, disambig):
 class MonThreadDeCalcul(threading.Thread):
     """Thread permettant le calcul des points automatiquement. Version Python"""
 
-    def __init__(self, parent, motif, image):
+    def __init__(self, parent, motif, image, dossTemp):
         threading.Thread.__init__(self)
         self.parent = parent
         self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
         self.motif = motif
         self.image = image
+        self.dossTemp = dossTemp
         self._stopevent = threading.Event()
 
     def run(self):
@@ -106,8 +107,9 @@ class MonThreadDeCalcul(threading.Thread):
         lance le thread.
         """
         while not self._stopevent.isSet():
-            self.parent.picture_detect()
+            self.parent.picture_detect(self.dossTemp)
             self._stopevent.wait(0.01)
+        os.remove(self.dossTemp)
 
     def stop(self):
         self._stopevent.set()
@@ -164,21 +166,24 @@ class StartQT4(QMainWindow):
         if height >= 768 and width >= 1024 and self.mini == False:
             # Importation de l'interface ici car l'import de l'interface "mini" écrase l'interface "standard"
             from Ui_pymecavideo import Ui_pymecavideo
-
-
         else:
-            from Ui_pymecavideo_mini import Ui_pymecavideo
+            from Ui_pymecavideo_mini_layout import Ui_pymecavideo
 
             message = QMessageBox(self)
+            
+        self.setWindowFlags(self.windowFlags() |
+                              Qt.WindowSystemMenuHint |
+                              Qt.WindowMinMaxButtonsHint)
+        
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
 
 
         print('yyyyyyyyyyyyy()')
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        sizePolicy.setHeightForWidth(True)
-        self.setSizePolicy(sizePolicy)
-        self.heightForWidth(0.5)
+#        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+#        sizePolicy.setHeightForWidth(True)
+#        self.setSizePolicy(sizePolicy)
+#        self.heightForWidth(0.5)
 
         self.dbg = Dbg(0)
         for o in opts:
@@ -250,6 +255,7 @@ class StartQT4(QMainWindow):
             self.showNormal()
         self.plein_ecran = not (self.plein_ecran)
 
+
     def splashVideo(self):
         self.dbg.p(1, "rentre dans 'splashVideo'")
         for opt, val in self.opts:
@@ -262,6 +268,7 @@ class StartQT4(QMainWindow):
                 self.openTheFile(self.prefs.lastVideo)
             except:
                 pass
+
 
     def init_variables(self, opts, filename=u""):
         self.dbg.p(1, "rentre dans 'init_variables'")
@@ -650,11 +657,12 @@ class StartQT4(QMainWindow):
             # self.monThread = MonThreadDeCalculQt(self, self.motif[self.indexMotif], self.imageAffichee)
 
             # Python
-            self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee)
+            dossTemp = tempfile.NamedTemporaryFile(delete=False).name
+            self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee, dossTemp)
             self.monThread.start()
 
 
-    def picture_detect(self):
+    def picture_detect(self, dossTemp):
         """
         Est lancée lors de la détection automatique des points. Gère l'ajout des thread de calcul.
         self.myThreads : tableau contenant les thread
@@ -668,7 +676,7 @@ class StartQT4(QMainWindow):
             if self.indexMotif <= len(self.motif) - 1:
                 self.dbg.p(1, "'picture_detect' : While")
 #                self.pointTrouve = filter_picture(self.motif[self.indexMotif], self.imageAffichee)
-                self.pointTrouve = filter_picture(self.motif, self.indexMotif, self.imageAffichee)
+                self.pointTrouve = filter_picture(self.motif, self.indexMotif, self.imageAffichee, dossTemp)
                 self.dbg.p(3, "Point Trouve dans mon Thread : " + str(self.pointTrouve))
                 self.onePointFind()
 
@@ -1075,6 +1083,7 @@ class StartQT4(QMainWindow):
     def resizeEvent(self, event):
         self.emit(SIGNAL('redimensionneSignal()'))
 
+
     def redimensionne(self, premier=None):
 #        print ('kkkk')
         if self.premierResize or premier:
@@ -1082,16 +1091,16 @@ class StartQT4(QMainWindow):
             self.premierResize = False
         else:
             self.determineHauteurLargeur(self.width())
-        rect = self.geometry()
+#        rect = self.geometry()
         #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
-        if sys.platform != "win32":
-            self.setFixedHeight(self.hauteur + 130)
+#        if sys.platform != "win32":
+#            self.setFixedHeight(self.hauteur + 130)
 #        print(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
-        self.ui.label.setGeometry(QRect(150, 40, self.largeur, self.hauteur))
+#        self.ui.label.setGeometry(QRect(150, 40, self.largeur, self.hauteur))
         try:
             self.label_video.maj()
             self.label_trajectoire.maj()
-            self.ui.label_3.setGeometry(self.ui.label_3.x(), self.ui.label_3.y(), self.largeur, self.hauteur)
+#            self.ui.label_3.setGeometry(self.ui.label_3.x(), self.ui.label_3.y(), self.largeur, self.hauteur)
 
             self.affiche_image()
         except AttributeError:
