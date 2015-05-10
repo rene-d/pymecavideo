@@ -178,12 +178,10 @@ class StartQT4(QMainWindow):
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
 
-
-        print('yyyyyyyyyyyyy()')
-#        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+#        print('yyyyyyyyyyyyy()')
+#        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
 #        sizePolicy.setHeightForWidth(True)
 #        self.setSizePolicy(sizePolicy)
-#        self.heightForWidth(0.5)
 
         self.dbg = Dbg(0)
         for o in opts:
@@ -1059,31 +1057,52 @@ class StartQT4(QMainWindow):
             self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
         else:
             framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-        sizeEcran = QDesktopWidget().screenGeometry()
-        rapportLH = float(self.largeurFilm) / self.hauteurFilm
-        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
-            self.dbg.p(2, 'film trop grand')
-            self.largeur = int(sizeEcran.width() * 3.0 / 4.0)
-        elif self.largeurFilm < 640:
-            self.dbg.p(2, 'film trop petit')
-            self.largeur = 640
-        else:
-            self.largeur = self.largeurFilm
-        try:
-            if largeur:
-                self.largeur = largeur - 190
-                self.hauteur = int(self.largeur / rapportLH)
-                self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
-                self.label_video.origine = self.origine
-            self.hauteur = int(self.largeur / rapportLH)
+        
+#        sizeEcran = QDesktopWidget().screenGeometry()
+        posVideo = self.ui.label.mapTo(self, QPoint(0,0))
+        
+        ratioFilm = self.largeurFilm / self.hauteurFilm
+        ratioLabel = 1.0*self.ui.label.width() / self.ui.label.height()
 
+        if ratioFilm > ratioLabel:
+            self.largeur = self.width() - posVideo.x()
+            self.hauteur = int(self.largeur / ratioFilm)
+        else:
+            self.hauteur = self.height() - posVideo.y()
+            self.largeur = int(self.hauteur * ratioFilm)
+        
+        try:
+            self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
+            self.label_video.origine = self.origine
         except AttributeError:
             pass  # premier passage
+        
+
+        
+#        rapportLH = float(self.largeurFilm) / self.hauteurFilm
+#        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
+#            self.dbg.p(2, 'film trop grand')
+#            self.largeur = int(sizeEcran.width() * 3.0 / 4.0)
+#        elif self.largeurFilm < 640:
+#            self.dbg.p(2, 'film trop petit')
+#            self.largeur = 640
+#        else:
+#            self.largeur = self.largeurFilm
+#        try:
+#            if largeur:
+#                self.largeur = largeur - 190
+#                self.hauteur = int(self.largeur / rapportLH)
+#                self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
+#                self.label_video.origine = self.origine
+#            self.hauteur = int(self.largeur / rapportLH)
+#
+#        except AttributeError:
+#            pass  # premier passage
 
     def resizeEvent(self, event):
         self.emit(SIGNAL('redimensionneSignal()'))
 
-
+        
     def redimensionne(self, premier=None):
 #        print ('kkkk')
         if self.premierResize or premier:
@@ -1091,10 +1110,12 @@ class StartQT4(QMainWindow):
             self.premierResize = False
         else:
             self.determineHauteurLargeur(self.width())
-#        rect = self.geometry()
-        #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
-#        if sys.platform != "win32":
-#            self.setFixedHeight(self.hauteur + 130)
+        
+        if sys.platform != "win32":
+            posVideo = self.ui.label.mapTo(self, QPoint(0,0))
+            #rect = self.geometry()
+            #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
+            self.setFixedHeight(self.hauteur + posVideo.y())
 #        print(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
 #        self.ui.label.setGeometry(QRect(150, 40, self.largeur, self.hauteur))
         try:
@@ -1814,7 +1835,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
                 self.prefs.lastVideo = self.filename
                 self.determineHauteurLargeur()
-                self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
+#                self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
                 self.init_image()
                 self.init_capture()
                 self.redimensionne(premier=1)
