@@ -20,15 +20,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
 
 
-class Label_Video(QtGui.QLabel):
+class Label_Video(QtWidgets.QLabel):
     def __init__(self, parent, app):
         QtGui.QLabel.__init__(self, parent)
         self.parent = parent

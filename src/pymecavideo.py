@@ -51,6 +51,7 @@ import time, commands, codecs
 import locale, getopt
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 # création précoce de l'objet application, déjà nécessaire pour traiter les bugs
 app = QApplication(sys.argv)
@@ -71,8 +72,6 @@ from dialogencode import QMessageBoxEncode
 import qtiplotexport
 from subprocess import *
 import re
-
-from pgraph import traceur2d
 
 import threading
 import platform
@@ -1418,69 +1417,61 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
 
     def tracer_courbe(self, itemChoisi):
+        """
+        trace une courbe
+        @param itemChoisi est un numéro d'item dans la liste des
+        courbes qu'on peut tracer ; c'est très lié à l'implémentation :
+        à rendre plus propre si possible !!!!
+        """
         self.dbg.p(1, "rentre dans 'tracer_courbe'")
-        if self.ui.comboBox_mode_tracer.isEnabled():
-            # try:
-            self.ui.comboBox_mode_tracer.setCurrentIndex(0)
-            if itemChoisi <= 0: return  # c'est rien du tout.
-            numero = (itemChoisi - 1) / 3
-            typeDeCourbe = ("x", "y", "v")[(itemChoisi - 1) % 3]
-            titre = (_translate("pymecavideo", "Evolution de l'abscisse du point %1", None).arg(numero + 1),
-                     _translate("pymecavideo", "Evolution de l'ordonnée du point %1", None).arg(numero + 1),
-                     _translate("pymecavideo", "Evolution de la vitesse du point %1", None).arg(numero + 1))[
-                (itemChoisi - 1) % 3]
-            abscisse = []
-            ordonnee = []
-            t = 0
-            ancienPoint = None
-            ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
-            for i in self.points.keys():
-                if ref == "camera":
-                    p = self.pointEnMetre(self.points[i][1 + numero])
-                else:
-                    ref = int(ref)
-                    p = self.pointEnMetre(self.points[i][1 + numero]) - self.pointEnMetre(self.points[i][ref])
-                if typeDeCourbe == "x": ordonnee.append(p.x())
-                if typeDeCourbe == "y": ordonnee.append(p.y())
-                if typeDeCourbe == "v":
-                    if ancienPoint != None:
-                        abscisse.append(t)
-                        v = (p - ancienPoint).norme() / self.deltaT
-                        ordonnee.append(v)
-                else:
-                    abscisse.append(t)
-                t += self.deltaT
-                ancienPoint = p
-            # les abscisses et les ordonnées sont prêtes
-            labelAbscisse = "t (s)"
-            if typeDeCourbe != "v":
-                labelOrdonnee = typeDeCourbe + " (m)"
+        if not self.ui.comboBox_mode_tracer.isEnabled():
+            return
+        
+        # try:
+        self.ui.comboBox_mode_tracer.setCurrentIndex(0)
+        if itemChoisi <= 0: return  # c'est rien du tout.
+        numero = (itemChoisi - 1) / 3
+        typeDeCourbe = ("x", "y", "v")[(itemChoisi - 1) % 3]
+        titre = (_translate("pymecavideo", "Evolution de l'abscisse du point %1", None).arg(numero + 1),
+                 _translate("pymecavideo", "Evolution de l'ordonnée du point %1", None).arg(numero + 1),
+                 _translate("pymecavideo", "Evolution de la vitesse du point %1", None).arg(numero + 1))[
+            (itemChoisi - 1) % 3]
+        abscisse = []
+        ordonnee = []
+        t = 0
+        ancienPoint = None
+        ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+        for i in self.points.keys():
+            if ref == "camera":
+                p = self.pointEnMetre(self.points[i][1 + numero])
             else:
-                labelOrdonnee = typeDeCourbe + " (m/s)"
-            # déterminer le style de tracé
-            styleTrace = None
-            if typeDeCourbe in ("x", "y"):
-                if ref == "camera":
-                    p1 = self.pointEnMetre(vecteur(0, 0))
-                    p2 = self.pointEnMetre(vecteur(self.largeur, self.hauteur))
-                    minx = p1.x();
-                    maxx = p2.x()
-                    miny = p1.y();
-                    maxy = p2.y()
-                    if typeDeCourbe == "x":
-                        styleTrace = [0, minx, t, maxx]
-                    if typeDeCourbe == "y":
-                        styleTrace = [0, miny, t, maxy]
-                else:
-                    styleTrace = "zero"
-            else:  # type de courbe "v""
-                styleTrace = "zero"
+                ref = int(ref)
+                p = self.pointEnMetre(self.points[i][1 + numero]) - self.pointEnMetre(self.points[i][ref])
+            if typeDeCourbe == "x": ordonnee.append(p.x())
+            if typeDeCourbe == "y": ordonnee.append(p.y())
+            if typeDeCourbe == "v":
+                if ancienPoint != None:
+                    abscisse.append(t)
+                    v = (p - ancienPoint).norme() / self.deltaT
+                    ordonnee.append(v)
+            else:
+                abscisse.append(t)
+            t += self.deltaT
+            ancienPoint = p
+        # les abscisses et les ordonnées sont prêtes
+        labelAbscisse = "t (s)"
+        if typeDeCourbe != "v":
+            labelOrdonnee = typeDeCourbe + " (m)"
+        else:
+            labelOrdonnee = typeDeCourbe + " (m/s)"
 
-            if not hasattr(self, 'traceur'):
-                self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
-                                         itemChoisi)
-            else:  # mets juste à jour la fenêtre de matplotlib
-                self.traceur.update(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
+        cmd=u"""python pgraph.py "{0}" "{1}" "{2}" """.format(
+            titre, labelAbscisse, labelOrdonnee).encode("utf-8")
+        xy ="\n".join(["{0} {1}". format(abscisse[i], ordonnee[i]) for i in range(len(abscisse))])
+        thread=plotThread(cmd, xy)
+        thread.daemon=True
+        thread.start()
+        return
 
 
     def affiche_point_attendu(self, n):
@@ -2021,7 +2012,28 @@ def lanceSciDAVis(fichier):
     param @fichier le fichier de projet
     """
     os.system("scidavis %s" % fichier)
+    return
 
+class plotThread(threading.Thread):
+    """
+    une classe pour lancer un traceur de courbe
+    """
+    def __init__(self, cmd, dataLines):
+        """
+        Le constructeur
+        @param cmd la commande à lancer dans un shell
+        @param dataLines une chaîne de plusieurs lignes (format x y)
+        """
+        threading.Thread.__init__(self)
+        self.cmd=cmd
+        self.xy=dataLines
+        return
+
+    def run(self):
+        p=subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE)
+        p.communicate(self.xy)
+        return
+    
 
 if __name__ == "__main__":
     run()
