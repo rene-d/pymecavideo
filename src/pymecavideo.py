@@ -42,7 +42,7 @@ licence['fr'] = u"""
 #
 # Le module de gestion des erreurs n'est chargé que si on execute le fichier .exe ou si on est sous Linux
 #
-import sys, os
+import sys, os, subprocess
 # if sys.platform == "win32" or sys.argv[0].endswith(".exe"):
 # import Error
 
@@ -389,7 +389,7 @@ class StartQT4(QMainWindow):
         index = self.ui.exportCombo.findText(text)
         if index > 0:
             self.ui.exportCombo.setItemData(index, Qt.blue, Qt.BackgroundRole)
-            self.ui.exportCombo.setItemText(index, _translate("pymecavideo", "NON DISPO : %1", None).arg(text))
+            self.ui.exportCombo.setItemText(index, _translate("pymecavideo", "NON DISPO : {0}", None).format(text))
             self.ui.exportCombo.setItemData(index, Qt.blue, Qt.BackgroundRole)
         return
 
@@ -751,9 +751,10 @@ class StartQT4(QMainWindow):
 
     def choisi_nouvelle_origine(self):
         self.dbg.p(1, "rentre dans 'choisi_nouvelle_origine'")
-        nvl_origine = QMessageBox.information(self, QString("NOUVELLE ORIGINE"), \
-                                              QString(
-                                                  "Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine"))
+        nvl_origine = QMessageBox.information(
+            self,
+            u"NOUVELLE ORIGINE",
+            u"Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
 
         label = Label_Origine(parent=self.ui.label, app=self)
         label.show()
@@ -1172,8 +1173,6 @@ class StartQT4(QMainWindow):
             for key in self.points:
                 liste_des_cles.append(key)
             ################## fin du fichier mecavideo ################
-            fichier = unicode(fichier)
-            fichier = fichier.encode('utf8')
             file = codecs.open(fichier, 'w', 'utf8')
             try:
                 file.write(self.entete_fichier(_translate("pymecavideo", "temps en seconde, positions en mètre", None)))
@@ -1194,7 +1193,11 @@ class StartQT4(QMainWindow):
     def enregistre_ui(self):
         self.dbg.p(1, "rentre dans 'enregistre_ui'")
         if self.points != {}:
-            fichier = QFileDialog.getSaveFileName(self, "FileDialog", "data.csv", "*.csv *.txt *.asc *.dat")
+            fichier, hints = QFileDialog.getSaveFileName(
+                self,
+                "FileDialog",
+                "data.csv",
+                "*.csv *.txt *.asc *.dat")
 
             self.enregistre(fichier)
 
@@ -1241,7 +1244,7 @@ class StartQT4(QMainWindow):
         self.ui.comboBox_referentiel.clear()
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points):
-            self.ui.comboBox_referentiel.insertItem(-1, _translate("pymecavideo", "point N° %1", None).arg(str(i + 1)))
+            self.ui.comboBox_referentiel.insertItem(-1, _translate("pymecavideo", "point N° {0}", None).format(i+1))
         self.cree_tableau()
 
         self.ui.pushButton_origine.setEnabled(0)
@@ -1410,9 +1413,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.ui.comboBox_mode_tracer.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
                 for i in range(self.nb_de_points):
                     combo = self.ui.comboBox_mode_tracer
-                    combo.addItem(QString("x%d(t)" % (i + 1)))
-                    combo.addItem(QString("y%d(t)" % (i + 1)))
-                    combo.addItem(QString("v%d(t)" % (i + 1)))
+                    combo.addItem(u"x%d(t)" % (i + 1))
+                    combo.addItem(u"y%d(t)" % (i + 1))
+                    combo.addItem(u"v%d(t)" % (i + 1))
 
                 self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
         except ZeroDivisionError:
@@ -1436,9 +1439,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if itemChoisi <= 0: return  # c'est rien du tout.
         numero = (itemChoisi - 1) / 3
         typeDeCourbe = ("x", "y", "v")[(itemChoisi - 1) % 3]
-        titre = (_translate("pymecavideo", "Evolution de l'abscisse du point %1", None).arg(numero + 1),
-                 _translate("pymecavideo", "Evolution de l'ordonnée du point %1", None).arg(numero + 1),
-                 _translate("pymecavideo", "Evolution de la vitesse du point %1", None).arg(numero + 1))[
+        titre = (_translate("pymecavideo", "Evolution de l'abscisse du point {0}", None).format(numero + 1),
+                 _translate("pymecavideo", "Evolution de l'ordonnée du point {0}", None).format(numero + 1),
+                 _translate("pymecavideo", "Evolution de la vitesse du point {0}", None).format(numero + 1))[
             (itemChoisi - 1) % 3]
         abscisse = []
         ordonnee = []
@@ -1485,7 +1488,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         affecte la ligne de statut et la ligne sous le zoom
         """
         self.mets_a_jour_label_infos(
-            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° %1", None).arg(n))
+            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(n))
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
@@ -1676,7 +1679,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                                                   _translate("pymecavideo",
                                                              "Quelle est la longueur en mètre de votre étalon sur l'image ?",
                                                              None),
-                                                  QLineEdit.Normal, QString("1.0"))
+                                                  QLineEdit.Normal, u"1.0")
         if echelle_result_raw[1] == False:
             return None
         try:
@@ -1748,11 +1751,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def verifie_donnees_sauvegardees(self):
         self.dbg.p(1, "rentre dans 'verifie_donnees_sauvegardees'")
         if self.modifie:
-            retour = QMessageBox.warning(self, QString(_translate("pymecavideo", "Les données seront perdues", None)), \
-                                         QString(_translate("pymecavideo",
-                                                            "Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?",
-                                                            None)),
-                                         QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            retour = QMessageBox.warning(
+                self,
+                _translate(u"pymecavideo", "Les données seront perdues", None),
+                _translate(u"pymecavideo", "Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?", None),
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if retour == QMessageBox.Yes:
                 self.enregistre_ui()
                 return True
@@ -1800,10 +1803,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'openfile'")
         dir_ = self._dir("videos")
-        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo", None), dir_,
-                                               _translate("pymecavideo",
-                                                          "fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)",
-                                                          None))
+        filename, hints = QFileDialog.getOpenFileName(
+            self, _translate("pymecavideo", "Ouvrir une vidéo", None),
+            dir_,
+            _translate("pymecavideo",
+                       "fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)",
+                       None))
         self.openTheFile(filename)
         try:
             self.reinitialise_capture()
@@ -1825,18 +1830,12 @@ Merci de bien vouloir le renommer avant de continuer""", None),
     def openTheFile(self, filename):
         """
         Ouvre le fichier de nom filename, enregistre les préférences de
-         fichier vidéo.
-        @param filename chaîne de caractère, de type string,QSring ou QByteArray
-         le forçage de type permet d'accepter chacune des variantes en entrée.
-         N.B.: l'attribut self.prefs.lastVideo sera qui sera enregistré est de
-         type string et d'encodage unicode.
+        fichier vidéo.
+        @param filename nom du fichier
         """
         self.dbg.p(1, "rentre dans 'openTheFile'")
         if filename != "":
-            filename = QString(filename)
-            filename = filename.toUtf8()
-            data = filename.data()
-            self.filename = data.decode('utf-8')
+            self.filename = filename
             goOn = self.init_cvReader()
 
             if goOn:  # video is in good format
@@ -1881,7 +1880,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
             licence_XX = licence[loc] % Version
         else:
             licence_XX = licence["en"] % Version
-        QMessageBox.warning(None, "Licence", QString(licence_XX), QMessageBox.Ok, QMessageBox.Ok)
+        QMessageBox.warning(None, u"Licence", licence_XX, QMessageBox.Ok, QMessageBox.Ok)
 
     def aide(self):
         self.dbg.p(1, "rentre dans 'aide'")
@@ -1894,9 +1893,9 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 command = "x-www-browser %s" % helpfile
                 status, output = commands.getstatusoutput(command)
         else:
-            QMessageBox.warning(None, "Aide",
-                                _translate("pymecavideo", "Désolé pas de fichier d'aide pour le langage %1.", None).arg(
-                                    lang))
+            QMessageBox.warning(
+                None, "Aide",
+                _translate("pymecavideo", "Désolé pas de fichier d'aide pour le langage {0}.", None).format(lang))
 
 
     def init_image(self):
@@ -1981,8 +1980,6 @@ def run():
 
     ###translation##
     locale = "%s" % QLocale.system().name()
-
-    # locale = "%s" %QString("en_EN")
 
     qtTranslator = QTranslator()
     if qtTranslator.load("qt_" + locale):

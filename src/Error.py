@@ -101,19 +101,18 @@ def SendBugReport():
     #
     import webbrowser, datetime
     from PyQt5.QtGui import QMessageBox
-    from PyQt5.QtCore import QString
 
     def rien(x):
         return x
 
     try:
-        a = _("test")
+        a = _(u"test")
     except:
         _ = rien
     message = _(u"pymecavideo a rencontré une erreur et doit être fermé.\nVoulez-vous envoyer un rapport de bug ?")
 
-    dlg = QMessageBox.warning(None, QString(_(unicode("Erreur", "utf8"))),
-                              QString(message),
+    dlg = QMessageBox.warning(None, _(u"Erreur"),
+                              message,
                               QMessageBox.Yes | QMessageBox.No)
 
     if dlg == QMessageBox.Yes:  # YES, on envoie le mail

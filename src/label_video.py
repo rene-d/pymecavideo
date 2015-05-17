@@ -20,7 +20,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -29,12 +28,12 @@ from vecteur import vecteur
 from zoom import Zoom_Croix
 
 
-class Label_Video(QtWidgets.QLabel):
+class Label_Video(QLabel):
     def __init__(self, parent, app):
-        QtGui.QLabel.__init__(self, parent)
+        QLabel.__init__(self, parent)
         self.parent = parent
         self.app = app
-        self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
         self.liste_points = []
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHeightForWidth(True)
@@ -42,7 +41,7 @@ class Label_Video(QtWidgets.QLabel):
 
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
-        self.setCursor(QtCore.Qt.ArrowCursor)
+        self.setCursor(Qt.ArrowCursor)
         self.pos = self.pos_avant = vecteur(50, 50)
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
         self.zoom_croix.hide()
@@ -75,11 +74,11 @@ class Label_Video(QtWidgets.QLabel):
 
     def enterEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
-            self.setCursor(QtCore.Qt.CrossCursor)
+            self.setCursor(Qt.CrossCursor)
         else:
-            self.setCursor(QtCore.Qt.ArrowCursor)
+            self.setCursor(Qt.ArrowCursor)
     def maj(self):
-        self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
 
     def met_a_jour_crop(self):
         self.fait_crop(self.pos_avant)

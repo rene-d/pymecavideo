@@ -44,9 +44,9 @@ class Preferences:
         """
         Renvoie une chaîne représentant les préférences, lisible par un humain
         """
-        result = self.app.tr("Proximite de la souris %1").arg(self.proximite)
-        result += self.app.tr("; derniere video %1").arg(self.lastVideo)
-        result += self.app.tr("; videoDir %1").arg(self.videoDir)
+        result = self.app.tr("Proximite de la souris {0}").format(self.proximite)
+        result += self.app.tr("; derniere video {0}").format(self.lastVideo)
+        result += self.app.tr("; videoDir {0}").format(self.videoDir)
         return "%s" % result
 
     def save(self):
