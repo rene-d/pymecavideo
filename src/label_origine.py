@@ -57,6 +57,6 @@ class Label_Origine(QLabel):
         self.zoom_croix.hide()
         self.app.ui.label_zoom.setPixmap(QPixmap(None))
         del self.zoom_croix
-        self.app.emit(SIGNAL('change_axe_origine()'))
+        self.app.change_axe_origine.emit()
 
         self.close()

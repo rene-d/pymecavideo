@@ -66,7 +66,7 @@ class Label_Video(QtWidgets.QLabel):
         if self.app.lance_capture == True:
             self.liste_points.append(point)
             self.pos_avant = self.pos
-            self.app.emit(SIGNAL('clic_sur_video()'))
+            self.app.clic_sur_video.emit()
             self.update()
             self.met_a_jour_crop()
 

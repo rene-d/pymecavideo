@@ -24,6 +24,7 @@ import locale
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class standardDragTable(QTableWidget):
@@ -33,7 +34,7 @@ class standardDragTable(QTableWidget):
 
     def __init__(self, parent):
         QTableWidget.__init__(self, parent)
-        QObject.connect(self, SIGNAL("itemSelectionChanged()"), self.selection)
+        self.itemSelectionChanged.connect(self.selection)
         self.sep_decimal = "."
         try:
             if locale.getdefaultlocale()[0][0:2] == 'fr':

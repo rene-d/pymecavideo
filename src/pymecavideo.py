@@ -82,11 +82,8 @@ from globdef import APP_DATA_PATH, VIDEO, SUFF, VIDEO_PATH, CONF_PATH, IMG_PATH,
 
 from detect import filter_picture
 
-_encoding = QApplication.UnicodeUTF8
-
-
 def _translate(context, text, disambig):
-    return QApplication.translate(context, text, disambig, _encoding)
+    return QApplication.translate(context, text, disambig)
 
 
 class MonThreadDeCalcul(threading.Thread):
@@ -342,7 +339,7 @@ class StartQT4(QMainWindow):
 
         self.update()
 
-        self.emit(SIGNAL('OKRedimensionnement'))
+        self.OKRedimensionnement.emit()
         self.ui.horizontalSlider.setEnabled(0)
 
         # self.ui.pushButton_video.setEnabled(0)
@@ -525,64 +522,74 @@ class StartQT4(QMainWindow):
         if self.ui.tableWidget:
             self.ui.tableWidget.clear()
 
+    ############ les signaux spéciaux #####################
+    clic_sur_video = pyqtSignal()
+    change_axe_origine = pyqtSignal()
+    selection_done = pyqtSignal()
+    selection_motif_done = pyqtSignal()
+    stopRedimensionnement = pyqtSignal()
+    OKRedimensionnement = pyqtSignal()
+    redimensionneSignal = pyqtSignal()
+    stopCalculs = pyqtSignal()
+    updateProgressBar = pyqtSignal()
+    
     def ui_connections(self):
         """connecte les signaux de QT"""
         self.dbg.p(1, "rentre dans 'ui_connections'")
-        QObject.connect(self.ui.actionOuvrir_un_fichier, SIGNAL("triggered()"), self.openfile)
-        QObject.connect(self.ui.actionExemples, SIGNAL("triggered()"), self.openexample)
-        QObject.connect(self.ui.action_propos, SIGNAL("triggered()"), self.propos)
-        QObject.connect(self.ui.actionAide, SIGNAL("triggered()"), self.aide)
-        # QObject.connect(self.ui.actionPreferences,SIGNAL("triggered()"), self.prefs.setFromDialog)
-        QObject.connect(self.ui.actionDefaire, SIGNAL("triggered()"), self.efface_point_precedent)
-        QObject.connect(self.ui.actionRefaire, SIGNAL("triggered()"), self.refait_point_suivant)
-        QObject.connect(self.ui.actionQuitter, SIGNAL("triggered()"), self.close)
-        QObject.connect(self.ui.actionSaveData, SIGNAL("triggered()"), self.enregistre_ui)
-        QObject.connect(self.ui.actionCopier_dans_le_presse_papier, SIGNAL("triggered()"), self.presse_papier)
-        QObject.connect(self.ui.actionOpenOffice_org_Calc, SIGNAL("triggered()"), self.oooCalc)
-        QObject.connect(self.ui.actionQtiplot, SIGNAL("triggered()"), self.qtiplot)
-        QObject.connect(self.ui.actionScidavis, SIGNAL("triggered()"), self.scidavis)
-        QObject.connect(self.ui.actionRouvrirMecavideo, SIGNAL("triggered()"), self.rouvre_ui)
-        QObject.connect(self.ui.Bouton_Echelle, SIGNAL("clicked()"), self.demande_echelle)
-        QObject.connect(self.ui.horizontalSlider, SIGNAL("sliderReleased()"), self.affiche_image_slider)
-        QObject.connect(self.ui.horizontalSlider, SIGNAL("valueChanged(int)"), self.affiche_image_slider_move)
-        QObject.connect(self.ui.spinBox_image, SIGNAL("valueChanged(int)"), self.affiche_image_spinbox)
-        QObject.connect(self.ui.Bouton_lance_capture, SIGNAL("clicked()"), self.debut_capture)
-        QObject.connect(self, SIGNAL("clic_sur_video()"), self.clic_sur_label_video)
-        QObject.connect(self.ui.comboBox_referentiel, SIGNAL("currentIndexChanged (int)"), self.tracer_trajectoires)
-        QObject.connect(self.ui.comboBox_mode_tracer, SIGNAL("currentIndexChanged (int)"), self.tracer_courbe)
-        QObject.connect(self.ui.tabWidget, SIGNAL("currentChanged (int)"), self.tracer_trajectoires)
+        self.ui.actionOuvrir_un_fichier.triggered.connect(self.openfile)
+        self.ui.actionExemples.triggered.connect(self.openexample)
+        self.ui.action_propos.triggered.connect(self.propos)
+        self.ui.actionAide.triggered.connect(self.aide)
+        self.ui.actionDefaire.triggered.connect(self.efface_point_precedent)
+        self.ui.actionRefaire.triggered.connect(self.refait_point_suivant)
+        self.ui.actionQuitter.triggered.connect(self.close)
+        self.ui.actionSaveData.triggered.connect(self.enregistre_ui)
+        self.ui.actionCopier_dans_le_presse_papier.triggered.connect(self.presse_papier)
+        self.ui.actionOpenOffice_org_Calc.triggered.connect(self.oooCalc)
+        self.ui.actionQtiplot.triggered.connect(self.qtiplot)
+        self.ui.actionScidavis.triggered.connect(self.scidavis)
+        self.ui.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
+        self.ui.Bouton_Echelle.clicked.connect(self.demande_echelle)
+        self.ui.horizontalSlider.sliderReleased.connect(self.affiche_image_slider)
+        self.ui.horizontalSlider.valueChanged.connect(self.affiche_image_slider_move)
+        self.ui.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
+        self.ui.Bouton_lance_capture.clicked.connect(self.debut_capture)
+        self.clic_sur_video.connect(self.clic_sur_label_video)
+        self.ui.comboBox_referentiel.currentIndexChanged .connect(self.tracer_trajectoires)
+        self.ui.comboBox_mode_tracer.currentIndexChanged .connect(self.tracer_courbe)
+        self.ui.tabWidget.currentChanged .connect(self.tracer_trajectoires)
 
-        QObject.connect(self.ui.checkBoxScale, SIGNAL("currentIndexChanged(int)"), self.enableSpeed)
-        QObject.connect(self.ui.checkBoxVectorSpeed, SIGNAL("stateChanged(int)"), self.enableSpeed)
+        self.ui.checkBoxScale.currentIndexChanged.connect(self.enableSpeed)
+        self.ui.checkBoxVectorSpeed.stateChanged.connect(self.enableSpeed)
 
-        QObject.connect(self.ui.radioButtonSpeedEveryWhere, SIGNAL("clicked()"), self.enableSpeed)
-        QObject.connect(self.ui.radioButtonNearMouse, SIGNAL("clicked()"), self.enableSpeed)
-        QObject.connect(self.ui.button_video, SIGNAL("clicked()"), self.video)
-        QObject.connect(self.ui.pushButton_select_all_table, SIGNAL("clicked()"), self.presse_papier)
-        QObject.connect(self.ui.pushButtonChrono, SIGNAL("clicked()"), self.chronoPhoto)
-        QObject.connect(self.ui.pushButton_reinit, SIGNAL("clicked()"), self.reinitialise_capture)
-        QObject.connect(self.ui.pushButton_defait, SIGNAL("clicked()"), self.efface_point_precedent)
-        QObject.connect(self.ui.pushButton_refait, SIGNAL("clicked()"), self.refait_point_suivant)
-        QObject.connect(self.ui.pushButton_origine, SIGNAL("clicked()"), self.choisi_nouvelle_origine)
+        self.ui.radioButtonSpeedEveryWhere.clicked.connect(self.enableSpeed)
+        self.ui.radioButtonNearMouse.clicked.connect(self.enableSpeed)
+        self.ui.button_video.clicked.connect(self.video)
+        self.ui.pushButton_select_all_table.clicked.connect(self.presse_papier)
+        self.ui.pushButtonChrono.clicked.connect(self.chronoPhoto)
+        self.ui.pushButton_reinit.clicked.connect(self.reinitialise_capture)
+        self.ui.pushButton_defait.clicked.connect(self.efface_point_precedent)
+        self.ui.pushButton_refait.clicked.connect(self.refait_point_suivant)
+        self.ui.pushButton_origine.clicked.connect(self.choisi_nouvelle_origine)
 
-        QObject.connect(self.ui.checkBox_abscisses, SIGNAL("stateChanged(int)"), self.change_sens_X)
-        QObject.connect(self.ui.checkBox_ordonnees, SIGNAL("stateChanged(int)"), self.change_sens_Y)
-        QObject.connect(self, SIGNAL('change_axe_origine()'), self.change_axe_ou_origine)
-        QObject.connect(self, SIGNAL('selection_done()'), self.picture_detect)
-        QObject.connect(self, SIGNAL('selection_motif_done()'), self.storeMotif)
-        QObject.connect(self, SIGNAL('stopRedimensionnement()'), self.fixeLesDimensions)
-        QObject.connect(self, SIGNAL('OKRedimensionnement()'), self.defixeLesDimensions)
-        QObject.connect(self, SIGNAL('redimensionneSignal()'), self.redimensionne)
+        self.ui.checkBox_abscisses.stateChanged.connect(self.change_sens_X)
+        self.ui.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
+        self.change_axe_origine.connect(self.change_axe_ou_origine)
+        self.selection_done.connect(self.picture_detect)
+        self.selection_motif_done.connect(self.storeMotif)
+        self.stopRedimensionnement.connect(self.fixeLesDimensions)
+        self.OKRedimensionnement.connect(self.defixeLesDimensions)
+        self.redimensionneSignal.connect(self.redimensionne)
 
 
-        QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
-        QObject.connect(self, SIGNAL('stopCalculs()'), self.stopComputing)
-        # QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
-        QObject.connect(self, SIGNAL('updateProgressBar()'), self.updatePB)
+        self.ui.pushButtonEnregistreChrono.clicked.connect(self.enregistreChrono)
+        self.stopCalculs.connect(self.stopComputing)
+        # self.ui.pushButton_video.clicked.connect(self.stopComputing)
+        self.updateProgressBar.connect(self.updatePB)
 
-        QObject.connect(self.ui.exportCombo, SIGNAL("currentIndexChanged(int)"), self.export)
+        self.ui.exportCombo.currentIndexChanged.connect(self.export)
 
-        QObject.connect(self.ui.pushButton_nvl_echelle, SIGNAL("clicked()"), self.recommence_echelle)
+        self.ui.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
 
     def enregistreChrono(self):
         #self.label_trajectoire.render()
@@ -685,7 +692,7 @@ class StartQT4(QMainWindow):
 
         if self.index_de_l_image == self.image_max:
             if self.indexMotif == 0 and not self.goCalcul:  # dernier passage
-                self.emit(SIGNAL('stopCalculs()'))
+                self.stopCalculs.emit()
             elif self.indexMotif == 0 and self.goCalcul:  # premier passage, premier calcul de la dernière image
                 self.goCalcul = False
 
@@ -713,7 +720,7 @@ class StartQT4(QMainWindow):
         try:
             if not self.time.isActive():
                 self.timer = QTimer(self)
-                QObject.connect(self.timer, SIGNAL("timeout()"), self, SLOT(self.readStdout()))
+                self.timer.timeout.connect(self, SLOT(self.readStdout()))
                 self.timer.start(100);
             else:
                 while not self.exitDecode:
@@ -760,7 +767,7 @@ class StartQT4(QMainWindow):
 
         self.label_video.origine = self.origine
         self.label_video.update()
-        self.emit(SIGNAL('stopRedimensionnement()'))
+        self.stopRedimensionnement.emit()
 
         # construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
         if self.points_ecran != {}:
@@ -784,7 +791,7 @@ class StartQT4(QMainWindow):
             self.sens_X = -1
         else:
             self.sens_X = 1
-        self.emit(SIGNAL('change_axe_origine()'))
+        self.change_axe_origine.emit()
 
     def change_sens_Y(self):
         self.dbg.p(1, "rentre dans 'change_sens_Y'")
@@ -792,7 +799,7 @@ class StartQT4(QMainWindow):
             self.sens_Y = -1
         else:
             self.sens_Y = 1
-        self.emit(SIGNAL('change_axe_origine()'))
+        self.change_axe_origine.emit()
 
     def check_uncheck_direction_axes(self):
         if self.sens_X == -1:
@@ -894,11 +901,8 @@ class StartQT4(QMainWindow):
 
         quand le paramètre est absent, initialise les répertoires si nécessaire
         """
-
-        home = unicode(QDesktopServices.storageLocation(8), 'iso-8859-1')
-
         if lequel == "home":
-            return home
+            return HOME_PATH
         elif lequel == "videos":
             return VIDEO_PATH
         elif lequel == "conf":
@@ -1101,10 +1105,10 @@ class StartQT4(QMainWindow):
 #            pass  # premier passage
 
     def resizeEvent(self, event):
-        self.emit(SIGNAL('redimensionneSignal()'))
+        self.redimensionneSignal.emit()
 
     def showEvent(self, event):
-        self.emit(SIGNAL('redimensionneSignal()'))
+        self.redimensionneSignal.emit()
         
     def redimensionne(self, premier=False):
         """
@@ -1701,7 +1705,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1, p2)
         self.label_echelle_trace.show()
-        self.emit(SIGNAL('stopRedimensionnement()'))
+        self.stopRedimensionnement.emit()
 
 
     def reinitialise_environnement(self):

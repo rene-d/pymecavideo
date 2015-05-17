@@ -92,7 +92,7 @@ class MyReaderThread(QThread):
                     if self.pct > 0:
                         self.parent.value_ = int(self.pct)
 
-                        self.app.emit(SIGNAL('updateProgressBar()'))
+                        self.app.updateProgressBar.emit()
                 except ValueError:
                     pass
 
@@ -108,7 +108,7 @@ class MyReaderThread(QThread):
             finally:
                 stdout_file.close()
         self.parent.value_ = 100
-        self.app.emit(SIGNAL('updateProgressBar()'))
+        self.app.updateProgressBar.emit()
 
         self.quit()
 

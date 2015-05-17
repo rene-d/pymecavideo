@@ -70,7 +70,7 @@ class Label_Auto(QLabel):
     def mouseReleaseEvent(self, event):
         self.app.zoom = True
         self.app.motif.append(self.getMotif())
-        self.app.emit(SIGNAL('selection_motif_done()'))
+        self.app.selection_motif_done.emit()
 
 
     def getMotif(self):
