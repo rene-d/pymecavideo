@@ -1107,20 +1107,29 @@ class StartQT4(QMainWindow):
     def showEvent(self, event):
         self.emit(SIGNAL('redimensionneSignal()'))
         
-    def redimensionne(self, premier=None):
+    def redimensionne(self, premier=False):
+        """
+        redimensionne la fenêtre principale
+        @param premier booléen, force le redimensionnement comme la première fois s'il est
+        vrai ; faux par défaut.
+        """
         self.layout()
         if self.premierResize or premier:
             self.determineHauteurLargeur()
             self.premierResize = False
         else:
             self.determineHauteurLargeur(self.width())
-        
+
+        """
+        OBSOLÈTE : la méthode de calcul de hauteur fait perdre la ligne de statut
+        =========================================================================
         if sys.platform != "win32":
             posVideo = self.ui.label.mapTo(self, QPoint(0,0))
             #rect = self.geometry()
             #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
-            self.setFixedHeight(self.hauteur + posVideo.y())
-
+            #self.setFixedHeight(self.hauteur + posVideo.y())
+        =========================================================================
+        """
         
         if hasattr(self, 'label_video'):
             self.label_video.maj()
@@ -1772,7 +1781,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.affiche_image()
 
     def mets_a_jour_label_infos(self, message):
-        """On utilise la barre de status pour afficher les messages : permet de ganager un la place en envelant le label_infos_image """
+        """
+        On utilise la barre de status pour afficher les messages : 
+        permet de gagner de la place en envelant le label_infos_image
+        @param message message à afficher
+        """
         self.dbg.p(1, "rentre dans 'mets_a_jour_label_infos'")
         self.statusBar().showMessage(message)
 

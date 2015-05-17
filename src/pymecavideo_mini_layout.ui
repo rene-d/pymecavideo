@@ -22,6 +22,12 @@
     <height>618</height>
    </size>
   </property>
+  <property name="sizeIncrement">
+   <size>
+    <width>5</width>
+    <height>5</height>
+   </size>
+  </property>
   <property name="font">
    <font>
     <pointsize>9</pointsize>
@@ -1034,7 +1040,7 @@ photographie</string>
      <x>0</x>
      <y>0</y>
      <width>876</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -1081,7 +1087,7 @@ photographie</string>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="sizeGripEnabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </widget>
   <action name="actionOuvrir_un_fichier">
