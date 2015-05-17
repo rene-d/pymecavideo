@@ -44,9 +44,9 @@ import sys
 import os
 import subprocess
 
-from PyQt4.QtGui import QDesktopServices
+from PyQt5.QtGui import QDesktopServices
 
-# from PyQt4.QtGui import *
+# from PyQt5.QtGui import *
 
 #
 # Version de pymecavideo

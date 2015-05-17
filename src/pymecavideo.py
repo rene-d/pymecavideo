@@ -49,8 +49,8 @@ import sys, os
 from vecteur import vecteur
 import time, commands, codecs
 import locale, getopt
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 
 # création précoce de l'objet application, déjà nécessaire pour traiter les bugs
 app = QApplication(sys.argv)

@@ -100,8 +100,8 @@ def SendBugReport():
     # On ouvre le fichier qui contient les erreurs
     #
     import webbrowser, datetime
-    from PyQt4.QtGui import QMessageBox
-    from PyQt4.QtCore import QString
+    from PyQt5.QtGui import QMessageBox
+    from PyQt5.QtCore import QString
 
     def rien(x):
         return x

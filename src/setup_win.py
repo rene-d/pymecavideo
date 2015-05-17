@@ -77,7 +77,7 @@ build_exe_options = {'build_exe': 'build',
                                   'Tkconstants', 'pydoc', 'doctest', 'test', 'sqlite3',
                                   "matplotlib", 
                                   "PIL", "scipy", "email"
-                                  #'PyQt4.QtWebKit', #'PyQt4.QtOpenGL', #'PyQt4.QtNetwork'#♣,'PyQt4.QtSvg'
+                                  #'PyQt5.QtWebKit', #'PyQt4.QtOpenGL', #'PyQt4.QtNetwork'#♣,'PyQt4.QtSvg'
                                   ],
                      "include_files": includefiles,
                      'bin_excludes' : ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl85.dll',

@@ -1,20 +1,20 @@
 DESTDIR = 
 HELPFILES = $(shell ls help | grep -E 'xhtml$$|css$$|png$$')
-LRELEASE = lrelease-qt4
+LRELEASE = lrelease
 
 all:	Ui_pymecavideo.py Ui_pymecavideo_mini.py Ui_pymecavideo_mini_layout.py helpfiles languages
 
 
 
 Ui_%.py: %.ui
-	pyuic4 $< > $@
-	
+	pyuic5 $< > $@
+
 languages:
-	pylupdate4 pymecavideo_project.pro
-	lrelease ../data/lang/*.ts
+	pylupdate5 pymecavideo_project.pro
+	lrelease -qt5 ../data/lang/*.ts
 
 
-	
+
 helpfiles:
 	@$(MAKE) -C ../data/help
 

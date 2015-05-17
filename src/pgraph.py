@@ -47,7 +47,7 @@ class traceur2d:
 
 
 if __name__ == "__main__":
-    from PyQt4 import QtGui  # (the example applies equally well to PySide)
+    from PyQt5 import QtGui  # (the example applies equally well to PySide)
     app = QtGui.QApplication([])
     ## Define a top-level widget to hold everything
     w = QtGui.QWidget()

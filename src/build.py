@@ -4,7 +4,7 @@
 from distutils.core import setup
 import os
 
-import PyQt4
+import PyQt5
 import matplotlib
 
 import py2exe
@@ -27,7 +27,7 @@ data_files = [("Microsoft.VC90.CRT", glob(r'msvcr90.dll')),
               #              ('C:\\OpenCV2.3\\build\\bin\\opencv_ffmpeg.dll'),
               #              ("", glob(r'ff*.exe')),
 
-              ('imageformats', [os.path.join(os.path.dirname(PyQt4.__file__),
+              ('imageformats', [os.path.join(os.path.dirname(PyQt5.__file__),
                                              'plugins',
                                              'imageformats',
                                              'qjpeg4.dll')])
@@ -44,7 +44,7 @@ options = {"py2exe": {"compressed": 2,
 
                       "includes": ["sip",  #"matplotlib.backends",
                                    "matplotlib.backends.backend_qt4agg"
-                      ],  #, "PyQt4.QtCore", "PyQt4.QtGui"],
+                      ],  #, "PyQt5.QtCore", "PyQt4.QtGui"],
 
                       'excludes': ['bsddb', 'curses', 'pywin.debugger',
                                    'pywin.debugger.dbgcon', 'pywin.dialogs',
