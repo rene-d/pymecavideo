@@ -132,7 +132,8 @@ class Label_Echelle(QLabel):
         if event.button() == 1 and self.p1.x() >= 0:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
         self.zoom_croix.hide()
-        self.app.ui.label_zoom.setPixmap(QPixmap(None))
+        self.app.ui.label_zoom.setPixmap(QPixmap())
+        #self.app.ui.label_zoom.repaint()
         del self.zoom_croix
         self.parent.index_du_point = 0
 
