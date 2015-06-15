@@ -177,12 +177,19 @@ class StartQT4(QMainWindow):
         
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy.setHeightForWidth(True)
+
+
+        self.setSizePolicy(sizePolicy)
+
 
 
         print('yyyyyyyyyyyyy()')
-#        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-#        sizePolicy.setHeightForWidth(True)
-#        self.setSizePolicy(sizePolicy)
+        print('yyyyyyyyyyyyy()')
+        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy.setHeightForWidth(True)
+        self.setSizePolicy(sizePolicy)
 #        self.heightForWidth(0.5)
 
         self.dbg = Dbg(0)
@@ -246,6 +253,10 @@ class StartQT4(QMainWindow):
 
 
     # Basculer en mode plein écran / mode fenétré
+
+
+    def heightForWidth(self):
+        return 0.5
 
     def basculer_plein_ecran(self):
         self.dbg.p(1, "rentre dans 'basculer_plein_ecran'")
@@ -1081,7 +1092,10 @@ class StartQT4(QMainWindow):
             pass  # premier passage
 
     def resizeEvent(self, event):
+        self.setFixedHeight(self.width()*0.75)
+        QApplication.instance().processEvents()
         self.emit(SIGNAL('redimensionneSignal()'))
+
 
 
     def redimensionne(self, premier=None):
@@ -1815,6 +1829,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.prefs.lastVideo = self.filename
                 self.determineHauteurLargeur()
                 self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
+                self.ui.label.heightForWidth(1.5)
                 self.init_image()
                 self.init_capture()
                 self.redimensionne(premier=1)

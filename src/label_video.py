@@ -35,9 +35,11 @@ class Label_Video(QtGui.QLabel):
         self.app = app
         self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
         self.liste_points = []
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        sizePolicy.setHeightForWidth(True)
-        self.setSizePolicy(sizePolicy)
+        # sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        # sizePolicy.setHeightForWidth(True)
+        #
+        #
+        # self.setSizePolicy(sizePolicy)
 
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
@@ -52,6 +54,14 @@ class Label_Video(QtGui.QLabel):
 
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray", "green", "red", "blue", "cyan", "magenta",
                          "yellow", "gray", "green"]
+
+    def sizeHint(self):
+
+        return QSize(self.app.largeur, self.app.hauteur)
+
+    def heightForWidth(self, width):
+
+        return QtGui.QLabel.heightForWidth(self, width)
 
     def reinit(self):
         try:
@@ -71,6 +81,8 @@ class Label_Video(QtGui.QLabel):
 
     def mouseReleaseEvent(self, event):
         self.storePoint(vecteur(event.x(), event.y()))
+
+
 
     def enterEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
