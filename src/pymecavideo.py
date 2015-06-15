@@ -180,24 +180,12 @@ class StartQT4(QMainWindow):
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHeightForWidth(True)
 
-<<<<<<< HEAD
-
-        self.setSizePolicy(sizePolicy)
-
-
-
         print('yyyyyyyyyyyyy()')
         print('yyyyyyyyyyyyy()')
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        sizePolicy.setHeightForWidth(True)
+
         self.setSizePolicy(sizePolicy)
 #        self.heightForWidth(0.5)
-=======
-#        print('yyyyyyyyyyyyy()')
-#        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-#        sizePolicy.setHeightForWidth(True)
-#        self.setSizePolicy(sizePolicy)
->>>>>>> 1a33098d71858ba5c2121c4589967351bbdb3ea2
+
 
         self.dbg = Dbg(0)
         for o in opts:
@@ -1126,12 +1114,7 @@ class StartQT4(QMainWindow):
         QApplication.instance().processEvents()
         self.emit(SIGNAL('redimensionneSignal()'))
 
-<<<<<<< HEAD
 
-
-    def redimensionne(self, premier=None):
-#        print ('kkkk')
-=======
     def showEvent(self, event):
         self.emit(SIGNAL('redimensionneSignal()'))
         
@@ -1142,7 +1125,6 @@ class StartQT4(QMainWindow):
         vrai ; faux par défaut.
         """
         self.layout()
->>>>>>> 1a33098d71858ba5c2121c4589967351bbdb3ea2
         if self.premierResize or premier:
             self.determineHauteurLargeur()
             self.premierResize = False
@@ -1877,12 +1859,9 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
                 self.prefs.lastVideo = self.filename
                 self.determineHauteurLargeur()
-<<<<<<< HEAD
-                self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
-                self.ui.label.heightForWidth(1.5)
-=======
+
 #                self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
->>>>>>> 1a33098d71858ba5c2121c4589967351bbdb3ea2
+
                 self.init_image()
                 self.init_capture()
                 self.redimensionne(premier=1)
