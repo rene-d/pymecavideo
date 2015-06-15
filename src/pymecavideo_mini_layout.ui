@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>858</width>
+    <width>876</width>
     <height>618</height>
    </rect>
   </property>
@@ -18,8 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>858</width>
+    <width>876</width>
     <height>618</height>
+   </size>
+  </property>
+  <property name="sizeIncrement">
+   <size>
+    <width>5</width>
+    <height>5</height>
    </size>
   </property>
   <property name="font">
@@ -496,22 +502,6 @@ vers le bas</string>
            </layout>
           </item>
           <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>5</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
            <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,1">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
@@ -559,9 +549,9 @@ vers le bas</string>
                <bool>true</bool>
               </property>
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
+               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                <horstretch>1</horstretch>
+                <verstretch>1</verstretch>
                </sizepolicy>
               </property>
               <property name="minimumSize">
@@ -680,13 +670,13 @@ vers le bas</string>
            <widget class="QGroupBox" name="groupBox_4">
             <property name="minimumSize">
              <size>
-              <width>180</width>
+              <width>160</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>180</width>
+              <width>160</width>
               <height>16777215</height>
              </size>
             </property>
@@ -703,16 +693,14 @@ vers le bas</string>
                 <widget class="QCheckBox" name="checkBoxVectorSpeed">
                  <property name="text">
                   <string>Montrer 
-les vecteurs
-vitesses</string>
+les vecteurs vitesses</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QRadioButton" name="radioButtonNearMouse">
                  <property name="text">
-                  <string>près de
-la souris</string>
+                  <string>près de la souris</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -750,26 +738,12 @@ la souris</string>
                 </widget>
                </item>
                <item>
-                <widget class="Line" name="line">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QLabel" name="label_6">
                  <property name="text">
                   <string>px pour 1 m/s</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_2">
-                 <property name="text">
-                  <string>Voir un graphique</string>
                  </property>
                 </widget>
                </item>
@@ -787,9 +761,23 @@ la souris</string>
                 </spacer>
                </item>
                <item>
+                <widget class="Line" name="line">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>Voir un graphique</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QComboBox" name="comboBox_mode_tracer">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -813,6 +801,13 @@ la souris</string>
                   </size>
                  </property>
                 </spacer>
+               </item>
+               <item>
+                <widget class="Line" name="line_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
                </item>
                <item>
                 <widget class="QPushButton" name="pushButtonChrono">
@@ -845,6 +840,9 @@ photographie</string>
                <widget class="QLabel" name="label_8">
                 <property name="text">
                  <string>Définir un autre référentiel : </string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -969,6 +967,12 @@ photographie</string>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
             <widget class="QPushButton" name="pushButton_select_all_table">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Copier les mesures dans le presse papier</string>
              </property>
@@ -1035,8 +1039,8 @@ photographie</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>858</width>
-     <height>21</height>
+     <width>876</width>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -1083,7 +1087,7 @@ photographie</string>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="sizeGripEnabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </widget>
   <action name="actionOuvrir_un_fichier">

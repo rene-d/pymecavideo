@@ -180,6 +180,7 @@ class StartQT4(QMainWindow):
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHeightForWidth(True)
 
+<<<<<<< HEAD
 
         self.setSizePolicy(sizePolicy)
 
@@ -191,6 +192,12 @@ class StartQT4(QMainWindow):
         sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
 #        self.heightForWidth(0.5)
+=======
+#        print('yyyyyyyyyyyyy()')
+#        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+#        sizePolicy.setHeightForWidth(True)
+#        self.setSizePolicy(sizePolicy)
+>>>>>>> 1a33098d71858ba5c2121c4589967351bbdb3ea2
 
         self.dbg = Dbg(0)
         for o in opts:
@@ -250,6 +257,8 @@ class StartQT4(QMainWindow):
 
         # chargement d'un éventuel premier fichier
         self.splashVideo()
+        
+        
 
 
     # Basculer en mode plein écran / mode fenétré
@@ -1070,56 +1079,92 @@ class StartQT4(QMainWindow):
             self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
         else:
             framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-        sizeEcran = QDesktopWidget().screenGeometry()
-        rapportLH = float(self.largeurFilm) / self.hauteurFilm
-        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
-            self.dbg.p(2, 'film trop grand')
-            self.largeur = int(sizeEcran.width() * 3.0 / 4.0)
-        elif self.largeurFilm < 640:
-            self.dbg.p(2, 'film trop petit')
-            self.largeur = 640
-        else:
-            self.largeur = self.largeurFilm
-        try:
-            if largeur:
-                self.largeur = largeur - 190
-                self.hauteur = int(self.largeur / rapportLH)
-                self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
-                self.label_video.origine = self.origine
-            self.hauteur = int(self.largeur / rapportLH)
+        
+#        sizeEcran = QDesktopWidget().screenGeometry()
+#        posVideo = self.ui.label.mapTo(self, QPoint(0,0))
 
+        ratioFilm = self.largeurFilm / self.hauteurFilm
+        ratioLabel = 1.0*self.ui.label.width() / self.ui.label.height()
+        
+        if ratioFilm > ratioLabel:
+            self.largeur = 1.0*(self.ui.label.width())
+            self.hauteur = int(self.largeur / ratioFilm)
+        else:
+            self.hauteur = 1.0*(self.ui.label.height())
+            self.largeur = int(self.hauteur * ratioFilm)
+            
+        self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
+        try:
+            self.label_video.origine = self.origine
         except AttributeError:
             pass  # premier passage
+        
+
+        
+#        rapportLH = float(self.largeurFilm) / self.hauteurFilm
+#        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
+#            self.dbg.p(2, 'film trop grand')
+#            self.largeur = int(sizeEcran.width() * 3.0 / 4.0)
+#        elif self.largeurFilm < 640:
+#            self.dbg.p(2, 'film trop petit')
+#            self.largeur = 640
+#        else:
+#            self.largeur = self.largeurFilm
+#        try:
+#            if largeur:
+#                self.largeur = largeur - 190
+#                self.hauteur = int(self.largeur / rapportLH)
+#                self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
+#                self.label_video.origine = self.origine
+#            self.hauteur = int(self.largeur / rapportLH)
+#
+#        except AttributeError:
+#            pass  # premier passage
 
     def resizeEvent(self, event):
         self.setFixedHeight(self.width()*0.75)
         QApplication.instance().processEvents()
         self.emit(SIGNAL('redimensionneSignal()'))
 
+<<<<<<< HEAD
 
 
     def redimensionne(self, premier=None):
 #        print ('kkkk')
+=======
+    def showEvent(self, event):
+        self.emit(SIGNAL('redimensionneSignal()'))
+        
+    def redimensionne(self, premier=False):
+        """
+        redimensionne la fenêtre principale
+        @param premier booléen, force le redimensionnement comme la première fois s'il est
+        vrai ; faux par défaut.
+        """
+        self.layout()
+>>>>>>> 1a33098d71858ba5c2121c4589967351bbdb3ea2
         if self.premierResize or premier:
             self.determineHauteurLargeur()
             self.premierResize = False
         else:
             self.determineHauteurLargeur(self.width())
-#        rect = self.geometry()
-        #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
-#        if sys.platform != "win32":
-#            self.setFixedHeight(self.hauteur + 130)
-#        print(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
-#        self.ui.label.setGeometry(QRect(150, 40, self.largeur, self.hauteur))
-        try:
+
+        """
+        OBSOLÈTE : la méthode de calcul de hauteur fait perdre la ligne de statut
+        =========================================================================
+        if sys.platform != "win32":
+            posVideo = self.ui.label.mapTo(self, QPoint(0,0))
+            #rect = self.geometry()
+            #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
+            #self.setFixedHeight(self.hauteur + posVideo.y())
+        =========================================================================
+        """
+        
+        if hasattr(self, 'label_video'):
             self.label_video.maj()
             self.label_trajectoire.maj()
-#            self.ui.label_3.setGeometry(self.ui.label_3.x(), self.ui.label_3.y(), self.largeur, self.hauteur)
-
             self.affiche_image()
-        except AttributeError:
-            pass  # premier passage si pas de vidéo avant
-
+            
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
@@ -1765,7 +1810,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.affiche_image()
 
     def mets_a_jour_label_infos(self, message):
-        """On utilise la barre de status pour afficher les messages : permet de ganager un la place en envelant le label_infos_image """
+        """
+        On utilise la barre de status pour afficher les messages : 
+        permet de gagner de la place en envelant le label_infos_image
+        @param message message à afficher
+        """
         self.dbg.p(1, "rentre dans 'mets_a_jour_label_infos'")
         self.statusBar().showMessage(message)
 
@@ -1828,8 +1877,12 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
                 self.prefs.lastVideo = self.filename
                 self.determineHauteurLargeur()
+<<<<<<< HEAD
                 self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
                 self.ui.label.heightForWidth(1.5)
+=======
+#                self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
+>>>>>>> 1a33098d71858ba5c2121c4589967351bbdb3ea2
                 self.init_image()
                 self.init_capture()
                 self.redimensionne(premier=1)
