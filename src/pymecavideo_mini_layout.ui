@@ -298,7 +298,7 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_4">
                   <item>
-                   <widget class="QPushButton" name="pushButton_refait">
+                   <widget class="QPushButton" name="pushButton_defait">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -329,7 +329,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pushButton_defait">
+                   <widget class="QPushButton" name="pushButton_refait">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>

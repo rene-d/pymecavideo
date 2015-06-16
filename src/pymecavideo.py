@@ -170,20 +170,17 @@ class StartQT4(QMainWindow):
             from Ui_pymecavideo_mini_layout import Ui_pymecavideo
 
             message = QMessageBox(self)
-            
+
         self.setWindowFlags(self.windowFlags() |
-                              Qt.WindowSystemMenuHint |
-                              Qt.WindowMinMaxButtonsHint)
-        
+                            Qt.WindowSystemMenuHint |
+                            Qt.WindowMinMaxButtonsHint)
+
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHeightForWidth(True)
 
-
         self.setSizePolicy(sizePolicy)
-
-
 
         self.dbg = Dbg(0)
         for o in opts:
@@ -243,8 +240,6 @@ class StartQT4(QMainWindow):
 
         # chargement d'un éventuel premier fichier
         self.splashVideo()
-        
-        
 
 
     # Basculer en mode plein écran / mode fenétré
@@ -315,11 +310,11 @@ class StartQT4(QMainWindow):
         self.goCalcul = True  # Booléen vérifiant la disponibilté du thread de calcul
         self.updatePicture = True
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
-        self.chrono=False
+        self.chrono = False
 
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         # for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture', 'wxAstroCapture']:
-        #     if any(os.access(os.path.join(p, logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
+        # if any(os.access(os.path.join(p, logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
         #         self.logiciel_acquisition = logiciel
         #         # self.ui.pushButton_video.setEnabled(1)
         #         break
@@ -387,6 +382,9 @@ class StartQT4(QMainWindow):
 
         self.ui.pushButtonEnregistreChrono.setVisible(0)
         self.ui.tabWidget.setCurrentIndex(0)  # montre l'onglet video
+
+        self.ui.pushButton_video.setEnabled(0)
+        self.ui.pushButton_video.hide()
 
 
     def desactiveExport(self, text):
@@ -581,10 +579,9 @@ class StartQT4(QMainWindow):
         QObject.connect(self, SIGNAL('OKRedimensionnement()'), self.defixeLesDimensions)
         QObject.connect(self, SIGNAL('redimensionneSignal()'), self.redimensionne)
 
-
         QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
         QObject.connect(self, SIGNAL('stopCalculs()'), self.stopComputing)
-        # QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
+        QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
         QObject.connect(self, SIGNAL('updateProgressBar()'), self.updatePB)
 
         QObject.connect(self.ui.exportCombo, SIGNAL("currentIndexChanged(int)"), self.export)
@@ -592,11 +589,12 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButton_nvl_echelle, SIGNAL("clicked()"), self.recommence_echelle)
 
     def enregistreChrono(self):
-        #self.label_trajectoire.render()
+        # self.label_trajectoire.render()
         self.pixmapChrono = QPixmap(self.label_trajectoire.size())
         self.label_trajectoire.render(self.pixmapChrono)
         dir_ = self._dir("home")
-        fichier = QFileDialog.getSaveFileName(self, _translate("pymecavideo", "Enregistrer la chronophotographie", None),
+        fichier = QFileDialog.getSaveFileName(self,
+                                              _translate("pymecavideo", "Enregistrer la chronophotographie", None),
                                               dir_,
                                               _translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
         self.pixmapChrono.save(fichier)
@@ -605,7 +603,7 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         ##ajoute la première image utilisée pour le pointage sur le fond du label
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % self.premiere_image)
-        self.chrono=True
+        self.chrono = True
         self.imageChrono = QImage(imfilename).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
         self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
         self.ui.pushButtonEnregistreChrono.setVisible(1)
@@ -651,9 +649,9 @@ class StartQT4(QMainWindow):
             self.label_auto.close()
             self.indexMotif = 0
             # self.picture_detect()
-            # self.ui.pushButton_video.setText("STOP CALCULS")
-            # self.ui.pushButton_video.setEnabled(1)
-            # self.ui.pushButton_video.show()
+            self.ui.pushButton_video.setText("STOP CALCULS")
+            self.ui.pushButton_video.setEnabled(1)
+            self.ui.pushButton_video.show()
             # self.ui.pushButton_video.setFocus()
             self.label_video.setEnabled(0)
             self.goCalcul = True
@@ -681,7 +679,7 @@ class StartQT4(QMainWindow):
             self.pointsFound = []
             if self.indexMotif <= len(self.motif) - 1:
                 self.dbg.p(1, "'picture_detect' : While")
-#                self.pointTrouve = filter_picture(self.motif[self.indexMotif], self.imageAffichee)
+                # self.pointTrouve = filter_picture(self.motif[self.indexMotif], self.imageAffichee)
                 self.pointTrouve = filter_picture(self.motif, self.indexMotif, self.imageAffichee, dossTemp)
                 self.dbg.p(3, "Point Trouve dans mon Thread : " + str(self.pointTrouve))
                 self.onePointFind()
@@ -701,8 +699,8 @@ class StartQT4(QMainWindow):
         self.monThread.stop()
         del self.monThread
         self.label_video.setEnabled(1)
-        # self.ui.pushButton_video.setEnabled(0)
-        # self.ui.pushButton_video.hide()
+        self.ui.pushButton_video.setEnabled(0)
+        self.ui.pushButton_video.hide()
 
     def onePointFind(self):
         """est appelée quand un point a été trouvé lors de la détection automatique
@@ -1058,68 +1056,66 @@ class StartQT4(QMainWindow):
         self.prefs.save()
 
 
-
     def determineHauteurLargeur(self, largeur=None):
         ##si le film est trop large on le fixe vers les 3/4 de l'écran
         self.dbg.p(1, "rentre dans 'determineHauteurLargeur'")
-        if self.premierResize :
+        if self.premierResize:
 
             if self.cvReader is None:
                 self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
             else:
                 framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-        
-#        sizeEcran = QDesktopWidget().screenGeometry()
-#        posVideo = self.ui.label.mapTo(self, QPoint(0,0))
+
+                # sizeEcran = QDesktopWidget().screenGeometry()
+            #        posVideo = self.ui.label.mapTo(self, QPoint(0,0))
 
         ratioFilm = self.largeurFilm / self.hauteurFilm
-        ratioLabel = 1.0*self.ui.label.width() / self.ui.label.height()
-        
+        ratioLabel = 1.0 * self.ui.label.width() / self.ui.label.height()
+
         if ratioFilm > ratioLabel:
-            self.largeur = 1.0*(self.ui.label.width())
+            self.largeur = 1.0 * (self.ui.label.width())
             self.hauteur = int(self.largeur / ratioFilm)
         else:
-            self.hauteur = 1.0*(self.ui.label.height())
+            self.hauteur = 1.0 * (self.ui.label.height())
             self.largeur = int(self.hauteur * ratioFilm)
-            
+
         self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
         try:
             self.label_video.origine = self.origine
         except AttributeError:
             pass  # premier passage
-        
 
-#        rapportLH = float(self.largeurFilm) / self.hauteurFilm
-#        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
-#            self.dbg.p(2, 'film trop grand')
-#            self.largeur = int(sizeEcran.width() * 3.0 / 4.0)
-#        elif self.largeurFilm < 640:
-#            self.dbg.p(2, 'film trop petit')
-#            self.largeur = 640
-#        else:
-#            self.largeur = self.largeurFilm
-#        try:
-#            if largeur:
-#                self.largeur = largeur - 190
-#                self.hauteur = int(self.largeur / rapportLH)
-#                self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
-#                self.label_video.origine = self.origine
-#            self.hauteur = int(self.largeur / rapportLH)
-#
-#        except AttributeError:
-#            pass  # premier passage
+
+            # rapportLH = float(self.largeurFilm) / self.hauteurFilm
+        #        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
+        #            self.dbg.p(2, 'film trop grand')
+        #            self.largeur = int(sizeEcran.width() * 3.0 / 4.0)
+        #        elif self.largeurFilm < 640:
+        #            self.dbg.p(2, 'film trop petit')
+        #            self.largeur = 640
+        #        else:
+        #            self.largeur = self.largeurFilm
+        #        try:
+        #            if largeur:
+        #                self.largeur = largeur - 190
+        #                self.hauteur = int(self.largeur / rapportLH)
+        #                self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
+        #                self.label_video.origine = self.origine
+        #            self.hauteur = int(self.largeur / rapportLH)
+        #
+        #        except AttributeError:
+        #            pass  # premier passage
 
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans resizeEvent")
-        self.setFixedHeight(self.width()*0.75)
+        self.setFixedHeight(self.width() * 0.75)
         self.emit(SIGNAL('redimensionneSignal()'))
         QApplication.instance().processEvents()
 
 
-
     # def showEvent(self, event):
-    #     self.emit(SIGNAL('redimensionneSignal()'))
-        
+    # self.emit(SIGNAL('redimensionneSignal()'))
+
     def redimensionne(self, premier=False):
         """
         redimensionne la fenêtre principale
@@ -1144,13 +1140,12 @@ class StartQT4(QMainWindow):
             #self.setFixedHeight(self.hauteur + posVideo.y())
         =========================================================================
         """
-        
+
         if hasattr(self, 'label_video'):
             self.label_video.maj()
             self.label_trajectoire.maj()
             self.afficheJusteImage()
 
-            
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
@@ -1329,7 +1324,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if min != None and max != None:
             return (min + max) * 0.5
         else:
-            return vecteur(self.largeur/2, self.hauteur/2)
+            return vecteur(self.largeur / 2, self.hauteur / 2)
 
     def efface_point_precedent(self):
         """revient au point précédent
@@ -1405,9 +1400,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 if ref != "camera":
                     self.ui.pushButtonChrono.setEnabled(0)
                     self.ui.pushButtonEnregistreChrono.setVisible(0)
-                    self.chrono=False
+                    self.chrono = False
                     bc = self.mediane_trajectoires(int(ref) - 1)
-                    origine = vecteur(self.largeur/2, self.hauteur/2) - bc
+                    origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
                     self.label_trajectoire.origine = origine
 
                     self.label_trajectoire.referentiel = ref
@@ -1643,16 +1638,15 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' + str(self.index_de_l_image) + ' ' + str(self.image_max))
             if self.updatePicture:
                 if self.index_de_l_image <= self.image_max:
-                    self.dbg.p(1, "affiche_image "+"self.index_de_l_image <= self.image_max")
+                    self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
                     self.extract_image(self.filename, self.index_de_l_image)
                     image = QImage(self.chemin_image)
                     self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
                     if hasattr(self, "label_video"):
                         self.afficheJusteImage()
 
-
-                        if self.ui.horizontalSlider.value()!=self.index_de_l_image:
-                            self.dbg.p(1, "affiche_image "+"horizontal")
+                        if self.ui.horizontalSlider.value() != self.index_de_l_image:
+                            self.dbg.p(1, "affiche_image " + "horizontal")
                             self.ui.horizontalSlider.setValue(self.index_de_l_image)
                             self.ui.spinBox_image.setValue(self.index_de_l_image)
                 elif self.index_de_l_image > self.image_max:
@@ -1664,7 +1658,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
 
     def afficheJusteImage(self):
-        self.dbg.p(1, "affiche_image "+"video")
+        self.dbg.p(1, "affiche_image " + "video")
         self.label_video.setMouseTracking(True)
         self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
         self.label_video.met_a_jour_crop()
@@ -1722,7 +1716,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         except ValueError:
             self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une échelle valable", None))
             self.demande_echelle()
-        # self.ui.pushButton_video.setEnabled(0)
+            # self.ui.pushButton_video.setEnabled(0)
 
     def feedbackEchelle(self, p1, p2):
         """
@@ -1873,7 +1867,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.prefs.lastVideo = self.filename
                 self.determineHauteurLargeur()
 
-#                self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
+                #                self.ui.label.setGeometry(153, 40, self.largeur, self.hauteur)
 
                 self.init_image()
                 self.init_capture()
@@ -1974,7 +1968,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         @param index le numéro de l'image
         @param force permet de forcer l'écriture d'une image
         """
-        self.dbg.p(1, "rentre dans 'extract_image' "+'index : '+str(index))
+        self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % index)
         if force or not os.path.isfile(imfilename):
             self.cvReader.writeImage(index, imfilename)
