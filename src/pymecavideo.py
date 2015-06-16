@@ -1635,7 +1635,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if self.updatePicture:
                 if self.index_de_l_image <= self.image_max:
                     self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
-
+                    self.extract_image(self.filename, self.index_de_l_image)
+                    self.imageExtraite = QImage(self.chemin_image)
+                    self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
 
                   #  self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
                     if hasattr(self, "label_video"):
@@ -1655,11 +1657,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def afficheJusteImage(self):
         self.dbg.p(1, "affiche_image video, largeur %s, hauteur, %s"%(self.largeur, self.hauteur))
-
-        self.extract_image(self.filename, self.index_de_l_image)
-        image = QImage(self.chemin_image)
-
-        self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
+        self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
         print(self.imageAffichee.width(), self.chemin_image)
         self.label_video.setMouseTracking(True)
         self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
