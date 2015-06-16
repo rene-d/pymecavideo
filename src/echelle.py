@@ -115,8 +115,9 @@ class Label_Echelle(QLabel):
 
     def mouseMoveEvent(self, event):
         self.zoom_croix.show()
-        if (event.x()>0 and event.x()<self.app.largeur) or (event.y()>0 and event.y()<self.app.hauteur):
+        if (event.x()>0 and event.x()<self.app.largeur) and (event.y()>0 and event.y()<self.app.hauteur):
             self.pos = vecteur(event.x(), event.y())
+        print(self.pos)
         self.fait_crop(self.pos)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
 
