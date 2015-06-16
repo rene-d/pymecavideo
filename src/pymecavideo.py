@@ -180,11 +180,9 @@ class StartQT4(QMainWindow):
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHeightForWidth(True)
 
-        print('yyyyyyyyyyyyy()')
-        print('yyyyyyyyyyyyy()')
 
         self.setSizePolicy(sizePolicy)
-#        self.heightForWidth(0.5)
+
 
 
         self.dbg = Dbg(0)
@@ -1063,10 +1061,13 @@ class StartQT4(QMainWindow):
 
     def determineHauteurLargeur(self, largeur=None):
         ##si le film est trop large on le fixe vers les 3/4 de l'écran
-        if self.cvReader is None:
-            self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
-        else:
-            framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+        self.dbg.p(1, "rentre dans 'determineHauteurLargeur'")
+        if self.premierResize :
+
+            if self.cvReader is None:
+                self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
+            else:
+                framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         
 #        sizeEcran = QDesktopWidget().screenGeometry()
 #        posVideo = self.ui.label.mapTo(self, QPoint(0,0))
@@ -1088,7 +1089,6 @@ class StartQT4(QMainWindow):
             pass  # premier passage
         
 
-        
 #        rapportLH = float(self.largeurFilm) / self.hauteurFilm
 #        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
 #            self.dbg.p(2, 'film trop grand')
@@ -1110,13 +1110,15 @@ class StartQT4(QMainWindow):
 #            pass  # premier passage
 
     def resizeEvent(self, event):
+        self.dbg.p(1, "rentre dans resizeEvent")
         self.setFixedHeight(self.width()*0.75)
+        self.emit(SIGNAL('redimensionneSignal()'))
         QApplication.instance().processEvents()
-        self.emit(SIGNAL('redimensionneSignal()'))
 
 
-    def showEvent(self, event):
-        self.emit(SIGNAL('redimensionneSignal()'))
+
+    # def showEvent(self, event):
+    #     self.emit(SIGNAL('redimensionneSignal()'))
         
     def redimensionne(self, premier=False):
         """
@@ -1124,6 +1126,7 @@ class StartQT4(QMainWindow):
         @param premier booléen, force le redimensionnement comme la première fois s'il est
         vrai ; faux par défaut.
         """
+        self.dbg.p(1, "rentre dans 'redimensionne'")
         self.layout()
         if self.premierResize or premier:
             self.determineHauteurLargeur()
@@ -1145,7 +1148,8 @@ class StartQT4(QMainWindow):
         if hasattr(self, 'label_video'):
             self.label_video.maj()
             self.label_trajectoire.maj()
-            self.affiche_image()
+            self.afficheJusteImage()
+
             
 
     def entete_fichier(self, msg=""):
@@ -1639,24 +1643,33 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' + str(self.index_de_l_image) + ' ' + str(self.image_max))
             if self.updatePicture:
                 if self.index_de_l_image <= self.image_max:
+                    self.dbg.p(1, "affiche_image "+"self.index_de_l_image <= self.image_max")
                     self.extract_image(self.filename, self.index_de_l_image)
                     image = QImage(self.chemin_image)
                     self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
                     if hasattr(self, "label_video"):
-                        self.label_video.setMouseTracking(True)
-                        self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
-                        self.label_video.met_a_jour_crop()
-                        self.label_video.update()
+                        self.afficheJusteImage()
 
-                        self.label_video.show()
-                        self.ui.horizontalSlider.setValue(self.index_de_l_image)
-                        self.ui.spinBox_image.setValue(self.index_de_l_image)
+
+                        if self.ui.horizontalSlider.value()!=self.index_de_l_image:
+                            self.dbg.p(1, "affiche_image "+"horizontal")
+                            self.ui.horizontalSlider.setValue(self.index_de_l_image)
+                            self.ui.spinBox_image.setValue(self.index_de_l_image)
                 elif self.index_de_l_image > self.image_max:
                     self.index_de_l_image = self.image_max
                     self.lance_capture = False
 
         except AttributeError:
             pass
+
+
+    def afficheJusteImage(self):
+        self.dbg.p(1, "affiche_image "+"video")
+        self.label_video.setMouseTracking(True)
+        self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
+        self.label_video.met_a_jour_crop()
+        #self.label_video.update()
+        #self.label_video.show()
 
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
@@ -1961,7 +1974,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         @param index le numéro de l'image
         @param force permet de forcer l'écriture d'une image
         """
-        self.dbg.p(1, "rentre dans 'extract_image'")
+        self.dbg.p(1, "rentre dans 'extract_image' "+'index : '+str(index))
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % index)
         if force or not os.path.isfile(imfilename):
             self.cvReader.writeImage(index, imfilename)

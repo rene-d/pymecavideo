@@ -192,7 +192,7 @@
                 <rect>
                  <x>10</x>
                  <y>20</y>
-                 <width>131</width>
+                 <width>139</width>
                  <height>347</height>
                 </rect>
                </property>
@@ -505,6 +505,16 @@ vers le bas</string>
            <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,1">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QPushButton" name="pushButton_video">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>STOP Calculs</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QLabel" name="label_numero_image">
                 <property name="autoFillBackground">
@@ -1040,7 +1050,7 @@ photographie</string>
      <x>0</x>
      <y>0</y>
      <width>876</width>
-     <height>18</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
