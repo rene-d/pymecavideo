@@ -17,7 +17,7 @@
 ;along with pymecavideo; if not, write to the Free Software
 ;Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#define AppVersion "6.2c"
+#define AppVersion "6.2"
 
 
 [Setup]
@@ -51,7 +51,7 @@ OutputDir=releases
 
 ;Dans le panneau de configuration de Windows2000/NT/XP, c'est l'icone de pymecavideo.exe qui
 ;apparaît à gauche du nom du fichier pour la désinstallation
-UninstallDisplayIcon={app}\data\icones\pymecavideo.ico
+UninstallDisplayIcon={app}\data\icones\icone_pymecavideo.ico
 
 ;Fenêtre en background
 WindowResizable=false
@@ -83,7 +83,7 @@ fr.gpl_licence=Prendre connaissance du contrat de licence pour le logiciel
 fr.fdl_licence=Prendre connaissance du contrat de licence pour la documentation associée
 fr.CreateDesktopIcon=Créer un raccourci sur le bureau vers
 fr.AssocFileExtension=&Associer le programme pymecavideo à l'extension .mecavideo
-fr.CreateQuickLaunchIcon=Créer un icô´ne dans la barre de lancement rapide
+fr.CreateQuickLaunchIcon=Créer un icône dans la barre de lancement rapide
 fr.FileExtensionName=Fichier pymecavideo
 fr.InstallFor=Installer pour :
 fr.AllUsers=Tous les utilisateurs
@@ -176,7 +176,7 @@ Use7zip=true
 Root: HKCR; SubKey: .mecavideo; ValueType: string; ValueData: {cm:FileExtensionName}; Flags: uninsdeletekey
 Root: HKCR; SubKey: {cm:FileExtensionName}; ValueType: string; Flags: uninsdeletekey; ValueData: {cm:FileExtensionName}
 Root: HKCR; SubKey: {cm:FileExtensionName}\Shell\Open\Command; ValueType: string; ValueData: """{app}\pymecavideo.exe"" ""-f %1"""; Flags: uninsdeletekey;
-Root: HKCR; Subkey: {cm:FileExtensionName}\DefaultIcon; ValueType: string; ValueData: {app}\data\icones\pymecavideo.ico,0; Flags: uninsdeletekey;
+Root: HKCR; Subkey: {cm:FileExtensionName}\DefaultIcon; ValueType: string; ValueData: {app}\data\icones\icone_pymecavideo.ico,0; Flags: uninsdeletekey;
 
 ; Pour stocker le style d'installation : "All users" ou "Current user"
 Root: HKLM; Subkey: Software\pymecavideo; ValueType: string; ValueName: DataFolder; ValueData: {code:DefAppDataFolder}\pymecavideo ; Flags: uninsdeletekey;
