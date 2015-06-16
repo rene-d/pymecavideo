@@ -1066,8 +1066,6 @@ class StartQT4(QMainWindow):
             else:
                 framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
 
-                # sizeEcran = QDesktopWidget().screenGeometry()
-            #        posVideo = self.ui.label.mapTo(self, QPoint(0,0))
 
         ratioFilm = self.largeurFilm / self.hauteurFilm
         ratioLabel = 1.0 * self.ui.label.width() / self.ui.label.height()
@@ -1085,6 +1083,7 @@ class StartQT4(QMainWindow):
         except AttributeError:
             pass  # premier passage
 
+        self.dbg.p(1, "rentre dans 'determineHauteurLargeur, hauteur : %s, largeur %s'"%(self.hauteur, self.largeur))
 
             # rapportLH = float(self.largeurFilm) / self.hauteurFilm
         #        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
@@ -1112,9 +1111,6 @@ class StartQT4(QMainWindow):
         self.emit(SIGNAL('redimensionneSignal()'))
         QApplication.instance().processEvents()
 
-
-    # def showEvent(self, event):
-    # self.emit(SIGNAL('redimensionneSignal()'))
 
     def redimensionne(self, premier=False):
         """
@@ -1639,9 +1635,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if self.updatePicture:
                 if self.index_de_l_image <= self.image_max:
                     self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
-                    self.extract_image(self.filename, self.index_de_l_image)
-                    image = QImage(self.chemin_image)
-                    self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
+
+
+                  #  self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
                     if hasattr(self, "label_video"):
                         self.afficheJusteImage()
 
@@ -1658,7 +1654,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
 
     def afficheJusteImage(self):
-        self.dbg.p(1, "affiche_image " + "video")
+        self.dbg.p(1, "affiche_image video, largeur %s, hauteur, %s"%(self.largeur, self.hauteur))
+
+        self.extract_image(self.filename, self.index_de_l_image)
+        image = QImage(self.chemin_image)
+
+        self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
+        print(self.imageAffichee.width(), self.chemin_image)
         self.label_video.setMouseTracking(True)
         self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
         self.label_video.met_a_jour_crop()

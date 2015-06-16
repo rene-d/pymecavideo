@@ -90,6 +90,7 @@ class Label_Video(QtGui.QLabel):
         else:
             self.setCursor(QtCore.Qt.ArrowCursor)
     def maj(self):
+        self.app.dbg.p(1, "rentre dans 'label_video.maj'")
         self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
 
     def met_a_jour_crop(self):
@@ -112,7 +113,6 @@ class Label_Video(QtGui.QLabel):
     def paintEvent(self, event):
 
         if self.app.echelle_faite and self.app.lance_capture:
-
             self.fait_crop(self.pos)
             self.app.ui.label_zoom.setPixmap(self.cropX2)
 
