@@ -208,38 +208,20 @@ class openCvReader:
         self.capture = cv.CreateFileCapture(self.filename.encode('utf8'))
         self.nextImage = 1
 
-    #
-    # def getImage(self, index):
-    #     """
-    #     récupère une IplImage
-    #     @param index le numéro de l'image, commence à 1.
-    #     @return l'image trouvée
-    #     """
-    #     if index < self.nextImage:
-    #         self.rembobine()
-    #     while index >= self.nextImage:
-    #         print('yyy')
-    #         if cv.GrabFrame(self.capture):
-    #             img = cv.RetrieveFrame(self.capture)
-    #             self.nextImage += 1
-    #         else:
-    #             return None
-    #     return img
-
-
     def getImage(self, index):
         """
-        récupère une IplImage
+        récupère un array numpy
         @param index le numéro de l'image, commence à 1.
         @return l'image trouvée
         """
 
-        if cv.GrabFrame(self.capture):
-            img = cv.RetrieveFrame(self.capture,index)
-
+        self.capture = cv2.VideoCapture(self.filename.encode('utf8'))
+        if self.capture:
+            self.capture.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, index)
+            status, img =  self.capture.read()
         else:
-            return None
-        return img
+            return False, None
+        return True, img
 
 
     def writeImage(self, index, imgFileName):
@@ -249,9 +231,9 @@ class openCvReader:
         @param imgFileName un nom de fichier pour l'enregistrement
         @return vrai si l'enregistrement a réussi
         """
-        img = self.getImage(index)
-        if img:
-            cv.SaveImage(imgFileName, img)
+        ok,img = self.getImage(index)
+        if ok:
+            cv2.imwrite(imgFileName, img)
             return True
         else:
             return False

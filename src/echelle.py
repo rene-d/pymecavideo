@@ -81,7 +81,9 @@ class Label_Echelle(QLabel):
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
-        self.setCursor(Qt.CrossCursor)
+        pix = QPixmap("curseur_cible.png").scaledToHeight(32, 32)
+        self.cursor = QCursor(pix)
+        self.setCursor(self.cursor)
         self.cropX2 = None
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
         self.zoom_croix.hide()
@@ -117,7 +119,6 @@ class Label_Echelle(QLabel):
         self.zoom_croix.show()
         if (event.x()>0 and event.x()<self.app.largeur) and (event.y()>0 and event.y()<self.app.hauteur):
             self.pos = vecteur(event.x(), event.y())
-        print(self.pos)
         self.fait_crop(self.pos)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
 

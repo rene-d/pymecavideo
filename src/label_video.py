@@ -43,7 +43,10 @@ class Label_Video(QtGui.QLabel):
 
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
-        self.setCursor(QtCore.Qt.ArrowCursor)
+        #self.setCursor(QtCore.Qt.ArrowCursor)
+        pix = QPixmap("curseur_cible.png").scaledToHeight(32, 32)
+        self.cursor = QCursor(pix)
+        self.setCursor(self.cursor)
         self.pos = self.pos_avant = vecteur(50, 50)
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
         self.zoom_croix.hide()
@@ -81,7 +84,6 @@ class Label_Video(QtGui.QLabel):
 
     def mouseReleaseEvent(self, event):
         self.storePoint(vecteur(event.x(), event.y()))
-
 
 
     def enterEvent(self, event):
