@@ -208,6 +208,24 @@ class openCvReader:
         self.capture = cv.CreateFileCapture(self.filename.encode('utf8'))
         self.nextImage = 1
 
+    #
+    # def getImage(self, index):
+    #     """
+    #     récupère une IplImage
+    #     @param index le numéro de l'image, commence à 1.
+    #     @return l'image trouvée
+    #     """
+    #     if index < self.nextImage:
+    #         self.rembobine()
+    #     while index >= self.nextImage:
+    #         print('yyy')
+    #         if cv.GrabFrame(self.capture):
+    #             img = cv.RetrieveFrame(self.capture)
+    #             self.nextImage += 1
+    #         else:
+    #             return None
+    #     return img
+
 
     def getImage(self, index):
         """
@@ -215,15 +233,14 @@ class openCvReader:
         @param index le numéro de l'image, commence à 1.
         @return l'image trouvée
         """
-        if index < self.nextImage:
-            self.rembobine()
-        while index >= self.nextImage:
-            if cv.GrabFrame(self.capture):
-                img = cv.RetrieveFrame(self.capture)
-                self.nextImage += 1
-            else:
-                return None
+
+        if cv.GrabFrame(self.capture):
+            img = cv.RetrieveFrame(self.capture,index)
+
+        else:
+            return None
         return img
+
 
     def writeImage(self, index, imgFileName):
         """

@@ -311,6 +311,8 @@ class StartQT4(QMainWindow):
         self.updatePicture = True
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
         self.chrono = False
+        self.a_une_image = False
+        self.enleveHistorique = False
 
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         # for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture', 'wxAstroCapture']:
@@ -326,7 +328,8 @@ class StartQT4(QMainWindow):
         # else:
         #     self.ui.pushButton_video.setEnabled(0)
         #     self.ui.pushButton_video.hide()
-
+        self.hauteur = 480
+        self.largeur = 640
 
     def init_interface(self, refait=0):
         self.ui.tabWidget.setEnabled(1)
@@ -385,6 +388,8 @@ class StartQT4(QMainWindow):
 
         self.ui.pushButton_video.setEnabled(0)
         self.ui.pushButton_video.hide()
+
+
 
 
     def desactiveExport(self, text):
@@ -1057,6 +1062,8 @@ class StartQT4(QMainWindow):
 
 
     def determineHauteurLargeur(self, largeur=None):
+        """mets à jour le framerate, la largueur du film, la hauteur du film, la largeur et la hauteur du widget label_video"""
+
         ##si le film est trop large on le fixe vers les 3/4 de l'écran
         self.dbg.p(1, "rentre dans 'determineHauteurLargeur'")
         if self.premierResize:
@@ -1065,27 +1072,36 @@ class StartQT4(QMainWindow):
                 self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
             else:
                 framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-
+            # if self.largeurFilm < 640:
+            #    self.dbg.p(2, 'film trop petit')
+            #    self.ui.label.setFixedWidth(640)
+            # else:
+            #     self.ui.label.setFixedWidth(self.largeurFilm)
+            #     self.ui.label.setFixedHeight(self.hauteurFilm)
+            #     print('OOOOOOOOOOK')
 
         ratioFilm = self.largeurFilm / self.hauteurFilm
         ratioLabel = 1.0 * self.ui.label.width() / self.ui.label.height()
 
-        if ratioFilm > ratioLabel:
-            self.largeur = 1.0 * (self.ui.label.width())
-            self.hauteur = int(self.largeur / ratioFilm)
-        else:
-            self.hauteur = 1.0 * (self.ui.label.height())
-            self.largeur = int(self.hauteur * ratioFilm)
 
-        self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
+        if ratioFilm > ratioLabel:
+
+            largeur = 1.0 * (self.ui.label.width())
+            hauteur = int(largeur / ratioFilm)
+        else:
+            hauteur = 1.0 * (self.ui.label.height())
+            largeur = int(hauteur * ratioFilm)
+
+
+
         try:
             self.label_video.origine = self.origine
         except AttributeError:
             pass  # premier passage
 
-        self.dbg.p(1, "rentre dans 'determineHauteurLargeur, hauteur : %s, largeur %s'"%(self.hauteur, self.largeur))
 
-            # rapportLH = float(self.largeurFilm) / self.hauteurFilm
+
+        #        rapportLH = float(self.largeurFilm) / self.hauteurFilm
         #        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
         #            self.dbg.p(2, 'film trop grand')
         #            self.largeur = int(sizeEcran.width() * 3.0 / 4.0)
@@ -1105,9 +1121,22 @@ class StartQT4(QMainWindow):
         #        except AttributeError:
         #            pass  # premier passage
 
+        if largeur!=self.largeur or hauteur!=self.hauteur:
+            self.largeur, self.hauteur = largeur, hauteur
+            self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
+
+        print("##############",ratioFilm,ratioLabel)
+        try:
+            print("##############",self.largeurFilm, self.hauteurFilm,self.largeur,self.hauteur)
+        except :
+            pass
+
+        self.dbg.p(1, "rentre dans 'determineHauteurLargeur, hauteur : %s, largeur %s'"%(self.hauteur, self.largeur))
+
+
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans resizeEvent")
-        self.setFixedHeight(self.width() * 0.75)
+        # self.setFixedHeight(self.width() * 0.75)
         self.emit(SIGNAL('redimensionneSignal()'))
         QApplication.instance().processEvents()
 
@@ -1119,28 +1148,31 @@ class StartQT4(QMainWindow):
         vrai ; faux par défaut.
         """
         self.dbg.p(1, "rentre dans 'redimensionne'")
-        self.layout()
-        if self.premierResize or premier:
-            self.determineHauteurLargeur()
-            self.premierResize = False
-        else:
-            self.determineHauteurLargeur(self.width())
+        print('self.a_une_image',self.a_une_image)
+        if self.a_une_image :
 
-        """
-        OBSOLÈTE : la méthode de calcul de hauteur fait perdre la ligne de statut
-        =========================================================================
-        if sys.platform != "win32":
-            posVideo = self.ui.label.mapTo(self, QPoint(0,0))
-            #rect = self.geometry()
-            #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
-            #self.setFixedHeight(self.hauteur + posVideo.y())
-        =========================================================================
-        """
+            self.layout()
+            if self.premierResize or premier:
+                self.determineHauteurLargeur()
+                self.premierResize = False
+            else:
+                self.determineHauteurLargeur(self.width())
 
-        if hasattr(self, 'label_video'):
-            self.label_video.maj()
-            self.label_trajectoire.maj()
-            self.afficheJusteImage()
+            """
+            OBSOLÈTE : la méthode de calcul de hauteur fait perdre la ligne de statut
+            =========================================================================
+            if sys.platform != "win32":
+                posVideo = self.ui.label.mapTo(self, QPoint(0,0))
+                #rect = self.geometry()
+                #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
+                #self.setFixedHeight(self.hauteur + posVideo.y())
+            =========================================================================
+            """
+
+            if hasattr(self, 'label_video'):
+                self.label_video.maj()
+                self.label_trajectoire.maj()
+                self.afficheJusteImage()
 
 
     def entete_fichier(self, msg=""):
@@ -1226,7 +1258,7 @@ class StartQT4(QMainWindow):
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
-        self.ui.spinBox_image.setEnabled(0)
+        self.ui.spinBox_image.setEnabled(1)
 
         self.arretAuto = False
 
@@ -1352,12 +1384,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.affiche_nb_points()
         self.ui.tab_traj.setEnabled(1)
         compteurClic = 0
+
         for clics in self.tousLesClics:
             compteurClic += 1
             if compteurClic == len(self.tousLesClics):
-                self.updatePicture = True  # afficeh la dernière mage
+                self.updatePicture = True  # affiche la dernière mage
             else:
-                self.updatePicture = False  # afficeh la dernière mage
+                self.updatePicture = False
             self.clic_sur_label_video(liste_points=clics, interactif=False)
         self.clic_sur_label_video_ajuste_ui(1)
 
@@ -1534,7 +1567,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         Contrôle la possibilité de défaire un clic
         @param value booléen
         """
-        self.dbg.p(1, "rentre dans 'enableDefaire'")
+        self.dbg.p(1, "rentre dans 'enableDefaire, %s'"%(str(value)))
         self.ui.pushButton_defait.setEnabled(value)
         self.ui.actionDefaire.setEnabled(value)
 
@@ -1572,9 +1605,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     self.points):  # update image only at last point. use to optimise undo/redo fucntions.
                 self.affiche_image()
             self.tracer_trajectoires("absolu")
-
-        self.enableDefaire(len(self.tousLesClics) > 0)
-        self.enableRefaire(self.tousLesClics.nextCount() > 0)
+        if not self.enleveHistorique :
+            self.enableDefaire(len(self.tousLesClics) > 0)
+            self.enableRefaire(self.tousLesClics.nextCount() > 0)
 
     def stock_coordonnees_image(self, ligne, liste_points, interactif=True, index_image=False):
         """
@@ -1586,7 +1619,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'stock_coordonnees_image'")
         if not index_image:
             index_image = self.index_de_l_image
-        t = "%4f" % ((ligne) * self.deltaT)
+        #t = "%4f" % ((ligne) * self.deltaT)
+        t = "%4f" % ((self.index_de_l_image-self.premiere_image) * self.deltaT)
         self.points[ligne] = [t] + liste_points
 
         # rentre le temps dans la première colonne
@@ -1625,6 +1659,17 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def affiche_image_spinbox(self):
         self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
+        #si la capture est lancée et que l'on touche à la spinbox, on désactive les boutons pour revenir en arrière (BUG)
+        if self.lance_capture :
+            self.enableDefaire(False)
+            self.enableRefaire(False)
+            self.enleveHistorique=True
+            #on vérifie qu'on est pas revenu en arrière
+
+            if self.ui.spinBox_image.value()<self.index_de_l_image :
+                self.ui.spinBox_image.setValue(self.index_de_l_image)
+
+
         self.index_de_l_image = self.ui.spinBox_image.value()
         self.affiche_image()
 
@@ -1936,7 +1981,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.affiche_echelle()
         self.ui.tab_traj.setEnabled(0)
         self.ui.spinBox_image.setEnabled(1)
-        self.a_une_image = True
+
         self.affiche_image()
         self.reinitialise_environnement()
 
@@ -1970,9 +2015,18 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         """
         self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % index)
+        imfilenamedev = os.path.join(IMG_PATH, VIDEO + SUFF % (index+1))
+        imfilenameder = os.path.join(IMG_PATH, VIDEO + SUFF % (index-1))
         if force or not os.path.isfile(imfilename):
             self.cvReader.writeImage(index, imfilename)
+        if not os.path.isfile(imfilenamedev) and index<self.index_max :
+            self.cvReader.writeImage(index+1, imfilename)
+        if not os.path.isfile(imfilenameder) and (index-1>0) :
+
+            self.cvReader.writeImage(index-1, imfilename)
+
         self.chemin_image = imfilename
+        self.a_une_image = True
 
     def traiteOptions(self):
         self.dbg.p(1, "rentre dans 'traiteOptions'")
