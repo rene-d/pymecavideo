@@ -609,6 +609,7 @@ class StartQT4(QMainWindow):
         ##ajoute la première image utilisée pour le pointage sur le fond du label
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % self.premiere_image)
         self.chrono = True
+        print("dddddddimfilename", imfilename)
         self.imageChrono = QImage(imfilename).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
         self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
         self.ui.pushButtonEnregistreChrono.setVisible(1)
@@ -821,8 +822,12 @@ class StartQT4(QMainWindow):
         @param point un point en "coordonnées d\'écran"
         """
         self.dbg.p(1, "rentre dans 'pointEnMetre'")
-        return vecteur(self.sens_X * (float(p.x() - self.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
+        if self.echelle_faite :
+            return vecteur(self.sens_X * (float(p.x() - self.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
                        float(self.origine.y() - p.y()) * self.echelle_image.mParPx())
+        else :
+            return vecteur(self.sens_X * (float(p.x() - self.origine.x()) ), self.sens_Y *
+                       float(self.origine.y() - p.y()))
 
     def presse_papier(self):
         """Sélectionne la totalité du tableau de coordonnées

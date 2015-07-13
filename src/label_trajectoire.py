@@ -154,11 +154,12 @@ class Label_Trajectoire(QLabel):
             self.painter.setPen(Qt.blue)
             self.painter.drawText(self.width()-200,50, unicode("{0}T = {1:.3f} s").format(unichr(916), self.app.deltaT))
             #######dessine l'échelle
-            longueur = sqrt((self.app.p1.x()-self.app.p2.x())**2+ (self.app.p1.y()-self.app.p2.y())**2)
-            self.painter.drawLine(100,60,100,80)
-            self.painter.drawLine(100,70, longueur+100,70)
-            self.painter.drawLine(longueur+100,60,longueur+100,80)
-            self.painter.drawText((longueur)/2,120, unicode("D = {0:.2f} m").format(self.app.echelle_image.longueur_reelle_etalon))
+            if self.app.echelle_faite:
+                longueur = sqrt((self.app.p1.x()-self.app.p2.x())**2+ (self.app.p1.y()-self.app.p2.y())**2)
+                self.painter.drawLine(100,60,100,80)
+                self.painter.drawLine(100,70, longueur+100,70)
+                self.painter.drawLine(longueur+100,60,longueur+100,80)
+                self.painter.drawText((longueur)/2,120, unicode("D = {0:.2f} m").format(self.app.echelle_image.longueur_reelle_etalon))
             self.painter.end()
 
 

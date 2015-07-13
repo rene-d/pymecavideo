@@ -217,7 +217,7 @@ class openCvReader:
 
         self.capture = cv2.VideoCapture(self.filename.encode('utf8'))
         if self.capture:
-            self.capture.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, index)
+            self.capture.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, index-1)
             status, img =  self.capture.read()
         else:
             return False, None
@@ -233,7 +233,10 @@ class openCvReader:
         """
         ok,img = self.getImage(index)
         if ok:
-            cv2.imwrite(imgFileName, img)
+
+            while not os.path.isfile(imgFileName):
+                cv2.imwrite(imgFileName, img)
+
             return True
         else:
             return False
