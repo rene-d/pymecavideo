@@ -82,7 +82,7 @@ from globdef import APP_DATA_PATH, VIDEO, SUFF, VIDEO_PATH, CONF_PATH, IMG_PATH,
     DATA_PATH, HELP_PATH, NEWVID_PATH
 
 from detect import filter_picture
-
+from toQimage import toQImage
 _encoding = QApplication.UnicodeUTF8
 
 
@@ -608,11 +608,17 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         ##ajoute la première image utilisée pour le pointage sur le fond du label
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % self.premiere_image)
-        self.chrono = True
-        print("dddddddimfilename", imfilename)
-        self.imageChrono = QImage(imfilename).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
-        self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
-        self.ui.pushButtonEnregistreChrono.setVisible(1)
+        self.chrono = not self.chrono
+        if self.chrono :
+            ok,img = self.cvReader.writeImage(1,imfilename)
+            self.imageChrono = QImage(toQImage(img)).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
+            self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
+            self.ui.pushButtonEnregistreChrono.setVisible(1)
+            self.ui.pushButtonChrono.setStyleSheet("background-color: red");
+        else:
+            self.ui.pushButtonEnregistreChrono.setVisible(0)
+            self.ui.pushButtonChrono.setStyleSheet("background-color: transparent");
+            self.label_trajectoire.setPixmap(QPixmap())
 
 
     def fixeLesDimensions(self):
@@ -1700,7 +1706,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 if self.index_de_l_image <= self.image_max:
                     self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
                     self.extract_image(self.filename, self.index_de_l_image)
-                    self.imageExtraite = QImage(self.chemin_image)
+                    #self.imageExtraite = QImage(self.chemin_image)
+                    self.imageExtraite = QImage(toQImage(self.image_opencv))
                     self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
 
                     # self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
@@ -1774,7 +1781,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.echelle_image.etalonneReel(echelle_result[0])
 
                 self.job = Label_Echelle(self.label_video, self)
-                self.job.setPixmap(QPixmap(self.chemin_image))
+                self.job.setPixmap(QPixmap(toQImage(self.image_opencv)))
                 self.job.show()
         except ValueError:
             self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une échelle valable", None))
@@ -2034,8 +2041,8 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         """
         self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % index)
-        if force or not os.path.isfile(imfilename):
-            self.cvReader.writeImage(index, imfilename)
+        #if force or not os.path.isfile(imfilename):
+        ok, self.image_opencv = self.cvReader.writeImage(index, imfilename)
 
         self.chemin_image = imfilename
         self.a_une_image = True

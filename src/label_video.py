@@ -88,7 +88,9 @@ class Label_Video(QtGui.QLabel):
 
     def enterEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
-            self.setCursor(QtCore.Qt.CrossCursor)
+            pix = QPixmap("curseur_cible.png").scaledToHeight(32, 32)
+            self.cursor = QCursor(pix)
+            self.setCursor(self.cursor)
         else:
             self.setCursor(QtCore.Qt.ArrowCursor)
     def maj(self):

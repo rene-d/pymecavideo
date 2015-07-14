@@ -234,12 +234,12 @@ class openCvReader:
         ok,img = self.getImage(index)
         if ok:
 
-            while not os.path.isfile(imgFileName):
-                cv2.imwrite(imgFileName, img)
+            #while not os.path.isfile(imgFileName):
+             #   cv2.imwrite(imgFileName, img)
 
-            return True
+            return True,img
         else:
-            return False
+            return False,None
 
     def recupere_avi_infos(self):
         """
