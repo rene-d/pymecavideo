@@ -119,7 +119,7 @@ class Cadreur(QObject):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
-        self.titre = "Ralenti (Appuyez sur"
+
         cv2.namedWindow(self.titre)
 
         ralentiLabel = "Choisir le ralenti"
@@ -131,7 +131,6 @@ class Cadreur(QObject):
         while not fini:
 
             for i in self.app.points.keys():
-                print('eee',i)
                 p = self.app.points[i][self.numpoint]
                 hautgauche = (p + self.decal - self.rayons) * ech
                 taille = self.sz * ech
@@ -146,7 +145,6 @@ class Cadreur(QObject):
 
                 cv2.imshow(self.titre, crop_img)
                 k = cv2.waitKey(int(self.delay * self.ralenti))
-                print(k)
                 if k == 0x10001b or k == 27 or k==20:
                     fini = True
                     cv2.destroyAllWindows()
@@ -200,7 +198,7 @@ class openCvReader:
         """
         récupère un array numpy
         @param index le numéro de l'image, commence à 1.
-        @return l'image trouvée
+        @return le statu, l'image trouvée
         """
 
         self.capture = cv2.VideoCapture(self.filename.encode('utf8'))
@@ -221,10 +219,8 @@ class openCvReader:
         """
         ok,img = self.getImage(index)
         if ok:
+            img2 = cv2.cvtColor(img, cv2.cv.CV_BGR2RGB) #convertis dans le bon format de couleurs
 
-            #while not os.path.isfile(imgFileName):
-             #   cv2.imwrite(imgFileName, img)
-            img2 = cv2.cvtColor(img, cv2.cv.CV_BGR2RGB)
             return True,img2
         else:
             return False,None

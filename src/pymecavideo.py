@@ -519,7 +519,7 @@ class StartQT4(QMainWindow):
         self.enableDefaire(False)
         self.enableRefaire(False)
         self.affiche_nb_points(1)
-        self.ui.Bouton_lance_capture.setEnabled(0)
+        self.ui.Bouton_lance_capture.setEnabled(1)
         self.defixeLesDimensions()
 
         ### Réactiver checkBox_avancees après réinitialisation ###
@@ -1138,19 +1138,15 @@ class StartQT4(QMainWindow):
 
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans resizeEvent")
-
-        # self.emit(SIGNAL('redimensionneSignal()'))
         if not self.resizing:
             self.resizing = True
-            if not self.echelle_faite or not self.lance_capture:
-                self.determineHauteurLargeur()
-
-                #self.setGeometry(self.x(),self.y(),self.largeur+190, self.hauteur+96)
-                self.setFixedWidth(self.largeur + 190)
-
-                self.qtimer = QTimer.singleShot(3, self.stopRedimensionnements)
-            else:
+            if self.echelle_faite or self.lance_capture:
                 self.layout().setSizeConstraint(QLayout.SetFixedSize)
+
+            else:
+                self.determineHauteurLargeur()
+                self.setFixedWidth(self.largeur + 190)
+                self.qtimer = QTimer.singleShot(3, self.stopRedimensionnements)
 
         QApplication.instance().processEvents()
 
