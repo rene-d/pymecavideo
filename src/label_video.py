@@ -47,7 +47,7 @@ class Label_Video(QtGui.QLabel):
         pix = QPixmap("curseur_cible.png").scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
-        self.pos = self.pos_avant = vecteur(50, 50)
+        self.pos = vecteur(50, 50)
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
@@ -76,11 +76,14 @@ class Label_Video(QtGui.QLabel):
 
     def storePoint(self, point):
         if self.app.lance_capture == True:
-            self.liste_points.append(point)
-            self.pos_avant = self.pos
+            self.app.listePoints.append([self.app.index_de_l_image,self.app.point_attendu,point])
+            print("ajout dans listePoints)", self.app.listePoints)
+            #self.liste_points.append(point)
             self.app.emit(SIGNAL('clic_sur_video()'))
             self.update()
-            self.met_a_jour_crop()
+
+
+            self.met_a_jour_crop(self.pos)
 
     def mouseReleaseEvent(self, event):
         self.storePoint(vecteur(event.x(), event.y()))
@@ -97,8 +100,8 @@ class Label_Video(QtGui.QLabel):
         self.app.dbg.p(1, "rentre dans 'label_video.maj'")
         self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
 
-    def met_a_jour_crop(self):
-        self.fait_crop(self.pos_avant)
+    def met_a_jour_crop(self, pos = vecteur(50,50)):
+        self.fait_crop(pos)
 
     def leaveEvent(self, event):
         if self.app.lance_capture == True:

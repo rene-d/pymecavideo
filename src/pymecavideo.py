@@ -299,6 +299,7 @@ class StartQT4(QMainWindow):
         self.nb_de_points = 1  # nombre de points suivis
         self.premiere_image = 1  # n° de la première image cliquée
         self.index_de_l_image = 1  # image à afficher
+        self.point_attendu = 1
 
         self.filename = filename
         self.opts = opts
@@ -307,7 +308,10 @@ class StartQT4(QMainWindow):
         self.echelle_faite = False
         self.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
 
-        self.tousLesClics = listePointee()  # tous les clics faits sur l'image
+        #self.tousLesClics = listePointee()  # tous les clics faits sur l'image
+        self.listePoints = listePointee()
+
+
 
         self.goCalcul = True  # Booléen vérifiant la disponibilté du thread de calcul
         self.updatePicture = True
@@ -493,7 +497,7 @@ class StartQT4(QMainWindow):
         if nb_de_points:
             self.nb_de_points = nb_de_points
         if tousLesClics != None and tousLesClics.count():
-            self.tousLesClics = tousLesClics
+            self.listePoints = tousLesClics
 
 
     def reinitialise_capture(self):
@@ -755,8 +759,8 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'refait_echelle'")
         # self.cree_tableau()
         index = 0
-        for point in self.tousLesClics:
-            self.stock_coordonnees_image(index, point)
+        for point in self.listePoints:
+            self.stock_coordonnees_image(index, point[2])
             index += 1
 
     def choisi_nouvelle_origine(self):
@@ -1377,9 +1381,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """revient au point précédent
         """
         self.dbg.p(1, "rentre dans 'efface_point_precedent'")
-        self.tousLesClics.decPtr()
+        self.listePoints.decPtr()
 
-        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics, self.premiere_image)
+        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.listePoints, self.premiere_image)
         self.repasseTousLesClics()
         self.label_echelle_trace.show()
         self.modifie = True
@@ -1388,8 +1392,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """rétablit le point suivant après un effacement
         """
         self.dbg.p(1, "rentre dans 'refait_point_suivant'")
-        self.tousLesClics.incPtr()
-        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.tousLesClics, self.premiere_image)
+        self.listePoints.incPtr()
+        self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.listePoints, self.premiere_image)
         self.repasseTousLesClics()
         self.modifie = True
 
@@ -1404,13 +1408,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.ui.tab_traj.setEnabled(1)
         compteurClic = 0
 
-        for clics in self.tousLesClics:
+        for clics in self.listePoints:
             compteurClic += 1
-            if compteurClic == len(self.tousLesClics):
+            if compteurClic == len(self.listePoints):
                 self.updatePicture = True  # affiche la dernière mage
             else:
                 self.updatePicture = False
-            self.clic_sur_label_video(liste_points=clics, interactif=False)
+            self.clic_sur_label_video(liste_points=clics[2], interactif=False)
         self.clic_sur_label_video_ajuste_ui(1)
 
 
@@ -1555,26 +1559,29 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
         self.lance_capture = True
 
-        if liste_points == None:
-            liste_points = self.label_video.liste_points
-        ### on fait des marques pour les points déjà visités
-        etiquette = "@abcdefghijklmnopqrstuvwxyz"[len(liste_points)]
+        #if liste_points == None:
+        #    liste_points = self.label_video.liste_points
 
-        if self.nb_de_points > len(liste_points):
-            point_attendu = 1 + len(liste_points)
-            self.affiche_point_attendu(point_attendu)  # peut etre ici un update de l'image a optimiser
+
+
+        ### on fait des marques pour les points déjà visités
+        etiquette = "@abcdefghijklmnopqrstuvwxyz"[len(self.listePoints)%self.nb_de_points]
+
+        if len(self.listePoints)%self.nb_de_points != 0 :
+            self.point_attendu +=1
+            self.affiche_point_attendu(self.point_attendu)  # peut etre ici un update de l'image a optimiser
 
         else:
-            point_attendu = 1
-            self.affiche_point_attendu(point_attendu)
+            self.point_attendu = 1
+            self.affiche_point_attendu(self.point_attendu)
             if self.index_de_l_image <= self.image_max:  ##si on atteint la fin de la vidéo
                 self.lance_capture = True
-                self.stock_coordonnees_image(self.nb_image_deja_analysees, liste_points, interactif)
+                self.stock_coordonnees_image(self.nb_image_deja_analysees, interactif)
                 self.nb_image_deja_analysees += 1
                 self.index_de_l_image += 1
                 if interactif:
                     self.modifie = True
-                self.clic_sur_label_video_ajuste_ui(point_attendu)
+                self.clic_sur_label_video_ajuste_ui(self.point_attendu)
 
             if self.index_de_l_image > self.image_max:
                 self.lance_capture = False
@@ -1612,23 +1619,20 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'clic_sur_label_video_ajuste_ui'")
         self.lance_capture = True
-
+        print("liste_point + reste à cliquer",len(self.listePoints), self.nb_de_points-len(self.listePoints)%self.nb_de_points)
         if point_attendu == 1:  # pour une acquisition sur une nouvelle image
-            if len(self.label_video.liste_points) > 0:
-                self.tousLesClics.append(self.label_video.liste_points)
-            self.label_video.liste_points = []
             self.dbg.p(1, "self.nb_image_deja_analysees >= len(self.points) ? %s %s" % (
-                len(self.tousLesClics), len(self.points)))
+                len(self.listePoints), self.nb_de_points-len(self.listePoints)%self.nb_de_points))
 
-            if len(self.tousLesClics) == len(
-                    self.points):  # update image only at last point. use to optimise undo/redo fucntions.
-                self.affiche_image()
+            #if len(self.tousLesClics) == len(
+            #        self.points):  # update image only at last point. use to optimise undo/redo fucntions.
+            self.affiche_image()
             self.tracer_trajectoires("absolu")
         # if not self.enleveHistorique :
-        self.enableDefaire(len(self.tousLesClics) > 0)
-        self.enableRefaire(self.tousLesClics.nextCount() > 0)
+        self.enableDefaire(len(self.listePoints) > 0)
+        self.enableRefaire(self.listePoints.nextCount() > 0)
 
-    def stock_coordonnees_image(self, ligne, liste_points, interactif=True, index_image=False):
+    def stock_coordonnees_image(self, ligne,  interactif=True, index_image=False):
         """
         place les données dans le tableau, rempli les dictionnaires de 
         @param ligne le numérode la ligne où placer les données (commence à 0)
@@ -1640,7 +1644,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             index_image = self.index_de_l_image
         # t = "%4f" % ((ligne) * self.deltaT)
         t = "%4f" % ((self.index_de_l_image - self.premiere_image) * self.deltaT)
-        self.points[ligne] = [t] + liste_points
+
+        #construction de l'ensemble des points pour l'image actuelle
+        listePointsCliquesParImage = []
+        for point in self.listePoints:
+            if point[0]==self.index_de_l_image :
+                listePointsCliquesParImage.append(point[2])
+        self.points[ligne] = [t] + listePointsCliquesParImage
 
         # rentre le temps dans la première colonne
         self.ui.tableWidget.insertRow(ligne)
@@ -1648,7 +1658,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
         i = 0
         # Pour chaque point dans liste_points, insère les valeur dans la ligne
-        for point in liste_points:
+        for point in listePointsCliquesParImage:
             # ajoute les coordonnées "en pixel" des points dans des dictionnaires de coordonnées
             x = point.x()
             y = point.y()
