@@ -954,6 +954,7 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'init_cvReader'")
 
         self.cvReader = openCvReader(self.filename)
+
         time.sleep(0.1)
         if not self.cvReader.ok and (
                     "/".join(self.filename.split('/')[:-1]) != NEWVID_PATH):  # if video is ever encoded, don't get in
@@ -1702,7 +1703,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 if self.index_de_l_image <= self.image_max:
                     self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
                     self.extract_image(self.filename, self.index_de_l_image)
-                    #self.imageExtraite = QImage(self.chemin_image)
                     self.imageExtraite = QImage(toQImage(self.image_opencv))
                     self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
 
@@ -2036,11 +2036,12 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         @param force permet de forcer l'écriture d'une image
         """
         self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
-        imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % index)
-        #if force or not os.path.isfile(imfilename):
-        ok, self.image_opencv = self.cvReader.writeImage(index, imfilename)
 
-        self.chemin_image = imfilename
+        ok, self.image_opencv = self.cvReader.getImage(index)
+        if not ok :
+            self.mets_a_jour_label_infos(
+            _translate("pymecavideo", "L'image que vous voulez afficher n'existe pas", None))
+
         self.a_une_image = True
 
     def traiteOptions(self):

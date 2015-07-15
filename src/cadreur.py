@@ -122,7 +122,7 @@ class Cadreur(QObject):
 
         cv2.namedWindow(self.titre)
 
-        ralentiLabel = "Choisir le ralenti"
+        ralentiLabel = str(self.app.tr("Choisir le ralenti"))
 
         cv2.createTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
         ech, w, h = self.echelleTaille()
@@ -169,7 +169,9 @@ class openCvReader:
         """
         self.filename = filename
         self.autoTest()
-        self.rembobine()
+        if self.ok :
+            self.capture = cv2.VideoCapture(self.filename.encode('utf8'))
+
 
     def autoTest(self):
         #        if sys.platform == 'win32':
@@ -182,18 +184,6 @@ class openCvReader:
     def __nonzero__(self):
         return self.ok
 
-    def rembobine(self):
-        """
-        Recharge le fichier vidéo
-        """
-
-        try:
-            self.filename = unicode(self.filename, 'utf8')
-        except TypeError:
-            pass
-        self.capture = cv.CreateFileCapture(self.filename.encode('utf8'))
-        self.nextImage = 1
-
     def getImage(self, index):
         """
         récupère un array numpy
@@ -201,29 +191,18 @@ class openCvReader:
         @return le statu, l'image trouvée
         """
 
-        self.capture = cv2.VideoCapture(self.filename.encode('utf8'))
         if self.capture:
             self.capture.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, index-1)
-            status, img =  self.capture.read()
+
+            try :
+                status, img =  self.capture.read()
+            except cv2.error:
+                return False,None
+            img2 = cv2.cvtColor(img, cv2.cv.CV_BGR2RGB) #convertis dans le bon format de couleurs
         else:
             return False, None
-        return True, img
+        return True, img2
 
-
-    def writeImage(self, index, imgFileName):
-        """
-        Enregistre une image de la vidéo
-        @param index le numéro de l'image (commence à 1)
-        @param imgFileName un nom de fichier pour l'enregistrement
-        @return vrai si l'enregistrement a réussi
-        """
-        ok,img = self.getImage(index)
-        if ok:
-            img2 = cv2.cvtColor(img, cv2.cv.CV_BGR2RGB) #convertis dans le bon format de couleurs
-
-            return True,img2
-        else:
-            return False,None
 
     def recupere_avi_infos(self):
         """
@@ -231,17 +210,17 @@ class openCvReader:
         @return un quadruplet (framerate,nombre d'images,la largeur, la hauteur)
         """
         try:
-            self.rembobine()
-            fps = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FPS)
-            fcount = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_COUNT)
-            largeur = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_WIDTH)
-            hauteur = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_HEIGHT)
+            fps = self.capture.get(cv.CV_CAP_PROP_FPS)
+            fcount = self.capture.get(cv.CV_CAP_PROP_FRAME_COUNT)
+            largeur = self.capture.get(cv.CV_CAP_PROP_FRAME_WIDTH)
+            hauteur = self.capture.get(cv.CV_CAP_PROP_FRAME_HEIGHT)
+            print(fps,fcount, largeur, hauteur)
         except:
             print "could not retrieve informations from the video file."
             print "assuming fps = 25, frame count = 10."
             return 25, 10, 320, 200
 #        return fps, fcount
-        return fps, fcount - 1, largeur, hauteur
+        return fps, fcount, largeur, hauteur
 
     def __str__(self):
         return "<openCvReader instance: filename=%s, nextImage=%d>" % (self.filename, self.nextImage)
