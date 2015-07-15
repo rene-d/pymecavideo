@@ -1634,7 +1634,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def stock_coordonnees_image(self, ligne,  interactif=True, index_image=False):
         """
-        place les données dans le tableau, rempli les dictionnaires de 
+        place les données dans le tableau, rempli les dictionnaires de pixels
         @param ligne le numérode la ligne où placer les données (commence à 0)
         @param liste_points la liste des points cliqués sur l'image courante
         @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
@@ -1655,7 +1655,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         # rentre le temps dans la première colonne
         self.ui.tableWidget.insertRow(ligne)
         self.ui.tableWidget.setItem(ligne, 0, QTableWidgetItem(t))
-
+        print("stock_coor", ligne, self.ui.tableWidget.currentRow())
         i = 0
         # Pour chaque point dans liste_points, insère les valeur dans la ligne
         for point in listePointsCliquesParImage:
