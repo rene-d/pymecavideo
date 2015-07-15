@@ -76,9 +76,9 @@ class Cadreur(QObject):
         à l'image effectivement trouvée dans le film, et la taille du film
         @return un triplet échelle, largeur, hauteur (de l'image dans le widget de de pymecavideo)
         """
-        m = QImage(self.app.chemin_image).size()
-        echx = 1.0 * m.width() / 640
-        echy = 1.0 * m.height() / 480
+        m = self.app.imageExtraite.size()
+        echx = 1.0 * m.width() / self.app.largeur
+        echy = 1.0 * m.height() / self.app.hauteur
         # permet de prendre en compte les vidéos à un format différent de 4:3
         ech = max(echx, echy)
         return ech, m.width() / ech, m.height() / ech
@@ -132,40 +132,49 @@ class Cadreur(QObject):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
-        wsub = cv.NamedWindow(self.titre)
+        self.titre = "Ralenti"
+        cv2.namedWindow(self.titre)
 
         ralentiLabel = "Choisir le ralenti"
 
-        cv.CreateTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
+        cv2.createTrackbar(ralentiLabel, "Ralenti", 0, 16, self.controleRalenti)
         ech, w, h = self.echelleTaille()
         i = 0
+        self.capture = cv2.VideoCapture(self.app.filename.encode('utf8'))
         while not fini:
 
 
             #rembobine
-            self.capture = cv.CreateFileCapture(self.app.filename.encode('utf8'))
+   #         self.capture = cv.CreateFileCapture(self.app.filename.encode('utf8'))
 
             #have to move to first picture clicked
 
-            cv.SetCaptureProperty(self.capture, cv.CV_CAP_PROP_POS_FRAMES, self.app.premiere_image - 1)
+  #          cv.SetCaptureProperty(self.capture, cv.CV_CAP_PROP_POS_FRAMES, self.app.premiere_image - 1)
 
             for i in self.app.points.keys():
+                print('eee',i)
                 p = self.app.points[i][self.numpoint]
                 hautgauche = (p + self.decal - self.rayons) * ech
                 taille = self.sz * ech
-                img = self.queryFrame()
+                self.capture.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
+                status, img =  self.capture.read()
 
                 x, y = int(hautgauche.x()), int(hautgauche.y())
                 w, h = int(taille.x()), int(taille.y())
-                isub = cv.GetSubRect(img, (x, y, w, h))
-                cv.ShowImage(self.titre, isub)
-                k = cv.WaitKey(int(self.delay * self.ralenti))
+
+                crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
+                # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
+
+                cv2.imshow("cropped", crop_img)
+                cv2.waitKey(int(self.delay * self.ralenti))
+
                 if k == 0x10001b or k == 27:
                     fini = True
-                    cv.DestroyAllWindows()
+                    cv2.destroyAllWindows()
                     break
 
-        cv.DestroyWindow(self.titre)
+        #cv.DestroyWindow(self.titre)
+        cv2.destroyWindow(self.titre)
         fini = True
 
 
