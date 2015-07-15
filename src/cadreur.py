@@ -115,41 +115,20 @@ class Cadreur(QObject):
         self.rayons = vecteur((agauche + adroite) / 2, (dessus + dessous) / 2)
 
 
-    def queryFrame(self):
-        """
-        récupère l'image suivante du film et traite le cas où OpenCV
-        ne sait pas le faire
-        @return une IplImage
-        """
-        if cv.GrabFrame(self.capture):
-            return cv.RetrieveFrame(self.capture)
-        else:
-            print "erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile
-            sys.exit(1)
-
-
     def montrefilm(self, fini=False):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
-        self.titre = "Ralenti"
+        self.titre = "Ralenti (Appuyez sur"
         cv2.namedWindow(self.titre)
 
         ralentiLabel = "Choisir le ralenti"
 
-        cv2.createTrackbar(ralentiLabel, "Ralenti", 0, 16, self.controleRalenti)
+        cv2.createTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
         ech, w, h = self.echelleTaille()
-        i = 0
+
         self.capture = cv2.VideoCapture(self.app.filename.encode('utf8'))
         while not fini:
-
-
-            #rembobine
-   #         self.capture = cv.CreateFileCapture(self.app.filename.encode('utf8'))
-
-            #have to move to first picture clicked
-
-  #          cv.SetCaptureProperty(self.capture, cv.CV_CAP_PROP_POS_FRAMES, self.app.premiere_image - 1)
 
             for i in self.app.points.keys():
                 print('eee',i)
@@ -165,16 +144,16 @@ class Cadreur(QObject):
                 crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
                 # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
 
-                cv2.imshow("cropped", crop_img)
-                cv2.waitKey(int(self.delay * self.ralenti))
-
-                if k == 0x10001b or k == 27:
+                cv2.imshow(self.titre, crop_img)
+                k = cv2.waitKey(int(self.delay * self.ralenti))
+                print(k)
+                if k == 0x10001b or k == 27 or k==20:
                     fini = True
                     cv2.destroyAllWindows()
                     break
 
         #cv.DestroyWindow(self.titre)
-        cv2.destroyWindow(self.titre)
+        cv2.destroyAllWindows()
         fini = True
 
 
