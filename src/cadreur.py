@@ -236,8 +236,8 @@ class openCvReader:
 
             #while not os.path.isfile(imgFileName):
              #   cv2.imwrite(imgFileName, img)
-
-            return True,img
+            img2 = cv2.cvtColor(img, cv2.cv.CV_BGR2RGB)
+            return True,img2
         else:
             return False,None
 
