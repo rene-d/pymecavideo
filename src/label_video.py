@@ -77,8 +77,6 @@ class Label_Video(QtGui.QLabel):
     def storePoint(self, point):
         if self.app.lance_capture == True:
             self.app.listePoints.append([self.app.index_de_l_image,self.app.point_attendu,point])
-            print("ajout dans listePoints)", self.app.listePoints)
-            #self.liste_points.append(point)
             self.app.emit(SIGNAL('clic_sur_video()'))
             self.update()
 
@@ -140,23 +138,24 @@ class Label_Video(QtGui.QLabel):
         ############################################################
         #draw points
         self.app.dbg.p(5, "In label_video, paintEvent, self.app.points :%s" % self.app.points)
-        for points in self.app.points.values():  #all points clicked are stored here, but updated every "number of point to click" frames
-            color = 0
 
-            for point in points:
-                if type(point) != type(""):
-                    self.painter.setPen(QColor(self.couleurs[color]))
-                    self.painter.setFont(QFont("", 10))
-                    self.painter.translate(point.x(), point.y())
-                    self.painter.drawLine(-2, 0, 2, 0)
-                    self.painter.drawLine(0, -2, 0, 2)
-                    self.painter.translate(-10, +10)
-                    self.painter.drawText(0, 0, str(color + 1))
+        for points in self.app.listePoints:  #all points clicked are stored here, but updated every "number of point to click" frames
+            color = points[1]-1
 
-                    self.painter.translate(-point.x() + 10, -point.y() - 10)
+            point = points[2]
+            if type(point) != type(""):
+                self.painter.setPen(QColor(self.couleurs[color]))
+                self.painter.setFont(QFont("", 10))
+                self.painter.translate(point.x(), point.y())
+                self.painter.drawLine(-2, 0, 2, 0)
+                self.painter.drawLine(0, -2, 0, 2)
+                self.painter.translate(-10, +10)
+                self.painter.drawText(0, 0, str(color+1 ))
 
-                    color += 1
-        color = 0
+                self.painter.translate(-point.x() + 10, -point.y() - 10)
+
+
+
         # if self.liste_points != []:
         #
         #     for point in self.liste_points:  #points clicked in a "number of point to click" sequence.

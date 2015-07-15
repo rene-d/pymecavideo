@@ -151,7 +151,7 @@ class Label_Echelle(QLabel):
 
         self.app.affiche_lance_capture(True)
         self.app.feedbackEchelle(self.p1, self.p2)
-        if len(self.app.tousLesClics) > 0:  #si on appelle l'échelle après avoir déjà pointé
+        if len(self.app.listePoints) > 0:  #si on appelle l'échelle après avoir déjà pointé
             self.app.mets_a_jour_label_infos(self.app.tr("Vous pouvez continuer votre acquisition"))
             self.app.affiche_nb_points(False)
             self.app.refait_echelle()
