@@ -1561,7 +1561,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         affecte la ligne de statut et la ligne sous le zoom
         """
         self.mets_a_jour_label_infos(
-            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° %1", None).arg(n))
+            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° %1", None).arg(n+1))
 
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
