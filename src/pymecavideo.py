@@ -188,6 +188,7 @@ class StartQT4(QMainWindow):
             if ('-d' in o[0]) or ('--debug' in o[0]):
                 self.dbg = Dbg(o[1])
                 self.dbg.p(1, "Niveau de débogage" + o[1])
+
         self.args = args
 
         self.cvReader = None
@@ -243,13 +244,9 @@ class StartQT4(QMainWindow):
         self.splashVideo()
 
 
-    # Basculer en mode plein écran / mode fenétré
-
-
-    def heightForWidth(self):
-        return 0.5
 
     def basculer_plein_ecran(self):
+        """Basculer en mode plein écran / mode fenétré"""
         self.dbg.p(1, "rentre dans 'basculer_plein_ecran'")
         if not self.plein_ecran:
             self.showFullScreen()
@@ -292,15 +289,11 @@ class StartQT4(QMainWindow):
         self.pY = {}  # points apparaissant à l'écran, indexés par Y
         self.index_du_point = 0
         self.echelle_image = echelle()  # objet gérant l'image
-        self.nb_image_deja_analysees = 0  # indique le nombre d'images dont on a dejà fait l'étude, ce qui correspond aussi au nombre de lignes dans le tableau.
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray",
                          "green"]  # correspond aux couleurs des points de la trajectoire
-        self.pointsProvisoires = []  # quand on a plusieurs clics à faire
         self.nb_de_points = 1  # nombre de points suivis
         self.premiere_image = 1  # n° de la première image cliquée
         self.index_de_l_image = 1  # image à afficher
-        self.point_attendu = 1
-
         self.filename = filename
         self.opts = opts
         self.stdout_file = os.path.join(APP_DATA_PATH, "stdout")
@@ -308,17 +301,12 @@ class StartQT4(QMainWindow):
         self.echelle_faite = False
         self.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
 
-        #self.tousLesClics = listePointee()  # tous les clics faits sur l'image
         self.listePoints = listePointee()
 
-
-
         self.goCalcul = True  # Booléen vérifiant la disponibilté du thread de calcul
-        self.updatePicture = True
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
         self.chrono = False
         self.a_une_image = False
-        self.enleveHistorique = False
 
         ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
         # for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture', 'wxAstroCapture']:
@@ -339,24 +327,17 @@ class StartQT4(QMainWindow):
 
     def init_interface(self, refait=0):
         self.ui.tabWidget.setEnabled(1)
-        self.ui.tabWidget.setEnabled(1)
-        self.ui.actionDefaire.setEnabled(1)
-        self.ui.actionRefaire.setEnabled(1)
         self.ui.actionExemples.setEnabled(1)
         self.cree_tableau()
         try:
-
             self.label_trajectoire.clear()
         except AttributeError:
             self.label_trajectoire = Label_Trajectoire(self.ui.label_3, self)
             self.label_trajectoire.show()
 
         self.update()
-
         self.emit(SIGNAL('OKRedimensionnement'))
         self.ui.horizontalSlider.setEnabled(0)
-
-        # self.ui.pushButton_video.setEnabled(0)
 
         self.ui.echelleEdit.setEnabled(0)
         self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
@@ -444,6 +425,8 @@ class StartQT4(QMainWindow):
             self.ui.Bouton_Echelle.setEnabled(False)
         self.ui.echelleEdit.show()
         self.ui.Bouton_Echelle.show()
+
+
 
     def reinitialise_tout(self, echelle_image=None, nb_de_points=None, tousLesClics=None, index_point_actuel=None):
         """
@@ -568,12 +551,12 @@ class StartQT4(QMainWindow):
 
         QObject.connect(self.ui.checkBoxScale, SIGNAL("currentIndexChanged(int)"), self.enableSpeed)
         QObject.connect(self.ui.checkBoxVectorSpeed, SIGNAL("stateChanged(int)"), self.enableSpeed)
-
         QObject.connect(self.ui.radioButtonSpeedEveryWhere, SIGNAL("clicked()"), self.enableSpeed)
         QObject.connect(self.ui.radioButtonNearMouse, SIGNAL("clicked()"), self.enableSpeed)
+
         QObject.connect(self.ui.button_video, SIGNAL("clicked()"), self.video)
         QObject.connect(self.ui.pushButton_select_all_table, SIGNAL("clicked()"), self.presse_papier)
-        QObject.connect(self.ui.pushButtonChrono, SIGNAL("clicked()"), self.chronoPhoto)
+
         QObject.connect(self.ui.pushButton_reinit, SIGNAL("clicked()"), self.reinitialise_capture)
         QObject.connect(self.ui.pushButton_defait, SIGNAL("clicked()"), self.efface_point_precedent)
         QObject.connect(self.ui.pushButton_refait, SIGNAL("clicked()"), self.refait_point_suivant)
@@ -584,11 +567,11 @@ class StartQT4(QMainWindow):
         QObject.connect(self, SIGNAL('change_axe_origine()'), self.change_axe_ou_origine)
         QObject.connect(self, SIGNAL('selection_done()'), self.picture_detect)
         QObject.connect(self, SIGNAL('selection_motif_done()'), self.storeMotif)
-        #QObject.connect(self, SIGNAL('stopRedimensionnement()'), self.fixeLesDimensions)
-        #QObject.connect(self, SIGNAL('OKRedimensionnement()'), self.defixeLesDimensions)
         QObject.connect(self, SIGNAL('redimensionneSignal()'), self.redimensionne)
 
+        QObject.connect(self.ui.pushButtonChrono, SIGNAL("clicked()"), self.chronoPhoto)
         QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
+
         QObject.connect(self, SIGNAL('stopCalculs()'), self.stopComputing)
         QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
         QObject.connect(self, SIGNAL('updateProgressBar()'), self.updatePB)
@@ -611,7 +594,6 @@ class StartQT4(QMainWindow):
     def chronoPhoto(self):
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         ##ajoute la première image utilisée pour le pointage sur le fond du label
-        imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % self.premiere_image)
         self.chrono = not self.chrono
         if self.chrono :
             ok,img = self.cvReader.getImage(1)
@@ -623,17 +605,6 @@ class StartQT4(QMainWindow):
             self.ui.pushButtonEnregistreChrono.setVisible(0)
             self.ui.pushButtonChrono.setStyleSheet("background-color: transparent");
             self.label_trajectoire.setPixmap(QPixmap())
-
-
-    #def fixeLesDimensions(self):
-    #    print('OKOKKKO')
-    #    self.setMinimumWidth(self.width())
-    #    self.setMaximumWidth(self.width())
-
-    #def defixeLesDimensions(self):
-    #    print('UUUUUUU')
-    #    self.setMinimumWidth(833)
-    #    self.setMaximumWidth(16000000)
 
     def updatePB(self):
         self.qmsgboxencode.updateProgressBar()
@@ -666,11 +637,11 @@ class StartQT4(QMainWindow):
             self.label_auto.hide()
             self.label_auto.close()
             self.indexMotif = 0
-            # self.picture_detect()
+
             self.ui.pushButton_video.setText("STOP CALCULS")
             self.ui.pushButton_video.setEnabled(1)
             self.ui.pushButton_video.show()
-            # self.ui.pushButton_video.setFocus()
+
             self.label_video.setEnabled(0)
             self.goCalcul = True
 
@@ -697,7 +668,6 @@ class StartQT4(QMainWindow):
             self.pointsFound = []
             if self.indexMotif <= len(self.motif) - 1:
                 self.dbg.p(1, "'picture_detect' : While")
-                # self.pointTrouve = filter_picture(self.motif[self.indexMotif], self.imageAffichee)
                 self.pointTrouve = filter_picture(self.motif, self.indexMotif, self.imageAffichee, dossTemp)
                 self.dbg.p(3, "Point Trouve dans mon Thread : " + str(self.pointTrouve))
                 self.onePointFind()
@@ -1393,7 +1363,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if len(self.listePoints)-1>=0 :
             if len(self.listePoints)%self.nb_de_points==self.nb_de_points-1:
                 self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]
-            #print("^^^^^^^",self.listePoints, self.index_de_l_image)
         self.affiche_image()
 
         self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
@@ -1403,9 +1372,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """rétablit le point suivant après un effacement
         """
         self.dbg.p(1, "rentre dans 'refait_point_suivant'")
-        #print(self.listePoints)
         self.listePoints.incPtr()
-        #print(self.listePoints)
         #on stocke si la ligne est complète
         if len(self.listePoints)%self.nb_de_points==0:
             self.stock_coordonnees_image(ligne=int((len(self.listePoints)-1)/self.nb_de_points))
@@ -1573,9 +1540,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         ### on fait des marques pour les points déjà visités
         etiquette = "@abcdefghijklmnopqrstuvwxyz"[len(self.listePoints)%self.nb_de_points]
         self.point_attendu = len(self.listePoints)%self.nb_de_points
-        print(self.point_attendu, len(self.listePoints))
         if len(self.listePoints)%self.nb_de_points != 0 :
-            #self.point_attendu +=1
             self.affiche_point_attendu(self.point_attendu)  # peut etre ici un update de l'image a optimiser
 
         else:
@@ -1650,9 +1615,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             index_image = self.listePoints[len(self.listePoints)-1][0]
         # t = "%4f" % ((ligne) * self.deltaT)
         t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
-        print(self.listePoints)
-        print('stock', self.index_de_l_image, t, index_image, ligne)
-        print("""'stock', self.index_de_l_image, t, index_image, ligne""")
+
         #construction de l'ensemble des points pour l'image actuelle
         listePointsCliquesParImage = []
         for point in self.listePoints:
@@ -1663,7 +1626,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         # rentre le temps dans la première colonne
         self.ui.tableWidget.insertRow(ligne)
         self.ui.tableWidget.setItem(ligne, 0, QTableWidgetItem(t))
-        #print("stock_coor", ligne, self.ui.tableWidget.currentRow())
+
         i = 0
         # Pour chaque point dans liste_points, insère les valeur dans la ligne
         for point in listePointsCliquesParImage:
@@ -1718,24 +1681,24 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'affiche_image'")
         try:
             self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' + str(self.index_de_l_image) + ' ' + str(self.image_max))
-            if self.updatePicture:
-                if self.index_de_l_image <= self.image_max:
-                    self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
-                    self.extract_image(self.filename, self.index_de_l_image)
-                    self.imageExtraite = QImage(toQImage(self.image_opencv))
-                    self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
 
-                    # self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
-                    if hasattr(self, "label_video"):
-                        self.afficheJusteImage()
+            if self.index_de_l_image <= self.image_max:
+                self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
+                self.extract_image(self.index_de_l_image)
+                self.imageExtraite = QImage(toQImage(self.image_opencv))
+                self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
 
-                    if self.ui.horizontalSlider.value() != self.index_de_l_image:
-                        self.dbg.p(1, "affiche_image " + "horizontal")
-                        self.ui.horizontalSlider.setValue(self.index_de_l_image)
-                        self.ui.spinBox_image.setValue(self.index_de_l_image)
-                elif self.index_de_l_image > self.image_max:
-                    self.index_de_l_image = self.image_max
-                    self.lance_capture = False
+                # self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
+                if hasattr(self, "label_video"):
+                    self.afficheJusteImage()
+
+                if self.ui.horizontalSlider.value() != self.index_de_l_image:
+                    self.dbg.p(1, "affiche_image " + "horizontal")
+                    self.ui.horizontalSlider.setValue(self.index_de_l_image)
+                    self.ui.spinBox_image.setValue(self.index_de_l_image)
+            elif self.index_de_l_image > self.image_max:
+                self.index_de_l_image = self.image_max
+                self.lance_capture = False
 
         except AttributeError:
             pass
@@ -1818,8 +1781,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def reinitialise_environnement(self):
         self.dbg.p(1, "rentre dans 'reinitialise_environnement'")
-        for filename in glob(os.path.join(IMG_PATH, "*.jpg")):
-            os.remove(filename)
+
 
     def closeEvent(self, event):
         """
@@ -1830,18 +1792,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         from tempfile import gettempdir
 
         self.nettoieVideosRecodees()
-        if self.verifie_donnees_sauvegardees():
-            self.reinitialise_environnement()
-            liste_fichiers = os.listdir(gettempdir())
-            for fichier in liste_fichiers:
-                if "pymeca" in fichier:
-                    try:
-                        os.remove(fichier)
-                    except OSError:
-                        pass
-            event.accept()
-        else:
-            event.ignore()
+
 
     def nettoieVideosRecodees(self):
         """
@@ -1870,18 +1821,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 return False
         else:
             return True
-
-    def aller_a_l_image(self, increment):
-        self.dbg.p(1, "rentre dans 'aller_a_l_image'")
-        increment = int(increment)
-        self.index_de_l_image = self.index_de_l_image + increment
-        if self.index_de_l_image <= self.image_max:
-            self.affiche_image()
-
-        elif self.index_de_l_image == 0:
-            self.index_de_l_image = 1
-            self.mets_a_jour_label_infos(_translate("pymecavideo", "Vous avez atteint le début de la vidéo", None))
-            self.affiche_image()
 
     def mets_a_jour_label_infos(self, message):
         """
@@ -1967,7 +1906,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.menuE_xporter_vers.setEnabled(1)
         self.ui.actionSaveData.setEnabled(1)
         self.mets_a_jour_label_infos(
-            _translate("pymecavideo", "Veuillez choisir une image et définir l'échelle", None))
+            _translate("pymecavideo", "Veuillez choisir une image (et définir l'échelle)", None))
         self.ui.Bouton_Echelle.setEnabled(True)
         self.ui.spinBox_nb_de_points.setEnabled(True)
         self.ui.horizontalSlider.setEnabled(1)
@@ -1975,11 +1914,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.checkBox_ordonnees.setEnabled(1)
         self.ui.checkBox_auto.setEnabled(1)
         self.ui.Bouton_lance_capture.setEnabled(True)
-        # try:
-        # if self.label_echelle_trace:
-        #         self.ui.Bouton_lance_capture.setEnabled(True)
-        # except AttributeError:
-        #     pass  # si l'échelle n'est pas défine encore
 
 
     def propos(self):
@@ -2008,7 +1942,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
             QMessageBox.warning(None, "Aide",
                                 _translate("pymecavideo", "Désolé pas de fichier d'aide pour le langage %1.", None).arg(
                                     lang))
-
 
     def init_image(self):
         """intialise certaines variables lors le la mise en place d'une nouvelle image"""
@@ -2042,12 +1975,12 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         fichier = os.path.join(IMG_PATH, VIDEO + SUFF % 1)
         try:
             os.remove(fichier)
-            self.extract_image(self.filename, 1)
+            self.extract_image(1)
             os.remove(fichier)
         except OSError:
             pass
 
-    def extract_image(self, video, index, force=False):
+    def extract_image(self, index):
         """
         extrait une image de la video à l'aide d'OpenCV et l'enregistre
         @param video le nom du fichier video
@@ -2059,7 +1992,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         ok, self.image_opencv = self.cvReader.getImage(index)
         if not ok :
             self.mets_a_jour_label_infos(
-            _translate("pymecavideo", "L'image que vous voulez afficher n'existe pas", None))
+            _translate("pymecavideo", "Pymecavideo n'arrive pas à lire l'image", None))
 
         self.a_une_image = True
 

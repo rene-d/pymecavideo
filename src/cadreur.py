@@ -214,7 +214,6 @@ class openCvReader:
             fcount = self.capture.get(cv.CV_CAP_PROP_FRAME_COUNT)
             largeur = self.capture.get(cv.CV_CAP_PROP_FRAME_WIDTH)
             hauteur = self.capture.get(cv.CV_CAP_PROP_FRAME_HEIGHT)
-            print(fps,fcount, largeur, hauteur)
         except:
             print "could not retrieve informations from the video file."
             print "assuming fps = 25, frame count = 10."

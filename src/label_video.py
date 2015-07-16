@@ -76,12 +76,10 @@ class Label_Video(QtGui.QLabel):
 
     def storePoint(self, point):
         if self.app.lance_capture == True:
-            self.app.listePoints.append([self.app.index_de_l_image,self.app.point_attendu,point])
+            self.app.listePoints.append([self.app.index_de_l_image,len(self.app.listePoints)%self.app.nb_de_points,point])
             self.app.emit(SIGNAL('clic_sur_video()'))
-            self.update()
-
-
             self.met_a_jour_crop(self.pos)
+            self.update()
 
     def mouseReleaseEvent(self, event):
         self.storePoint(vecteur(event.x(), event.y()))
@@ -100,6 +98,7 @@ class Label_Video(QtGui.QLabel):
 
     def met_a_jour_crop(self, pos = vecteur(50,50)):
         self.fait_crop(pos)
+        self.app.ui.label_zoom.setPixmap(self.cropX2)
 
     def leaveEvent(self, event):
         if self.app.lance_capture == True:
