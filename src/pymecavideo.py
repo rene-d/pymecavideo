@@ -1382,16 +1382,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'efface_point_precedent'")
         #efface la dernière entrée dans le tableau
-        print (len(self.listePoints), self.nb_de_points, len(self.listePoints)/self.nb_de_points, self.ui.tableWidget.rowCount())
-        self.ui.tableWidget.removeRow(len(self.listePoints)/self.nb_de_points)
+        self.ui.tableWidget.removeRow(int((len(self.listePoints)-1)/self.nb_de_points))
 
+        #décrémente la liste des points de 1
         self.listePoints.decPtr()
-
-        #self.reinitialise_tout(self.echelle_image, self.nb_de_points, self.listePoints, self.premiere_image)
-
-        #self.repasseTousLesClics()
-        #self.label_echelle_trace.show()
-        #self.modifie = True
 
         ##dernière image à afficher
         if len(self.listePoints)-1>=0 :
@@ -1401,16 +1395,19 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
 
 
-
-
-
     def refait_point_suivant(self):
         """rétablit le point suivant après un effacement
         """
         self.dbg.p(1, "rentre dans 'refait_point_suivant'")
+        print(self.listePoints)
         self.listePoints.incPtr()
+        print(self.listePoints)
+        #on stocke si la ligne est complète
+        if len(self.listePoints)%self.nb_de_points==0:
+            self.stock_coordonnees_image(ligne=len(self.listePoints)-1)
         self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]+1
         self.affiche_image()
+
         self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
 
 
@@ -1646,19 +1643,18 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         place les données dans le tableau, rempli les dictionnaires de pixels
         @param ligne le numérode la ligne où placer les données (commence à 0)
-        @param liste_points la liste des points cliqués sur l'image courante
         @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
         """
         self.dbg.p(1, "rentre dans 'stock_coordonnees_image'")
         if not index_image:
-            index_image = self.index_de_l_image
+            index_image = self.listePoints[len(self.listePoints)-1][0]
         # t = "%4f" % ((ligne) * self.deltaT)
-        t = "%4f" % ((self.index_de_l_image - self.premiere_image) * self.deltaT)
-
+        t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
+        print('stock', self.index_de_l_image, t, index_image)
         #construction de l'ensemble des points pour l'image actuelle
         listePointsCliquesParImage = []
         for point in self.listePoints:
-            if point[0]==self.index_de_l_image :
+            if point[0]==index_image :
                 listePointsCliquesParImage.append(point[2])
         self.points[ligne] = [t] + listePointsCliquesParImage
 
