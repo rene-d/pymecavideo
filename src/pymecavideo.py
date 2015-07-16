@@ -524,7 +524,7 @@ class StartQT4(QMainWindow):
         self.enableRefaire(False)
         self.affiche_nb_points(1)
         self.ui.Bouton_lance_capture.setEnabled(1)
-        self.defixeLesDimensions()
+        #self.defixeLesDimensions()
 
         ### Réactiver checkBox_avancees après réinitialisation ###
         self.ui.pushButton_origine.setEnabled(1)
@@ -584,8 +584,8 @@ class StartQT4(QMainWindow):
         QObject.connect(self, SIGNAL('change_axe_origine()'), self.change_axe_ou_origine)
         QObject.connect(self, SIGNAL('selection_done()'), self.picture_detect)
         QObject.connect(self, SIGNAL('selection_motif_done()'), self.storeMotif)
-        QObject.connect(self, SIGNAL('stopRedimensionnement()'), self.fixeLesDimensions)
-        QObject.connect(self, SIGNAL('OKRedimensionnement()'), self.defixeLesDimensions)
+        #QObject.connect(self, SIGNAL('stopRedimensionnement()'), self.fixeLesDimensions)
+        #QObject.connect(self, SIGNAL('OKRedimensionnement()'), self.defixeLesDimensions)
         QObject.connect(self, SIGNAL('redimensionneSignal()'), self.redimensionne)
 
         QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
@@ -614,7 +614,7 @@ class StartQT4(QMainWindow):
         imfilename = os.path.join(IMG_PATH, VIDEO + SUFF % self.premiere_image)
         self.chrono = not self.chrono
         if self.chrono :
-            ok,img = self.cvReader.writeImage(1,imfilename)
+            ok,img = self.cvReader.getImage(1)
             self.imageChrono = QImage(toQImage(img)).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
             self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
             self.ui.pushButtonEnregistreChrono.setVisible(1)
@@ -625,13 +625,15 @@ class StartQT4(QMainWindow):
             self.label_trajectoire.setPixmap(QPixmap())
 
 
-    def fixeLesDimensions(self):
-        self.setMinimumWidth(self.width())
-        self.setMaximumWidth(self.width())
+    #def fixeLesDimensions(self):
+    #    print('OKOKKKO')
+    #    self.setMinimumWidth(self.width())
+    #    self.setMaximumWidth(self.width())
 
-    def defixeLesDimensions(self):
-        self.setMinimumWidth(833)
-        self.setMaximumWidth(16000000)
+    #def defixeLesDimensions(self):
+    #    print('UUUUUUU')
+    #    self.setMinimumWidth(833)
+    #    self.setMaximumWidth(16000000)
 
     def updatePB(self):
         self.qmsgboxencode.updateProgressBar()
@@ -781,7 +783,7 @@ class StartQT4(QMainWindow):
 
         self.label_video.origine = self.origine
         self.label_video.update()
-        self.emit(SIGNAL('stopRedimensionnement()'))
+        self.echelle_faite=True ###TODO
 
         # construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
         if self.points_ecran != {}:

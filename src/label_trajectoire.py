@@ -223,23 +223,27 @@ class Label_Trajectoire(QLabel):
                     self.painter.begin(self)
                     self.painter.setRenderHint(QPainter.Antialiasing)
                     self.painter.setPen(QColor(self.couleurs[i - 1]))
-                    speed = sqrt(vector_speed.x() ** 2 + vector_speed.y() ** 2) * float(self.app.echelle_image.mParPx()) \
+                    try :
+                        speed = sqrt(vector_speed.x() ** 2 + vector_speed.y() ** 2) * float(self.app.echelle_image.mParPx()) \
                             / (2 * self.app.deltaT) * float(self.app.ui.checkBoxScale.currentText())
-                    path = QPainterPath()
-                    path.moveTo(0, 0)
-                    path.lineTo(speed, 0)
-                    path.lineTo(QPointF(speed - 10, 0) + QPointF(0, 10))
-                    path.lineTo(speed - 8, 0)
-                    path.lineTo(QPointF(speed - 10, 0) + QPointF(0, -10))
-                    path.lineTo(speed, 0)
+                        self.app.ui.checkBoxScale.setStyleSheet("background-color:none");
+                        path = QPainterPath()
+                        path.moveTo(0, 0)
+                        path.lineTo(speed, 0)
+                        path.lineTo(QPointF(speed - 10, 0) + QPointF(0, 10))
+                        path.lineTo(speed - 8, 0)
+                        path.lineTo(QPointF(speed - 10, 0) + QPointF(0, -10))
+                        path.lineTo(speed, 0)
 
-                    angle = atan2(float(vector_speed.y()), float(vector_speed.x()))
-                    self.painter.translate(p.x(), p.y())
-                    self.painter.rotate(degrees(angle))
-                    self.painter.drawPath(path)
-                    self.painter.fillPath(path, QColor(self.couleurs[i - 1]))  #VERIFIER COORDONÉES ICI
+                        angle = atan2(float(vector_speed.y()), float(vector_speed.x()))
+                        self.painter.translate(p.x(), p.y())
+                        self.painter.rotate(degrees(angle))
+                        self.painter.drawPath(path)
+                        self.painter.fillPath(path, QColor(self.couleurs[i - 1]))  #VERIFIER COORDONÉES ICI
 
-                    path.moveTo(0, 0)
+                        path.moveTo(0, 0)
+                    except ValueError:
+                        self.app.ui.checkBoxScale.setStyleSheet("background-color: red");
                     self.painter.end()
                 else:
                     pass  #null speed
