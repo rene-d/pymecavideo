@@ -138,10 +138,10 @@ class Label_Video(QtGui.QLabel):
         ############################################################
         #draw points
         self.app.dbg.p(5, "In label_video, paintEvent, self.app.points :%s" % self.app.points)
-
+        cptr_point = 0
         for points in self.app.listePoints:  #all points clicked are stored here, but updated every "number of point to click" frames
-            color = points[1]-1
-
+            color = cptr_point%self.app.nb_de_points
+            cptr_point+=1
             point = points[2]
             if type(point) != type(""):
                 self.painter.setPen(QColor(self.couleurs[color]))
@@ -153,24 +153,6 @@ class Label_Video(QtGui.QLabel):
                 self.painter.drawText(0, 0, str(color+1 ))
 
                 self.painter.translate(-point.x() + 10, -point.y() - 10)
-
-
-
-        # if self.liste_points != []:
-        #
-        #     for point in self.liste_points:  #points clicked in a "number of point to click" sequence.
-        #
-        #         self.painter.setPen(QColor(self.couleurs[color]))
-        #         self.painter.setFont(QFont("", 10))
-        #         self.painter.translate(point.x(), point.y())
-        #         self.painter.drawLine(-2, 0, 2, 0)
-        #         self.painter.drawLine(0, -2, 0, 2)
-        #         self.painter.translate(-10, +10)
-        #         self.painter.drawText(0, 0, str(color + 1))
-        #
-        #         self.painter.translate(-point.x() + 10, -point.y() - 10)
-        #         color += 1
-        #         ############################################################
 
         ############################################################
         #paint repere

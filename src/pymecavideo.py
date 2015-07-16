@@ -1389,7 +1389,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
         ##dernière image à afficher
         if len(self.listePoints)-1>=0 :
-            self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]+1
+            if len(self.listePoints)%self.nb_de_points==self.nb_de_points-1:
+                self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]
+            print("^^^^^^^",self.listePoints, self.index_de_l_image)
         self.affiche_image()
 
         self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
@@ -1399,13 +1401,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """rétablit le point suivant après un effacement
         """
         self.dbg.p(1, "rentre dans 'refait_point_suivant'")
-        print(self.listePoints)
+        #print(self.listePoints)
         self.listePoints.incPtr()
-        print(self.listePoints)
+        #print(self.listePoints)
         #on stocke si la ligne est complète
         if len(self.listePoints)%self.nb_de_points==0:
-            self.stock_coordonnees_image(ligne=len(self.listePoints)-1)
-        self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]+1
+            self.stock_coordonnees_image(ligne=int((len(self.listePoints)-1)/self.nb_de_points))
+            self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]+1
         self.affiche_image()
 
         self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
@@ -1566,25 +1568,21 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
         self.lance_capture = True
 
-        #if liste_points == None:
-        #    liste_points = self.label_video.liste_points
-
-
-
         ### on fait des marques pour les points déjà visités
         etiquette = "@abcdefghijklmnopqrstuvwxyz"[len(self.listePoints)%self.nb_de_points]
-
+        self.point_attendu = len(self.listePoints)%self.nb_de_points
+        print(self.point_attendu, len(self.listePoints))
         if len(self.listePoints)%self.nb_de_points != 0 :
-            self.point_attendu +=1
+            #self.point_attendu +=1
             self.affiche_point_attendu(self.point_attendu)  # peut etre ici un update de l'image a optimiser
 
         else:
-            self.point_attendu = 1
+            #self.point_attendu = 1
             self.affiche_point_attendu(self.point_attendu)
             if self.index_de_l_image <= self.image_max:  ##si on atteint la fin de la vidéo
                 self.lance_capture = True
-                self.stock_coordonnees_image(self.nb_image_deja_analysees, interactif)
-                self.nb_image_deja_analysees += 1
+                self.stock_coordonnees_image(ligne=int((len(self.listePoints)-1)/self.nb_de_points))
+
                 self.index_de_l_image += 1
                 if interactif:
                     self.modifie = True
@@ -1650,7 +1648,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             index_image = self.listePoints[len(self.listePoints)-1][0]
         # t = "%4f" % ((ligne) * self.deltaT)
         t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
-        print('stock', self.index_de_l_image, t, index_image)
+        print(self.listePoints)
+        print('stock', self.index_de_l_image, t, index_image, ligne)
+        print("""'stock', self.index_de_l_image, t, index_image, ligne""")
         #construction de l'ensemble des points pour l'image actuelle
         listePointsCliquesParImage = []
         for point in self.listePoints:
