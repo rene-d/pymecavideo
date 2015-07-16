@@ -1182,10 +1182,10 @@ class StartQT4(QMainWindow):
             =========================================================================
             """
 
- #           if hasattr(self, 'label_video'):
- #               self.label_video.maj()
- #               self.label_trajectoire.maj()
- #               self.afficheJusteImage()
+            if hasattr(self, 'label_video'):
+                self.label_video.maj()
+                self.label_trajectoire.maj()
+                self.afficheJusteImage()
 
 
     def entete_fichier(self, msg=""):
