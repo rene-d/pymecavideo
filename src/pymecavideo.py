@@ -1391,7 +1391,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if len(self.listePoints)-1>=0 :
             if len(self.listePoints)%self.nb_de_points==self.nb_de_points-1:
                 self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]
-            print("^^^^^^^",self.listePoints, self.index_de_l_image)
+            #print("^^^^^^^",self.listePoints, self.index_de_l_image)
         self.affiche_image()
 
         self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
