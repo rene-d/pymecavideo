@@ -282,7 +282,7 @@ class StartQT4(QMainWindow):
         self.auto = False
         self.motif = []
         self.lance_capture = False
-        self.modifie = False
+        self.modifie = False #est Vraie si le fichier est odifié. permet de sauvegarder les changements
         self.points = {}  # dictionnaire des points cliqués, par n d'image.
         self.trajectoire = {}  # dictionnaire des points des trajectoires
         self.pX = {}  # points apparaissant à l'écran, indexés par X
@@ -989,7 +989,8 @@ class StartQT4(QMainWindow):
 
         lignes = open(fichier, "r").readlines()
         i = 0
-        self.points = {}
+        self.points = {} #dictionnaire des données, simple. Les clefs sont les index de l'image. les données les
+        self.listePoints = listePointee()
         dd = ""
         for l in lignes:
             if l[0] == "#":
@@ -999,6 +1000,11 @@ class StartQT4(QMainWindow):
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
         self.init_interface()
         self.change_axe_ou_origine()
+
+        # puis on trace le segment entre les points cliqués pour l'échelle
+        self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+
         for l in lignes:
             if l[0] == "#":
                 pass
@@ -1007,37 +1013,37 @@ class StartQT4(QMainWindow):
                 d = l.split("\t")
                 t = "%4f" % (float(d[0].replace(",", ".")))
                 self.ui.tableWidget.insertRow(i)
+                print(i)
                 self.ui.tableWidget.setItem(i, 0, QTableWidgetItem(t))
                 self.points[i] = [t]
-
+                print(d)
                 for j in range(1, len(d), 2):
-                    self.points[i].append(
-                        vecteur(float(d[j].replace(",", ".")) * self.echelle_image.longueur_reelle_etalon \
+                    pos = vecteur(float(d[j].replace(",", ".")) * self.echelle_image.longueur_reelle_etalon \
                                 + self.origine.x(), self.origine.y() - float(
-                            d[j + 1].replace(",", ".")) * self.echelle_image.longueur_reelle_etalon))
+                            d[j + 1].replace(",", ".")) * self.echelle_image.longueur_reelle_etalon)
+                    self.listePoints.append([float(t)*framerate+self.premiere_image,len(self.listePoints)%self.nb_de_points,pos])
+                    self.points[i].append(pos)
+                    print(i,j, str(float(d[j].replace(",", "."))))
                     self.ui.tableWidget.setItem(i, j, QTableWidgetItem(str(float(d[j].replace(",", ".")))))
                     self.ui.tableWidget.setItem(i, j + 1, QTableWidgetItem(str(float(d[j + 1].replace(",", ".")))))
                 i += 1
 
-        # puis on trace le segment entre les points cliqués pour l'échelle
-        self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-
+        #print(self.points)
+        #print(self.listePoints)
         self.determineHauteurLargeur()
 
         self.defini_barre_avancement()
         self.affiche_echelle()  # on met à jour le widget d'échelle
-        n = len(self.points.keys())
-        self.nb_image_deja_analysees = n
-        self.ui.horizontalSlider.setValue(n + self.premiere_image)
-        self.ui.spinBox_image.setValue(n + self.premiere_image)
+        #n = len(self.points.keys())
+        #self.nb_image_deja_analysees = n
+        derniere_image = self.listePoints[len(self.listePoints)-1][0]+1
+        self.ui.horizontalSlider.setValue(derniere_image)
+        self.ui.spinBox_image.setValue(derniere_image)
         self.affiche_nb_points(self.nb_de_points)
         self.enableDefaire(True)
         self.enableRefaire(False)
 
         # On regénère la liste self.tousLesClics
-        for i in self.points.keys():
-            self.tousLesClics.append(self.points[i][1:])
         self.affiche_image()  # on affiche l'image
         self.debut_capture(departManuel=False)
 
@@ -1078,28 +1084,6 @@ class StartQT4(QMainWindow):
             self.label_video.origine = self.origine
         except AttributeError:
             pass  # premier passage
-
-
-
-        # rapportLH = float(self.largeurFilm) / self.hauteurFilm
-        #        if self.largeurFilm > sizeEcran.width() * 3.0 / 4.0:
-        #            self.dbg.p(2, 'film trop grand')
-        #            self.largeur = int(sizeEcran.width() * 3.0 / 4.0)
-        #        elif self.largeurFilm < 640:
-        #            self.dbg.p(2, 'film trop petit')
-        #            self.largeur = 640
-        #        else:
-        #            self.largeur = self.largeurFilm
-        #        try:
-        #            if largeur:
-        #                self.largeur = largeur - 190
-        #                self.hauteur = int(self.largeur / rapportLH)
-        #                self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
-        #                self.label_video.origine = self.origine
-        #            self.hauteur = int(self.largeur / rapportLH)
-        #
-        #        except AttributeError:
-        #            pass  # premier passage
 
         if largeur != self.largeur or hauteur != self.hauteur:
             self.largeur, self.hauteur = largeur, hauteur
@@ -1162,6 +1146,7 @@ class StartQT4(QMainWindow):
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
+        print(self.points)
         result = u"""#pymecavideo
 #video = %s
 #sens axe des X = %d
@@ -1210,6 +1195,7 @@ class StartQT4(QMainWindow):
                 file.close()
             ################# fin du fichier physique ################
             self.modifie = False
+            print(self.listePoints)
 
     def enregistre_ui(self):
         self.dbg.p(1, "rentre dans 'enregistre_ui'")
@@ -1264,7 +1250,8 @@ class StartQT4(QMainWindow):
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points):
             self.ui.comboBox_referentiel.insertItem(-1, _translate("pymecavideo", "point N° %1", None).arg(str(i + 1)))
-        self.cree_tableau()
+        if  departManuel:
+            self.cree_tableau()
 
         self.ui.pushButton_origine.setEnabled(0)
         self.ui.checkBox_abscisses.setEnabled(0)
@@ -1594,12 +1581,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if point_attendu == 1:  # pour une acquisition sur une nouvelle image
             self.dbg.p(1, "self.nb_image_deja_analysees >= len(self.points) ? %s %s" % (
                 len(self.listePoints), self.nb_de_points-len(self.listePoints)%self.nb_de_points))
-
-            #if len(self.tousLesClics) == len(
-            #        self.points):  # update image only at last point. use to optimise undo/redo fucntions.
             self.affiche_image()
             self.tracer_trajectoires("absolu")
-        # if not self.enleveHistorique :
         self.affiche_image()
         self.enableDefaire(len(self.listePoints) > 0)
         self.enableRefaire(self.listePoints.nextCount() > 0)

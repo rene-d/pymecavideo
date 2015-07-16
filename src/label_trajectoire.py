@@ -169,6 +169,9 @@ class Label_Trajectoire(QLabel):
         self.painter = QPainter()
         self.painter.begin(self)
         self.painter.setRenderHint(QPainter.Antialiasing)
+
+
+        
         for points in self.app.points.values():
             color = 0
             for point in points:
