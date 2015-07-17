@@ -170,7 +170,6 @@ class Label_Trajectoire(QLabel):
         self.painter.begin(self)
         self.painter.setRenderHint(QPainter.Antialiasing)
 
-        #print(len(self.app.listePoints), self.app.listePoints[0:2])
         listePoints = []
         listeParImage = []
         for point in self.app.listePoints:
@@ -180,10 +179,8 @@ class Label_Trajectoire(QLabel):
             if len(listeParImage)%self.app.nb_de_points==0:
                 listePoints.append(listeParImage)
                 listeParImage=[]
-        print(listePoints)
 
         for points in listePoints:
-            print(points)
             color = 0
             for point in points:
                 if self.referentiel != 0:
