@@ -279,6 +279,8 @@ class StartQT4(QMainWindow):
         self.repere = 0
         self.myThreads = []
         self.origine = vecteur(320, 240)
+        self.rouvert = False #positionné a vrai si on vien d'ouvrir un fichier mecavideo
+
         self.auto = False
         self.motif = []
         self.lance_capture = False
@@ -1001,18 +1003,29 @@ class StartQT4(QMainWindow):
                 dd += l
         self.echelle_image = echelle()  # on réinitialise l'échelle
         self.loads(dd)  # on récupère les données importantes
-        print('1', self.largeur, self.hauteur)
+        time.sleep(2)
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
 
         self.init_interface()
 
-        print('2', self.largeur, self.hauteur)
+
         self.change_axe_ou_origine()
 
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+        self.rouvert = True
 
+        #self.largeur_rouvre = self.largeur
+        #self.hauteur_rouvre = self.hauteur
+        print('ee', self.width(), self.height())
+        print('ff', self.largeur, self.hauteur)
+        self.premierResize = False
+        #self.determineHauteurLargeur()
+        self.resize(self.largeur+190, self.hauteur+96)
+        #self.redimensionne()
+#        self.setFixedWidth(self.largeur_rouvre+190)
+ #       self.setFixedHeight(self.hauteur_rouvre+60)
         for l in lignes:
             if l[0] == "#":
                 pass
@@ -1032,11 +1045,19 @@ class StartQT4(QMainWindow):
                     self.ui.tableWidget.setItem(i, j, QTableWidgetItem(str(float(d[j].replace(",", ".")))))
                     self.ui.tableWidget.setItem(i, j + 1, QTableWidgetItem(str(float(d[j + 1].replace(",", ".")))))
                 i += 1
-        #self.redimensionne(force=True)
-        self.label_video.setFixedWidth(self.largeur)
-        self.resize(self.largeur+190, self.hauteur+60)
+        #self.redimensionne(force=True)u
 
+        self.label_video.setFixedWidth(self.largeur)
+        print('112', self.largeur, self.hauteur)
+        #self.resize(self.largeur+190, self.hauteur+60)
+        #self.determineHauteurLargeur()
+        #self.setMinimumHeight(self.hauteur+60)
+        #self.setMaximumHeight(self.hauteur+60)
+        #self.setMinimumWidth(self.largeur+190)
+        #self.setMaximumWidth(self.largeur+190)
+        print('113', self.largeur, self.hauteur)
         self.defini_barre_avancement()
+
         self.affiche_echelle()  # on met à jour le widget d'échelle
         #n = len(self.points.keys())
         #self.nb_image_deja_analysees = n
@@ -1067,56 +1088,70 @@ class StartQT4(QMainWindow):
 
         ##si le film est trop large on le fixe vers les 3/4 de l'écran
         self.dbg.p(1, "rentre dans 'determineHauteurLargeur'")
-        if not fixe : #sert lors de l'ouervture d'un fichier pymecavideo
-            if self.premierResize:
-
-                if self.cvReader is None:
-                    self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
-                else:
-                    framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-
-            ratioFilm = float(self.largeurFilm) / self.hauteurFilm
-            self.ratio = ratioFilm
-
-            ######le ration du film est toujours supérieur au ratio du label.
-            ######si la hauteur du film est supérieur au widget de gauche, on fait coller la hauteur du label avec celle de la vidéo
-            ######si non, on met la hauteur du label à 1024
-            if self.height() <= 620 and self.hauteurFilm < 480:
-                hauteur = 480
-                largeur = 640
+        #if not fixe : #sert lors de l'ouervture d'un fichier pymecavideo
+        if self.premierResize:
+            print(1)
+            if self.cvReader is None:
+                self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
             else:
-                hauteur = self.height() - 96
-                largeur = ratioFilm * hauteur
+                framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
 
-            try:
-                self.label_video.origine = self.origine
-            except AttributeError:
-                pass  # premier passage
+        ratioFilm = float(self.largeurFilm) / self.hauteurFilm
+        self.ratio = ratioFilm
+        print(2)
+        ######le ration du film est toujours supérieur au ratio du label.
+        ######si la hauteur du film est supérieur au widget de gauche, on fait coller la hauteur du label avec celle de la vidéo
+        ######si non, on met la hauteur du label à 1024
+        if self.height() <= 620 and self.hauteurFilm < 480:
+            hauteur = 480
+            largeur = 640
+        else:
+            hauteur = self.height() - 96
+            largeur = ratioFilm * hauteur
 
-            if largeur != self.largeur or hauteur != self.hauteur:
-                self.largeur, self.hauteur = largeur, hauteur
+        try:
+            self.label_video.origine = self.origine
+        except AttributeError:
+            pass  # premier passage
 
-                self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
+        if largeur != self.largeur or hauteur != self.hauteur:
+            self.largeur, self.hauteur = largeur, hauteur
 
-            self.dbg.p(1, "rentre dans 'determineHauteurLargeur, hauteur : %s, largeur %s'" % (self.hauteur, self.largeur))
+            self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
+
+        self.dbg.p(1, "rentre dans 'determineHauteurLargeur, hauteur : %s, largeur %s'" % (self.hauteur, self.largeur))
 
     def stopRedimensionnements(self):
-
         self.resizing = False
+        print("4s")
         self.emit(SIGNAL('redimensionneSignal()'))
 
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans resizeEvent")
+        print(self.width(), self.height())
+        print("1s")
         if not self.resizing:
-            self.resizing = True
-            if self.echelle_faite or self.lance_capture:
-                self.layout().setSizeConstraint(QLayout.SetFixedSize)
-
-            else:
+            print("2s")
+            if self.rouvert :
+                self.resizing = True
+                print("3s")
                 self.determineHauteurLargeur()
                 self.setFixedWidth(self.largeur + 190)
-                self.qtimer = QTimer.singleShot(3, self.stopRedimensionnements)
+                #self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
+            else :
+                print(66)
+                self.resizing = True
+                if (self.echelle_faite or self.lance_capture) :
+                    print(77)
+                    self.layout().setSizeConstraint(QLayout.SetFixedSize)
+
+                else:
+                    print(88)
+                    self.determineHauteurLargeur()
+                    self.setFixedWidth(self.largeur + 190)
+            self.qtimer = QTimer.singleShot(3, self.stopRedimensionnements)
+        self.update()
         QApplication.instance().processEvents()
 
 
@@ -1141,7 +1176,6 @@ class StartQT4(QMainWindow):
 
             self.label_video.setFixedWidth(self.largeur)
             self.label_video.setFixedHeight(self.hauteur)
-            #self.layout()
 
             self.setFixedWidth(self.largeur + 190)
             self.setFixedHeight(self.hauteur + 60)
