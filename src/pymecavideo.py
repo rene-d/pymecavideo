@@ -1016,16 +1016,9 @@ class StartQT4(QMainWindow):
         framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         self.rouvert = True
 
-        #self.largeur_rouvre = self.largeur
-        #self.hauteur_rouvre = self.hauteur
-        print('ee', self.width(), self.height())
-        print('ff', self.largeur, self.hauteur)
         self.premierResize = False
-        #self.determineHauteurLargeur()
         self.resize(self.largeur+190, self.hauteur+96)
-        #self.redimensionne()
-#        self.setFixedWidth(self.largeur_rouvre+190)
- #       self.setFixedHeight(self.hauteur_rouvre+60)
+
         for l in lignes:
             if l[0] == "#":
                 pass
@@ -1048,19 +1041,9 @@ class StartQT4(QMainWindow):
         #self.redimensionne(force=True)u
 
         self.label_video.setFixedWidth(self.largeur)
-        print('112', self.largeur, self.hauteur)
-        #self.resize(self.largeur+190, self.hauteur+60)
-        #self.determineHauteurLargeur()
-        #self.setMinimumHeight(self.hauteur+60)
-        #self.setMaximumHeight(self.hauteur+60)
-        #self.setMinimumWidth(self.largeur+190)
-        #self.setMaximumWidth(self.largeur+190)
-        print('113', self.largeur, self.hauteur)
         self.defini_barre_avancement()
 
         self.affiche_echelle()  # on met à jour le widget d'échelle
-        #n = len(self.points.keys())
-        #self.nb_image_deja_analysees = n
         derniere_image = self.listePoints[len(self.listePoints)-1][0]+1
         self.ui.horizontalSlider.setValue(derniere_image)
         self.ui.spinBox_image.setValue(derniere_image)
@@ -1071,10 +1054,6 @@ class StartQT4(QMainWindow):
         # On regénère la liste self.tousLesClics
         self.affiche_image()  # on affiche l'image
         self.debut_capture(departManuel=False)
-        print('3', self.largeur, self.hauteur,self.width())
-#        self.determineHauteurLargeur(True)
-        print('4', self.largeur, self.hauteur)
-
         self.ui.tableWidget.show()
 
         # On met à jour les préférences
@@ -1090,15 +1069,14 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'determineHauteurLargeur'")
         #if not fixe : #sert lors de l'ouervture d'un fichier pymecavideo
         if self.premierResize:
-            print(1)
             if self.cvReader is None:
                 self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
             else:
                 framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
 
         ratioFilm = float(self.largeurFilm) / self.hauteurFilm
         self.ratio = ratioFilm
-        print(2)
         ######le ration du film est toujours supérieur au ratio du label.
         ######si la hauteur du film est supérieur au widget de gauche, on fait coller la hauteur du label avec celle de la vidéo
         ######si non, on met la hauteur du label à 1024
@@ -1106,9 +1084,9 @@ class StartQT4(QMainWindow):
             hauteur = 480
             largeur = 640
         else:
+
             hauteur = self.height() - 96
             largeur = ratioFilm * hauteur
-
         try:
             self.label_video.origine = self.origine
         except AttributeError:
@@ -1116,38 +1094,29 @@ class StartQT4(QMainWindow):
 
         if largeur != self.largeur or hauteur != self.hauteur:
             self.largeur, self.hauteur = largeur, hauteur
-
+            self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
             self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
 
         self.dbg.p(1, "rentre dans 'determineHauteurLargeur, hauteur : %s, largeur %s'" % (self.hauteur, self.largeur))
 
     def stopRedimensionnements(self):
         self.resizing = False
-        print("4s")
         self.emit(SIGNAL('redimensionneSignal()'))
 
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans resizeEvent")
-        print(self.width(), self.height())
-        print("1s")
         if not self.resizing:
-            print("2s")
             if self.rouvert :
                 self.resizing = True
-                print("3s")
-                self.determineHauteurLargeur()
                 self.setFixedWidth(self.largeur + 190)
-                #self.layout().setSizeConstraint(QLayout.SetFixedSize)
+                self.setFixedHeight(self.hauteur + 96)
 
             else :
-                print(66)
                 self.resizing = True
                 if (self.echelle_faite or self.lance_capture) :
-                    print(77)
                     self.layout().setSizeConstraint(QLayout.SetFixedSize)
 
                 else:
-                    print(88)
                     self.determineHauteurLargeur()
                     self.setFixedWidth(self.largeur + 190)
             self.qtimer = QTimer.singleShot(3, self.stopRedimensionnements)
@@ -1155,56 +1124,37 @@ class StartQT4(QMainWindow):
         QApplication.instance().processEvents()
 
 
-    def redimensionne(self, premier=False, force = False):
+    def redimensionne(self, premier=False):
         """
         redimensionne la fenêtre principale
         @param premier booléen, force le redimensionnement comme la première fois s'il est
         vrai ; faux par défaut.
         """
         self.dbg.p(1, "rentre dans 'redimensionne'")
-        if force :
-            self.layout().setSizeConstraint(QLayout.SetFixedSize)
-
-            self.label_video.setFixedWidth(self.largeur)
-            self.label_video.setFixedHeight(self.hauteur)
+        if self.a_une_image:
             #self.layout()
-
-            self.setFixedWidth(self.largeur + 190)
-            self.setFixedHeight(self.hauteur + 60)
-            print('5', self.largeur, self.width())
-            self.update()
-
-            self.label_video.setFixedWidth(self.largeur)
-            self.label_video.setFixedHeight(self.hauteur)
-
-            self.setFixedWidth(self.largeur + 190)
-            self.setFixedHeight(self.hauteur + 60)
-            print('5', self.largeur, self.width())
-            self.update()
-        else :
-            if self.a_une_image:
-                self.layout()
-                if self.premierResize or premier:
-                    self.determineHauteurLargeur()
-                    self.premierResize = False
-                else:
+            if self.premierResize or premier:
+                self.determineHauteurLargeur()
+                self.premierResize = False
+            else:
+                if not self.rouvert:
                     self.determineHauteurLargeur(self.width())
 
-                """
-                OBSOLÈTE : la méthode de calcul de hauteur fait perdre la ligne de statut
-                =========================================================================
-                if sys.platform != "win32":
-                    posVideo = self.ui.label.mapTo(self, QPoint(0,0))
-                    #rect = self.geometry()
-                    #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
-                    #self.setFixedHeight(self.hauteur + posVideo.y())
-                =========================================================================
-                """
+            """
+            OBSOLÈTE : la méthode de calcul de hauteur fait perdre la ligne de statut
+            =========================================================================
+            if sys.platform != "win32":
+                posVideo = self.ui.label.mapTo(self, QPoint(0,0))
+                #rect = self.geometry()
+                #self.setGeometry(rect.x(), rect.y(), self.largeur + 190, self.hauteur + 130)
+                #self.setFixedHeight(self.hauteur + posVideo.y())
+            =========================================================================
+            """
 
-                if hasattr(self, 'label_video'):
-                    self.label_video.maj()
-                    self.label_trajectoire.maj()
-                    self.afficheJusteImage()
+            if hasattr(self, 'label_video'):
+                self.label_video.maj()
+                self.label_trajectoire.maj()
+                self.afficheJusteImage()
 
 
     def entete_fichier(self, msg=""):
@@ -1405,10 +1355,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'efface_point_precedent'")
         #efface la dernière entrée dans le tableau
         self.ui.tableWidget.removeRow(int((len(self.listePoints)-1)/self.nb_de_points))
-
-        print(self.width(), self.label_video.width(), self.largeur)
-
-        #décrémente la liste des points de 1
         self.listePoints.decPtr()
 
         ##dernière image à afficher
