@@ -155,7 +155,7 @@ class Label_Echelle(QLabel):
         # self.app.affiche_nb_points(True)
         self.app.mets_a_jour_label_infos(self.app.tr(u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
 
-        self.app.affiche_lance_capture(True)
+        #self.app.affiche_lance_capture(False)
         self.app.feedbackEchelle(self.p1, self.p2)
         if len(self.app.listePoints) > 0:  #si on appelle l'échelle après avoir déjà pointé
             self.app.mets_a_jour_label_infos(self.app.tr("Vous pouvez continuer votre acquisition"))

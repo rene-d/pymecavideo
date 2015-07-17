@@ -729,14 +729,10 @@ class StartQT4(QMainWindow):
 
     def refait_echelle(self):
         # """Permet de retracer une échelle et de recalculer les points"""
-        # self.recommence_echelle()
         self.dbg.p(1, "rentre dans 'refait_echelle'")
-        # self.cree_tableau()
-        index = 0
-        for point in self.listePoints:
-            self.stock_coordonnees_image(index, point[2])
-            index += 1
-
+        self.cree_tableau()
+        self.recalculLesCoordonnees()
+        print(self.points)
     def choisi_nouvelle_origine(self):
         self.dbg.p(1, "rentre dans 'choisi_nouvelle_origine'")
         nvl_origine = QMessageBox.information(self, QString("NOUVELLE ORIGINE"), \
@@ -1018,6 +1014,7 @@ class StartQT4(QMainWindow):
         self.premierResize = False
         self.resize(self.largeur+190, self.hauteur+96)
 
+        # on régénère self.listePoints et self.points
         for l in lignes:
             if l[0] == "#":
                 pass
@@ -1025,8 +1022,7 @@ class StartQT4(QMainWindow):
                 l = l.strip('\t\n')
                 d = l.split("\t")
                 t = "%4f" % (float(d[0].replace(",", ".")))
-                self.ui.tableWidget.insertRow(i)
-                self.ui.tableWidget.setItem(i, 0, QTableWidgetItem(t))
+
                 self.points[i] = [t]
                 for j in range(1, len(d), 2):
                     pos = vecteur(float(d[j].replace(",", ".")) * self.echelle_image.longueur_reelle_etalon \
@@ -1034,10 +1030,8 @@ class StartQT4(QMainWindow):
                             d[j + 1].replace(",", ".")) * self.echelle_image.longueur_reelle_etalon)
                     self.listePoints.append([float(t)*framerate+self.premiere_image,len(self.listePoints)%self.nb_de_points,pos])
                     self.points[i].append(pos)
-                    self.ui.tableWidget.setItem(i, j, QTableWidgetItem(str(float(d[j].replace(",", ".")))))
-                    self.ui.tableWidget.setItem(i, j + 1, QTableWidgetItem(str(float(d[j + 1].replace(",", ".")))))
+
                 i += 1
-        #self.redimensionne(force=True)u
 
         self.label_video.setFixedWidth(self.largeur)
         self.defini_barre_avancement()
@@ -1050,10 +1044,10 @@ class StartQT4(QMainWindow):
         self.enableDefaire(True)
         self.enableRefaire(False)
 
-        # On regénère la liste self.tousLesClics
         self.affiche_image()  # on affiche l'image
         self.debut_capture(departManuel=False)
         self.ui.tableWidget.show()
+        self.recalculLesCoordonnees()
 
         # On met à jour les préférences
         self.prefs.lastVideo = self.filename
@@ -1355,6 +1349,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         #efface la dernière entrée dans le tableau
         self.ui.tableWidget.removeRow(int((len(self.listePoints)-1)/self.nb_de_points))
         self.listePoints.decPtr()
+        if len(self.listePoints)%self.nb_de_points!=0:
+            self.points[len(self.listePoints)/self.nb_de_points].pop()
+        else:
+            del self.points[len(self.listePoints)/self.nb_de_points]
 
         ##dernière image à afficher
         if len(self.listePoints)-1>=0 :
@@ -1754,10 +1752,22 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.job = Label_Echelle(self.label_video, self)
                 self.job.setPixmap(QPixmap(toQImage(self.image_opencv)))
                 self.job.show()
+
         except ValueError:
             self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une échelle valable", None))
             self.demande_echelle()
-            # self.ui.pushButton_video.setEnabled(0)
+
+    def recalculLesCoordonnees(self):
+        """permet de remplir le tableau des coordonnées à la demande. Se produit quand on ouvre un fichier mecavideo ou quan don recommence l'échelle"""
+        for i in range(len(self.points)):
+            self.ui.tableWidget.insertRow(i)
+            self.ui.tableWidget.setItem(i, 0, QTableWidgetItem(self.points[i][0]))
+            for j in range(self.nb_de_points):
+                p = self.pointEnMetre(self.points[i][j+1])
+                self.ui.tableWidget.setItem(i, j*(self.nb_de_points-1)+1, QTableWidgetItem(str(p.x())))
+                self.ui.tableWidget.setItem(i, j*(self.nb_de_points-1) + 2, QTableWidgetItem(str(p.y())))
+        #esthétique : enleve la derniere ligne
+        self.ui.tableWidget.removeRow(len(self.points))
 
     def feedbackEchelle(self, p1, p2):
         """
@@ -1766,7 +1776,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'feedbackEchelle'")
         from echelle import Label_Echelle_Trace
-
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1, p2)
         self.label_echelle_trace.show()
         self.emit(SIGNAL('stopRedimensionnement()'))
@@ -1775,7 +1784,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def reinitialise_environnement(self):
         self.dbg.p(1, "rentre dans 'reinitialise_environnement'")
 
-
     def closeEvent(self, event):
         """
         Un crochet pour y mettre toutes les procédures à faire lors
@@ -1783,7 +1791,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'closeEvent'")
         from tempfile import gettempdir
-
         self.nettoieVideosRecodees()
 
 
