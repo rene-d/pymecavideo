@@ -170,13 +170,24 @@ class Label_Trajectoire(QLabel):
         self.painter.begin(self)
         self.painter.setRenderHint(QPainter.Antialiasing)
 
+        #print(len(self.app.listePoints), self.app.listePoints[0:2])
+        listePoints = []
+        listeParImage = []
+        for point in self.app.listePoints:
+        #    #TODO :si quelqu'un veut implémenter un slicing de l'objet listePointee...
+        #    #print(self.app.listePoints[i*self.app.nb_de_points:(i+1)*self.app.nb_de_points])
+            listeParImage.append(point[2])
+            if len(listeParImage)%self.app.nb_de_points==0:
+                listePoints.append(listeParImage)
+                listeParImage=[]
+        print(listePoints)
 
-        
-        for points in self.app.points.values():
+        for points in listePoints:
+            print(points)
             color = 0
             for point in points:
                 if self.referentiel != 0:
-                    ptreferentiel = points[int(self.referentiel)]
+                    ptreferentiel = points[int(self.referentiel)-1]
 
                 else:
                     ptreferentiel = vecteur(0, 0)
