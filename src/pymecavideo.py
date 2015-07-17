@@ -1003,7 +1003,6 @@ class StartQT4(QMainWindow):
                 dd += l
         self.echelle_image = echelle()  # on réinitialise l'échelle
         self.loads(dd)  # on récupère les données importantes
-        time.sleep(2)
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
 
         self.init_interface()
