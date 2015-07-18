@@ -1775,6 +1775,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une échelle valable", None))
             self.demande_echelle()
 
+    def calculeLesVitesses(self):
+        """à partir des sets de points, renvoie les vitesses selon l'axe X, selon l'axe Y et les normes des vitesses"""
+        self.vitesses = {}
+
     def recalculLesCoordonnees(self):
         """permet de remplir le tableau des coordonnées à la demande. Se produit quand on ouvre un fichier mecavideo ou quan don recommence l'échelle"""
         for i in range(len(self.points)):
