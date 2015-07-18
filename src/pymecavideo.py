@@ -738,7 +738,6 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'refait_echelle'")
         self.cree_tableau()
         self.recalculLesCoordonnees()
-        print(self.points)
     def choisi_nouvelle_origine(self):
         self.dbg.p(1, "rentre dans 'choisi_nouvelle_origine'")
         nvl_origine = QMessageBox.information(self, QString("NOUVELLE ORIGINE"), \
@@ -809,9 +808,6 @@ class StartQT4(QMainWindow):
         """
         self.dbg.p(1, "rentre dans 'pointEnMetre'")
         if self.echelle_faite:
-            print(p.x(), self.origine.x(), self.echelle_image.mParPx())
-            print(self.echelle_image.p1, self.echelle_image.p2, self.echelle_image.longueur_reelle_etalon, self.echelle_image.longueur_pixel_etalon())
-            print(self.echelle_image.mParPx(),self.echelle_image.longueur_reelle_etalon/(self.echelle_image.p1-self.echelle_image.p2).norme() )
             return vecteur(self.sens_X * (float(p.x() - self.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
                        float(self.origine.y() - p.y()) * self.echelle_image.mParPx())
 
@@ -1781,13 +1777,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """permet de remplir le tableau des coordonnées à la demande. Se produit quand on ouvre un fichier mecavideo ou quan don recommence l'échelle"""
         for i in range(len(self.points)):
             self.ui.tableWidget.insertRow(i)
-            print(self.points[i][0])
             self.ui.tableWidget.setItem(i, 0, QTableWidgetItem(self.points[i][0]))
             for j in range(self.nb_de_points):
-                #print()
-                #print()
                 p = self.pointEnMetre(self.points[i][j+1])
-                print(p, self.points[i][j+1])
                 self.ui.tableWidget.setItem(i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x())))
                 self.ui.tableWidget.setItem(i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y())))
         #esthétique : enleve la derniere ligne
