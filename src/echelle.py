@@ -48,11 +48,17 @@ class echelle(QObject):
 
     def mParPx(self):
         """renvoie le nombre de mètre par pixel"""
-        return self.longueur_reelle_etalon / self.longueur_pixel_etalon()
+        if not self.isUndef():
+            return self.longueur_reelle_etalon / self.longueur_pixel_etalon()
+        else :
+            return 1
 
     def pxParM(self):
         """renvoie le nombre de pixel par mètre"""
-        return self.longueur_pixel_etalon() / self.longueur_reelle_etalon
+        if not self.isUndef():
+            return self.longueur_pixel_etalon() / self.longueur_reelle_etalon
+        else :
+            return 1
 
     def applique_echelle(self, pos):
         """
@@ -81,7 +87,7 @@ class Label_Echelle(QLabel):
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
-        pix = QPixmap("curseur_cible.png").scaledToHeight(32, 32)
+        pix = QPixmap("curseur_cible.svg").scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
         self.cropX2 = None
@@ -149,9 +155,9 @@ class Label_Echelle(QLabel):
         # self.app.affiche_nb_points(True)
         self.app.mets_a_jour_label_infos(self.app.tr(u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
 
-        self.app.affiche_lance_capture(True)
+        #self.app.affiche_lance_capture(False)
         self.app.feedbackEchelle(self.p1, self.p2)
-        if len(self.app.tousLesClics) > 0:  #si on appelle l'échelle après avoir déjà pointé
+        if len(self.app.listePoints) > 0:  #si on appelle l'échelle après avoir déjà pointé
             self.app.mets_a_jour_label_infos(self.app.tr("Vous pouvez continuer votre acquisition"))
             self.app.affiche_nb_points(False)
             self.app.refait_echelle()

@@ -29,14 +29,14 @@ class traceur2d:
         self.parent = parent
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
-        self.plotWidget=None
+        self.plotWidget=pg.plot()
         self.update(x, y, xlabel, ylabel, titre, style, item)
 
     def update(self, x, y, xlabel="", ylabel="", titre="", style=None, item=None):
-        if self.plotWidget:
-            self.plotWidget.hide()
-            del self.plotWidget
-        self.plotWidget=pg.plot(title=titre)
+        self.plotWidget.clear()
+        self.plotWidget.setTitle(titre)
+        self.plotWidget.setWindowTitle(titre)
+
         self.plotWidget.plot(x,y)
         self.plotWidget.setLabel('bottom', xlabel)
         self.plotWidget.setLabel('left', ylabel)

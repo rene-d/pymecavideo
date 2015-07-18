@@ -47,7 +47,7 @@ class Label_Video(QtGui.QLabel):
         pix = QPixmap("curseur_cible.png").scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
-        self.pos = self.pos_avant = vecteur(50, 50)
+        self.pos = vecteur(50, 50)
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
@@ -76,11 +76,10 @@ class Label_Video(QtGui.QLabel):
 
     def storePoint(self, point):
         if self.app.lance_capture == True:
-            self.liste_points.append(point)
-            self.pos_avant = self.pos
+            self.app.listePoints.append([self.app.index_de_l_image,len(self.app.listePoints)%self.app.nb_de_points,point])
             self.app.emit(SIGNAL('clic_sur_video()'))
+            self.met_a_jour_crop(self.pos)
             self.update()
-            self.met_a_jour_crop()
 
     def mouseReleaseEvent(self, event):
         self.storePoint(vecteur(event.x(), event.y()))
@@ -88,7 +87,7 @@ class Label_Video(QtGui.QLabel):
 
     def enterEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
-            pix = QPixmap("curseur_cible.png").scaledToHeight(32, 32)
+            pix = QPixmap("curseur_cible.svg").scaledToHeight(32, 32)
             self.cursor = QCursor(pix)
             self.setCursor(self.cursor)
         else:
@@ -97,8 +96,9 @@ class Label_Video(QtGui.QLabel):
         self.app.dbg.p(1, "rentre dans 'label_video.maj'")
         self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
 
-    def met_a_jour_crop(self):
-        self.fait_crop(self.pos_avant)
+    def met_a_jour_crop(self, pos = vecteur(50,50)):
+        self.fait_crop(pos)
+        self.app.ui.label_zoom.setPixmap(self.cropX2)
 
     def leaveEvent(self, event):
         if self.app.lance_capture == True:
@@ -137,38 +137,21 @@ class Label_Video(QtGui.QLabel):
         ############################################################
         #draw points
         self.app.dbg.p(5, "In label_video, paintEvent, self.app.points :%s" % self.app.points)
-        for points in self.app.points.values():  #all points clicked are stored here, but updated every "number of point to click" frames
-            color = 0
+        cptr_point = 0
+        for points in self.app.listePoints:  #all points clicked are stored here, but updated every "number of point to click" frames
+            color = cptr_point%self.app.nb_de_points
+            cptr_point+=1
+            point = points[2]
+            if type(point) != type(""):
+                self.painter.setPen(QColor(self.couleurs[color]))
+                self.painter.setFont(QFont("", 10))
+                self.painter.translate(point.x(), point.y())
+                self.painter.drawLine(-2, 0, 2, 0)
+                self.painter.drawLine(0, -2, 0, 2)
+                self.painter.translate(-10, +10)
+                self.painter.drawText(0, 0, str(color+1 ))
 
-            for point in points:
-                if type(point) != type(""):
-                    self.painter.setPen(QColor(self.couleurs[color]))
-                    self.painter.setFont(QFont("", 10))
-                    self.painter.translate(point.x(), point.y())
-                    self.painter.drawLine(-2, 0, 2, 0)
-                    self.painter.drawLine(0, -2, 0, 2)
-                    self.painter.translate(-10, +10)
-                    self.painter.drawText(0, 0, str(color + 1))
-
-                    self.painter.translate(-point.x() + 10, -point.y() - 10)
-
-                    color += 1
-        color = 0
-        # if self.liste_points != []:
-        #
-        #     for point in self.liste_points:  #points clicked in a "number of point to click" sequence.
-        #
-        #         self.painter.setPen(QColor(self.couleurs[color]))
-        #         self.painter.setFont(QFont("", 10))
-        #         self.painter.translate(point.x(), point.y())
-        #         self.painter.drawLine(-2, 0, 2, 0)
-        #         self.painter.drawLine(0, -2, 0, 2)
-        #         self.painter.translate(-10, +10)
-        #         self.painter.drawText(0, 0, str(color + 1))
-        #
-        #         self.painter.translate(-point.x() + 10, -point.y() - 10)
-        #         color += 1
-        #         ############################################################
+                self.painter.translate(-point.x() + 10, -point.y() - 10)
 
         ############################################################
         #paint repere
