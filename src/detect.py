@@ -29,14 +29,11 @@ import cv2
 from globdef import *
 
 
-def filter_picture(parts, num, image):
-    imgPref = tempfile.NamedTemporaryFile(delete=False).name
-    partImg = os.path.join(imgPref + "part.png")
-    
+def filter_picture(parts, num, image, dossTemp):
     part = parts[num]
     
     if "QImage" in str(type(part)):
-        part = QImage2CVImage(part, imgPref)
+        part = QImage2CVImage(part, dossTemp)
         
     if type(image) == type("") and type(part) == type(""):
         image = cv2.imread(image, 1)
@@ -49,9 +46,9 @@ def filter_picture(parts, num, image):
         return points
     
     elif "QImage" in str(type(image)):
-        image = QImage2CVImage(image, imgPref)
+        image = QImage2CVImage(image, dossTemp)
         point1, point2 = detect_part(part, image)
-        os.remove(imgPref)
+
         return (point2[0]+part.shape[1]/2, point2[1]+part.shape[0]/2)
 
     else:
