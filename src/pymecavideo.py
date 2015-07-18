@@ -1528,9 +1528,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 styleTrace = "zero"
 
             if not hasattr(self, 'traceur'):
+                print('OKKK')
                 self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
                                          itemChoisi)
             else:  # mets juste à jour la fenêtre de matplotlib
+                print('AAAAK')
                 self.traceur.update(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
 
 
