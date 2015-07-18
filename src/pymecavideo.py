@@ -497,6 +497,12 @@ class StartQT4(QMainWindow):
         self.ui.label.update()
         self.label_video.update()
         self.label_video.setCursor(Qt.ArrowCursor)
+        try:
+            self.label_echelle_trace.hide()
+            del self.label_echelle_trace
+        except AttributeError:
+            pass  # quand on demande un effacement tout au début. Comme par exemple, ouvrir les exmples.
+
         self.init_variables(None, filename=self.filename)
         self.affiche_image()
 
@@ -802,12 +808,13 @@ class StartQT4(QMainWindow):
         @param point un point en "coordonnées d\'écran"
         """
         self.dbg.p(1, "rentre dans 'pointEnMetre'")
-        if self.echelle_faite :
+        if self.echelle_faite:
+            print(p.x(), self.origine.x(), self.echelle_image.mParPx())
+            print(self.echelle_image.p1, self.echelle_image.p2, self.echelle_image.longueur_reelle_etalon, self.echelle_image.longueur_pixel_etalon())
+            print(self.echelle_image.mParPx(),self.echelle_image.longueur_reelle_etalon/(self.echelle_image.p1-self.echelle_image.p2).norme() )
             return vecteur(self.sens_X * (float(p.x() - self.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
                        float(self.origine.y() - p.y()) * self.echelle_image.mParPx())
-        else :
-            return vecteur(self.sens_X * (float(p.x() - self.origine.x()) ), self.sens_Y *
-                       float(self.origine.y() - p.y()))
+
 
     def presse_papier(self):
         """Sélectionne la totalité du tableau de coordonnées
@@ -972,23 +979,28 @@ class StartQT4(QMainWindow):
         self.origine = vecteur(self.origine.split()[-2][1:-1], self.origine.split()[-1][:-1])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.origine))
         self.premiere_image = int(self.premiere_image.split()[-1])
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.filename))
-        self.echelle_image.longueur_reelle_etalon = float(self.echelle_image.longueur_reelle_etalon.split()[-2])
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.filename))
+        self.dbg.p(3, "rentre dans 'loads' %s" % (self.premiere_image))
+        self.echelle_image.longueur_reelle_etalon = float(self.echelle_image.longueur_reelle_etalon.split()[1])
+        self.dbg.p(3, "rentre dans 'loads' %s" % (self.echelle_image.longueur_reelle_etalon))
+        if self.echelle_image.mParPx() == 1 :
+            self.echelle_faite = False
+        else :
+            self.echelle_faite = True
+
         self.echelle_image.p1, self.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]) \
             , vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.filename))
+        self.dbg.p(3, "rentre dans 'loads' %s" % ([self.echelle_image.p1, self.echelle_image.p2]))
         self.deltaT = float(self.deltaT.split()[-1])
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.filename))
+        self.dbg.p(3, "rentre dans 'loads' %s" % (self.deltaT))
         self.nb_de_points = int(self.nb_de_points.split()[-2])
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.filename))
+        self.dbg.p(3, "rentre dans 'loads' %s" % (self.nb_de_points))
 
         self.init_cvReader()
 
     def rouvre(self, fichier):
         """Open a mecavideo file"""
         self.dbg.p(1, "rentre dans 'rouvre'")
-
+        self.reinitialise_capture()
         lignes = open(fichier, "r").readlines()
         i = 0
         self.points = {} #dictionnaire des données, simple. Les clefs sont les index de l'image. les données les
@@ -1002,6 +1014,7 @@ class StartQT4(QMainWindow):
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
 
         self.init_interface()
+
 
 
         self.change_axe_ou_origine()
@@ -1025,9 +1038,10 @@ class StartQT4(QMainWindow):
 
                 self.points[i] = [t]
                 for j in range(1, len(d), 2):
-                    pos = vecteur(float(d[j].replace(",", ".")) * self.echelle_image.longueur_reelle_etalon \
+                    pos = vecteur(float(d[j].replace(",", ".")) * self.echelle_image.pxParM() \
                                 + self.origine.x(), self.origine.y() - float(
-                            d[j + 1].replace(",", ".")) * self.echelle_image.longueur_reelle_etalon)
+                            d[j + 1].replace(",", ".")) * self.echelle_image.pxParM())
+
                     self.listePoints.append([float(t)*framerate+self.premiere_image,len(self.listePoints)%self.nb_de_points,pos])
                     self.points[i].append(pos)
 
@@ -1266,6 +1280,12 @@ class StartQT4(QMainWindow):
         self.ui.Bouton_Echelle.setEnabled(0)
         self.ui.Bouton_lance_capture.setEnabled(0)
 
+        #si aucune échelle n'a été définie, on place l'étalon à 1 px pou 1 m.
+        if not self.echelle_faite:
+            self.echelle_image.longueur_reelle_etalon = 1
+            self.echelle_image.p1 = vecteur(0,0)
+            self.echelle_image.p1 = vecteur(0,1)
+            self.echelle_faite = True
         #######automatic capture
         if self.ui.checkBox_auto.isChecked():
             self.auto = True
@@ -1294,7 +1314,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.ui.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem('t (s)'))
 
         for i in range(self.nb_de_points):
-            if self.echelle_faite:
+            if  self.echelle_faite:
                 x = "X%d (m)" % (1 + i)
                 y = "Y%d (m)" % (1 + i)
             else:
@@ -1761,11 +1781,15 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """permet de remplir le tableau des coordonnées à la demande. Se produit quand on ouvre un fichier mecavideo ou quan don recommence l'échelle"""
         for i in range(len(self.points)):
             self.ui.tableWidget.insertRow(i)
+            print(self.points[i][0])
             self.ui.tableWidget.setItem(i, 0, QTableWidgetItem(self.points[i][0]))
             for j in range(self.nb_de_points):
+                #print()
+                #print()
                 p = self.pointEnMetre(self.points[i][j+1])
-                self.ui.tableWidget.setItem(i, j*(self.nb_de_points-1)+1, QTableWidgetItem(str(p.x())))
-                self.ui.tableWidget.setItem(i, j*(self.nb_de_points-1) + 2, QTableWidgetItem(str(p.y())))
+                print(p, self.points[i][j+1])
+                self.ui.tableWidget.setItem(i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x())))
+                self.ui.tableWidget.setItem(i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y())))
         #esthétique : enleve la derniere ligne
         self.ui.tableWidget.removeRow(len(self.points))
 
