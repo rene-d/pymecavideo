@@ -25,7 +25,6 @@ import numpy as np
 
 class traceur2d:
     def __init__(self, parent, x, y, xlabel="", ylabel="", titre="", style=None, item=None):
-        print "traceur2d", titre, item
         self.parent = parent
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
