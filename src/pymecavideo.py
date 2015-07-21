@@ -428,63 +428,6 @@ class StartQT4(QMainWindow):
         self.ui.echelleEdit.show()
         self.ui.Bouton_Echelle.show()
 
-
-
-    def reinitialise_tout(self, echelle_image=None, nb_de_points=None, tousLesClics=None, index_point_actuel=None):
-        """
-        Réinitialise l'interface de saisie, mais pas l'échelle. On
-        peut quand même passer quelques paramètres à conserver, ce qui
-        permet le défaire/refaire :
-        @param echelle_image évite de ressaisir l'échelle de l'image
-        @param nb_de_points évite de ressaisir le nombre de points à suivre
-        @param tousLesClics permet de conserver une liste de points à refaire
-        @param index_point_actuel permet de réinitialiser à partir de l'image de départ.
-        """
-
-        self.dbg.p(1, "rentre dans 'reinitialise_tout'")
-        self.dbg.p(2,
-                   "Dans reinitialise_tout: echelle_image=%s, nb_de_points=%s, tousLesClics=%s,index_point_actuel=%s" % (
-                       echelle_image, nb_de_points, tousLesClics, index_point_actuel))
-
-        self.montre_vitesses = False
-        self.label_trajectoire.update()
-        self.ui.label.update()
-        self.label_video.update()
-
-        #############
-        # si il existe un point actuel, cela signifie qu'on réinitialise
-        # tout mais qu'on doit garder la position de départ. Cas quand
-        # on revient en arrière d'un cran ou que l'on refait le point.
-        #############
-
-        if index_point_actuel:
-            self.init_interface(refait=1)
-            ############ permet de récupérer les 2 valeurs souhaitées
-
-            ############
-            self.init_variables(None, filename=self.filename)
-            self.index_de_l_image = index_point_actuel
-
-            self.premiere_image = index_point_actuel
-            self.ui.spinBox_image.setValue(self.index_de_l_image)
-        else:
-            self.init_interface()
-            self.init_variables(None, filename=self.filename)
-        if echelle_image:
-            self.echelle_image = echelle_image
-            self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        else:  # destroy scale
-            try:
-                self.label_echelle_trace.hide()
-                del self.label_echelle_trace
-            except AttributeError:
-                pass  # quand on demande un effacement tout au début. Comme par exemple, ouvrir les exmples.
-
-        if nb_de_points:
-            self.nb_de_points = nb_de_points
-        if tousLesClics != None and tousLesClics.count():
-            self.listePoints = tousLesClics
-
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
@@ -1393,20 +1336,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
 
 
-
-    def repasseTousLesClics(self):
-        """
-        repasse en mode non-interactif toute la liste des clics
-        sur l'image, jusqu'au pointeur courant de cette liste pointée.
-        """
-        self.dbg.p(1, "rentre dans 'repasseTousLesClics'")
-        self.affiche_echelle()
-        self.affiche_nb_points()
-        self.ui.tab_traj.setEnabled(1)
-
-        #on se place sur la dernière image
-        self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]
-
     def video(self):
         self.dbg.p(1, "rentre dans 'videos'")
         ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
@@ -1856,7 +1785,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def openexample(self):
         self.dbg.p(1, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
-        self.reinitialise_tout()
+
         filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"), dir_,
                                                _translate("pymecavideo",
                                                           "fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)",
