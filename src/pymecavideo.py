@@ -1311,14 +1311,20 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if len(self.listePoints)%self.nb_de_points!=0:
             self.points[len(self.listePoints)/self.nb_de_points].pop()
         else:
-            try :
-                del self.points[len(self.listePoints)/self.nb_de_points]
-            except KeyError:
-                pass
+            del self.points[len(self.listePoints)/self.nb_de_points]
+
         ##dernière image à afficher
-        if len(self.listePoints)-1>=0 :
-            if len(self.listePoints)%self.nb_de_points==self.nb_de_points-1:
-                self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]
+        if self.nb_de_points!=1:
+            if len(self.listePoints)-1>=0 :
+                if len(self.listePoints)%self.nb_de_points==self.nb_de_points-1:
+                    print(666,self.index_de_l_image)
+                    self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]
+        else :
+            if len(self.listePoints)-1>=0 :
+                if len(self.listePoints)%self.nb_de_points==self.nb_de_points-1:
+                    print(777,self.index_de_l_image, self.listePoints)
+                    self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]+1
+                    print(777,self.index_de_l_image)
         self.affiche_image()
 
         self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
@@ -1612,8 +1618,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
             if self.ui.spinBox_image.value() < self.index_de_l_image:
                 #self.ui.spinBox_image.setValue(self.index_de_l_image)
-                self.efface_point_precedent()
-
+                #si le point est sur une image, on efface le point
+                if self.ui.spinBox_image.value()==self.listePoints[len(self.listePoints)-1][0]:
+                    self.efface_point_precedent()
+                
 
         self.index_de_l_image = self.ui.spinBox_image.value()
         self.affiche_image()
