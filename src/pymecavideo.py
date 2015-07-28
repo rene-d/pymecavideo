@@ -1620,7 +1620,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 #self.ui.spinBox_image.setValue(self.index_de_l_image)
                 #si le point est sur une image, on efface le point
                 if self.ui.spinBox_image.value()==self.listePoints[len(self.listePoints)-1][0]:
-                    self.efface_point_precedent()
+                    for i in range(self.nb_de_points):
+                        self.efface_point_precedent()
                 
 
         self.index_de_l_image = self.ui.spinBox_image.value()
