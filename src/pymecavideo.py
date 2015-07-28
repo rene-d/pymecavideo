@@ -1311,8 +1311,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if len(self.listePoints)%self.nb_de_points!=0:
             self.points[len(self.listePoints)/self.nb_de_points].pop()
         else:
-            del self.points[len(self.listePoints)/self.nb_de_points]
-
+            try :
+                del self.points[len(self.listePoints)/self.nb_de_points]
+            except KeyError:
+                pass
         ##dernière image à afficher
         if len(self.listePoints)-1>=0 :
             if len(self.listePoints)%self.nb_de_points==self.nb_de_points-1:
