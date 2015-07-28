@@ -54,7 +54,11 @@ class Label_Origine(QLabel):
     def mouseReleaseEvent(self, event):
         self.app.origine = vecteur(event.x() + 1, event.y() + 1)
         self.zoom_croix.hide()
-        self.app.ui.label_zoom.setPixmap(QPixmap(None))
+        try :
+            self.app.ui.label_zoom.setPixmap(QPixmap(None))
+        except TypeError:
+            self.app.ui.label_zoom.setPixmap(QPixmap())
+
         del self.zoom_croix
         self.app.emit(SIGNAL('change_axe_origine()'))
 

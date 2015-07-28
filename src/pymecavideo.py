@@ -1611,7 +1611,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if self.ui.spinBox_image.value() < self.index_de_l_image:
                 #self.ui.spinBox_image.setValue(self.index_de_l_image)
                 self.efface_point_precedent()
-                
+
 
         self.index_de_l_image = self.ui.spinBox_image.value()
         self.affiche_image()
