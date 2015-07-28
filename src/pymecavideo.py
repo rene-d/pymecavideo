@@ -1601,7 +1601,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def affiche_image_spinbox(self):
         self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
-        # si la capture est lancée et que l'on touche à la spinbox, on désactive les boutons pour revenir en arrière (BUG)
+
         if self.lance_capture:
       #      self.enableDefaire(False)
        #     self.enableRefaire(False)
@@ -1609,8 +1609,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             #on vérifie qu'on est pas revenu en arrière
 
             if self.ui.spinBox_image.value() < self.index_de_l_image:
-                self.ui.spinBox_image.setValue(self.index_de_l_image)
-
+                #self.ui.spinBox_image.setValue(self.index_de_l_image)
+                self.efface_point_precedent()
+                
 
         self.index_de_l_image = self.ui.spinBox_image.value()
         self.affiche_image()
