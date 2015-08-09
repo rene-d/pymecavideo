@@ -1063,6 +1063,7 @@ class StartQT4(QMainWindow):
             try :
                 self.label_echelle_trace.p1 = vecteur(self.label_echelle_p1Avant.x()*float(self.largeur)/self.largeurAvant, self.label_echelle_p1Avant.y()*float(self.largeur)/self.largeurAvant)
                 self.label_echelle_trace.p2 = vecteur(self.label_echelle_p2Avant.x()*float(self.largeur)/self.largeurAvant, self.label_echelle_p2Avant.y()*float(self.largeur)/self.largeurAvant)
+                self.label_echelle_trace.setGeometry(0,0,self.label_video.width(), self.label_video.height())
             except AttributeError:
                 pass
             #self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))

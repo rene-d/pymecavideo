@@ -181,6 +181,10 @@ class Label_Echelle_Trace(QLabel):
 
     def mouseReleaseEvent(self, event):
         event.ignore()
+    def maj(self):
+        print('MAJ', self.width(), self.height())
+        self.setGeometry(QRect(0, 0, self.app.label_video.width(), self.app.label_video.height()))
+
 
     def paintEvent(self, event):
         painter = QPainter()
