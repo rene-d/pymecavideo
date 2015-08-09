@@ -1020,10 +1020,12 @@ class StartQT4(QMainWindow):
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans resizeEvent")
         hauteurFenetre = self.heightForWidth(self.width())
+        print(hauteurFenetre)
         if self.redimensionne :
+            print('ok redim')
             #redimensionne le widget central pour coller à la fenêtre entrain de se faire étirer
             self.ui.centralwidget.resize(self.size()-QSize(1,1))
-
+            print('fixe hauteur')
             self.setFixedHeight(hauteurFenetre)
 
             #calcule la valeur de la hauteur calculée à partir de la largeur actuelle et du ratio.
