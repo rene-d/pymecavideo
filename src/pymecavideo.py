@@ -160,7 +160,8 @@ class StartQT4(QMainWindow):
         self.largeur = 640
         self.decalh = 67
         self.decalw = 197
-        self.redimensionne = True
+        self.redimensionne = True #permet de fixer la taille de la fenetre au minimum. On ne peut pas dimensionner plus petit.
+        self.stopRedimensionne = False #trigger pour savoir si on a le droit de re dimensionner ou pas.
         #### Mode plein écran
         self.plein_ecran = False
         QShortcut(QKeySequence(Qt.Key_F11), self, self.basculer_plein_ecran)
@@ -1017,45 +1018,54 @@ class StartQT4(QMainWindow):
             return hauteur if hauteur >= 615 else 615
 
     def redimensionneFenetre(self):
-        if self.redimensionne :
+        if not self.stopRedimensionne :
+            #garde un historique pour l'origine
+            self.largeurAvant = self.largeur
+            self.hauteurAvant  = self.hauteur
+            self.origineAvant = self.origine
+            if self.redimensionne :
 
-            print('ok redim')
-            #redimensionne le widget central pour coller à la fenêtre entrain de se faire étirer
-            self.ui.centralwidget.resize(self.size()-QSize(1,1))
-            print('fixe hauteur')
-            self.setFixedHeight(self.hauteurFenetre)
+                print('ok redim')
+                #redimensionne le widget central pour coller à la fenêtre entrain de se faire étirer
+                self.ui.centralwidget.resize(self.size()-QSize(1,1))
+                print('fixe hauteur')
+                self.setFixedHeight(self.hauteurFenetre)
 
-            #calcule la valeur de la hauteur calculée à partir de la largeur actuelle et du ratio.
-            self.largeur = self.width()-self.decalw
-            self.hauteur = self.largeur/self.ratio
+                #calcule la valeur de la hauteur calculée à partir de la largeur actuelle et du ratio.
+                self.largeur = self.width()-self.decalw
+                self.hauteur = self.largeur/self.ratio
 
-            self.label_video.setFixedHeight(self.hauteur)
-            self.label_video.setFixedWidth(self.largeur)
-            self.ui.label.setFixedHeight(self.hauteur)
-            self.ui.label.setFixedWidth(self.largeur)
+                self.label_video.setFixedHeight(self.hauteur)
+                self.label_video.setFixedWidth(self.largeur)
+                self.ui.label.setFixedHeight(self.hauteur)
+                self.ui.label.setFixedWidth(self.largeur)
 
+            else :
+                self.setFixedSize(876, 615)
+                self.setFixedWidth(876)
+                self.setFixedHeight(615)
+
+                self.largeur = 640
+                self.hauteur = int(self.largeur/self.ratio)
+
+                self.label_video.setFixedHeight(self.hauteur)
+                self.label_video.setFixedWidth(self.largeur)
+                self.ui.label.setFixedHeight(self.hauteur)
+                self.ui.label.setFixedWidth(self.largeur)
+
+
+            self.origine = vecteur(self.origineAvant.x()*float(self.largeur)/self.largeurAvant, self.origineAvant.y()*float(self.largeur)/self.largeurAvant)
+            #self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
+            self.affiche_image()
+            if hasattr(self, 'label_video'):
+                    self.label_video.origine = self.origine
+                    self.label_video.maj()
+                    self.label_trajectoire.maj()
+                    self.afficheJusteImage()
         else :
-            self.setFixedSize(876, 615)
-            self.setFixedWidth(876)
-            self.setFixedHeight(615)
-
-            self.largeur = 640
-            self.hauteur = int(self.largeur/self.ratio)
-
-            self.label_video.setFixedHeight(self.hauteur)
-            self.label_video.setFixedWidth(self.largeur)
-            self.ui.label.setFixedHeight(self.hauteur)
-            self.ui.label.setFixedWidth(self.largeur)
-
-        self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
-        self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
-        self.affiche_image()
-        if hasattr(self, 'label_video'):
-                self.label_video.origine = self.origine
-                self.label_video.maj()
-                self.label_trajectoire.maj()
-                self.afficheJusteImage()
-
+            #self.setFixedSize(876, 615)
+            self.setFixedWidth(self.width())
+            self.setFixedHeight(self.height())
 
         QApplication.instance().processEvents()
 
@@ -1181,6 +1191,9 @@ class StartQT4(QMainWindow):
         self.ui.checkBox_auto.setEnabled(0)
         self.ui.Bouton_Echelle.setEnabled(0)
         self.ui.Bouton_lance_capture.setEnabled(0)
+
+        #on empêche le redimensionnement
+        self.stopRedimensionne = True
 
         #si aucune échelle n'a été définie, on place l'étalon à 1 px pou 1 m.
         if not self.echelle_faite:
