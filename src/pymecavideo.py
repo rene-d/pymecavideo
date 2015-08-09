@@ -1016,17 +1016,14 @@ class StartQT4(QMainWindow):
             hauteur = int((self.width()-self.decalw)/self.ratio)+self.decalh
             return hauteur if hauteur >= 615 else 615
 
-
-    def resizeEvent(self, event):
-        self.dbg.p(1, "rentre dans resizeEvent")
-        hauteurFenetre = self.heightForWidth(self.width())
-        print(hauteurFenetre)
+    def redimensionneFenetre(self):
         if self.redimensionne :
+
             print('ok redim')
             #redimensionne le widget central pour coller à la fenêtre entrain de se faire étirer
             self.ui.centralwidget.resize(self.size()-QSize(1,1))
             print('fixe hauteur')
-            self.setFixedHeight(hauteurFenetre)
+            self.setFixedHeight(self.hauteurFenetre)
 
             #calcule la valeur de la hauteur calculée à partir de la largeur actuelle et du ratio.
             self.largeur = self.width()-self.decalw
@@ -1061,6 +1058,13 @@ class StartQT4(QMainWindow):
 
 
         QApplication.instance().processEvents()
+
+    def resizeEvent(self, event):
+        self.dbg.p(1, "rentre dans resizeEvent")
+        self.hauteurFenetre = self.heightForWidth(self.width())
+        print(self.hauteurFenetre)
+        self.qtimer = QTimer.singleShot(3, self.redimensionneFenetre)
+
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
