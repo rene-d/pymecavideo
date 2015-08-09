@@ -311,21 +311,6 @@ class StartQT4(QMainWindow):
         self.chrono = False
         self.a_une_image = False
 
-        ######vérification de la présence d'un logiciel connu de capture vidéo dans le path
-        # for logiciel in ['qastrocam', 'qastrocam-g2', 'wxastrocapture', 'wxAstroCapture']:
-        # if any(os.access(os.path.join(p, logiciel), os.X_OK) for p in os.environ['PATH'].split(os.pathsep)):
-        # self.logiciel_acquisition = logiciel
-        #         # self.ui.pushButton_video.setEnabled(1)
-        #         break
-        # if self.logiciel_acquisition:
-        #     # self.ui.pushButton_video.setText(
-        #         _translate("pymecavideo", "Lancer %1\n pour capturer une vidéo", None)
-        #             .arg(self.logiciel_acquisition)
-        #     )
-        # else:
-        #     self.ui.pushButton_video.setEnabled(0)
-        #     self.ui.pushButton_video.hide()
-
         self.resizing = False
 
     def init_interface(self, refait=0):
