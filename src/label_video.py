@@ -34,6 +34,7 @@ class Label_Video(QtGui.QLabel):
         self.parent = parent
         self.app = app
         self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.setMinimumSize(QSize(640,480))
         self.liste_points = []
         # sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         # sizePolicy.setHeightForWidth(True)

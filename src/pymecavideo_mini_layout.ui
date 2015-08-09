@@ -46,7 +46,7 @@
   <property name="dockOptions">
    <set>QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="centralwidgetratio" name="centralwidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
      <horstretch>0</horstretch>
@@ -72,7 +72,7 @@
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="widgetratio" name="tabWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -1207,6 +1207,18 @@ photographie</string>
    <class>standardDragTable</class>
    <extends>QTableWidget</extends>
    <header>standarddragtable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>centralwidgetratio</class>
+   <extends>QWidget</extends>
+   <header>widgetratioqt4</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>widgetratio</class>
+   <extends>QTabWidget</extends>
+   <header>widgetratioqt4</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
