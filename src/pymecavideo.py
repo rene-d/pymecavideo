@@ -1023,6 +1023,11 @@ class StartQT4(QMainWindow):
             self.largeurAvant = self.largeur
             self.hauteurAvant  = self.hauteur
             self.origineAvant = self.origine
+            try :
+                self.label_echelle_p1Avant = self.label_echelle_trace.p1
+                self.label_echelle_p2Avant = self.label_echelle_trace.p2
+            except AttributeError:
+                pass
             if self.redimensionne :
 
                 print('ok redim')
@@ -1055,6 +1060,11 @@ class StartQT4(QMainWindow):
 
 
             self.origine = vecteur(self.origineAvant.x()*float(self.largeur)/self.largeurAvant, self.origineAvant.y()*float(self.largeur)/self.largeurAvant)
+            try :
+                self.label_echelle_trace.p1 = vecteur(self.label_echelle_p1Avant.x()*float(self.largeur)/self.largeurAvant, self.label_echelle_p1Avant.y()*float(self.largeur)/self.largeurAvant)
+                self.label_echelle_trace.p2 = vecteur(self.label_echelle_p2Avant.x()*float(self.largeur)/self.largeurAvant, self.label_echelle_p2Avant.y()*float(self.largeur)/self.largeurAvant)
+            except AttributeError:
+                pass
             #self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
             self.affiche_image()
             if hasattr(self, 'label_video'):
