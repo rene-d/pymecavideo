@@ -668,6 +668,7 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'refait_echelle'")
         self.cree_tableau()
         self.recalculLesCoordonnees()
+
     def choisi_nouvelle_origine(self):
         self.dbg.p(1, "rentre dans 'choisi_nouvelle_origine'")
         nvl_origine = QMessageBox.information(self, QString("NOUVELLE ORIGINE"), \
@@ -951,7 +952,9 @@ class StartQT4(QMainWindow):
         self.rouvert = True
 
         self.premierResize = False
-        self.resize(self.largeur+190, self.hauteur+96)
+        #self.resize(self.largeur + self.decalw, self.hauteur + self.decalh)
+        self.setFixedHeight(self.hauteur+self.decalh)
+        self.setFixedWidth(self.largeur+self.decalw)
 
         # on régénère self.listePoints et self.points
         for l in lignes:
@@ -993,7 +996,11 @@ class StartQT4(QMainWindow):
         self.prefs.lastVideo = self.filename
         self.prefs.videoDir = os.path.dirname(self.filename)
         self.prefs.save()
+        self.update()
+        self.qtimer2 = QTimer.singleShot(30, self.stopRedim)
 
+    def stopRedim(self):
+        self.stopRedimensionne = True
 
     def determineRatio(self):
         if self.premierResize:
