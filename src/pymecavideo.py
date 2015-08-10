@@ -939,22 +939,14 @@ class StartQT4(QMainWindow):
         self.echelle_image = echelle()  # on réinitialise l'échelle
         self.loads(dd)  # on récupère les données importantes
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
-
         self.init_interface()
-
-
-
         self.change_axe_ou_origine()
-
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         self.rouvert = True
 
         self.premierResize = False
-        #self.resize(self.largeur + self.decalw, self.hauteur + self.decalh)
-        self.setFixedHeight(self.hauteur+self.decalh)
-        self.setFixedWidth(self.largeur+self.decalw)
 
         # on régénère self.listePoints et self.points
         for l in lignes:
@@ -976,7 +968,6 @@ class StartQT4(QMainWindow):
 
                 i += 1
 
-        self.label_video.setFixedWidth(self.largeur)
         self.defini_barre_avancement()
 
         self.affiche_echelle()  # on met à jour le widget d'échelle
@@ -996,11 +987,12 @@ class StartQT4(QMainWindow):
         self.prefs.lastVideo = self.filename
         self.prefs.videoDir = os.path.dirname(self.filename)
         self.prefs.save()
-        self.update()
-        self.qtimer2 = QTimer.singleShot(30, self.stopRedim)
 
-    def stopRedim(self):
-        self.stopRedimensionne = True
+        self.resize(self.largeur+self.decalw,self.hauteur+self.decalh)
+        self.ui.centralwidget.setGeometry(0,0,self.largeur+self.decalw,self.hauteur+self.decalh)
+        self.ui.label.setFixedSize(self.largeur, self.hauteur)
+        self.label_video.setFixedSize(self.largeur, self.hauteur)
+
 
     def determineRatio(self):
         if self.premierResize:
@@ -1036,21 +1028,18 @@ class StartQT4(QMainWindow):
             except AttributeError:
                 pass
             if self.redimensionne :
-
-                print('ok redim')
                 #redimensionne le widget central pour coller à la fenêtre entrain de se faire étirer
                 self.ui.centralwidget.resize(self.size()-QSize(1,1))
-                print('fixe hauteur')
+
                 self.setFixedHeight(self.hauteurFenetre)
 
                 #calcule la valeur de la hauteur calculée à partir de la largeur actuelle et du ratio.
                 self.largeur = self.width()-self.decalw
                 self.hauteur = self.largeur/self.ratio
-
-                self.label_video.setFixedHeight(self.hauteur)
-                self.label_video.setFixedWidth(self.largeur)
                 self.ui.label.setFixedHeight(self.hauteur)
                 self.ui.label.setFixedWidth(self.largeur)
+                self.label_video.setFixedHeight(self.hauteur)
+                self.label_video.setFixedWidth(self.largeur)
 
             else :
                 self.setFixedSize(876, 615)
@@ -1090,7 +1079,6 @@ class StartQT4(QMainWindow):
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans resizeEvent")
         self.hauteurFenetre = self.heightForWidth(self.width())
-        print(self.hauteurFenetre)
         self.qtimer = QTimer.singleShot(3, self.redimensionneFenetre)
 
 
