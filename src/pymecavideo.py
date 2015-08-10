@@ -115,30 +115,6 @@ class MonThreadDeCalcul(threading.Thread):
         self._stopevent.set()
 
 
-class MonThreadDeCalculQt(QThread):
-    """Thread permettant le calcul des points automatiquement. Version Qt. 20/04/2015 : focntionne mal sous windows"""
-
-    def __init__(self, parent, motif, image):
-        QThread.__init__(self)
-        self.parent = parent
-        self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
-        self.motif = motif
-        self.image = image
-        self.stopped = False
-
-    def run(self):
-        """
-        lance le thread.
-        stocke les corrdonnées des points trouvés
-        Envoi un signal quand terminé.
-        """
-        while not self.stopped:
-            self.parent.picture_detect()
-
-    def stop(self):
-        self.stopped = True
-
-
 class StartQT4(QMainWindow):
     def __init__(self, parent=None, opts=[], args=[]):
         """
