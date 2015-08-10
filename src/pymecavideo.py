@@ -559,11 +559,6 @@ class StartQT4(QMainWindow):
             self.label_video.setEnabled(0)
             self.goCalcul = True
 
-            # TODO : tests avec les différents mode de threading
-            ##Qthread (fonctionne mal)
-            # self.monThread = MonThreadDeCalculQt(self, self.motif[Motif], self.imageAffichee)
-
-            # Python
             dossTemp = tempfile.NamedTemporaryFile(delete=False).name
             self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee, dossTemp)
             self.monThread.start()
