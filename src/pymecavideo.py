@@ -1414,6 +1414,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             ancienPoint = None
             ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
             for i in self.points.keys():
+                t = float(self.points[i][0])
                 if ref == "camera":
                     p = self.pointEnMetre(self.points[i][1 + numero])
                 else:
@@ -1424,12 +1425,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 if typeDeCourbe == "v":
                     if ancienPoint != None:
                         abscisse.append(t)
-                        v = (p - ancienPoint).norme() / self.deltaT
+                        v = (p - ancienPoint).norme() / (t-ancienTemps)
                         ordonnee.append(v)
                 else:
                     abscisse.append(t)
-                t += self.deltaT
                 ancienPoint = p
+                ancienTemps = t
+                
             # les abscisses et les ordonnées sont prêtes
             labelAbscisse = "t (s)"
             if typeDeCourbe != "v":
