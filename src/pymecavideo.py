@@ -987,12 +987,24 @@ class StartQT4(QMainWindow):
         self.prefs.lastVideo = self.filename
         self.prefs.videoDir = os.path.dirname(self.filename)
         self.prefs.save()
+        self.metsAjourLesDimensiosn()
 
+
+    def metsAjourLesDimensiosn(self):
         self.resize(self.largeur+self.decalw,self.hauteur+self.decalh)
         self.ui.centralwidget.setGeometry(0,0,self.largeur+self.decalw,self.hauteur+self.decalh)
         self.ui.label.setFixedSize(self.largeur, self.hauteur)
         self.label_video.setFixedSize(self.largeur, self.hauteur)
 
+    def devineLargeurHauteur(self):
+        if self.largeurFilm<640:
+            self.largeur = 640
+            self.hauteur = self.largeur/self.ratio
+        elif self.largeurFilm > QApplication.desktop().screenGeometry().width() :
+            self.largeur = QApplication.desktop().screenGeometry().width()*0.9
+        else :
+            self.largeur = self.largeurFilm
+        self.hauteur = self.largeur/self.ratio
 
     def determineRatio(self):
         if self.premierResize:
@@ -1833,7 +1845,9 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 #self.determineHauteurLargeur()
 
                 self.init_image()
+                self.devineLargeurHauteur()
                 self.init_capture()
+                self.metsAjourLesDimensiosn()
                 #self.redimensionne(premier=1)
                 self.label_video.show()
                 self.prefs.videoDir = os.path.dirname(self.filename)
