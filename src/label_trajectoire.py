@@ -96,13 +96,16 @@ class Label_Trajectoire(QLabel):
                             keyMax = len(self.app.points.keys())
                             if key != 0 and key != keyMax - 1:  ##first and last point can't have speed.
                                 ##coordonnates of n-1 and n+1 point
-                                pointBefore = QPoint(
-                                    self.app.points[key - 1][i].x() + self.origine.x() - ptreferentielBefore.x(),
-                                    self.app.points[key - 1][i].y() + self.origine.y() - ptreferentielBefore.y())
                                 try:
+                                    tempsAfter = float(self.app.points[key + 1][0])/self.app.deltaT  #en "delta_T"
+                                    tempsBefore = float(self.app.points[key-1][0])/self.app.deltaT #en "delta_T"
+                                    pointBefore = QPoint(
+                                         ( self.app.points[key - 1][i].x() + self.origine.x() - ptreferentielBefore.x())/(tempsAfter-tempsBefore),
+                                         (self.app.points[key - 1][i].y() + self.origine.y() - ptreferentielBefore.y())/(tempsAfter-tempsBefore))
+
                                     pointAfter = QPoint(
-                                        self.app.points[key + 1][i].x() + self.origine.x() - ptreferentielAfter.x(),
-                                        self.app.points[key + 1][i].y() + self.origine.y() - ptreferentielAfter.y())
+                                         (self.app.points[key + 1][i].x() + self.origine.x() - ptreferentielAfter.x())/(tempsAfter-tempsBefore),
+                                         (self.app.points[key + 1][i].y() + self.origine.y() - ptreferentielAfter.y())/(tempsAfter-tempsBefore))
 
                                     vector_speed = pointAfter - pointBefore
 
