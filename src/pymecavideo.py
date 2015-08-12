@@ -90,55 +90,6 @@ def _translate(context, text, disambig):
     return QApplication.translate(context, text, disambig, _encoding)
 
 
-class MonThreadDeCalcul(threading.Thread):
-    """Thread permettant le calcul des points automatiquement. Version Python"""
-
-    def __init__(self, parent, motif, image, dossTemp):
-        threading.Thread.__init__(self)
-        self.parent = parent
-        self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
-        self.motif = motif
-        self.image = image
-        self.dossTemp = dossTemp
-        self._stopevent = threading.Event()
-
-    def run(self):
-        """
-        lance le thread.
-        """
-        while not self._stopevent.isSet():
-            self.parent.picture_detect(self.dossTemp)
-            self._stopevent.wait(0.01)
-        os.remove(self.dossTemp)
-
-    def stop(self):
-        self._stopevent.set()
-
-
-class MonThreadDeCalculQt(QThread):
-    """Thread permettant le calcul des points automatiquement. Version Qt. 20/04/2015 : focntionne mal sous windows"""
-
-    def __init__(self, parent, motif, image):
-        QThread.__init__(self)
-        self.parent = parent
-        self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
-        self.motif = motif
-        self.image = image
-        self.stopped = False
-
-    def run(self):
-        """
-        lance le thread.
-        stocke les corrdonnées des points trouvés
-        Envoi un signal quand terminé.
-        """
-        while not self.stopped:
-            self.parent.picture_detect()
-
-    def stop(self):
-        self.stopped = True
-
-
 class StartQT4(QMainWindow):
     def __init__(self, parent=None, opts=[], args=[]):
         """
@@ -307,7 +258,6 @@ class StartQT4(QMainWindow):
 
         self.listePoints = listePointee()
 
-        self.goCalcul = True  # Booléen vérifiant la disponibilté du thread de calcul
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
         self.chrono = False
         self.a_une_image = False
@@ -503,14 +453,14 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.checkBox_abscisses, SIGNAL("stateChanged(int)"), self.change_sens_X)
         QObject.connect(self.ui.checkBox_ordonnees, SIGNAL("stateChanged(int)"), self.change_sens_Y)
         QObject.connect(self, SIGNAL('change_axe_origine()'), self.change_axe_ou_origine)
-        QObject.connect(self, SIGNAL('selection_done()'), self.picture_detect)
-        QObject.connect(self, SIGNAL('selection_motif_done()'), self.storeMotif)
+        QObject.connect(self, SIGNAL('selection_motif_done()'), self.suiviDuMotif)
         #QObject.connect(self, SIGNAL('redimensionneSignal()'), self.redimensionne)
 
         QObject.connect(self.ui.pushButtonChrono, SIGNAL("clicked()"), self.chronoPhoto)
         QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
 
         QObject.connect(self, SIGNAL('stopCalculs()'), self.stopComputing)
+        QObject.connect(self, SIGNAL("suiviMotif()"), self.detecteUnPoint)
         QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
         QObject.connect(self, SIGNAL('updateProgressBar()'), self.updatePB)
 
@@ -568,8 +518,8 @@ class StartQT4(QMainWindow):
             self.ui.radioButtonSpeedEveryWhere.hide()
             self.label_trajectoire.reDraw()
 
-    def storeMotif(self):
-        self.dbg.p(1, "rentre dans 'storeMotif'")
+    def suiviDuMotif(self):
+        self.dbg.p(1, "rentre dans 'suiviDuMotif'")
         if len(self.motif) == self.nb_de_points:
             self.dbg.p(3, "selection des motifs finie")
             self.label_auto.hide()
@@ -581,63 +531,34 @@ class StartQT4(QMainWindow):
             self.ui.pushButton_video.show()
 
             self.label_video.setEnabled(0)
-            self.goCalcul = True
 
-            # TODO : tests avec les différents mode de threading
-            ##Qthread (fonctionne mal)
-            # self.monThread = MonThreadDeCalculQt(self, self.motif[Motif], self.imageAffichee)
+            self.dossTemp = tempfile.NamedTemporaryFile(delete=False).name
+            self.pileDeDetections=range(self.index_de_l_image, int(self.image_max)+1)
+            self.emit(SIGNAL("suiviMotif()"))
 
-            # Python
-            dossTemp = tempfile.NamedTemporaryFile(delete=False).name
-            self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee, dossTemp)
-            self.monThread.start()
-
-
-    def picture_detect(self, dossTemp):
+    def detecteUnPoint(self):
         """
-        Est lancée lors de la détection automatique des points. Gère l'ajout des thread de calcul.
-        self.myThreads : tableau contenant les thread
-        self.motifs : tableau des motifs
-
+        méthode (re)lancée pour les détections automatiques de points
+        traite une à une les données empilées dans self.pileDeDetections
+        et relance un signal "suiviMotif()" si la pile n'est pas vide
+        après chacun des traitements.
         """
-        self.dbg.p(1, "rentre dans 'picture_detect'")
-        self.dbg.p(3, "début 'picture_detect'" + str(self.indexMotif))
-        if self.index_de_l_image <= self.image_max:
-            self.pointsFound = []
-            if self.indexMotif <= len(self.motif) - 1:
-                self.dbg.p(1, "'picture_detect' : While")
-                self.pointTrouve = filter_picture(self.motif, self.indexMotif, self.imageAffichee, dossTemp)
-                self.dbg.p(3, "Point Trouve dans mon Thread : " + str(self.pointTrouve))
-                self.onePointFind()
-
-                self.indexMotif += 1
-            else:
-                self.indexMotif = 0
-
-        if self.index_de_l_image == self.image_max:
-            if self.indexMotif == 0 and not self.goCalcul:  # dernier passage
-                self.emit(SIGNAL('stopCalculs()'))
-            elif self.indexMotif == 0 and self.goCalcul:  # premier passage, premier calcul de la dernière image
-                self.goCalcul = False
+        if self.pileDeDetections:
+            index_de_l_image=self.pileDeDetections.pop(0)
+            print u"Traitement de l'image n°", index_de_l_image
+            point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.dossTemp)
+            self.label_video.storePoint(vecteur(point[0], point[1]))
+            self.emit(SIGNAL("suiviMotif()"))
+        else:
+            os.unlink(self.dossTemp)
+                      
 
     def stopComputing(self):
         self.dbg.p(1, "rentre dans 'stopComputing'")
-        self.monThread.stop()
-        del self.monThread
+        self.pileDeDetections=[] # vide la liste des points à détecter encore
         self.label_video.setEnabled(1)
         self.ui.pushButton_video.setEnabled(0)
         self.ui.pushButton_video.hide()
-
-    def onePointFind(self):
-        """est appelée quand un point a été trouvé lors de la détection automatique
-        self.pointFound : liste des points trouvés
-        """
-        self.dbg.p(1, "rentre dans 'onePointFind'")
-
-        self.pointsFound.append(self.pointTrouve)  # stock all points found
-
-        for point in self.pointsFound:
-            self.label_video.storePoint(vecteur(point[0], point[1]))
 
     def readStdout(self):
         self.dbg.p(1, "rentre dans 'readStdout'")
