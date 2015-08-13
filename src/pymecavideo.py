@@ -460,7 +460,6 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
 
         QObject.connect(self, SIGNAL('stopCalculs()'), self.stopComputing)
-        QObject.connect(self, SIGNAL("suiviMotif()"), self.detecteUnPoint)
         QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
         QObject.connect(self, SIGNAL('updateProgressBar()'), self.updatePB)
 
@@ -533,22 +532,30 @@ class StartQT4(QMainWindow):
             self.label_video.setEnabled(0)
 
             self.dossTemp = tempfile.NamedTemporaryFile(delete=False).name
-            self.pileDeDetections=range(self.index_de_l_image, int(self.image_max)+1)
-            self.emit(SIGNAL("suiviMotif()"))
+            self.pileDeDetections=range(self.index_de_l_image, int(self.image_max)+1)            
+            # programme le suivi du point suivant après un délai de 50 ms,
+            # pour laisser une chance aux évènement de l'interface graphique
+            # d'être traités en priorité
+            QTimer.singleShot(50, self.detecteUnPoint)
+
 
     def detecteUnPoint(self):
         """
         méthode (re)lancée pour les détections automatiques de points
         traite une à une les données empilées dans self.pileDeDetections
-        et relance un signal "suiviMotif()" si la pile n'est pas vide
-        après chacun des traitements.
+        et relance un signal si la pile n'est pas vide après chacun
+        des traitements.
         """
         if self.pileDeDetections:
             index_de_l_image=self.pileDeDetections.pop(0)
-            print u"Traitement de l'image n°", index_de_l_image
+            texteDuBouton = "STOP CALCULS (%d)" %index_de_l_image
+            self.ui.pushButton_video.setText(texteDuBouton)
             point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.dossTemp)
             self.label_video.storePoint(vecteur(point[0], point[1]))
-            self.emit(SIGNAL("suiviMotif()"))
+            # programme le suivi du point suivant après un délai de 50 ms,
+            # pour laisser une chance aux évènement de l'interface graphique
+            # d'être traités en priorité
+            QTimer.singleShot(50, self.detecteUnPoint)
         else:
             os.unlink(self.dossTemp)
                       

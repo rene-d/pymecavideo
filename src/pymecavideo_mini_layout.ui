@@ -511,7 +511,7 @@ vers le bas</string>
                  <bool>false</bool>
                 </property>
                 <property name="text">
-                 <string>STOP Calculs</string>
+                 <string>STOP Calculs     </string>
                 </property>
                </widget>
               </item>
