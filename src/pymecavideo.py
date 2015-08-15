@@ -915,14 +915,15 @@ class StartQT4(QMainWindow):
         self.prefs.lastVideo = self.filename
         self.prefs.videoDir = os.path.dirname(self.filename)
         self.prefs.save()
-        self.metsAjourLesDimensiosn()
+        self.metsAjourLesDimensions()
 
 
-    def metsAjourLesDimensiosn(self):
+    def metsAjourLesDimensions(self):
         self.resize(self.largeur+self.decalw,self.hauteur+self.decalh)
         self.ui.centralwidget.setGeometry(0,0,self.largeur+self.decalw,self.hauteur+self.decalh)
         self.ui.label.setFixedSize(self.largeur, self.hauteur)
         self.label_video.setFixedSize(self.largeur, self.hauteur)
+        self.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
 
     def devineLargeurHauteur(self):
         if self.largeurFilm<640:
