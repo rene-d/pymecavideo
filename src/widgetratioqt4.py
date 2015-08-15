@@ -17,6 +17,7 @@ class widgetratio(QTabWidget):
         sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
 
+
 class centralwidgetratio(QWidget):
     def __init__(self, parent):
         QTabWidget.__init__(self,parent)
@@ -27,6 +28,7 @@ class centralwidgetratio(QWidget):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
+        self.setGeometry(0,15,876,615)
 
     def heightForWidth(self, w):
         if self.width() <875 or self.height() < 615:

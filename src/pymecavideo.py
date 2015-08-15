@@ -109,7 +109,7 @@ class StartQT4(QMainWindow):
         QWidget.__init__(self, parent)
         self.hauteur = 480
         self.largeur = 640
-        self.decalh = 67
+        self.decalh = 120
         self.decalw = 197
         self.redimensionne = True #permet de fixer la taille de la fenetre au minimum. On ne peut pas dimensionner plus petit.
         self.stopRedimensionne = False #trigger pour savoir si on a le droit de re dimensionner ou pas.
