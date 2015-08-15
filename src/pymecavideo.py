@@ -496,7 +496,14 @@ class StartQT4(QMainWindow):
     def updatePB(self):
         self.qmsgboxencode.updateProgressBar()
 
-    def enableSpeed(self):
+    def enableSpeed(self, secondParam=None):
+        """
+        Quand on veut afficher le vecteur vitesse,
+        on active le spinbox qui permet de choisir une échelle.
+        Quand on ne veut plus, on peut cacher le spinbox.
+        @param secondParam peu utile mais nécessaire : certains modes
+        de rappel de cette fonction ont un paramètre supplémentaire
+        """
         self.dbg.p(1, "rentre dans 'enableSpeed'")
         if self.ui.checkBoxVectorSpeed.isChecked():
             self.dbg.p(2, "In enableSpeed")
@@ -511,8 +518,7 @@ class StartQT4(QMainWindow):
 
         else:
             self.ui.checkBoxScale.setEnabled(0)
-            self.ui.checkBoxScale.insertItem(0, "1")
-
+                   
             self.ui.radioButtonNearMouse.hide()
             self.ui.radioButtonSpeedEveryWhere.hide()
             self.label_trajectoire.reDraw()
