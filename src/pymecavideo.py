@@ -1790,9 +1790,16 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
                 self.init_image()
                 self.devineLargeurHauteur()
+
+                self.origine = vecteur(self.largeur/2, self.hauteur/2)
+                print(self.origine, self.hauteur, self.largeur)
+                self.label_video.origine = self.origine
+                self.label_video.repaint()
+
                 self.init_capture()
                 self.metsAjourLesDimensions()
                 #self.redimensionne(premier=1)
+                self.label_video.repaint()
                 self.label_video.show()
                 self.prefs.videoDir = os.path.dirname(self.filename)
                 self.prefs.save()

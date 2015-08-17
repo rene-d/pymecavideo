@@ -158,6 +158,7 @@ class Label_Video(QtGui.QLabel):
         #paint repere
         self.painter.setPen(Qt.green)
         self.painter.translate(0, 0)
+
         self.painter.translate(self.origine.x(), self.origine.y())
         p1 = QPoint(self.app.sens_X * (-40), 0)
         p2 = QPoint(self.app.sens_X * (40), 0)
