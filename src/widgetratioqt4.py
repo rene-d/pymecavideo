@@ -34,8 +34,11 @@ class centralwidgetratio(QWidget):
         if self.width() <875 or self.height() < 615:
             return 615
         else :
-            hauteur = int((self.width()-self.parent.decalw)/self.parent.ratio)+self.parent.decalh
-            return hauteur if hauteur >= 615 else 615
+            try :
+                hauteur = int((self.width()-self.parent.decalw)/self.parent.ratio)+self.parent.decalh
+                return hauteur if hauteur >= 615 else 615
+            except AttributeError:
+                return 615
 
     def sizeHint(self):
         w = self.width()
