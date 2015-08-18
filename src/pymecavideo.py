@@ -1402,13 +1402,14 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             else:  # type de courbe "v""
                 styleTrace = "zero"
 
-            if not hasattr(self, 'traceur'):
-                print("traceur")
-                self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
+            if hasattr(self, 'traceur'):
+                del self.traceur
+
+            self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
                                          itemChoisi)
-            else:  # mets juste à jour la fenêtre de matplotlib
-                print("pas traceur")
-                self.traceur.update(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
+            #else:  # mets juste à jour la fenêtre de matplotlib
+            #    self.traceur.update(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
+            #    self.traceur
 
 
     def affiche_point_attendu(self, n):
