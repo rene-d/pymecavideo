@@ -929,7 +929,7 @@ class StartQT4(QMainWindow):
 
     def metsAjourLesDimensions(self):
         self.resize(self.largeur+self.decalw,self.hauteur+self.decalh)
-        self.ui.centralwidget.setGeometry(0,0,self.largeur+self.decalw,self.hauteur+self.decalh)
+        self.ui.centralwidget.setGeometry(0,15,self.largeur+self.decalw,self.hauteur+self.decalh)
         self.ui.label.setFixedSize(self.largeur, self.hauteur)
         self.label_video.setFixedSize(self.largeur, self.hauteur)
         self.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
@@ -1403,9 +1403,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 styleTrace = "zero"
 
             if not hasattr(self, 'traceur'):
+                print("traceur")
                 self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
                                          itemChoisi)
             else:  # mets juste à jour la fenêtre de matplotlib
+                print("pas traceur")
                 self.traceur.update(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
 
 
