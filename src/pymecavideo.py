@@ -231,7 +231,10 @@ class StartQT4(QMainWindow):
         self.sens_Y = 1
         self.repere = 0
         self.myThreads = []
-        self.origine = vecteur(320, 240)
+        try:
+            self.origine = vecteur(self.largeur/2, self.hauteur/2)
+        except AttributeError:
+            self.origine = vecteur(320, 240)
         self.rouvert = False #positionné a vrai si on vien d'ouvrir un fichier mecavideo
 
         self.auto = False
@@ -1781,7 +1784,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
             data = filename.data()
             self.filename = data.decode('utf-8')
             goOn = self.init_cvReader()
-            print(self.filename)
             if goOn:  # video is in good format
 
                 self.prefs.lastVideo = self.filename
@@ -1791,12 +1793,13 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.init_image()
                 self.devineLargeurHauteur()
 
-                self.origine = vecteur(self.largeur/2, self.hauteur/2)
-                print(self.origine, self.hauteur, self.largeur)
-                self.label_video.origine = self.origine
-                self.label_video.repaint()
+
 
                 self.init_capture()
+                self.origine = vecteur(self.largeur/2, self.hauteur/2)
+                self.change_axe_ou_origine()
+                self.label_video.origine = self.origine
+                self.label_video.repaint()
                 self.metsAjourLesDimensions()
                 #self.redimensionne(premier=1)
                 self.label_video.repaint()
