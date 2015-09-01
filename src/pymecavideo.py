@@ -231,7 +231,10 @@ class StartQT4(QMainWindow):
         self.sens_Y = 1
         self.repere = 0
         self.myThreads = []
-        self.origine = vecteur(320, 240)
+        try:
+            self.origine = vecteur(self.largeur/2, self.hauteur/2)
+        except AttributeError:
+            self.origine = vecteur(320, 240)
         self.rouvert = False #positionné a vrai si on vien d'ouvrir un fichier mecavideo
 
         self.auto = False
@@ -926,7 +929,7 @@ class StartQT4(QMainWindow):
 
     def metsAjourLesDimensions(self):
         self.resize(self.largeur+self.decalw,self.hauteur+self.decalh)
-        self.ui.centralwidget.setGeometry(0,0,self.largeur+self.decalw,self.hauteur+self.decalh)
+        self.ui.centralwidget.setGeometry(0,15,self.largeur+self.decalw,self.hauteur+self.decalh)
         self.ui.label.setFixedSize(self.largeur, self.hauteur)
         self.label_video.setFixedSize(self.largeur, self.hauteur)
         self.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
@@ -939,6 +942,7 @@ class StartQT4(QMainWindow):
             self.largeur = QApplication.desktop().screenGeometry().width()*0.9
         else :
             self.largeur = self.largeurFilm
+
         self.hauteur = self.largeur/self.ratio
 
     def determineRatio(self):
@@ -960,9 +964,11 @@ class StartQT4(QMainWindow):
             return 615
         else :
             self.redimensionne = True
-            hauteur = int((self.width()-self.decalw)/self.ratio)+self.decalh
-            return hauteur if hauteur >= 615 else 615
-
+            try:
+                hauteur = int((self.width()-self.decalw)/self.ratio)+self.decalh
+                return hauteur if hauteur >= 615 else 615
+            except AttributeError:
+                return 615
     def redimensionneFenetre(self):
         if not self.stopRedimensionne :
             #garde un historique pour l'origine
@@ -982,11 +988,15 @@ class StartQT4(QMainWindow):
 
                 #calcule la valeur de la hauteur calculée à partir de la largeur actuelle et du ratio.
                 self.largeur = self.width()-self.decalw
-                self.hauteur = self.largeur/self.ratio
+                try :
+                    self.hauteur = self.largeur/self.ratio
+                except AttributeError:
+                    self.hauteur=615
                 self.ui.label.setFixedHeight(self.hauteur)
                 self.ui.label.setFixedWidth(self.largeur)
-                self.label_video.setFixedHeight(self.hauteur)
-                self.label_video.setFixedWidth(self.largeur)
+                if hasattr(self, 'label_video'):
+                    self.label_video.setFixedHeight(self.hauteur)
+                    self.label_video.setFixedWidth(self.largeur)
 
             else :
                 self.setFixedSize(876, 615)
@@ -995,9 +1005,9 @@ class StartQT4(QMainWindow):
 
                 self.largeur = 640
                 self.hauteur = int(self.largeur/self.ratio)
-
-                self.label_video.setFixedHeight(self.hauteur)
-                self.label_video.setFixedWidth(self.largeur)
+                if hasattr(self, 'label_video'):
+                    self.label_video.setFixedHeight(self.hauteur)
+                    self.label_video.setFixedWidth(self.largeur)
                 self.ui.label.setFixedHeight(self.hauteur)
                 self.ui.label.setFixedWidth(self.largeur)
 
@@ -1392,11 +1402,14 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             else:  # type de courbe "v""
                 styleTrace = "zero"
 
-            if not hasattr(self, 'traceur'):
-                self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
+            if hasattr(self, 'traceur'):
+                del self.traceur
+
+            self.traceur = traceur2d(self, abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace,
                                          itemChoisi)
-            else:  # mets juste à jour la fenêtre de matplotlib
-                self.traceur.update(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
+            #else:  # mets juste à jour la fenêtre de matplotlib
+            #    self.traceur.update(abscisse, ordonnee, labelAbscisse, labelOrdonnee, titre, styleTrace, itemChoisi)
+            #    self.traceur
 
 
     def affiche_point_attendu(self, n):
@@ -1774,7 +1787,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
             data = filename.data()
             self.filename = data.decode('utf-8')
             goOn = self.init_cvReader()
-
             if goOn:  # video is in good format
 
                 self.prefs.lastVideo = self.filename
@@ -1783,9 +1795,17 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
                 self.init_image()
                 self.devineLargeurHauteur()
+
+
+
                 self.init_capture()
-                self.metsAjourLesDimensiosn()
+                self.origine = vecteur(self.largeur/2, self.hauteur/2)
+                self.change_axe_ou_origine()
+                self.label_video.origine = self.origine
+                self.label_video.repaint()
+                self.metsAjourLesDimensions()
                 #self.redimensionne(premier=1)
+                self.label_video.repaint()
                 self.label_video.show()
                 self.prefs.videoDir = os.path.dirname(self.filename)
                 self.prefs.save()
