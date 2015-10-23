@@ -87,7 +87,7 @@ class Label_Echelle(QLabel):
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
-        pix = QPixmap("curseur_cible.svg").scaledToHeight(32, 32)
+        pix = QPixmap("curseur_cible.png").scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
         self.cropX2 = None

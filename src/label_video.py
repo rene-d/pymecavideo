@@ -45,7 +45,8 @@ class Label_Video(QtGui.QLabel):
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
         #self.setCursor(QtCore.Qt.ArrowCursor)
-        pix = QPixmap("curseur_cible.png").scaledToHeight(32, 32)
+        self.cible_icon = os.path.join(self.app._dir("icones"), "curseur_cible.svg")
+        pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
         self.pos = vecteur(50, 50)
@@ -88,7 +89,7 @@ class Label_Video(QtGui.QLabel):
 
     def enterEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
-            pix = QPixmap("curseur_cible.svg").scaledToHeight(32, 32)
+            pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
             self.cursor = QCursor(pix)
             self.setCursor(self.cursor)
         else:
