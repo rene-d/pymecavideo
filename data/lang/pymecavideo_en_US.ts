@@ -457,7 +457,7 @@ la souris</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1340"/>
+        <location filename="pymecavideo.py" line="1335"/>
         <source>Choisir ...</source>
         <translation type="unfinished">Choose...</translation>
     </message>
@@ -633,72 +633,72 @@ photographie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="827"/>
+        <location filename="pymecavideo.py" line="822"/>
         <source>Ouvrir un projet Pymecavideo</source>
         <translation type="unfinished">Open a Mecavideo project</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="827"/>
+        <location filename="pymecavideo.py" line="822"/>
         <source>fichiers pymecavideo(*.csv)</source>
         <translation type="unfinished">pymecavideo files (*.csv)</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1089"/>
+        <location filename="pymecavideo.py" line="1084"/>
         <source>temps en seconde, positions en m&#xc3;&#xa8;tre</source>
         <translation type="unfinished">time in second, positions in meter</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1156"/>
+        <location filename="pymecavideo.py" line="1151"/>
         <source>point N&#xc2;&#xb0; %1</source>
         <translation type="unfinished">point # %1</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1361"/>
+        <location filename="pymecavideo.py" line="1356"/>
         <source>Evolution de l&apos;abscisse du point %1</source>
         <translation type="unfinished">Evolution of the abscissa of point #%1</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1361"/>
+        <location filename="pymecavideo.py" line="1356"/>
         <source>Evolution de l&apos;ordonn&#xc3;&#xa9;e du point %1</source>
         <translation type="unfinished">Evolution of ordinate of point #%1</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1361"/>
+        <location filename="pymecavideo.py" line="1356"/>
         <source>Evolution de la vitesse du point %1</source>
         <translation type="unfinished">Evolution of speed of point #%1</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1430"/>
+        <location filename="pymecavideo.py" line="1424"/>
         <source>Pointage des positions&#xc2;&#xa0;: cliquer sur le point N&#xc2;&#xb0; %1</source>
         <translation type="unfinished">Sampling positions: click on point #%1</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1458"/>
+        <location filename="pymecavideo.py" line="1452"/>
         <source>Vous avez atteint la fin de la vid&#xc3;&#xa9;o</source>
         <translation type="unfinished">You reached the end of the video</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1643"/>
+        <location filename="pymecavideo.py" line="1637"/>
         <source>D&#xc3;&#xa9;finir une &#xc3;&#xa9;chelle</source>
         <translation type="unfinished">Define a scale</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1643"/>
+        <location filename="pymecavideo.py" line="1637"/>
         <source>Quelle est la longueur en m&#xc3;&#xa8;tre de votre &#xc3;&#xa9;talon sur l&apos;image ?</source>
         <translation type="unfinished">Which the length (in meter) of your gauge in the image?</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1664"/>
+        <location filename="pymecavideo.py" line="1658"/>
         <source> Merci d&apos;indiquer une &#xc3;&#xa9;chelle valable</source>
         <translation type="unfinished">Please give a valid scale</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1721"/>
+        <location filename="pymecavideo.py" line="1715"/>
         <source>Les donn&#xc3;&#xa9;es seront perdues</source>
         <translation type="unfinished">Data will be lost</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1721"/>
+        <location filename="pymecavideo.py" line="1715"/>
         <source>Votre travail n&apos;a pas &#xc3;&#xa9;t&#xc3;&#xa9; sauvegard&#xc3;&#xa9;
 Voulez-vous les sauvegarder ?</source>
         <translation type="unfinished">Your work has not been saved. Do you want to save it?</translation>
@@ -709,22 +709,22 @@ Voulez-vous les sauvegarder ?</source>
         <translation type="obsolete">You reached the begin of the video</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1778"/>
+        <location filename="pymecavideo.py" line="1772"/>
         <source>Ouvrir une vid&#xc3;&#xa9;o</source>
         <translation type="unfinished">Open a video</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1749"/>
+        <location filename="pymecavideo.py" line="1743"/>
         <source>fichiers vid&#xc3;&#xa9;os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
         <translation type="unfinished">video files (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1761"/>
+        <location filename="pymecavideo.py" line="1755"/>
         <source>fichiers vid&#xc3;&#xa9;os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
         <translation type="unfinished">video files( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov) </translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1773"/>
+        <location filename="pymecavideo.py" line="1767"/>
         <source>Nom de fichier non conforme</source>
         <translation type="unfinished">Unvalid filename</translation>
     </message>
@@ -734,31 +734,31 @@ Voulez-vous les sauvegarder ?</source>
         <translation type="obsolete">Please select an image and define the scale</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1862"/>
+        <location filename="pymecavideo.py" line="1856"/>
         <source>D&#xc3;&#xa9;sol&#xc3;&#xa9; pas de fichier d&apos;aide pour le langage %1.</source>
         <translation type="unfinished">Sorry, no help file for the language %1.</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1179"/>
+        <location filename="pymecavideo.py" line="1174"/>
         <source>Veuillez s&#xc3;&#xa9;lectionner un cadre autour de(s) l&apos;objet(s) que vous voulez suivre.
 Vous pouvez arr&#xc3;&#xaa;ter &#xc3;&#xa0; tous moments la capture en appuyant sur le bouton</source>
         <translation type="unfinished">PLease select a frame around the object(s) which you will track.
 You can stop the capture at any moment by clicking the button</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1773"/>
+        <location filename="pymecavideo.py" line="1767"/>
         <source>Le nom de votre fichier contient des caract&#xc3;&#xa8;res accentu&#xc3;&#xa9;s ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
         <translation type="unfinished">The name of the file contains accented characters or spaces.
 PLease rename it before going on</translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1827"/>
+        <location filename="pymecavideo.py" line="1821"/>
         <source>Veuillez choisir une image (et d&#xc3;&#xa9;finir l&apos;&#xc3;&#xa9;chelle)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="pymecavideo.py" line="1914"/>
+        <location filename="pymecavideo.py" line="1908"/>
         <source>Pymecavideo n&apos;arrive pas &#xc3;&#xa0; lire l&apos;image</source>
         <translation type="unfinished"></translation>
     </message>

@@ -437,8 +437,8 @@ class StartQT4(QMainWindow):
         self.ui.pushButtonEnregistreChrono.setVisible(0)
         self.ui.tabWidget.setCurrentIndex(0)  # montre l'onglet video
 
-        self.ui.pushButton_stopCalculs.setEnabled(0)
-        self.ui.pushButton_stopCalculs.hide()
+        self.ui.pushButton_video.setEnabled(0)
+        self.ui.pushButton_video.hide()
 
 
     def desactiveExport(self, text):
@@ -567,7 +567,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.radioButtonSpeedEveryWhere, SIGNAL("clicked()"), self.enableSpeed)
         QObject.connect(self.ui.radioButtonNearMouse, SIGNAL("clicked()"), self.enableSpeed)
 
-        QObject.connect(self.ui.pushButton_stopCalculs, SIGNAL("clicked()"), self.video)
+        QObject.connect(self.ui.button_video, SIGNAL("clicked()"), self.video)
         QObject.connect(self.ui.pushButton_select_all_table, SIGNAL("clicked()"), self.presse_papier)
 
         QObject.connect(self.ui.pushButton_reinit, SIGNAL("clicked()"), self.reinitialise_capture)
@@ -585,7 +585,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.pushButtonEnregistreChrono, SIGNAL('clicked()'), self.enregistreChrono)
 
         QObject.connect(self, SIGNAL('stopCalculs()'), self.stopComputing)
-        QObject.connect(self.ui.pushButton_stopCalculs, SIGNAL('clicked()'), self.stopComputing)
+        QObject.connect(self.ui.pushButton_video, SIGNAL('clicked()'), self.stopComputing)
         QObject.connect(self, SIGNAL('updateProgressBar()'), self.updatePB)
 
         QObject.connect(self.ui.exportCombo, SIGNAL("currentIndexChanged(int)"), self.export)
@@ -655,20 +655,20 @@ class StartQT4(QMainWindow):
             self.label_auto.hide()
             self.label_auto.close()
             self.indexMotif = 0
-            self.ui.pushButton_stopCalculs.setText("STOP CALCULS")
-            self.ui.pushButton_stopCalculs.setEnabled(1)
-            self.ui.pushButton_stopCalculs.show()
+
+            self.ui.pushButton_video.setText("STOP CALCULS")
+            self.ui.pushButton_video.setEnabled(1)
+            self.ui.pushButton_video.show()
+
             self.label_video.setEnabled(0)
+
             self.dossTemp = tempfile.NamedTemporaryFile(delete=False).name
-            #self.pileDeDetections=zip(range(self.index_de_l_image, int(self.image_max)+1))
-            self.pileDeDetections = []
-            for i in range(self.index_de_l_image, int(self.image_max)+1):
-                for j in range(self.nb_de_points):
-                    self.pileDeDetections.append(i)
+            self.pileDeDetections=range(self.index_de_l_image, int(self.image_max)+1)            
             # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
-            timer=QTimer.singleShot(50, self.detecteUnPoint)
+            QTimer.singleShot(50, self.detecteUnPoint)
+
 
     def detecteUnPoint(self):
         """
@@ -677,21 +677,16 @@ class StartQT4(QMainWindow):
         et relance un signal si la pile n'est pas vide après chacun
         des traitements.
         """
-
         if self.pileDeDetections:
-            if len(self.pileDeDetections)%self.nb_de_points!=0:
-                self.indexMotif+=1
-            else :
-                self.indexMotif=0
             index_de_l_image=self.pileDeDetections.pop(0)
             texteDuBouton = "STOP CALCULS (%d)" %index_de_l_image
-            self.ui.pushButton_stopCalculs.setText(texteDuBouton)
+            self.ui.pushButton_video.setText(texteDuBouton)
             point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.dossTemp)
             self.label_video.storePoint(vecteur(point[0], point[1]))
             # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
-            timer=QTimer.singleShot(50, self.detecteUnPoint)
+            QTimer.singleShot(50, self.detecteUnPoint)
         else:
             os.unlink(self.dossTemp)
                       
@@ -700,8 +695,8 @@ class StartQT4(QMainWindow):
         self.dbg.p(1, "rentre dans 'stopComputing'")
         self.pileDeDetections=[] # vide la liste des points à détecter encore
         self.label_video.setEnabled(1)
-        self.ui.pushButton_stopCalculs.setEnabled(0)
-        self.ui.pushButton_stopCalculs.hide()
+        self.ui.pushButton_video.setEnabled(0)
+        self.ui.pushButton_video.hide()
 
     def readStdout(self):
         self.dbg.p(1, "rentre dans 'readStdout'")
