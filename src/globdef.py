@@ -51,7 +51,7 @@ from PyQt4.QtGui import QDesktopServices
 #
 # Version de pymecavideo
 #
-VERSION = "5.3"
+VERSION = "6.3"
 
 
 def testerDossier(listDir, defaut=""):
