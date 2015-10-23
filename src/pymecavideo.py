@@ -1057,16 +1057,11 @@ class StartQT4(QMainWindow):
         self.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
 
     def devineLargeurHauteur(self):
-        """adapte la largeur et la hauteur de l'interface au film et à l'écran"""
-
-        ###################film petit, de largeur inférieure à 640 pixels#####################
         if self.largeurFilm<640:
             self.largeur = 640
             self.hauteur = self.largeur/self.ratio
-        ###################film trop grand, ne passe pas dans la fenetre######################
         elif self.largeurFilm > QApplication.desktop().screenGeometry().width() :
             self.largeur = QApplication.desktop().screenGeometry().width()*0.9
-        ##############autres cas##############################################################
         else :
             self.largeur = self.largeurFilm
 
@@ -1863,7 +1858,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def openexample(self):
         self.dbg.p(1, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
-        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo", None), dir_,
+
+        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"), dir_,
                                                _translate("pymecavideo",
                                                           "fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)",
                                                           None))
