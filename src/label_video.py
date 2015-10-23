@@ -26,6 +26,7 @@ from PyQt4.QtGui import *
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
+import os
 
 
 class Label_Video(QtGui.QLabel):

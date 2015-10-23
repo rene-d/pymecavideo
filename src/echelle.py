@@ -26,6 +26,7 @@ from PyQt4.QtGui import *
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
+import os
 
 
 class echelle(QObject):
@@ -87,7 +88,8 @@ class Label_Echelle(QLabel):
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
-        pix = QPixmap("curseur_cible.png").scaledToHeight(32, 32)
+        self.cible_icon = os.path.join(self.app._dir("icones"), "curseur_cible.svg")
+        pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
         self.cropX2 = None
