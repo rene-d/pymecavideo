@@ -445,7 +445,7 @@ class StartQT4(QMainWindow):
         QObject.connect(self.ui.radioButtonSpeedEveryWhere, SIGNAL("clicked()"), self.enableSpeed)
         QObject.connect(self.ui.radioButtonNearMouse, SIGNAL("clicked()"), self.enableSpeed)
 
-        QObject.connect(self.ui.pushButton_stopCalculs, SIGNAL("clicked()"), self.video)
+        QObject.connect(self.ui.button_video, SIGNAL("clicked()"), self.video)
         QObject.connect(self.ui.pushButton_select_all_table, SIGNAL("clicked()"), self.presse_papier)
 
         QObject.connect(self.ui.pushButton_reinit, SIGNAL("clicked()"), self.reinitialise_capture)
