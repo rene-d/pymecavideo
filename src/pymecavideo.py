@@ -1308,6 +1308,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         try:
 
             if self.ui.tabWidget.currentIndex() != 0:  # Pas le premier onglet
+                self.statusBar().hide()
 
                 origine = vecteur(0, 0)
                 if newValue == "absolu":
@@ -1341,6 +1342,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     combo.addItem(QString("v%d(t)" % (i + 1)))
 
                 self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
+            else :
+                self.statusBar().show()
         except ZeroDivisionError:
             self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
         self.label_trajectoire.reDraw()
