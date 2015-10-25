@@ -47,7 +47,7 @@ import sys, os
 # import Error
 
 from vecteur import vecteur
-import time, commands, codecs
+import time, commands, codecs, math
 import locale, getopt
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -1885,6 +1885,9 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.dbg.p(3,
                    "In :  'defini_barre_avancement', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
         self.deltaT = float(1.0 / framerate)
+        if math.isnan(self.deltaT):
+            print "ERREUR à la lecture de la vidéo, vitesse des trames indéfinie, on suppose 40 trames par seconde"
+            self.deltaT=1.0/40
         self.ui.horizontalSlider.setMinimum(1)
 
         self.ui.horizontalSlider.setMaximum(int(self.image_max))
