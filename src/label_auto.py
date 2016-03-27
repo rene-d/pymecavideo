@@ -24,7 +24,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from vecteur import vecteur
-
+import os.path
 
 class Label_Auto(QLabel):
     def __init__(self, parent, app):
@@ -35,7 +35,13 @@ class Label_Auto(QLabel):
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
         self.setAutoFillBackground(False)
 
-        self.setCursor(Qt.CrossCursor)
+        #self.setCursor(Qt.CrossCursor)
+        ### prend un beau gros curseur rouge inmanquable
+        self.cible_icon = os.path.join(self.app._dir("icones"), "curseur_cible.svg")
+        pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
+        self.cursor = QCursor(pix)
+        self.setCursor(self.cursor)
+        
         self.setMouseTracking(True)
 
     def mousePressEvent(self, event):
