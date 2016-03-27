@@ -111,6 +111,7 @@ class StartQT4(QMainWindow):
         self.largeur = 640
         self.decalh = 120
         self.decalw = 197
+        self.pointsProbables=[None] # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         self.redimensionne = True #permet de fixer la taille de la fenetre au minimum. On ne peut pas dimensionner plus petit.
         self.stopRedimensionne = False #trigger pour savoir si on a le droit de re dimensionner ou pas.
         #### Mode plein écran
@@ -564,7 +565,8 @@ class StartQT4(QMainWindow):
             index_de_l_image=self.pileDeDetections.pop(0)
             texteDuBouton = "STOP CALCULS (%d)" %index_de_l_image
             self.ui.pushButton_stopCalculs.setText(texteDuBouton)
-            point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.dossTemp)
+            point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.dossTemp, self.pointsProbables)
+            self.pointsProbables[0]=point
             self.label_video.storePoint(vecteur(point[0], point[1]))
             # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
