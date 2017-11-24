@@ -4,7 +4,7 @@
     pgraph, a module for pymecavideo:
       a program to launch a handy plotter
       
-    Copyright (C) 2015 Georges Khaznadar <georgesk@debian.org>
+    Copyright (C) 2015-2017 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,12 +20,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from PyQt5 import QtWidgets
+import sys
 import pyqtgraph as pg
 import numpy as np
 
 class traceur2d:
     def __init__(self, parent, x, y, xlabel="", ylabel="", titre=""):
-        print "traceur2d", titre
+        #print "traceur2d", titre
         self.parent = parent
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
@@ -47,8 +49,6 @@ class traceur2d:
 
 
 if __name__ == "__main__":
-    from PyQt4 import QtGui
-    import sys
     
     
     #lecture des données x,y depuis l'entrée standard
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     x=[coord[0] for coord in xy]
     y=[coord[1] for coord in xy]
     
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
     plotWidget = pg.plot(title=unicode(sys.argv[1],"UTF-8"))

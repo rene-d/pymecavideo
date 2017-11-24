@@ -47,7 +47,7 @@ import sys, os, subprocess
 # import Error
 
 from vecteur import vecteur
-import time, commands, codecs
+import time, subprocess, codecs
 import locale, getopt
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -1791,7 +1791,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
         self.reinitialise_tout()
-        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"), dir_,
+        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo", None), dir_,
                                                _translate("pymecavideo",
                                                           "fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)",
                                                           None))
@@ -1888,10 +1888,10 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         helpfile = "%s/help-%s.xhtml" % (self._dir("help"), lang)
         if os.path.exists(helpfile):
             command = "firefox --new-window %s" % helpfile
-            status, output = commands.getstatusoutput(command)
+            status = subprocess.call(command, shell=True)
             if status != 0:
                 command = "x-www-browser %s" % helpfile
-                status, output = commands.getstatusoutput(command)
+                status = subprocess.call(command, shell=True)
         else:
             QMessageBox.warning(
                 None, "Aide",
