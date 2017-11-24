@@ -124,7 +124,7 @@ class Cadreur(QObject):
         if cv.GrabFrame(self.capture):
             return cv.RetrieveFrame(self.capture)
         else:
-            print "erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile
+            print ("erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile)
             sys.exit(1)
 
 
@@ -251,8 +251,8 @@ class openCvReader:
             largeur = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_WIDTH)
             hauteur = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_HEIGHT)
         except:
-            print "could not retrieve informations from the video file."
-            print "assuming fps = 25, frame count = 10."
+            print ("could not retrieve informations from the video file.")
+            print ("assuming fps = 25, frame count = 10.")
             return 25, 10, 320, 200
 #        return fps, fcount
         return fps, fcount - 1, largeur, hauteur
@@ -268,6 +268,6 @@ if __name__ == '__main__':
         vidfile = '/usr/share/python-mecavideo/video/g1.avi'
     cvReader = openCvReader(vidfile)
     if cvReader:
-        print "Ouverture du fichier %s réussie" % vidfile
+        print ("Ouverture du fichier %s réussie" % vidfile)
     else:
-        print "Ouverture manquée pour le fichier %s" % vidfile
+        print ("Ouverture manquée pour le fichier %s" % vidfile)
