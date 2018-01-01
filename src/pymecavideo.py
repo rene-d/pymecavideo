@@ -96,11 +96,6 @@ class StartQt5(QMainWindow):
         @param args les arguments restants après raitement des options
         """
 
-        if "maxi" in str(opts):
-            self.mini = False
-        else:
-            self.mini = True
-
         ######QT
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
@@ -115,13 +110,7 @@ class StartQt5(QMainWindow):
 
         height, width = QDesktopWidget().screenGeometry().height(), QDesktopWidget().screenGeometry().width()
 
-        if height >= 768 and width >= 1024 and self.mini == False:
-            # Importation de l'interface ici car l'import de l'interface "mini" écrase l'interface "standard"
-            from Ui_pymecavideo import Ui_pymecavideo
-        else:
-            from Ui_pymecavideo_mini_layout import Ui_pymecavideo
-
-            message = QMessageBox(self)
+        from Ui_pymecavideo_mini_layout import Ui_pymecavideo
 
         self.setWindowFlags(self.windowFlags() |
                             Qt.WindowSystemMenuHint |
