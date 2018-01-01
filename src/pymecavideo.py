@@ -1526,13 +1526,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         ### on fait des marques pour les points déjà visités
         etiquette = "@abcdefghijklmnopqrstuvwxyz"[len(self.listePoints)%self.nb_de_points]
         self.point_attendu = len(self.listePoints)%self.nb_de_points
-        if len(self.listePoints)%self.nb_de_points != 0 :
-            self.affiche_point_attendu(self.point_attendu)  # peut etre ici un update de l'image a optimiser
-
-        else:
-            #self.point_attendu = 1
+        if self.point_attendu != 0 :
             self.affiche_point_attendu(self.point_attendu)
-            if self.index_de_l_image <= self.image_max:  ##si on atteint la fin de la vidéo
+        else: # self.point_attendu == 0, c'est le premier point ?
+            self.affiche_point_attendu(self.point_attendu)
+            if self.index_de_l_image <= self.image_max:  ##si on n'atteint pas encore la fin de la vidéo
                 self.lance_capture = True
                 self.stock_coordonnees_image(ligne=int((len(self.listePoints)-1)/self.nb_de_points))
 
@@ -1593,9 +1591,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
         """
         self.dbg.p(1, "rentre dans 'stock_coordonnees_image'")
-        if not index_image:
+        if index_image==False:
             index_image = self.listePoints[len(self.listePoints)-1][0]
-        # t = "%4f" % ((ligne) * self.deltaT)
         t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
 
         #construction de l'ensemble des points pour l'image actuelle
