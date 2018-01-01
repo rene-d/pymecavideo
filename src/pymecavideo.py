@@ -2028,7 +2028,7 @@ def run():
 
     args = sys.argv[1:]
     try:
-        opts, args = getopt.getopt(args, "f:md:", ["fichier_mecavideo=", "maxi", "debug="])
+        opts, args = getopt.getopt(args, "f:d:", ["fichier_mecavideo=", "debug="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
