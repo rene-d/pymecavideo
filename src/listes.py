@@ -69,6 +69,8 @@ class listePointee:
     def __getitem__(self, i):
         if i >= 0 and i <= self.ptr:
             return self.data[i]
+        elif i < 0 and 1+self.ptr+i >=0:
+            return self.data[1+self.ptr+i]
         else:
             raise IndexError
 
@@ -177,6 +179,9 @@ def test():
             print(next(i))
         except StopIteration:
             break
+    print("itération à l'envers")
+    for i in range(-1, -1-len(l1), -1):
+        print ("index:", i, "=>", l1[i])
 
     
 if __name__ == "__main__":

@@ -78,7 +78,7 @@ class Label_Video(QLabel):
 
     def storePoint(self, point):
         if self.app.lance_capture == True:
-            self.app.listePoints.append([self.app.index_de_l_image,len(self.app.listePoints)%self.app.nb_de_points,point])
+            self.app.enregistre_dans_listePoints(point)
             self.liste_points.append(point)
             self.pos_avant = self.pos
             self.app.clic_sur_video.emit()

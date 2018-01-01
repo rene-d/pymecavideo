@@ -963,7 +963,9 @@ class StartQt5(QMainWindow):
                                 + self.origine.x(), self.origine.y() - float(
                             d[j + 1].replace(",", ".")) * self.echelle_image.pxParM())
 
-                    self.listePoints.append([float(t)*framerate+self.premiere_image,len(self.listePoints)%self.nb_de_points,pos])
+                    self.enregistre_dans_listePoints(
+                        pos, index=int(float(t)*framerate)+self.premiere_image
+                    )
                     self.points[i].append(pos)
 
                 i += 1
@@ -1584,6 +1586,27 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.enableDefaire(len(self.listePoints) > 0)
         self.enableRefaire(self.listePoints.nextCount() > 0)
 
+    def enregistre_dans_listePoints(self, point, index=None):
+        """
+        enregistre un clic dans self.listePoints à la bonne place.
+        on ajoute à cette liste un triplet :
+        numéro de l'image, rang du point (0,1 ou 2 s'il y a trois
+        points à saisir par image), et le point lui-même.
+
+        Le calcul du rang du point se déduit de la longueur de
+        self.listePoints.
+        @param point un point à enregistrer
+        @param index un numéro d'image. S'il est indéfini (par défaut), il
+        est remplacé par self.index_de_l_image.
+        """
+        if index:
+            i=index
+        else:
+            i=self.index_de_l_image
+        nieme=len(self.listePoints)%self.nb_de_points
+        self.listePoints.append([i,nieme,point])
+        return
+    
     def stock_coordonnees_image(self, ligne,  interactif=True, index_image=False):
         """
         place les données dans le tableau, rempli les dictionnaires de pixels
@@ -1592,7 +1615,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'stock_coordonnees_image'")
         if index_image==False:
-            index_image = self.listePoints[len(self.listePoints)-1][0]
+            # l'index est sur la dernière image traitée
+            index_image = self.listePoints[-1][0]
         t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
 
         #construction de l'ensemble des points pour l'image actuelle
