@@ -53,10 +53,15 @@ class listePointee:
     def incPtr(self):
         if self.ptr < len(self.data) - 1:
             self.ptr += 1
+        return
 
     def decPtr(self):
         if self.ptr > -1:
             self.ptr -= 1
+        return
+
+    def __bool__(self):
+        return len(self.data)>0 and self.ptr >= 0
 
     def __iter__(self):
         return listePointeeIterateur(self)
