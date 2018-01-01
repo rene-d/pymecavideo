@@ -1,4 +1,4 @@
-from PyQt4.QtGui import QImage, qRgb
+from PyQt5.QtGui import QImage, qRgb
 import numpy as np
  
 class NotImplementedException:
