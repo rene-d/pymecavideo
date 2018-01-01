@@ -37,7 +37,7 @@ import tempfile
 import time
 
 # nom de la commande qui lance LibreOffice Calc
-tableur="localc"
+tableur="libreoffice --calc"
 
 class CalcThread(threading.Thread):
     """

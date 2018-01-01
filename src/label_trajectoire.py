@@ -97,13 +97,16 @@ class Label_Trajectoire(QLabel):
                             keyMax = len(self.app.points.keys())
                             if key != 0 and key != keyMax - 1:  ##first and last point can't have speed.
                                 ##coordonnates of n-1 and n+1 point
-                                pointBefore = QPoint(
-                                    self.app.points[key - 1][i].x() + self.origine.x() - ptreferentielBefore.x(),
-                                    self.app.points[key - 1][i].y() + self.origine.y() - ptreferentielBefore.y())
                                 try:
+                                    tempsAfter = float(self.app.points[key + 1][0])/self.app.deltaT  #en "delta_T"
+                                    tempsBefore = float(self.app.points[key-1][0])/self.app.deltaT #en "delta_T"
+                                    pointBefore = QPoint(
+                                         ( self.app.points[key - 1][i].x() + self.origine.x() - ptreferentielBefore.x())/(tempsAfter-tempsBefore),
+                                         (self.app.points[key - 1][i].y() + self.origine.y() - ptreferentielBefore.y())/(tempsAfter-tempsBefore))
+
                                     pointAfter = QPoint(
-                                        self.app.points[key + 1][i].x() + self.origine.x() - ptreferentielAfter.x(),
-                                        self.app.points[key + 1][i].y() + self.origine.y() - ptreferentielAfter.y())
+                                         (self.app.points[key + 1][i].x() + self.origine.x() - ptreferentielAfter.x())/(tempsAfter-tempsBefore),
+                                         (self.app.points[key + 1][i].y() + self.origine.y() - ptreferentielAfter.y())/(tempsAfter-tempsBefore))
 
                                     vector_speed = pointAfter - pointBefore
 
@@ -155,11 +158,15 @@ class Label_Trajectoire(QLabel):
             self.painter.setPen(Qt.blue)
             self.painter.drawText(self.width()-200,50, unicode("{0}T = {1:.3f} s").format(unichr(916), self.app.deltaT))
             #######dessine l'échelle
-            longueur = sqrt((self.app.p1.x()-self.app.p2.x())**2+ (self.app.p1.y()-self.app.p2.y())**2)
-            self.painter.drawLine(100,60,100,80)
-            self.painter.drawLine(100,70, longueur+100,70)
-            self.painter.drawLine(longueur+100,60,longueur+100,80)
-            self.painter.drawText((longueur)/2,120, unicode("D = {0:.2f} m").format(self.app.echelle_image.longueur_reelle_etalon))
+
+            try :
+                longueur = sqrt((self.app.p1.x()-self.app.p2.x())**2+ (self.app.p1.y()-self.app.p2.y())**2)
+                self.painter.drawLine(100,60,100,80)
+                self.painter.drawLine(100,70, longueur+100,70)
+                self.painter.drawLine(longueur+100,60,longueur+100,80)
+                self.painter.drawText((longueur)/2,120, unicode("D = {0:.2f} m").format(self.app.echelle_image.longueur_reelle_etalon))
+            except AttributeError:
+                pass #échelle non faite
             self.painter.end()
 
 
@@ -169,11 +176,22 @@ class Label_Trajectoire(QLabel):
         self.painter = QPainter()
         self.painter.begin(self)
         self.painter.setRenderHint(QPainter.Antialiasing)
-        for points in self.app.points.values():
+
+        listePoints = []
+        listeParImage = []
+        for point in self.app.listePoints:
+        #    #TODO :si quelqu'un veut implémenter un slicing de l'objet listePointee...
+        #    #print(self.app.listePoints[i*self.app.nb_de_points:(i+1)*self.app.nb_de_points])
+            listeParImage.append(point[2])
+            if len(listeParImage)%self.app.nb_de_points==0:
+                listePoints.append(listeParImage)
+                listeParImage=[]
+
+        for points in listePoints:
             color = 0
             for point in points:
                 if self.referentiel != 0:
-                    ptreferentiel = points[int(self.referentiel)]
+                    ptreferentiel = points[int(self.referentiel)-1]
 
                 else:
                     ptreferentiel = vecteur(0, 0)
@@ -223,23 +241,27 @@ class Label_Trajectoire(QLabel):
                     self.painter.begin(self)
                     self.painter.setRenderHint(QPainter.Antialiasing)
                     self.painter.setPen(QColor(self.couleurs[i - 1]))
-                    speed = sqrt(vector_speed.x() ** 2 + vector_speed.y() ** 2) * float(self.app.echelle_image.mParPx()) \
+                    try :
+                        speed = sqrt(vector_speed.x() ** 2 + vector_speed.y() ** 2) * float(self.app.echelle_image.mParPx()) \
                             / (2 * self.app.deltaT) * float(self.app.ui.checkBoxScale.currentText())
-                    path = QPainterPath()
-                    path.moveTo(0, 0)
-                    path.lineTo(speed, 0)
-                    path.lineTo(QPointF(speed - 10, 0) + QPointF(0, 10))
-                    path.lineTo(speed - 8, 0)
-                    path.lineTo(QPointF(speed - 10, 0) + QPointF(0, -10))
-                    path.lineTo(speed, 0)
+                        self.app.ui.checkBoxScale.setStyleSheet("background-color:none");
+                        path = QPainterPath()
+                        path.moveTo(0, 0)
+                        path.lineTo(speed, 0)
+                        path.lineTo(QPointF(speed - 10, 0) + QPointF(0, 10))
+                        path.lineTo(speed - 8, 0)
+                        path.lineTo(QPointF(speed - 10, 0) + QPointF(0, -10))
+                        path.lineTo(speed, 0)
 
-                    angle = atan2(float(vector_speed.y()), float(vector_speed.x()))
-                    self.painter.translate(p.x(), p.y())
-                    self.painter.rotate(degrees(angle))
-                    self.painter.drawPath(path)
-                    self.painter.fillPath(path, QColor(self.couleurs[i - 1]))  #VERIFIER COORDONÉES ICI
+                        angle = atan2(float(vector_speed.y()), float(vector_speed.x()))
+                        self.painter.translate(p.x(), p.y())
+                        self.painter.rotate(degrees(angle))
+                        self.painter.drawPath(path)
+                        self.painter.fillPath(path, QColor(self.couleurs[i - 1]))  #VERIFIER COORDONÉES ICI
 
-                    path.moveTo(0, 0)
+                        path.moveTo(0, 0)
+                    except ValueError:
+                        self.app.ui.checkBoxScale.setStyleSheet("background-color: red");
                     self.painter.end()
                 else:
                     pass  #null speed

@@ -39,5 +39,11 @@ class Zoom_Croix(QWidget):
         painter = QPainter()
         painter.begin(self)
         painter.setPen(Qt.red)
-        painter.drawLine(50, 0, 50, 100)
-        painter.drawLine(0, 50, 100, 50)
+        painter.drawLine(50, 0, 50, 45)
+        painter.drawLine(50, 55, 50, 100)
+        painter.drawLine(0, 50, 45, 50)
+        painter.drawLine(55, 50, 100, 50)
+
+        painter.setPen(QPen(QColor(255,64,255),1)) # fixe la couleur du crayon et la largeur pour le dessin - forme compactée
+                # cf QPen(QBrush brush, float width, Qt.PenStyle style = Qt.SolidLine, Qt.PenCapStyle cap = Qt.SquareCap, Qt.PenJoinStyle join = Qt.BevelJoin)
+        painter.drawEllipse(QPointF(50,50),5,5)

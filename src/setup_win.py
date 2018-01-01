@@ -11,6 +11,7 @@
 import sys, os
 from glob import glob
 from cx_Freeze import setup, Executable
+import version
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -24,7 +25,7 @@ shutil.rmtree("build", ignore_errors=True)
 includefiles = [('D:/Developpement/Microsoft.VC90.CRT', "Microsoft.VC90.CRT"),
                      '../AUTHORS', '../COPYING', '../README.fr', 
                      ('../data', "data"),
-                     ('mencoder.exe', "mencoder.exe"),
+#                     ('mencoder.exe', "mencoder.exe"),
                      'opencv_ffmpeg2411.dll']
 
 #includefiles.extend(glob(r"*.xlsx"))
@@ -89,22 +90,22 @@ build_exe_options = {'build_exe': 'build',
 # GUI applications require a different base on Windows (the default is for a
 # console application).
 base = None
-#if sys.platform == "win32":
-#    base = "Win32GUI"
+if sys.platform == "win32":
+    base = "Win32GUI"
 
 
 cible = Executable(
     script = "pymecavideo.py",
     base = base,
     compress = True,
-    icon = os.path.join("", '../data/icones/pymecavideo.ico'),
+    icon = os.path.join("", '../data/icones/icone_pymecavideo.ico'),
     initScript = None,
     copyDependentFiles = True,
     appendScriptToExe = False,
     appendScriptToLibrary = False
     )
 
-
+print "version", version.Version.__str__()
 setup(  name = "pymecavideo",
         version = "6.2.3.0",
         author = 'Jean-Baptiste Butet ; Georges Khaznadar',

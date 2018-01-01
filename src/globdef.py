@@ -65,7 +65,7 @@ def testerDossier(listDir, defaut=""):
 #
 FILE_ENCODING = sys.getfilesystemencoding()
 DEFAUT_ENCODING = "utf-8"
-print "FILE_ENCODING", FILE_ENCODING
+print ("FILE_ENCODING", FILE_ENCODING)
 
 ######################################################################################  
 def toFileEncoding(path):

@@ -14,7 +14,6 @@ languages:
 	lrelease -qt5 ../data/lang/*.ts
 
 
-
 helpfiles:
 	@$(MAKE) -C ../data/help
 

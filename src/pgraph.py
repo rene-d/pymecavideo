@@ -26,19 +26,18 @@ import pyqtgraph as pg
 import numpy as np
 
 class traceur2d:
-    def __init__(self, parent, x, y, xlabel="", ylabel="", titre=""):
-        #print "traceur2d", titre
+    def __init__(self, parent, x, y, xlabel="", ylabel="", titre="", style=None, item=None):
         self.parent = parent
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
-        self.plotWidget=None
+        self.plotWidget=pg.plot()
         self.update(x, y, xlabel, ylabel, titre, style, item)
 
-    def update(self, x, y, xlabel="", ylabel="", titre=""):
-        if self.plotWidget:
-            self.plotWidget.hide()
-            del self.plotWidget
-        self.plotWidget=pg.plot(title=titre)
+    def update(self, x, y, xlabel="", ylabel="", titre="", style=None, item=None):
+        self.plotWidget.clear()
+        self.plotWidget.setTitle(titre)
+        self.plotWidget.setWindowTitle(titre)
+
         self.plotWidget.plot(x,y)
         self.plotWidget.setLabel('bottom', xlabel)
         self.plotWidget.setLabel('left', ylabel)

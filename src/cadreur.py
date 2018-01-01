@@ -28,7 +28,6 @@ import re
 import subprocess
 import shutil
 
-import cv2.cv as cv
 import cv2
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -60,7 +59,7 @@ class Cadreur(QObject):
         self.app = app
 
         self.capture = cv2.VideoCapture(self.app.filename.encode('utf8'))
-        self.fps = self.capture.get(cv.CV_CAP_PROP_FPS)
+        self.fps = self.capture.get(cv2.CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
 
         self.app.dbg.p(3, "In : Label_Video, __inti__, fps = %s and delay = %s" % (self.fps, self.delay))
@@ -76,9 +75,9 @@ class Cadreur(QObject):
         à l'image effectivement trouvée dans le film, et la taille du film
         @return un triplet échelle, largeur, hauteur (de l'image dans le widget de de pymecavideo)
         """
-        m = QImage(self.app.chemin_image).size()
-        echx = 1.0 * m.width() / 640
-        echy = 1.0 * m.height() / 480
+        m = self.app.imageExtraite.size()
+        echx = 1.0 * m.width() / self.app.largeur
+        echy = 1.0 * m.height() / self.app.hauteur
         # permet de prendre en compte les vidéos à un format différent de 4:3
         ech = max(echx, echy)
         return ech, m.width() / ech, m.height() / ech
@@ -121,8 +120,8 @@ class Cadreur(QObject):
         ne sait pas le faire
         @return une IplImage
         """
-        if cv.GrabFrame(self.capture):
-            return cv.RetrieveFrame(self.capture)
+        if cv2.GrabFrame(self.capture):
+            return cv2.RetrieveFrame(self.capture)
         else:
             print ("erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile)
             sys.exit(1)
@@ -132,40 +131,38 @@ class Cadreur(QObject):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
-        wsub = cv.NamedWindow(self.titre)
 
-        ralentiLabel = "Choisir le ralenti"
+        cv2.namedWindow(self.titre)
 
-        cv.CreateTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
+        ralentiLabel = str(self.app.tr("Choisir le ralenti"))
+
+        cv2.createTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
         ech, w, h = self.echelleTaille()
-        i = 0
+
+        self.capture = cv2.VideoCapture(self.app.filename.encode('utf8'))
         while not fini:
-
-
-            #rembobine
-            self.capture = cv.CreateFileCapture(self.app.filename.encode('utf8'))
-
-            #have to move to first picture clicked
-
-            cv.SetCaptureProperty(self.capture, cv.CV_CAP_PROP_POS_FRAMES, self.app.premiere_image - 1)
 
             for i in self.app.points.keys():
                 p = self.app.points[i][self.numpoint]
                 hautgauche = (p + self.decal - self.rayons) * ech
                 taille = self.sz * ech
-                img = self.queryFrame()
+                self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
+                status, img =  self.capture.read()
 
                 x, y = int(hautgauche.x()), int(hautgauche.y())
                 w, h = int(taille.x()), int(taille.y())
-                isub = cv.GetSubRect(img, (x, y, w, h))
-                cv.ShowImage(self.titre, isub)
-                k = cv.WaitKey(int(self.delay * self.ralenti))
-                if k == 0x10001b or k == 27:
+
+                crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
+                # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
+
+                cv2.imshow(self.titre, crop_img)
+                k = cv2.waitKey(int(self.delay * self.ralenti))
+                if k == 0x10001b or k == 27 or k==20:
                     fini = True
-                    cv.DestroyAllWindows()
+                    cv2.destroyAllWindows()
                     break
 
-        cv.DestroyWindow(self.titre)
+        cv2.destroyAllWindows()
         fini = True
 
 
@@ -183,7 +180,9 @@ class openCvReader:
         """
         self.filename = filename
         self.autoTest()
-        self.rembobine()
+        if self.ok :
+            self.capture = cv2.VideoCapture(self.filename)
+
 
     def autoTest(self):
         #        if sys.platform == 'win32':
@@ -196,48 +195,25 @@ class openCvReader:
     def __nonzero__(self):
         return self.ok
 
-    def rembobine(self):
-        """
-        Recharge le fichier vidéo
-        """
-
-        try:
-            self.filename = unicode(self.filename, 'utf8')
-        except TypeError:
-            pass
-        self.capture = cv.CreateFileCapture(self.filename.encode('utf8'))
-        self.nextImage = 1
-
-
     def getImage(self, index):
         """
-        récupère une IplImage
+        récupère un array numpy
         @param index le numéro de l'image, commence à 1.
-        @return l'image trouvée
+        @return le statu, l'image trouvée
         """
-        if index < self.nextImage:
-            self.rembobine()
-        while index >= self.nextImage:
-            if cv.GrabFrame(self.capture):
-                img = cv.RetrieveFrame(self.capture)
-                self.nextImage += 1
-            else:
-                return None
-        return img
 
-    def writeImage(self, index, imgFileName):
-        """
-        Enregistre une image de la vidéo
-        @param index le numéro de l'image (commence à 1)
-        @param imgFileName un nom de fichier pour l'enregistrement
-        @return vrai si l'enregistrement a réussi
-        """
-        img = self.getImage(index)
-        if img:
-            cv.SaveImage(imgFileName, img)
-            return True
+        if self.capture:
+            self.capture.set(cv2.CAP_PROP_POS_FRAMES, index-1)
+
+            try :
+                status, img =  self.capture.read()
+            except cv2.error:
+                return False,None
+            img2 = cv2.cvtColor(img, cv2.BGR2RGB) #convertis dans le bon format de couleurs
         else:
-            return False
+            return False, None
+        return True, img2
+
 
     def recupere_avi_infos(self):
         """
@@ -245,17 +221,16 @@ class openCvReader:
         @return un quadruplet (framerate,nombre d'images,la largeur, la hauteur)
         """
         try:
-            self.rembobine()
-            fps = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FPS)
-            fcount = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_COUNT)
-            largeur = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_WIDTH)
-            hauteur = cv.GetCaptureProperty(self.capture, cv.CV_CAP_PROP_FRAME_HEIGHT)
+            fps = self.capture.get(cv2.CAP_PROP_FPS)
+            fcount = self.capture.get(cv2.CAP_PROP_FRAME_COUNT)
+            largeur = self.capture.get(cv2.CAP_PROP_FRAME_WIDTH)
+            hauteur = self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
         except:
             print ("could not retrieve informations from the video file.")
             print ("assuming fps = 25, frame count = 10.")
             return 25, 10, 320, 200
 #        return fps, fcount
-        return fps, fcount - 1, largeur, hauteur
+        return fps, fcount, largeur, hauteur
 
     def __str__(self):
         return "<openCvReader instance: filename=%s, nextImage=%d>" % (self.filename, self.nextImage)

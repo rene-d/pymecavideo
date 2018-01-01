@@ -27,6 +27,7 @@ from PyQt5.QtWidgets import *
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
+import os
 
 
 class echelle(QObject):
@@ -49,11 +50,17 @@ class echelle(QObject):
 
     def mParPx(self):
         """renvoie le nombre de mètre par pixel"""
-        return self.longueur_reelle_etalon / self.longueur_pixel_etalon()
+        if not self.isUndef():
+            return self.longueur_reelle_etalon / self.longueur_pixel_etalon()
+        else :
+            return 1
 
     def pxParM(self):
         """renvoie le nombre de pixel par mètre"""
-        return self.longueur_pixel_etalon() / self.longueur_reelle_etalon
+        if not self.isUndef():
+            return self.longueur_pixel_etalon() / self.longueur_reelle_etalon
+        else :
+            return 1
 
     def applique_echelle(self, pos):
         """
@@ -82,7 +89,10 @@ class Label_Echelle(QLabel):
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
-        self.setCursor(Qt.CrossCursor)
+        self.cible_icon = os.path.join(self.app._dir("icones"), "curseur_cible.svg")
+        pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
+        self.cursor = QCursor(pix)
+        self.setCursor(self.cursor)
         self.cropX2 = None
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
         self.zoom_croix.hide()
@@ -116,7 +126,8 @@ class Label_Echelle(QLabel):
 
     def mouseMoveEvent(self, event):
         self.zoom_croix.show()
-        self.pos = vecteur(event.x(), event.y())
+        if (event.x()>0 and event.x()<self.app.largeur) and (event.y()>0 and event.y()<self.app.hauteur):
+            self.pos = vecteur(event.x(), event.y())
         self.fait_crop(self.pos)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
 
@@ -133,7 +144,8 @@ class Label_Echelle(QLabel):
         if event.button() == 1 and self.p1.x() >= 0:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
         self.zoom_croix.hide()
-        self.app.ui.label_zoom.setPixmap(QPixmap(None))
+        self.app.ui.label_zoom.setPixmap(QPixmap())
+        #self.app.ui.label_zoom.repaint()
         del self.zoom_croix
         self.parent.index_du_point = 0
 
@@ -146,9 +158,9 @@ class Label_Echelle(QLabel):
         # self.app.affiche_nb_points(True)
         self.app.mets_a_jour_label_infos(self.app.tr(u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
 
-        self.app.affiche_lance_capture(True)
+        #self.app.affiche_lance_capture(False)
         self.app.feedbackEchelle(self.p1, self.p2)
-        if len(self.app.tousLesClics) > 0:  #si on appelle l'échelle après avoir déjà pointé
+        if len(self.app.listePoints) > 0:  #si on appelle l'échelle après avoir déjà pointé
             self.app.mets_a_jour_label_infos(self.app.tr("Vous pouvez continuer votre acquisition"))
             self.app.affiche_nb_points(False)
             self.app.refait_echelle()
@@ -172,6 +184,10 @@ class Label_Echelle_Trace(QLabel):
 
     def mouseReleaseEvent(self, event):
         event.ignore()
+    def maj(self):
+        print('MAJ', self.width(), self.height())
+        self.setGeometry(QRect(0, 0, self.app.label_video.width(), self.app.label_video.height()))
+
 
     def paintEvent(self, event):
         painter = QPainter()

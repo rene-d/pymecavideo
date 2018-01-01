@@ -26,6 +26,7 @@ from PyQt5.QtWidgets import *
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
+import os
 
 
 class Label_Video(QLabel):
@@ -34,15 +35,21 @@ class Label_Video(QLabel):
         self.parent = parent
         self.app = app
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.setMinimumSize(QSize(640,480))
         self.liste_points = []
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        sizePolicy.setHeightForWidth(True)
-        self.setSizePolicy(sizePolicy)
+        # sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        # sizePolicy.setHeightForWidth(True)
+        #
+        #
+        # self.setSizePolicy(sizePolicy)
 
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
-        self.setCursor(Qt.ArrowCursor)
-        self.pos = self.pos_avant = vecteur(50, 50)
+        self.cible_icon = os.path.join(self.app._dir("icones"), "curseur_cible.svg")
+        pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
+        self.cursor = QCursor(pix)
+        self.setCursor(self.cursor)
+        self.pos = vecteur(50, 50)
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
@@ -52,6 +59,14 @@ class Label_Video(QLabel):
 
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray", "green", "red", "blue", "cyan", "magenta",
                          "yellow", "gray", "green"]
+
+    def sizeHint(self):
+
+        return QSize(self.app.largeur, self.app.hauteur)
+
+    def heightForWidth(self, width):
+
+        return QtGui.QLabel.heightForWidth(self, width)
 
     def reinit(self):
         try:
@@ -63,25 +78,32 @@ class Label_Video(QLabel):
 
     def storePoint(self, point):
         if self.app.lance_capture == True:
+            #### !!! faut-il réactiver la ligne suivante ?
+            #self.app.listePoints.append([self.app.index_de_l_image,len(self.app.listePoints)%self.app.nb_de_points,point])
             self.liste_points.append(point)
             self.pos_avant = self.pos
             self.app.clic_sur_video.emit()
+            self.met_a_jour_crop(self.pos)
             self.update()
-            self.met_a_jour_crop()
 
     def mouseReleaseEvent(self, event):
         self.storePoint(vecteur(event.x(), event.y()))
 
+
     def enterEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
-            self.setCursor(Qt.CrossCursor)
+            pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
+            self.cursor = QCursor(pix)
+            self.setCursor(self.cursor)
         else:
             self.setCursor(Qt.ArrowCursor)
     def maj(self):
+        self.app.dbg.p(1, "rentre dans 'label_video.maj'")
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
 
-    def met_a_jour_crop(self):
-        self.fait_crop(self.pos_avant)
+    def met_a_jour_crop(self, pos = vecteur(50,50)):
+        self.fait_crop(pos)
+        self.app.ui.label_zoom.setPixmap(self.cropX2)
 
     def leaveEvent(self, event):
         if self.app.lance_capture == True:
@@ -99,7 +121,7 @@ class Label_Video(QLabel):
 
     def paintEvent(self, event):
 
-        if self.app.echelle_faite:
+        if self.app.echelle_faite and self.app.lance_capture:
             self.fait_crop(self.pos)
             self.app.ui.label_zoom.setPixmap(self.cropX2)
 
@@ -120,38 +142,22 @@ class Label_Video(QLabel):
         ############################################################
         #draw points
         self.app.dbg.p(5, "In label_video, paintEvent, self.app.points :%s" % self.app.points)
-        for points in self.app.points.values():  #all points clicked are stored here, but updated every "number of point to click" frames
-            color = 0
-
-            for point in points:
-                if type(point) != type(""):
-                    self.painter.setPen(QColor(self.couleurs[color]))
-                    self.painter.setFont(QFont("", 10))
-                    self.painter.translate(point.x(), point.y())
-                    self.painter.drawLine(-2, 0, 2, 0)
-                    self.painter.drawLine(0, -2, 0, 2)
-                    self.painter.translate(-10, +10)
-                    self.painter.drawText(0, 0, str(color + 1))
-
-                    self.painter.translate(-point.x() + 10, -point.y() - 10)
-
-                    color += 1
-        color = 0
-        if self.liste_points != []:
-
-            for point in self.liste_points:  #points clicked in a "number of point to click" sequence.
-
+        cptr_point = 0
+        print("GRRRR", type(self.app.listePoints), self.app.listePoints)
+        for points in self.app.listePoints:  #all points clicked are stored here, but updated every "number of point to click" frames
+            color = cptr_point%self.app.nb_de_points
+            cptr_point+=1
+            point = points[2]
+            if type(point) != type(""):
                 self.painter.setPen(QColor(self.couleurs[color]))
                 self.painter.setFont(QFont("", 10))
                 self.painter.translate(point.x(), point.y())
                 self.painter.drawLine(-2, 0, 2, 0)
                 self.painter.drawLine(0, -2, 0, 2)
                 self.painter.translate(-10, +10)
-                self.painter.drawText(0, 0, str(color + 1))
+                self.painter.drawText(0, 0, str(color+1 ))
 
                 self.painter.translate(-point.x() + 10, -point.y() - 10)
-                color += 1
-                ############################################################
 
         ############################################################
         #paint repere

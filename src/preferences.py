@@ -53,20 +53,16 @@ class Preferences:
         """
         Sauvegarde des préférences dans le fichier de configuration.
         """
-        f = open(self.conffile, "w")
+        f = open(self.conffile, "wb")
         self.app.dbg.p(6, "sauvegarde des preferences dans  %s" % self.conffile)
         self.app.dbg.p(6, "%s" % self)
-        try:
-            self.lastVideo = unicode(self.lastVideo, 'utf8')
-        except TypeError:
-            pass
         pickle.dump((self.proximite, self.lastVideo, self.videoDir), f)
         f.close()
 
     def load(self):
         if os.path.exists(self.conffile):
             try:
-                f = open(self.conffile, "r")
+                f = open(self.conffile, "rb")
                 (self.proximite, self.lastVideo, self.videoDir) = pickle.load(f)
                 f.close()
             except:

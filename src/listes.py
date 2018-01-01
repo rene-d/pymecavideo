@@ -101,7 +101,11 @@ class listePointeeIterateur:
         self.i = 0
         self.lp = lp
 
-    def next(self):
+    def __iter__(self):
+        self.i=0
+        return self
+
+    def __next__(self):
         i = self.i
         self.i += 1
         if i > self.lp.ptr:
@@ -110,56 +114,56 @@ class listePointeeIterateur:
 
 
 if __name__ == "__main__":
-    print "quelques tests de liste pointée"
+    print ("quelques tests de liste pointée")
     l1 = listePointee()
     l1.append(1)
     l1.append(['a', 'b'])
     l1.append(2)
     l1.append(3)
     l1.decPtr()
-    print """
+    print ("""
     l1=listePointee()
     l1.append(1)
     l1.append(['a','b'])
     l1.append(2)
     l1.append(3)
     l1.decPtr()
-"""
-    print ">>> l1 = %s" % l1
-    print ">>> l1[0] = %s" % l1[0]
+""")
+    print (">>> l1 = %s" % l1)
+    print (">>> l1[0] = %s" % l1[0])
 
-    print """
+    print ("""
     for e in l1:
         print e
-"""
+""")
     for e in l1:
-        print e
+        print (e)
 
-    print "\n>>> len(l1) = %s" % len(l1)
+    print ("\n>>> len(l1) = %s" % len(l1))
 
     l1.incPtr()
 
-    print """
+    print ("""
         l1.incPtr()
-"""
+""")
     for e in l1:
-        print e
+        print (e)
 
-    print "\n>>> len(l1) = %s" % len(l1)
+    print ("\n>>> len(l1) = %s" % len(l1))
 
     l1.decPtr()
     l1.decPtr()
     l1.append('x')
 
-    print """
+    print ("""
     l1.decPtr()
     l1.decPtr()
     l1.append('x')
-"""
+""")
     for e in l1:
-        print e
+        print (e)
 
-    print "\n>>> len(l1) = %s" % len(l1)
+    print ("\n>>> len(l1) = %s" % len(l1))
 
         
     
