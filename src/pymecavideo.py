@@ -68,6 +68,7 @@ from listes import listePointee
 from version import Version
 from label_auto import Label_Auto
 from dialogencode import QMessageBoxEncode
+from toQimage import toQImage
 
 import qtiplotexport
 from subprocess import *
