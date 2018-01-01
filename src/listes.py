@@ -61,6 +61,13 @@ class listePointee:
     def __iter__(self):
         return listePointeeIterateur(self)
 
+    def __next__(self):
+        if i > self.ptr:
+            raise StopIteration
+        else:
+            i+=1
+            return self.data[i-1]
+
     def __getitem__(self, i):
         if i >= 0 and i <= self.ptr:
             return self.data[i]
@@ -113,7 +120,7 @@ class listePointeeIterateur:
         return self.lp.data[i]
 
 
-if __name__ == "__main__":
+def test():
     print ("quelques tests de liste pointée")
     l1 = listePointee()
     l1.append(1)
@@ -165,6 +172,14 @@ if __name__ == "__main__":
 
     print ("\n>>> len(l1) = %s" % len(l1))
 
-        
+    print ("test de l'iterateur")
+    i=iter(l1)
+    while True:
+        try:
+            print(next(i))
+        except StopIteration:
+            break
+
     
-              
+if __name__ == "__main__":
+    test()
