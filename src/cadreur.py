@@ -199,17 +199,20 @@ class openCvReader:
         """
         récupère un array numpy
         @param index le numéro de l'image, commence à 1.
-        @return le statu, l'image trouvée
+        @return le statut, l'image trouvée
         """
-
         if self.capture:
             self.capture.set(cv2.CAP_PROP_POS_FRAMES, index-1)
 
             try :
                 status, img =  self.capture.read()
             except cv2.error:
+                print("Erreur, image non décodée")
                 return False,None
-            img2 = cv2.cvtColor(img, cv2.BGR2RGB) #convertis dans le bon format de couleurs
+            except Exception as err:
+                print("Erreur :", err)
+                return False,None
+            img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #convertit dans le bon format de couleurs
         else:
             return False, None
         return True, img2
