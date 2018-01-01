@@ -61,13 +61,6 @@ class listePointee:
     def __iter__(self):
         return listePointeeIterateur(self)
 
-    def __next__(self):
-        if i > self.ptr:
-            raise StopIteration
-        else:
-            i+=1
-            return self.data[i-1]
-
     def __getitem__(self, i):
         if i >= 0 and i <= self.ptr:
             return self.data[i]
