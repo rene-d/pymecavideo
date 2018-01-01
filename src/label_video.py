@@ -143,7 +143,6 @@ class Label_Video(QLabel):
         #draw points
         self.app.dbg.p(5, "In label_video, paintEvent, self.app.points :%s" % self.app.points)
         cptr_point = 0
-        print("GRRRR", type(self.app.listePoints), self.app.listePoints)
         for points in self.app.listePoints:  #all points clicked are stored here, but updated every "number of point to click" frames
             color = cptr_point%self.app.nb_de_points
             cptr_point+=1
