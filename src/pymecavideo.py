@@ -6,9 +6,9 @@ licence['en'] = """
 
     a program to track moving points in a video frameset
     
-    Copyright (C) 2007-2008 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    Copyright (C) 2007-2016 Jean-Baptiste Butet <ashashiwa@gmail.com>
     
-    Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org>
+    Copyright (C) 2007-2016 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
