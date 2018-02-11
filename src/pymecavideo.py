@@ -29,9 +29,9 @@ licence['fr'] = u"""
 
     un programme pour tracer les trajectoires des points dans une vidéo.
     
-    Copyright (C) 2007-2008 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    Copyright (C) 2007-2016 Jean-Baptiste Butet <ashashiwa@gmail.com>
     
-    Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org>
+    Copyright (C) 2007-2018 Georges Khaznadar <georgesk@debian.org>
     
     Ce projet est un logiciel libre : vous pouvez le redistribuer, le modifier selon les terme de la GPL (GNU Public License) dans les termes de la Free Software Foundation concernant la version 3 ou plus de la dite licence.
     
