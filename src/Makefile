@@ -2,7 +2,7 @@ DESTDIR =
 HELPFILES = $(shell ls help | grep -E 'xhtml$$|css$$|png$$')
 LRELEASE = lrelease
 
-all:	Ui_pymecavideo.py Ui_pymecavideo_mini.py Ui_pymecavideo_mini_layout.py helpfiles languages icon_rc.py
+all:	Ui_pymecavideo_mini_layout.py helpfiles languages icon_rc.py
 
 
 icon_rc.py: icon.qrc
