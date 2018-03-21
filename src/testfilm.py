@@ -3,9 +3,8 @@
 
 import sys
 import threading
-import os.path
+import os, os.path
 
-import cv2.cv as cv
 import cv2
 
 
@@ -19,17 +18,12 @@ class film:
         le constructeur
         @param filename le nom d'un fichier video
         """
-        try:
-            filename = unicode(filename, 'utf8')
-        except TypeError:
-            pass
         self.filename = filename
-        try:
-            self.filesize = os.path.getsize(self.filename.encode('utf8'))
-            self.capture = cv2.VideoCapture(self.filename.encode('utf8'))
-        except WindowsError:
+        if os.name == 'nt':
             self.filesize = os.path.getsize(self.filename.encode('cp1252'))
-            self.capture = cv2.VideoCapture(self.filename.encode('cp1252'))
+        else:
+            self.filesize = os.path.getsize(self.filename.encode('utf8'))
+        self.capture = cv2.VideoCapture(self.filename)
 
         t = threading.Thread(target=self.autoTest)
         t.start()
@@ -42,15 +36,15 @@ class film:
         try:
             self.frame = self.capture.read()
             self.num = 0
-            self.fps = self.capture.get(cv.CV_CAP_PROP_FPS)
-            self.framecount = self.capture.get(cv.CV_CAP_PROP_FRAME_COUNT)
+            self.fps = self.capture.get(cv2.CAP_PROP_FPS)
+            self.framecount = self.capture.get(cv2.CAP_PROP_FRAME_COUNT)
             assert 1.0 * self.filesize / self.framecount > 60.0, "fichier aberrant en taille"
             self.ok = True
         except AssertionError:
-            print "assertion"+str(self.fps)+str(self.framecount)
+            print ("assertion"+str(self.fps)+str(self.framecount))
             pass
         except ZeroDivisionError:
-            print "szero"+str(self.fps)+str(self.framecount)
+            print ("szero"+str(self.fps)+str(self.framecount))
 
             pass
         #if self.filename.split('.')[-1].lower() == "ogv":  # never work with ogv. need encoding.

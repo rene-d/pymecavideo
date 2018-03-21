@@ -1211,13 +1211,13 @@ photographie</string>
   <customwidget>
    <class>centralwidgetratio</class>
    <extends>QWidget</extends>
-   <header>widgetratioqt4</header>
+   <header>widgetratioqt5</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>widgetratio</class>
    <extends>QTabWidget</extends>
-   <header>widgetratioqt4</header>
+   <header>widgetratioqt5</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

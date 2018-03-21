@@ -28,10 +28,9 @@ import re
 import subprocess
 import shutil
 
-import cv2.cv as cv
 import cv2
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 
 from vecteur import vecteur
 from globdef import PYMECA_SHARE
@@ -60,7 +59,7 @@ class Cadreur(QObject):
         self.app = app
 
         self.capture = cv2.VideoCapture(self.app.filename.encode('utf8'))
-        self.fps = self.capture.get(cv.CV_CAP_PROP_FPS)
+        self.fps = self.capture.get(cv2.CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
 
         self.app.dbg.p(3, "In : Label_Video, __inti__, fps = %s and delay = %s" % (self.fps, self.delay))
@@ -115,6 +114,19 @@ class Cadreur(QObject):
         self.rayons = vecteur((agauche + adroite) / 2, (dessus + dessous) / 2)
 
 
+    def queryFrame(self):
+        """
+        récupère l'image suivante du film et traite le cas où OpenCV
+        ne sait pas le faire
+        @return une IplImage
+        """
+        if cv2.GrabFrame(self.capture):
+            return cv2.RetrieveFrame(self.capture)
+        else:
+            print ("erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile)
+            sys.exit(1)
+
+
     def montrefilm(self, fini=False):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
@@ -134,7 +146,7 @@ class Cadreur(QObject):
                 p = self.app.points[i][self.numpoint]
                 hautgauche = (p + self.decal - self.rayons) * ech
                 taille = self.sz * ech
-                self.capture.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
+                self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
                 status, img =  self.capture.read()
 
                 x, y = int(hautgauche.x()), int(hautgauche.y())
@@ -150,7 +162,6 @@ class Cadreur(QObject):
                     cv2.destroyAllWindows()
                     break
 
-        #cv.DestroyWindow(self.titre)
         cv2.destroyAllWindows()
         fini = True
 
@@ -170,7 +181,7 @@ class openCvReader:
         self.filename = filename
         self.autoTest()
         if self.ok :
-            self.capture = cv2.VideoCapture(self.filename.encode('utf8'))
+            self.capture = cv2.VideoCapture(self.filename)
 
 
     def autoTest(self):
@@ -188,17 +199,20 @@ class openCvReader:
         """
         récupère un array numpy
         @param index le numéro de l'image, commence à 1.
-        @return le statu, l'image trouvée
+        @return le statut, l'image trouvée
         """
-
         if self.capture:
-            self.capture.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, index-1)
+            self.capture.set(cv2.CAP_PROP_POS_FRAMES, index-1)
 
             try :
                 status, img =  self.capture.read()
             except cv2.error:
+                print("Erreur, image non décodée")
                 return False,None
-            img2 = cv2.cvtColor(img, cv2.cv.CV_BGR2RGB) #convertis dans le bon format de couleurs
+            except Exception as err:
+                print("Erreur :", err)
+                return False,None
+            img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #convertit dans le bon format de couleurs
         else:
             return False, None
         return True, img2
@@ -210,13 +224,13 @@ class openCvReader:
         @return un quadruplet (framerate,nombre d'images,la largeur, la hauteur)
         """
         try:
-            fps = self.capture.get(cv.CV_CAP_PROP_FPS)
-            fcount = self.capture.get(cv.CV_CAP_PROP_FRAME_COUNT)
-            largeur = self.capture.get(cv.CV_CAP_PROP_FRAME_WIDTH)
-            hauteur = self.capture.get(cv.CV_CAP_PROP_FRAME_HEIGHT)
+            fps = self.capture.get(cv2.CAP_PROP_FPS)
+            fcount = self.capture.get(cv2.CAP_PROP_FRAME_COUNT)
+            largeur = self.capture.get(cv2.CAP_PROP_FRAME_WIDTH)
+            hauteur = self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
         except:
-            print "could not retrieve informations from the video file."
-            print "assuming fps = 25, frame count = 10."
+            print ("could not retrieve informations from the video file.")
+            print ("assuming fps = 25, frame count = 10.")
             return 25, 10, 320, 200
 #        return fps, fcount
         return fps, fcount, largeur, hauteur
@@ -232,6 +246,6 @@ if __name__ == '__main__':
         vidfile = '/usr/share/python-mecavideo/video/g1.avi'
     cvReader = openCvReader(vidfile)
     if cvReader:
-        print "Ouverture du fichier %s réussie" % vidfile
+        print ("Ouverture du fichier %s réussie" % vidfile)
     else:
-        print "Ouverture manquée pour le fichier %s" % vidfile
+        print ("Ouverture manquée pour le fichier %s" % vidfile)

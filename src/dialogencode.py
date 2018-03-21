@@ -47,8 +47,9 @@ import subprocess
 import time
 from subprocess import Popen, PIPE, STDOUT
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class MyReaderThread(QThread):
@@ -91,7 +92,7 @@ class MyReaderThread(QThread):
                     if self.pct > 0:
                         self.parent.value_ = int(self.pct)
 
-                        self.app.emit(SIGNAL('updateProgressBar()'))
+                        self.app.updateProgressBar.emit()
                 except ValueError:
                     pass
 
@@ -107,7 +108,7 @@ class MyReaderThread(QThread):
             finally:
                 stdout_file.close()
         self.parent.value_ = 100
-        self.app.emit(SIGNAL('updateProgressBar()'))
+        self.app.updateProgressBar.emit()
 
         self.quit()
 
@@ -144,7 +145,7 @@ class QMessageBoxEncode(QProgressDialog):
         QProgressDialog.__init__(self, app)
         self.setLabelText(
             u"La vidéo n'est pas compatible avec Pymecavideo.\nPymecavideo l'encode dans un autre format.\n Ceci peut prendre un peu de temps");
-        self.setCancelButtonText(QString())
+        self.setCancelButtonText(u"")
         self.setMaximum(100)
         self.setMinimum(0)
         self.app = app

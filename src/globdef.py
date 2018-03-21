@@ -44,9 +44,9 @@ import sys
 import os
 import subprocess
 
-from PyQt4.QtGui import QDesktopServices
+from PyQt5.QtCore import QStandardPaths
 
-# from PyQt4.QtGui import *
+# from PyQt5.QtGui import *
 
 #
 # Version de pymecavideo
@@ -65,7 +65,7 @@ def testerDossier(listDir, defaut=""):
 #
 FILE_ENCODING = sys.getfilesystemencoding()
 DEFAUT_ENCODING = "utf-8"
-print "FILE_ENCODING", FILE_ENCODING
+print ("FILE_ENCODING", FILE_ENCODING)
 
 ######################################################################################  
 def toFileEncoding(path):
@@ -108,7 +108,7 @@ if sys.platform == 'win32':
     sys.path.append(os.path.join(PATH, 'bin'))
 
 else:
-    datalocation = os.path.join("%s" % QDesktopServices.storageLocation(QDesktopServices.DataLocation), "pymecavideo")
+    datalocation = os.path.join(QStandardPaths.standardLocations(QStandardPaths.DataLocation)[0], "data", "pymecavideo")
     PATH = APP_DATA_PATH = datalocation
     if not os.path.exists(datalocation):
         subprocess.call("mkdir -p %s" %datalocation, shell=True)
@@ -143,7 +143,7 @@ GNUPLOT_PATH = GetGnuplotPath()
 
 # Dossier "home"
 #
-HOME_PATH = unicode(QDesktopServices.storageLocation(8), 'iso-8859-1')
+HOME_PATH = QStandardPaths.standardLocations(QStandardPaths.HomeLocation)
 
 #
 # Dossier "video"

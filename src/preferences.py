@@ -44,29 +44,25 @@ class Preferences:
         """
         Renvoie une chaîne représentant les préférences, lisible par un humain
         """
-        result = self.app.tr("Proximite de la souris %1").arg(self.proximite)
-        result += self.app.tr("; derniere video %1").arg(self.lastVideo)
-        result += self.app.tr("; videoDir %1").arg(self.videoDir)
+        result = self.app.tr("Proximite de la souris {0}").format(self.proximite)
+        result += self.app.tr("; derniere video {0}").format(self.lastVideo)
+        result += self.app.tr("; videoDir {0}").format(self.videoDir)
         return "%s" % result
 
     def save(self):
         """
         Sauvegarde des préférences dans le fichier de configuration.
         """
-        f = open(self.conffile, "w")
+        f = open(self.conffile, "wb")
         self.app.dbg.p(6, "sauvegarde des preferences dans  %s" % self.conffile)
         self.app.dbg.p(6, "%s" % self)
-        try:
-            self.lastVideo = unicode(self.lastVideo, 'utf8')
-        except TypeError:
-            pass
         pickle.dump((self.proximite, self.lastVideo, self.videoDir), f)
         f.close()
 
     def load(self):
         if os.path.exists(self.conffile):
             try:
-                f = open(self.conffile, "r")
+                f = open(self.conffile, "rb")
                 (self.proximite, self.lastVideo, self.videoDir) = pickle.load(f)
                 f.close()
             except:

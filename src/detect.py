@@ -23,7 +23,6 @@ from __future__ import print_function
 import os.path
 import tempfile
 
-import cv2.cv as cv
 import cv2
 import numpy as np
 
@@ -100,7 +99,7 @@ def detect_part(part, image, point=None):
     @return l'emplacement où se trouve le motif recherché
     """
     import numpy as np
-    result = cv2.matchTemplate(image, part, cv.CV_TM_SQDIFF) #  CV_TM_CCOEFF
+    result = cv2.matchTemplate(image, part, TM_SQDIFF) #  TM_CCOEFF
     ###########################################################
     # À ce point, result est une carte des coïncidences possibles
     # entre le motif "part" et l'image complète "image"

@@ -20,8 +20,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 from vecteur import vecteur
 import os.path
@@ -75,7 +76,7 @@ class Label_Auto(QLabel):
     def mouseReleaseEvent(self, event):
         self.app.zoom = True
         self.app.motif.append(self.getMotif())
-        self.app.emit(SIGNAL('selection_motif_done()'))
+        self.app.selection_motif_done.emit()
 
 
     def getMotif(self):

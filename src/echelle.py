@@ -21,8 +21,9 @@
 
 from math import sqrt
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 from vecteur import vecteur
 from zoom import Zoom_Croix

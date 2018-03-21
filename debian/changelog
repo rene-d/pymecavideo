@@ -1,3 +1,10 @@
+pymecavideo (7.0~rc1-1) unstable; urgency=medium
+
+  * upgraded to the new upstream version: based on Python3 + Qt5
+  * updated dependencies, Standards-Version, compat level
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 10 Sep 2017 17:45:17 +0200
+
 pymecavideo (6.2cRC2-1) unstable; urgency=medium
 
   * upgraded to the new upstream version

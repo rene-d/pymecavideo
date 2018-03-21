@@ -40,7 +40,7 @@ licence['fr'] = u"""
 """
 
 import cv
-from PyQt4.QtGui import *
+from PyQt5.QtGui import *
 
 import Image
 

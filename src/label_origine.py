@@ -18,8 +18,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
@@ -60,6 +61,6 @@ class Label_Origine(QLabel):
             self.app.ui.label_zoom.setPixmap(QPixmap())
 
         del self.zoom_croix
-        self.app.emit(SIGNAL('change_axe_origine()'))
+        self.app.change_axe_origine.emit()
 
         self.close()

@@ -20,21 +20,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
 import os
 
 
-class Label_Video(QtGui.QLabel):
+class Label_Video(QLabel):
     def __init__(self, parent, app):
-        QtGui.QLabel.__init__(self, parent)
+        QLabel.__init__(self, parent)
         self.parent = parent
         self.app = app
-        self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
         self.setMinimumSize(QSize(640,480))
         self.liste_points = []
         # sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -45,7 +45,6 @@ class Label_Video(QtGui.QLabel):
 
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
-        #self.setCursor(QtCore.Qt.ArrowCursor)
         self.cible_icon = os.path.join(self.app._dir("icones"), "curseur_cible.svg")
         pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
@@ -79,8 +78,10 @@ class Label_Video(QtGui.QLabel):
 
     def storePoint(self, point):
         if self.app.lance_capture == True:
-            self.app.listePoints.append([self.app.index_de_l_image,len(self.app.listePoints)%self.app.nb_de_points,point])
-            self.app.emit(SIGNAL('clic_sur_video()'))
+            self.app.enregistre_dans_listePoints(point)
+            self.liste_points.append(point)
+            self.pos_avant = self.pos
+            self.app.clic_sur_video.emit()
             self.met_a_jour_crop(self.pos)
             self.update()
 
@@ -94,10 +95,10 @@ class Label_Video(QtGui.QLabel):
             self.cursor = QCursor(pix)
             self.setCursor(self.cursor)
         else:
-            self.setCursor(QtCore.Qt.ArrowCursor)
+            self.setCursor(Qt.ArrowCursor)
     def maj(self):
         self.app.dbg.p(1, "rentre dans 'label_video.maj'")
-        self.setGeometry(QtCore.QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
 
     def met_a_jour_crop(self, pos = vecteur(50,50)):
         self.fait_crop(pos)

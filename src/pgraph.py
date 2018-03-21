@@ -4,7 +4,7 @@
     pgraph, a module for pymecavideo:
       a program to launch a handy plotter
       
-    Copyright (C) 2015 Georges Khaznadar <georgesk@debian.org>
+    Copyright (C) 2015-2017 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from PyQt5 import QtWidgets
+import sys
 import pyqtgraph as pg
 import numpy as np
 
@@ -46,33 +48,22 @@ class traceur2d:
 
 
 if __name__ == "__main__":
-    from PyQt4 import QtGui  # (the example applies equally well to PySide)
-    app = QtGui.QApplication([])
-    ## Define a top-level widget to hold everything
-    w = QtGui.QWidget()
-
-    ## Create some widgets to be placed inside
-    btn = QtGui.QPushButton('press me')
-    text = QtGui.QLineEdit('enter text')
-    listw = QtGui.QListWidget()
-
-    x = np.arange(1000)
-    y = np.random.normal(size=(3, 1000))
-    plotWidget = pg.plot(title="Three plot curves")
-    for i in range(3):
-        plotWidget.plot(x, y[i], pen=(i,3))  ## setting pen=(i,3) automaticaly creates three different-colored pens
     
-    ## Create a grid layout to manage the widgets size and position
-    layout = QtGui.QGridLayout()
-    w.setLayout(layout)
-    ## Add widgets to the layout in their proper positions
-    layout.addWidget(btn, 0, 0)   # button goes in upper-left
-    layout.addWidget(text, 1, 0)   # text edit goes in middle-left
-    layout.addWidget(listw, 2, 0)  # list widget goes in bottom-left
-    layout.addWidget(plotWidget, 0, 1, 3, 1)  # plot goes on right side, spanning 3 rows
-
-    ## Display the widget as a new window
-    w.show()
+    
+    #lecture des données x,y depuis l'entrée standard
+    xy=[map(float, ln.split()) for ln in sys.stdin if ln.strip()]
+    x=[coord[0] for coord in xy]
+    y=[coord[1] for coord in xy]
+    
+    app = QtWidgets.QApplication(sys.argv)
+    pg.setConfigOption('background', 'w')
+    pg.setConfigOption('foreground', 'k')
+    plotWidget = pg.plot(title=unicode(sys.argv[1],"UTF-8"))
+    plotWidget.setLabel('bottom', unicode(sys.argv[2],"UTF-8"))
+    plotWidget.setLabel('left', unicode(sys.argv[3],"UTF-8"))
+    plotWidget.plot(x, y)
+    
+    plotWidget.show()
 
     ## Start the Qt event loop
     app.exec_()

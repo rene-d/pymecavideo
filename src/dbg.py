@@ -29,8 +29,8 @@ class Dbg:
         """
         affiche un message si la verbosité est suffisante
         """
-        if niveau <= self.verbosite:
-            print msg
+        if niveau <= int(self.verbosite):
+            print (msg)
 
     def __str__(self):
         """
