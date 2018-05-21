@@ -42,9 +42,11 @@ licence['fr'] = u"""
 #
 # Le module de gestion des erreurs n'est chargé que si on execute le fichier .exe ou si on est sous Linux
 #
-import sys, os, subprocess
+import sys, os, os.path, subprocess
 # if sys.platform == "win32" or sys.argv[0].endswith(".exe"):
 # import Error
+thisDir=os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, thisDir)
 
 from vecteur import vecteur
 import time, subprocess, codecs
