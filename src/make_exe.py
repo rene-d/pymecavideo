@@ -1,5 +1,7 @@
 #!/bin/env python
 
+from __future__ import print_function
+
 from subprocess import check_call, Popen, PIPE
 import shutil
 import os
@@ -62,7 +64,7 @@ def safe_rmtree(f):
 
 
 def report(s):
-    print '============>', s
+    print ('============>', s)
 
 
 def make_exe(options):
@@ -198,7 +200,7 @@ def br_login(br, options):
     br["autologin"] = 0
     page = br.submit()
     s = page.read()
-    # print s
+    # print (s)
     s.index('Logged in as')
 
 
@@ -217,19 +219,19 @@ def upload_file(options, fileInfo):
     page = br.open(URL_FH + 'projects/PYMECAVIDEO/files/')
     s = page.read()
     nb_match_before = s.count(fileName.replace(' ', '_'))
-    # print nb_match_before
-    # print s
+    # print (nb_match_before)
+    # print (s)
 
     report('Opening PYMECAVIDEO - New Files page...')
     page = br.open(URL_FH + 'projects/PYMECAVIDEO/files/new')
     s = page.read()
-    # print s
+    # print (s)
 
     report('Registering the file')
     br.select_form(nr=1)
     control = br.find_control("version_id")
     targetLabel = VersionInfo.longVersion
-    # print control.get_items()
+    # print (control.get_items())
     value = None
     for item in control.get_items():
         for label in item.get_labels():
@@ -244,16 +246,16 @@ def upload_file(options, fileInfo):
     br.add_file(open(filePath, 'rb'), None, fileName)
     report('Uploading %s' % fileName)
     page = br.submit()
-    # print page.read()
+    # print (page.read())
     report('File submitted : %s' % fileName)
 
     report('Opening PYMECAVIDEO - File list page...')
     page = br.open(URL_FH + 'projects/PYMECAVIDEO/files/')
     s = page.read()
-    # print s
+    # print (s)
     fileName = fileName.replace(' ', '_')
     nb_match_after = s.count(fileName)
-    # print nb_match_after
+    # print (nb_match_after)
     assert nb_match_after > nb_match_before
 
     all_matching_links = list(br.links(text=fileName))
@@ -281,14 +283,14 @@ def main():
     options, args = parser.parse_args()
 
     if len(args) == 0:
-        print 'Mandatory Argument: '
-        print '\n'.join(funcListName)
+        print ('Mandatory Argument: ')
+        print ('\n'.join(funcListName))
         sys.exit(1)
     else:
         for funcName in args:
             if not funcName in funcListName:
-                print 'Unsupported argument: %s' % funcName
-                print 'Possible choices: ' + ' '.join(funcListName)
+                print ('Unsupported argument: %s' % funcName)
+                print ('Possible choices: ' + ' '.join(funcListName))
                 sys.exit(1)
 
     if options.dev:
@@ -306,7 +308,7 @@ def main():
                 f(options)
                 break
         else:
-            print 'Unrecognised command:', funcName
+            print ('Unrecognised command:', funcName)
 
 
 if __name__ == '__main__':
