@@ -8,6 +8,7 @@
 #
 ##################################################################################################
 
+from __future__ import print_function
 import sys, os
 from glob import glob
 from cx_Freeze import setup, Executable
@@ -105,7 +106,7 @@ cible = Executable(
     appendScriptToLibrary = False
     )
 
-print "version", version.Version.__str__()
+print ("version", version.Version.__str__())
 setup(  name = "pymecavideo",
         version = "6.2.3.0",
         author = 'Jean-Baptiste Butet ; Georges Khaznadar',
