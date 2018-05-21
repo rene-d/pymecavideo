@@ -79,7 +79,9 @@ import platform
 import tempfile
 import math
 
-from globdef import APP_DATA_PATH, VIDEO, SUFF, VIDEO_PATH, CONF_PATH, IMG_PATH, ICON_PATH, LANG_PATH, \
+from globdef import HOME_PATH,APP_DATA_PATH, VIDEO,\
+    SUFF, VIDEO_PATH, CONF_PATH, \
+    IMG_PATH, ICON_PATH, LANG_PATH, \
     DATA_PATH, HELP_PATH, NEWVID_PATH
 
 from detect import filter_picture
@@ -911,7 +913,7 @@ class StartQt5(QMainWindow):
 
     def rouvre_ui(self):
         self.dbg.p(1, "rentre dans 'rouvre_ui'")
-        dir_ = self._dir("home")
+        dir_ = self._dir("home")[0]
         fichier = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
                                               dir_,
                                               _translate("pymecavideo", "fichiers pymecavideo(*.csv)", None))
