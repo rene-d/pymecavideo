@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 licence = {}
 licence['en'] = """
     pymecavideo version %s:
@@ -94,7 +95,7 @@ def IPLtoQPixmap(cv_image, swap=True, mode="RGB"):
                   cv_image.width * 3,
                   QImage.Format_RGB888)
     pixmap = QPixmap.fromImage(qimg)
-    print pixmap.size()
+    print (pixmap.size())
     return pixmap
 
 
@@ -116,7 +117,7 @@ def PILtoQPixmap(pil_image, swap=True, encoder="jpeg", mode="RGB"):
     """
     # print pil_image
     PILstring = pil_image.convert(mode).tostring()
-    #print "#########",pil_image.size[1], pil_image.size[0]
+    #print ("#########",pil_image.size[1], pil_image.size[0])
     qimg = QImage(PILstring,
                   pil_image.size[0],
                   pil_image.size[1],
