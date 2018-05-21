@@ -153,7 +153,7 @@ if sys.platform == 'win32':
 else:
     VIDEO_PATH = testerDossier((os.path.join("..", "data", "video"),
                                 '/usr/share/pymecavideo/video',
-                                '/usr/share/python-mecavideo/video'),
+                                '/usr/share/python3-mecavideo/video'),
                                APP_DATA_PATH)
 
 #
@@ -161,7 +161,7 @@ else:
 #
 
 PYMECA_SHARE = testerDossier(('/usr/share/pymecavideo',
-                              '/usr/share/python-mecavideo',
+                              '/usr/share/python3-mecavideo',
                               '.'),
                              '/usr/share/pymecavideo')
 
@@ -180,8 +180,12 @@ else:
 if sys.platform == 'win32':
     ICON_PATH = os.path.join(PATH, "data", "icones")
 else:
-    ICON_PATH = testerDossier((os.path.join("..", "data", "icones"),
-                               '/usr/share/python-mecavideo/icones', '/usr/share/pymecavideo/icones'))
+    ICON_PATH = testerDossier(
+        (os.path.join("..", "data", "icones"),
+         '/usr/share/python3-mecavideo/icones',
+         '/usr/share/pymecavideo/icones',
+         '/usr/share/icons')
+    )
 #
 # Dossier des langues
 #
@@ -189,7 +193,7 @@ if sys.platform == 'win32':
     LANG_PATH = os.path.join(PATH, r"data", r"lang")
 else:
     LANG_PATH = testerDossier((os.path.join("..", "data", "lang"),
-                               '/usr/share/pyshared/pymecavideo/lang', '/usr/share/python-mecavideo/lang',
+                               '/usr/share/pyshared/pymecavideo/lang', '/usr/share/python3-mecavideo/lang',
                                '/usr/share/pymecavideo/lang'))
 
 #
@@ -200,7 +204,7 @@ if sys.platform == 'win32':
 else:
     #DATA_PATH = os.path.join(PATH,"..","data")
     DATA_PATH = testerDossier((os.path.join("..", "data"),
-                               '/usr/share/python-mecavideo/', '/usr/share/pymecavideo/'))
+                               '/usr/share/python3-mecavideo/', '/usr/share/pymecavideo/'))
 
 #
 # Dossier de l'aide
