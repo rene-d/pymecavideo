@@ -914,7 +914,7 @@ class StartQt5(QMainWindow):
     def rouvre_ui(self):
         self.dbg.p(1, "rentre dans 'rouvre_ui'")
         dir_ = self._dir("home")[0]
-        fichier = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
+        fichier, _ = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
                                               dir_,
                                               _translate("pymecavideo", "fichiers pymecavideo(*.csv)", None))
 
