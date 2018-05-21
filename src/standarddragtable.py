@@ -4,7 +4,7 @@
       a subclass of QTableWidget able to send its data by drag & drop
       or to the clipboard.
       
-    Copyright (C) 2008 Georges Khaznadar <georgesk@ofset.org>
+    Copyright (C) 2007-2018 Georges Khaznadar <georgesk.debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

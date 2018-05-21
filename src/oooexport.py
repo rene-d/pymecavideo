@@ -5,7 +5,7 @@
       a program to track moving points in a video frameset
       
     Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
-    Copyright (C) 2015 Georges Khaznadar <georgesk@debian.org>
+    Copyright (C) 2007-2018 Georges Khaznadar <georgesk.debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

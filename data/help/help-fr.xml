@@ -6,7 +6,7 @@
 <author>
 <firstname>Georges</firstname>
 <surname>Khaznadar</surname>
-<address><email>georgesk@ofset.org</email></address>
+<address><email>georgesk@debian.org</email></address>
 </author>
 <date>1er janvier 200826 octobre 2010</date>
 <abstract>
@@ -80,11 +80,8 @@ Il est possible aussi d'obtenir des fichiers binaires, qui sont pris en charge
 par le gestionnaire de paquets de votre distribution préférée. Actuellement
 on trouve des paquets RPM et DEB.
 </para>
-<para>Les paquets pour Debian et Ubuntu sont maintenus dans le 
-<ulink url="http://debian.ofset.org">dépôt debian</ulink>
-de l'association <ulink url="http://www.ofset.org">OFSET</ulink>.
-Les instructions de téléchargement sont expliquées dans la 
-<ulink url="http://debian.ofset.org">page d'accueil du dépôt</ulink>.
+<para>Les paquets pour Debian et Ubuntu sont disponibles dans les dépôts
+officiels de ces distributions.
 </para>
 </sect1>
 <sect1>
@@ -520,8 +517,8 @@ GNU/Linux et sous <trademark>Windows</trademark>.
 <para>&copy; 2007-2010, 
 <author><personname><firstname>Jean-Baptiste</firstname><surname>Butet</surname></personname></author> <email>ashashiwa@gmail.com</email> : initiateur du projet PyMecaVideo
 </para>
-<para>&copy; 2008-2010,
-<author><personname><firstname>Georges</firstname><surname>Khaznadar</surname></personname></author> <email>georgesk@ofset.org</email> : contribution, empaquetage Debian
+<para>&copy; 2008-2018,
+<author><personname><firstname>Georges</firstname><surname>Khaznadar</surname></personname></author> <email>georgesk@debian.org</email> : contribution, empaquetage Debian
 </para>
 <para>&copy; 2008-2010,
 <author><personname><firstname>Benoît</firstname><surname>Markey</surname></personname></author> <email>markey@free.fr</email> : vidéos d'exemple

@@ -73,7 +73,7 @@ setup(name='pyMecaVideo',
       version='6.1',
       description='Analyse Mécanique des videos',
       author='Jean-Baptiste Butet ; Georges Khaznadar',
-      author_email='ashashiwa@gmail.com ; georgesk@ofset.org',
+      author_email='ashashiwa@gmail.com ; georgesk@debian.org',
       url='http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo',
 
       options=options,

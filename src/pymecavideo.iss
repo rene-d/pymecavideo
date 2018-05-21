@@ -23,7 +23,7 @@ AppName=pymecavideo 6
 AppVerName=pymecavideo 6.0
 AppVersion=6.0
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
-AppCopyright=Copyright (C) 2007-2008 Georges Khaznadar <georgesk@ofset.org> Jean-Baptiste Butet <ashashiwa@gmail.com>
+AppCopyright=Copyright (C) 2007-2018 Georges Khaznadar <georgesk.debian.org>
 VersionInfoVersion = 6.0.0.1
 
 ;Répertoire de base contenant les fichiers

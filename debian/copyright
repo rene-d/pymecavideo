@@ -1,25 +1,25 @@
-This package was debianized by Georges Khaznadar <georgesk@ofset.org> on
+This package was debianized by Georges Khaznadar <georgesk@debian.org> on
 Wed, 26 Dec 2007 15:55:42 +0100.
 
 It was downloaded from svn://lucette-serveur.hd.free.fr/pymecavideo
 
 Upstream Authors: 
 
-    Jean-Baptiste Butet <Jean-Baptiste.Butet@ac-lyon.fr> (main)
-    Georges Khaznadar <georgesk@ofset.org>               (contributions)
-    Cédrick FAURY <cedrick.faury@laposte.net>            (W$ portage)
+    Jean-Baptiste Butet <Jean-Baptiste.Butet@ac-lyon.fr>
+    Georges Khaznadar <georgesk@debian.org>
+    Cédrick FAURY <cedrick.faury@laposte.net>  port for Windows
 
 Copyright: 
 
     Copyright (C) 2007-2010 Jean-Baptiste Butet
-    Copyright (C) 2008-2010 Georges Khaznadar
+    Copyright (C) 2008-2018 Georges Khaznadar
     Copyright (C) 2010 Cédrick FAURY
 
 License:
 
     GPL version 3, see `/usr/share/common-licenses/GPL-3'.
 
-The Debian packaging is (C) 2007, Georges Khaznadar <georgesk@ofset.org> and
+The Debian packaging is (C) 2007, Georges Khaznadar <georgesk@debian.org> and
 is licensed under the GPL version 3, see `/usr/share/common-licenses/GPL-3'.
 
 ================================================
