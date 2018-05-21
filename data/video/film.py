@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 import cv
 import sys, threading
@@ -90,7 +91,7 @@ import os.path, re
 def showSlowAVI(fname):
     f = film(fname)
     if f:
-        print "vidéo : %s %d trames %d trames par seconde" % (fname, f.nbTrames(), f.tramesParSeconde())
+        print ("vidéo : %s %d trames %d trames par seconde" % (fname, f.nbTrames(), f.tramesParSeconde()))
         loop = True
         forward = None
         num = 0
@@ -115,7 +116,7 @@ def showSlowAVI(fname):
                 elif char == 1048674:  # b
                     forward = False
     else:
-        print "la vidéo %s n'est pas bien acceptée par OpenCV" % fname
+        print ("la vidéo %s n'est pas bien acceptée par OpenCV" % fname)
     cv.DestroyWindow("Example2")
 
 
@@ -131,7 +132,7 @@ if __name__ == '__main__':
         basedir = sys.argv[1]
     else:
         basedir = '/usr/share/python-mecavideo/video'
-    print "forward='f' backward='b' next='Esc'"
+    print ("forward='f' backward='b' next='Esc'")
     cv.NamedWindow("Example2", cv.CV_WINDOW_AUTOSIZE)
     os.path.walk(basedir, showMovies, None)
     cv.DestroyWindow("Example2")
