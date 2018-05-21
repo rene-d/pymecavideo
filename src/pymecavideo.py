@@ -1494,7 +1494,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         trace une courbe
         @param itemChoisi est un numéro d'item dans la liste des
-        courbes qu'on peut tracer ; c'est très lié à l'implémentation :
+        courbes qu'on peut tracer ; c'est trop lié à l'implémentation :
         à rendre plus propre si possible !!!!
         """
         self.dbg.p(1, "rentre dans 'tracer_courbe'")
@@ -1504,7 +1504,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         # try:
         self.ui.comboBox_mode_tracer.setCurrentIndex(0)
         if itemChoisi <= 0: return  # c'est rien du tout.
-        numero = (itemChoisi - 1) / 3
+        numero = (itemChoisi - 1) // 3 ## force le type entier !
         typeDeCourbe = ("x", "y", "v")[(itemChoisi - 1) % 3]
         titre = (_translate("pymecavideo", "Evolution de l'abscisse du point {0}", None).format(numero + 1),
                  _translate("pymecavideo", "Evolution de l'ordonnée du point {0}", None).format(numero + 1),
@@ -2145,7 +2145,7 @@ class plotThread(threading.Thread):
 
     def run(self):
         p=subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE)
-        p.communicate(self.xy)
+        p.communicate(self.xy.encode("utf-8"))
         return
     
 
