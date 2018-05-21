@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 """
     dicopoint, a module for pymecavideo:
@@ -170,7 +171,7 @@ class Points:
 
 
 if __name__ == "__main__":
-    print "coucou"
+    print ("coucou")
     pts = Points(8, 2)  # 8 trames vidéo, deux points suivis
     try:
         p = Point(10, 20, Point.userClick)
@@ -184,22 +185,22 @@ if __name__ == "__main__":
         p = Point(30, 40, Point.openCv)
         pts[6, 1] = p
         pts[7, 1] = p
-        print "pts[6,1]", pts[6, 1]
-        print "pts[7,1]", pts[7, 1]
-        print "voisins du dernier, le point 7, objet 0", pts.voisins(7, 0)
-        print "voisins du dernier, le point 7, objet 1", pts.voisins(7, 1)
-        print "voisins du premier, le point 0", pts.voisins(0, 1)
-        print "voisins du point 5, objet 0", pts.voisins(5, 0)
-        print "voisins du point 5, objet 1", pts.voisins(5, 1)
-        print "appel d'un tuple (3,3), retourne les voisins", pts.voisins((3, 3))
-        print "pts[15,1]", pts[15, 1]
+        print ("pts[6,1]", pts[6, 1])
+        print ("pts[7,1]", pts[7, 1])
+        print ("voisins du dernier, le point 7, objet 0", pts.voisins(7, 0))
+        print ("voisins du dernier, le point 7, objet 1", pts.voisins(7, 1))
+        print ("voisins du premier, le point 0", pts.voisins(0, 1))
+        print ("voisins du point 5, objet 0", pts.voisins(5, 0))
+        print ("voisins du point 5, objet 1", pts.voisins(5, 1))
+        print ("appel d'un tuple (3,3), retourne les voisins", pts.voisins((3, 3)))
+        print ("pts[15,1]", pts[15, 1])
 
 
-    except IndexError, (message):
-        print "erreur d'index :", message
+    except IndexError as err:
+        print ("erreur d'index :", err.message)
     try:
-        print "pts[5]", pts[5]
-    except IndexError, (message):
-        print "erreur d'index :", message
-    print pts
+        print ("pts[5]", pts[5])
+    except IndexError as err:
+        print ("erreur d'index :", err.message)
+    print (pts)
         
