@@ -6,7 +6,7 @@
       This module is just an utility to manage the version number which
       is important for releases of pymecavideo
       
-    Copyright (C) 2008 Georges Khaznadar
+    Copyright (C) 2008-2018 Georges Khaznadar
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import os.path, gzip, re
 
 class version:
     def __init__(self, majeur, mineur, nuance=""):
@@ -39,8 +40,18 @@ class version:
 ###############################################################
 # la version courante, à incrémenter lors de changements
 ###############################################################
-Version = version(6, 2, '')
+Version = version(6, 5, '')
 ###############################################################
+# incrémentation automatique pour une distribution debian
+###############################################################
+packageName= "python3-mecavideo"
+changelog=os.path.join("/usr/share/doc", packageName, "changelog.Debian.gz")
+if os.path.exists(changelog):
+    with gzip.open(changelog) as chlog:
+        firstline=chlog.readline().strip().decode("utf-8")
+        m=re.match(r"^pymecavideo \((.*)\).*$", firstline)
+        if m:
+            Version=m.group(1)
 
 
 if __name__ == "__main__":
