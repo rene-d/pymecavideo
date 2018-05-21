@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 licence = {}
 licence['en'] = """
@@ -27,7 +28,7 @@ licence['en'] = """
 licence['fr'] = u"""
     pymecavideo version %s :
 
-    un programme pour tracer les trajectoires des points dans une vid�o.
+    un programme pour tracer les trajectoires des points dans une vidéo.
     
     Copyright (C) 2007-2008 Jean-Baptiste Butet <ashashiwa@gmail.com>
     
@@ -35,7 +36,7 @@ licence['fr'] = u"""
     
     Ce projet est un logiciel libre : vous pouvez le redistribuer, le modifier selon les terme de la GPL (GNU Public License) dans les termes de la Free Software Foundation concernant la version 3 ou plus de la dite licence.
     
-    Ce programme est fait avec l'espoir qu'il sera utile mais SANS AUCUNE GARANTIE. Lisez la licence pour plus de d�tails.
+    Ce programme est fait avec l'espoir qu'il sera utile mais SANS AUCUNE GARANTIE. Lisez la licence pour plus de détails.
     
     <http://www.gnu.org/licenses/>.
 """
@@ -49,10 +50,10 @@ import globdef
 def _exceptionhook(typ, value, traceb):
     """ On catch une exception """
     frame = traceb.tb_frame
-    print >> sys.stderr, "\n"
+    print ("\n", file=sys.stderr)
     traceback.print_tb(traceb)
-    print >> sys.stderr, "\nType : ", typ, "\n"
-    print >> sys.stderr, "ValueError : ", value
+    print ("\nType : ", typ, "\n", file=sys.stderr)
+    print ("ValueError : ", value, file=sys.stderr)
     sys.exit()
 
 
@@ -75,14 +76,14 @@ class RedirectErr:
         #
         if not self.error_occured:
             #
-            # Premi�re erreur
+            # Première erreur
             # D'abord on enregistre la fonction atexit
             import atexit
 
             atexit.register(SendBugReport)
             # puis on ouvre le fichier qui contient les erreurs
             self.file_error = open(globdef.ERROR_FILE, 'w')
-            print globdef.ERROR_FILE
+            print (globdef.ERROR_FILE)
             self.error_occured = True
         if self.file_error is not None:
             self.file_error.write(text)
@@ -117,7 +118,7 @@ def SendBugReport():
 
     if dlg == QMessageBox.Yes:  # YES, on envoie le mail
         #
-        # D�finition du mail
+        # Définition du mail
         #
         e_mail = "pymecavideo-bugs@lists.tuxfamily.org"
         now = str(datetime.datetime.now())
@@ -143,7 +144,7 @@ def SendBugReport():
         file_error.close()
         to_send = """mailto:%s?subject=%s&body=%s""" % (e_mail, subject, body)
         #
-        # On v�rifie si l'utilisateur travaille avec Outlook
+        # On vérifie si l'utilisateur travaille avec Outlook
         #
         #        try:
         #            outlook_app = Dispatch("Outlook.application")
@@ -161,5 +162,5 @@ def SendBugReport():
 
 if __name__ == '__main__':
     sys.stderr = RedirectErr(sys.stderr)
-    print r
+    print (r)
     
