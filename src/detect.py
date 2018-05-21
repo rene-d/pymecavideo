@@ -43,8 +43,11 @@ def filter_picture(parts, num, image, dossTemp, points=None):
     motif partiel dans l'image.
     """
     part  = parts [num]
-    point = points[num]
-    
+    if points:
+        point = points[num]
+    else:
+        point=None
+        
     if "QImage" in str(type(part)):
         part = QImage2CVImage(part, dossTemp)
         
@@ -99,7 +102,7 @@ def detect_part(part, image, point=None):
     @return l'emplacement où se trouve le motif recherché
     """
     import numpy as np
-    result = cv2.matchTemplate(image, part, TM_SQDIFF) #  TM_CCOEFF
+    result = cv2.matchTemplate(image, part, cv2.TM_SQDIFF) #  cv2.TM_CCOEFF
     ###########################################################
     # À ce point, result est une carte des coïncidences possibles
     # entre le motif "part" et l'image complète "image"
