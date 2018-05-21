@@ -57,7 +57,7 @@ fix-install:
 	find $(DESTDIR)/usr/share/python-mecavideo -type f -exec chmod 644 {} \;
 
 install-ordinaire: all
-	python setup.py install
+	python3 setup.py install
 	install -m 755 pymecavideo $(DESTDIR)/usr/bin
 	mkdir -p $(DESTDIR)/usr/share/man/man1
 	gzip -c9 pymecavideo.1 > $(DESTDIR)/usr/share/man/man1/pymecavideo.1.gz
