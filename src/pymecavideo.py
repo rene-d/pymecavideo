@@ -662,6 +662,17 @@ class StartQt5(QMainWindow):
         self.ui.pushButton_stopCalculs.setEnabled(0)
         self.ui.pushButton_stopCalculs.hide()
 
+    def onePointFind(self):
+        """est appelée quand un point a été trouvé lors de la détection automatique
+        self.pointFound : liste des points trouvés
+        """
+        self.dbg.p(1, "rentre dans 'onePointFind'")
+
+        self.pointsFound.append(self.pointTrouve)  # stock all points found
+
+        for point in self.pointsFound:
+            self.label_video.storePoint(vecteur(point[0], point[1]))
+
     def readStdout(self):
         self.dbg.p(1, "rentre dans 'readStdout'")
         try:
