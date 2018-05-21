@@ -1,6 +1,7 @@
 DESTDIR =
 HELPFILES = $(shell ls data/help/help-*.xhtml data/help/*.png)
 MAN_LANG = fr
+PACKAGE = python3-mecavideo
 
 all: manpage
 	for d in src; do DESTDIR=$(DESTDIR) $(MAKE) -C $$d $@ ; done
@@ -20,7 +21,7 @@ clean:
 	make -C data/help clean
 
 install-for-debian: all install-bin install-man install-help install-media fix-install
-	cp src/testfilm.py $(DESTDIR)/usr/share/python-mecavideo
+	cp src/testfilm.py $(DESTDIR)/usr/share/$(PACKAGE)
 
 install-bin:
 	install -m 755 pymecavideo $(DESTDIR)/usr/bin
@@ -34,23 +35,25 @@ install-man:
 	done
 
 install-help:
-	mkdir -p $(DESTDIR)/usr/share/doc/python-mecavideo/html
+	mkdir -p $(DESTDIR)/usr/share/doc/$(PACKAGE)/html
 	for f in $(HELPFILES); do \
-	  cp $$f $(DESTDIR)/usr/share/doc/python-mecavideo/html; \
+	  cp $$f $(DESTDIR)/usr/share/doc/$(PACKAGE)/html; \
 	done
 
 install-media:
 	install -m 0644 data/icones/pymecavideo.xpm data/icones/pymecavideo-48.png \
 	  $(DESTDIR)/usr/share/pixmaps
 	install -m 0644 pymecavideo.desktop $(DESTDIR)/usr/share/applications
-	install -m 0644 data/icones/pymecavideo.svg data/icones/pymecavideo.png \
-	  $(DESTDIR)/usr/share/icons
+	for i in pymecavideo curseur_cible; do \
+	  install -m 0644 data/icones/$$i.svg data/icones/$$i.png \
+	  $(DESTDIR)/usr/share/icons; \
+	done
 	for d in data/icones data/video data/lang; do \
-	  cp -a $$d $(DESTDIR)/usr/share/python-mecavideo ; \
+	  cp -a $$d $(DESTDIR)/usr/share/$(PACKAGE) ; \
 	done
 
 fix-install:
-	find $(DESTDIR)/usr/share/python-mecavideo -name COPYING -exec rm {} \;
-	find $(DESTDIR)/usr/share/python-mecavideo -type f -exec chmod 644 {} \;
+	find $(DESTDIR)/usr/share/$(PACKAGE) -name COPYING -exec rm {} \;
+	find $(DESTDIR)/usr/share/$(PACKAGE) -type f -exec chmod 644 {} \;
 
 .PHONY: clean all install-for-debian install-bin install-man install-help install-media fix-install helpfiles
