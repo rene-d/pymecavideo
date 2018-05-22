@@ -3,7 +3,7 @@
 from __future__ import print_function
 
 from subprocess import check_call, Popen, PIPE
-import shutil,os,sys,urllib, urllib2
+import shutil,os,sys,urllib
 from optparse import Option, OptionParser
 
 # paths
