@@ -1,5 +1,7 @@
 #!/bin/env python
 
+from __future__ import print_function
+
 from subprocess import check_call, Popen, PIPE
 import shutil,os,sys,urllib, urllib2
 from optparse import Option, OptionParser
@@ -53,7 +55,7 @@ def safe_rmtree( f ):
     assert not os.path.exists( f )
 
 def report( s ):
-    print '============>', s
+    print ('============>', s)
 
 def make_exe( options ):
     report( '%s mode' % ('DEBUG' if options.debug else 'RELEASE' ) )
@@ -259,14 +261,14 @@ def main():
     options, args = parser.parse_args()
 
     if len(args) == 0:
-        print 'Mandatory Argument: '
-        print '\n'.join( funcListName )
+        print ('Mandatory Argument: ')
+        print ('\n'.join( funcListName ))
         sys.exit(1)
     else:
         for funcName in args:
             if not funcName in funcListName:
-                print 'Unsupported argument: %s' % funcName
-                print 'Possible choices: ' + ' '.join( funcListName )
+                print ('Unsupported argument: %s' % funcName)
+                print ('Possible choices: ' + ' '.join( funcListName ))
                 sys.exit(1)
                 
     if options.dev:
@@ -284,7 +286,7 @@ def main():
                 f( options )
                 break
         else:
-            print 'Unrecognised command:', funcName
+            print ('Unrecognised command:', funcName)
 
 if __name__ == '__main__':
     main()
