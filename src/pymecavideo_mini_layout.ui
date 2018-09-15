@@ -193,7 +193,7 @@
                  <x>10</x>
                  <y>20</y>
                  <width>139</width>
-                 <height>347</height>
+                 <height>357</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -997,7 +997,7 @@ photographie</string>
              </item>
              <item>
               <property name="text">
-               <string>Oo.o Calc</string>
+               <string>LibreOffice Calc</string>
               </property>
              </item>
              <item>
@@ -1120,7 +1120,7 @@ photographie</string>
   </action>
   <action name="actionQuitter">
    <property name="text">
-    <string>Quitter (Ctrl-Q)</string>
+    <string>&amp;Quitter (Ctrl-Q)</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+Q</string>
@@ -1128,7 +1128,7 @@ photographie</string>
   </action>
   <action name="actionSaveData">
    <property name="text">
-    <string>Enregistrer les données (Ctrl-S)</string>
+    <string>&amp;Enregistrer les données (Ctrl-S)</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+S</string>
@@ -1141,7 +1141,7 @@ photographie</string>
   </action>
   <action name="actionAide">
    <property name="text">
-    <string>Aide (F1)</string>
+    <string>&amp;Aide (F1)</string>
    </property>
    <property name="shortcut">
     <string notr="true">F1</string>
@@ -1149,7 +1149,7 @@ photographie</string>
   </action>
   <action name="actionExemples">
    <property name="text">
-    <string>Exemples ...</string>
+    <string>&amp;Exemples ...</string>
    </property>
   </action>
   <action name="actionRouvrirMecavideo">
@@ -1172,7 +1172,7 @@ photographie</string>
   </action>
   <action name="actionDefaire">
    <property name="text">
-    <string>Défaire (Ctrl-Z)</string>
+    <string>&amp;Défaire (Ctrl-Z)</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+Z</string>
@@ -1180,7 +1180,7 @@ photographie</string>
   </action>
   <action name="actionRefaire">
    <property name="text">
-    <string>Refaire (Ctrl-Y)</string>
+    <string>&amp;Refaire (Ctrl-Y)</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+Y</string>
@@ -1188,7 +1188,7 @@ photographie</string>
   </action>
   <action name="actionOpenOffice_org_Calc">
    <property name="text">
-    <string>OpenOffice.org &amp;Calc</string>
+    <string>LibreOffice &amp;Calc</string>
    </property>
   </action>
   <action name="actionQtiplot">

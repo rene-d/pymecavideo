@@ -92,9 +92,9 @@ class standardDragTable(QTableWidget):
 
     def mimeSelected(self):
         mime = QMimeData()
-        t = self.htmlSelected()
+        t = self.htmlSelected().encode("utf-8")
         mime.setData("text/html", t)
-        t = self.textSelected()
+        t = self.textSelected().encode("utf-8")
         mime.setData("text/plain", t)
         return mime
 

@@ -597,6 +597,21 @@ Merci de bien vouloir le renommer avant de continuer</translation>
         <source>D&#xe9;sol&#xe9; pas de fichier d&apos;aide pour le langage {0}.</source>
         <translation type="obsolete">Désolé pas de fichier d&apos;aide pour le langage {0}.</translation>
     </message>
+    <message>
+        <location filename="../../src/pymecavideo.py" line="1898"/>
+        <source>fichiers vid&#xe9;os (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
+        <translation type="obsolete">fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</translation>
+    </message>
+    <message>
+        <location filename="../../src/pymecavideo.py" line="1976"/>
+        <source>Veuillez choisir une image (et d&#xe9;finir l&apos;&#xe9;chelle)</source>
+        <translation type="obsolete">Veuillez choisir une image (et définir l&apos;échelle)</translation>
+    </message>
+    <message>
+        <location filename="../../src/pymecavideo.py" line="2066"/>
+        <source>Pymecavideo n&apos;arrive pas &#xe0; lire l&apos;image</source>
+        <translation type="obsolete">Pymecavideo n&apos;arrive pas à lire l&apos;image</translation>
+    </message>
     <message encoding="UTF-8">
         <location filename="../../src/pymecavideo.py" line="373"/>
         <source>indéf.</source>
