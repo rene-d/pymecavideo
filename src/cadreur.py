@@ -58,7 +58,7 @@ class Cadreur(QObject):
         self.numpoint = numpoint
         self.app = app
 
-        self.capture = cv2.VideoCapture(self.app.filename.encode('utf8'))
+        self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
         self.fps = self.capture.get(cv2.CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
 
@@ -139,7 +139,7 @@ class Cadreur(QObject):
         cv2.createTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
         ech, w, h = self.echelleTaille()
 
-        self.capture = cv2.VideoCapture(self.app.filename.encode('utf8'))
+        self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
         while not fini:
 
             for i in self.app.points.keys():
