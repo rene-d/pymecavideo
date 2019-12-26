@@ -1393,10 +1393,17 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         #efface la dernière entrée dans le tableau
         self.ui.tableWidget.removeRow(int((len(self.listePoints)-1)/self.nb_de_points))
         self.listePoints.decPtr()
+        self.dbg.p(2, "self.listePoints" + str(self.listePoints) + "self.points" +str( self.points))
         if len(self.listePoints)%self.nb_de_points!=0:
-            self.points[len(self.listePoints)/self.nb_de_points].pop()
+            try : 
+                self.points[len(self.listePoints)/self.nb_de_points].pop()
+            except KeyError:
+                self.dbg.p(1, "Erreur de clé : "+str(len(self.listePoints)/self.nb_de_points)) #liée au passage de ptyhon2 à python3 et au changement de comportement de /
         else:
-            del self.points[len(self.listePoints)/self.nb_de_points]
+            try : 
+                del self.points[len(self.listePoints)/self.nb_de_points]
+            except KeyError : 
+                self.dbg.p(1, "Erreur de clé : "+str(len(self.listePoints)/self.nb_de_points))
 
         ##dernière image à afficher
         if self.nb_de_points!=1:
