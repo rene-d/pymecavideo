@@ -1,14 +1,19 @@
 Description : 
-    Pymecavideo est un logiciel écrit en PyQT4 pour permettre le
+    Pymecavideo est un logiciel écrit en PyQT4 (puis 5) pour permettre le
 pointage d'une vidéo, le tracé des trajectoires du point pointé et
 l'export des positions (temporelles et spatiales) des points choisis.
 
 Installation : 
     Pymecavideo nécessite 4 dépendances :
-        PyQT4 : python-qt4  (-devel si vous utilisez le svn)
+        PyQT5 : python-qt5  (-devel si vous utilisez le svn)
         python-opencv
         python-pyqtgraph
 	python-odf (ou odfpy)
+	
+avec une installation via pip : 
+pip install opencv-python
+pip install pyqt5
+pip install pywin32
 
 Si pyqtgraph n'est pas packagé, il est très facile de l'installer : 
 pip install pyqtgraph
