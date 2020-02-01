@@ -42,12 +42,14 @@ licence['fr'] = u"""
 #
 # Le module de gestion des erreurs n'est chargé que si on execute le fichier .exe ou si on est sous Linux
 #
-import sys, os, subprocess
+import sys, os, os.path, subprocess
 # if sys.platform == "win32" or sys.argv[0].endswith(".exe"):
 # import Error
+thisDir=os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, thisDir)
 
 from vecteur import vecteur
-import time, subprocess, codecs
+import time
 import locale, getopt
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -71,7 +73,6 @@ from dialogencode import QMessageBoxEncode
 from toQimage import toQImage
 
 import qtiplotexport
-from subprocess import *
 import re
 
 import threading
@@ -449,6 +450,7 @@ class StartQt5(QMainWindow):
         self.ui.actionSaveData.triggered.connect(self.enregistre_ui)
         self.ui.actionCopier_dans_le_presse_papier.triggered.connect(self.presse_papier)
         self.ui.actionOpenOffice_org_Calc.triggered.connect(self.oooCalc)
+        self.ui.action_Python_source.triggered.connect(self.pythonSource)
         self.ui.actionQtiplot.triggered.connect(self.qtiplot)
         self.ui.actionScidavis.triggered.connect(self.scidavis)
         self.ui.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
@@ -805,12 +807,15 @@ class StartQt5(QMainWindow):
             option = self.ui.exportCombo.currentText()
             if option == "LibreOffice Calc":
                 self.oooCalc()
+            elif option == "Python (source)":
+                self.pythonSource()
             elif option == "Qtiplot":
                 self.qtiplot()
             elif option == "SciDAVis":
                 self.scidavis()
             self.ui.exportCombo.setCurrentIndex(0)
         return
+
 
     def oooCalc(self):
         """
@@ -822,6 +827,80 @@ class StartQt5(QMainWindow):
         calc = oooexport.Calc()
         calc.importPymeca(self)
 
+    def pythonSource(self):
+        """
+        Exporte les données dans un fichier source Python3
+        """
+        self.dbg.p(1, "rentre dans 'python source'")
+        f = tempfile.NamedTemporaryFile(prefix='pymecaTmp-', suffix=".py")
+        fname = f.name
+        f.close()
+        f = open(fname, "w")
+        date = time.strftime("%d/%m/%y %H:%M")
+        f.write(f"## Données exportées de Pymecavidéo\n## {date}\n")
+        f.write("\nimport numpy as np\nimport matplotlib.pyplot as plt\n")
+        f.write(f"\n# Intervalle de temps auto-détecté\ndt={self.deltaT}\n")
+        for i in range(self.nb_de_points):
+            f.write(f"\n# coordonnées du point numéro {i+1}\n")
+            ligne_x = f"x{i+1} = np.array(["
+            ligne_y = f"y{i+1} = np.array(["
+            for k in self.points.keys():
+                data = self.points[k]
+                for vect in data[1:]:
+                    vect=self.pointEnMetre(vect)
+                    ligne_x += f"{vect.x()}, "
+                    ligne_y += f"{vect.y()}, "
+            ligne_x += "])\n"
+            ligne_y += "])\n"
+            f.write(ligne_x)
+            f.write(ligne_y)
+            f.write("""
+
+##############################################################
+# Le code auto-généré qui suit peut être effacé à volonté.   #
+##############################################################
+# Il n'est là qu'à titre d'exemple, et il n'est pas toujours #
+# approprié à l'usage des données que vous avez exportées.   #
+##############################################################
+
+## affichage des points
+plt.plot(x1,y1,'o',markersize= 3)
+plt.xlabel("x (en m)")
+plt.ylabel("y (en m)")
+
+## affichage des vecteurs vitesses
+plt.title("Vecteurs vitesse")
+
+for k in range(1,len(x1)):
+    vx = (x1[k]-x1[k-1])/dt
+    vy = (y1[k]-y1[k-1])/dt
+    plt.quiver(x1[k-1], y1[k-1], vx, vy, scale=20, scale_units="xy")
+
+## présentation du diagramme interactif
+plt.grid()
+plt.show()
+""")
+            f.close()
+            reponse = QMessageBox.warning(
+                None,
+                _translate("pymecavideo", "Fichier Python créé", None),
+                _translate("pymecavideo", """\
+Le fichier {filename} a été créé dans un espace temporaire.
+Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
+""".format(
+    filename=fname
+    ),
+                           None),
+                QMessageBox.Ok, QMessageBox.Ok)
+            # on essaie d'ouvrir le programme Python dans un
+            # éditeur approprié
+            for editor in ("geany", "thonny", "gedit"):
+                if os.path.exists(f"/usr/bin/{editor}"):
+                    subprocess.call(f"({editor} {fname}&)", shell=True)
+                    # un éditeur est trouvé, inutile d'en essayer d'autres
+                    break
+        return
+        
     def qtiplot(self):
         """
         Exporte directement les données vers Qtiplot
@@ -1218,7 +1297,7 @@ class StartQt5(QMainWindow):
             for key in self.points:
                 liste_des_cles.append(key)
             ################## fin du fichier mecavideo ################
-            file = codecs.open(fichier, 'w', 'utf8')
+            file = open(fichier, 'w')
             try:
                 file.write(self.entete_fichier(_translate("pymecavideo", "temps en seconde, positions en mètre", None)))
                 for cle in liste_des_cles:

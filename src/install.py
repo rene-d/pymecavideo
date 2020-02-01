@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##installation script-
-from __future__ import print_function
+
 
 import subprocess
 import os

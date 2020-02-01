@@ -12,7 +12,7 @@ Ui_%.py: %.ui
 	pyuic5 $< > $@
 
 languages:
-	pylupdate5 pymecavideo_project.pro
+	pylupdate5 -translate-function _translate pymecavideo_project.pro
 	lrelease -qt5 ../data/lang/*.ts
 
 

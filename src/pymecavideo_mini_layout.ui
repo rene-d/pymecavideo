@@ -86,7 +86,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -1002,6 +1002,11 @@ photographie</string>
              </item>
              <item>
               <property name="text">
+               <string>Python (source)</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
                <string>Qtiplot</string>
               </property>
              </item>
@@ -1062,6 +1067,7 @@ photographie</string>
       <string>E&amp;xporter vers ...</string>
      </property>
      <addaction name="actionOpenOffice_org_Calc"/>
+     <addaction name="action_Python_source"/>
      <addaction name="actionQtiplot"/>
      <addaction name="actionScidavis"/>
     </widget>
@@ -1199,6 +1205,11 @@ photographie</string>
   <action name="actionScidavis">
    <property name="text">
     <string>Sci&amp;davis</string>
+   </property>
+  </action>
+  <action name="action_Python_source">
+   <property name="text">
+    <string>&amp;Python (source)</string>
    </property>
   </action>
  </widget>
