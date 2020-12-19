@@ -106,11 +106,12 @@ class MonThreadDeCalcul(QThread):
     def run(self):
         """
         lance le thread.
-        stocke les corrdonnées des points trouvés
+        stocke les coordonnées des points trouvés
         Envoi un signal quand terminé.
         """
         while not self.stopped:
             self.parent.picture_detect(self.tmpdir)
+        self.terminate
 
     def stop(self):
         self.stopped = True
@@ -244,7 +245,6 @@ class StartQt5(QMainWindow):
         self.sens_X = 1
         self.sens_Y = 1
         self.repere = 0
-        self.myThreads = []
         try:
             self.origine = vecteur(self.largeur/2, self.hauteur/2)
         except AttributeError:
@@ -331,7 +331,7 @@ class StartQt5(QMainWindow):
 
         self.ui.pushButton_stopCalculs.setEnabled(0)
         self.ui.pushButton_stopCalculs.hide()
-        self.tourne_image()
+        
 
 
     def desactiveExport(self, text):
@@ -628,20 +628,16 @@ class StartQt5(QMainWindow):
             self.ui.pushButton_stopCalculs.show()
             self.label_video.setEnabled(0)
             self.goCalcul = True
-
             # TODO : tests avec les différents mode de threading
-            ##Qthread (fonctionne mal)
-            # self.monThread = MonThreadDeCalculQt(self, self.motif[self.indexMotif], self.imageAffichee)
 
             # Python
             dossTemp = tempfile.NamedTemporaryFile(delete=False).name
             self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee, dossTemp)
             self.monThread.start()
 
-    def picture_detect(self, dossTemp):
+    def picture_detect(self, dossTemp=None):
         """
         Est lancée lors de la détection automatique des points. Gère l'ajout des thread de calcul.
-        self.myThreads : tableau contenant les thread
         self.motifs : tableau des motifs
 
         """
@@ -650,9 +646,8 @@ class StartQt5(QMainWindow):
         if self.index_de_l_image <= self.image_max:
             self.pointsFound = []
             if self.indexMotif <= len(self.motif) - 1:
-                self.dbg.p(1, "'picture_detect' : While")
-#                self.pointTrouve = filter_picture(self.motif[self.indexMotif], self.imageAffichee)
-                self.pointTrouve = filter_picture(self.motif, self.indexMotif, self.imageAffichee, dossTemp)
+                self.dbg.p(1, "'picture_detect' : While") 
+                self.pointTrouve = filter_picture(self.motif, self.indexMotif, self.imageAffichee, dossTemp, self.listePoints)
                 self.dbg.p(3, "Point Trouve dans mon Thread : " + str(self.pointTrouve))
                 self.onePointFind()
 
@@ -730,13 +725,14 @@ class StartQt5(QMainWindow):
     def tourne_image(self):
         self.my_transform = QTransform()
         if self.ui.checkBox_rot_droite.isChecked(): 
-            self.my_transform.rotate(90)
+            self.rotation=90
             self.ui.checkBox_rot_gauche.setChecked(0)
         elif self.ui.checkBox_rot_gauche.isChecked(): 
-            self.my_transform.rotate(-90)
+            self.rotation=-90
             self.ui.checkBox_rot_droite.setChecked(0)
         else : 
-            self.my_transform.rotate(0)
+            self.rotation=0
+        self.my_transform.rotate(self.rotation)
         self.affiche_image()
 
     def change_axe_ou_origine(self):
@@ -1026,9 +1022,11 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.dbg.p(1, "rentre dans 'loads'")
         s = s[1:-2].replace("\n#", "\n")
 
-        self.filename, self.sens_X, self.sens_Y, self.largeur, self.hauteur,self.origine, \
+        #TODO : A protéger avec un dictionnaire et des clés.
+        self.filename, self.sens_X, self.sens_Y, self.largeur, self.hauteur,self.rotation,self.origine, \
         self.premiere_image, self.echelle_image.longueur_reelle_etalon \
             , point, self.deltaT, self.nb_de_points = s.splitlines()[1:-1]
+        
         self.filename = self.filename.split('=')[-1][1:]
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.filename))
         self.sens_X = int(self.sens_X.split()[-1])
@@ -1039,6 +1037,8 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.largeur))
         self.hauteur = int(self.hauteur.split()[-1])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.hauteur))
+        self.rotation = int(self.rotation.split()[-1])
+        self.dbg.p(3, "rentre dans 'loads' %s" % (self.rotation))      
         self.origine = vecteur(self.origine.split()[-2][1:-1], self.origine.split()[-1][:-1])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.origine))
         self.premiere_image = int(self.premiere_image.split()[-1])
@@ -1120,8 +1120,16 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.debut_capture(departManuel=False)
         self.ui.tableWidget.show()
         self.recalculLesCoordonnees()
-
         # On met à jour les préférences
+        if self.rotation==90 : 
+            self.ui.checkBox_rot_droite.setChecked(1)
+            self.ui.checkBox_rot_gauche.setChecked(0)
+        elif self.rotation==-90 : 
+            self.ui.checkBox_rot_droite.setChecked(0)
+            self.ui.checkBox_rot_gauche.setChecked(1)
+        else : 
+            self.ui.checkBox_rot_droite.setChecked(0)
+            self.ui.checkBox_rot_gauche.setChecked(0)
         self.prefs.lastVideo = self.filename
         self.prefs.videoDir = os.path.dirname(self.filename)
         self.prefs.save()
@@ -1293,6 +1301,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 #sens axe des Y = %d
 #largeur video = %d
 #hauteur video = %d
+#rotation = %d
 #origine de pointage = %s
 #index de depart = %d
 #echelle %5f m pour %5f pixel
@@ -1300,7 +1309,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 #intervalle de temps : %f
 #suivi de %s point(s)
 #%s
-#""" % (self.filename, self.sens_X, self.sens_Y, self.largeur, self.hauteur,self.origine, self.premiere_image \
+#""" % (self.filename, self.sens_X, self.sens_Y, self.largeur, self.hauteur,self.rotation, self.origine, self.premiere_image \
                              , self.echelle_image.longueur_reelle_etalon, self.echelle_image.longueur_pixel_etalon(),
         self.echelle_image.p1, self.echelle_image.p2, self.deltaT, self.nb_de_points, msg)
         return result

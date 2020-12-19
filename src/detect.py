@@ -43,6 +43,7 @@ def filter_picture(parts, num, image, dossTemp, points=None):
     motif partiel dans l'image.
     """
     part  = parts [num]
+ 
     if points:
         point = points[num]
     else:
@@ -102,20 +103,26 @@ def detect_part(part, image, point=None):
     @return l'emplacement où se trouve le motif recherché
     """
     import numpy as np
+    
+    ##méthode 1 : 
     result = cv2.matchTemplate(image, part, cv2.TM_SQDIFF) #  cv2.TM_CCOEFF
-    ###########################################################
-    # À ce point, result est une carte des coïncidences possibles
-    # entre le motif "part" et l'image complète "image"
-    # iI faudrait donner un peu plus de vraisemblance aux coïncidences
-    # proches du dernier point détecté.
-    ###########################################################
+    ##########################################################
+    #À ce point, result est une carte des coïncidences possibles
+    #entre le motif "part" et l'image complète "image"
+    #iI faudrait donner un peu plus de vraisemblance aux coïncidences
+    #proches du dernier point détecté.
+    ##########################################################    
     if point:
-        flou=0.1
+        flou=2
         vraisemblable=gaussMatrix(result.shape,point,np.amax(result),flou*(part.shape[0]+part.shape[1]), inverse=True)
         result = result+vraisemblable
     ########## ceci minimise les chances de trouver loin ###########
     m, M, minloc, maxloc = cv2.minMaxLoc(result)
     return minloc
+    
+    ##méthode2 : découpe arbitrairementet si
+    
+    
 
 
 
@@ -127,5 +134,3 @@ def QImage2CVImage(img, dossierTemp):
     img = cv2.imread(fichImg, 1)
     os.remove(fichImg)
     return img
-    
-    
