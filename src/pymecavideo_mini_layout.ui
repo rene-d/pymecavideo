@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>876</width>
-    <height>618</height>
+    <width>1049</width>
+    <height>759</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -86,7 +86,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -99,7 +99,13 @@
            <enum>QLayout::SetDefaultConstraint</enum>
           </property>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_7" stretch="1,1,0">
+           <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,0">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
             <item>
              <widget class="QGroupBox" name="groupBox_3">
               <property name="enabled">
@@ -107,8 +113,8 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>0</width>
-                <height>0</height>
+                <width>150</width>
+                <height>140</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -169,16 +175,25 @@
             </item>
             <item>
              <widget class="QGroupBox" name="groupBox">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>150</width>
-                <height>380</height>
+                <height>521</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>150</width>
-                <height>380</height>
+                <height>516</height>
                </size>
               </property>
               <property name="title">
@@ -193,7 +208,7 @@
                  <x>10</x>
                  <y>20</y>
                  <width>139</width>
-                 <height>357</height>
+                 <height>490</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -454,6 +469,14 @@ automatique</string>
                  </widget>
                 </item>
                 <item>
+                 <widget class="QCheckBox" name="checkBox_abscisses">
+                  <property name="text">
+                   <string>Abscisses 
+vers la gauche</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QPushButton" name="pushButton_origine">
                   <property name="enabled">
                    <bool>true</bool>
@@ -467,15 +490,19 @@ automatique</string>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="checkBox_abscisses">
-                  <property name="text">
-                   <string>Abscisses 
-vers la gauche</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <widget class="QCheckBox" name="checkBox_ordonnees">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>46</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777213</width>
+                    <height>64</height>
+                   </size>
+                  </property>
                   <property name="text">
                    <string>Ordonnées 
 vers le bas</string>
@@ -486,25 +513,32 @@ vers le bas</string>
               </widget>
              </widget>
             </item>
-            <item>
-             <spacer name="verticalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>0</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
            </layout>
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,1">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_11">
+                <item>
+                 <widget class="QCheckBox" name="checkBox_rot_gauche">
+                  <property name="text">
+                   <string>tourner de 90°
+vers la gauche</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBox_rot_droite">
+                  <property name="text">
+                   <string>tourner de 90°
+vers la droite</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
               <item>
                <widget class="QPushButton" name="pushButton_stopCalculs">
                 <property name="enabled">
@@ -1054,8 +1088,8 @@ photographie</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>876</width>
-     <height>20</height>
+     <width>1049</width>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

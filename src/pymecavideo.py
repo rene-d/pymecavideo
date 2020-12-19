@@ -131,6 +131,7 @@ class StartQt5(QMainWindow):
         self.largeur = 640
         self.decalh = 120
         self.decalw = 197
+        self.rotation=0 #permet de retourner une vidéo mal prise
         self.pointsProbables=[None] # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         #### Mode plein écran
         self.plein_ecran = False
@@ -330,6 +331,7 @@ class StartQt5(QMainWindow):
 
         self.ui.pushButton_stopCalculs.setEnabled(0)
         self.ui.pushButton_stopCalculs.hide()
+        self.tourne_image()
 
 
     def desactiveExport(self, text):
@@ -421,6 +423,10 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_abscisses.setCheckState(Qt.Unchecked)
         self.ui.checkBox_ordonnees.setCheckState(Qt.Unchecked)
         self.ui.checkBox_auto.setCheckState(Qt.Unchecked)
+        self.ui.checkBox_rot_droite.setCheckState(Qt.Unchecked)
+        self.ui.checkBox_rot_gauche.setCheckState(Qt.Unchecked)
+        
+        
         #self.determineHauteurLargeur()
 
         if self.ui.tableWidget:
@@ -479,6 +485,8 @@ class StartQt5(QMainWindow):
 
         self.ui.checkBox_abscisses.stateChanged.connect(self.change_sens_X)
         self.ui.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
+        self.ui.checkBox_rot_droite.stateChanged.connect(self.tourne_image)
+        self.ui.checkBox_rot_gauche.stateChanged.connect(self.tourne_image)
         self.change_axe_origine.connect(self.change_axe_ou_origine)
         self.selection_done.connect(self.picture_detect)
         self.selection_motif_done.connect(self.storeMotif)
@@ -718,6 +726,18 @@ class StartQt5(QMainWindow):
 
         label = Label_Origine(parent=self.ui.label, app=self)
         label.show()
+
+    def tourne_image(self):
+        self.my_transform = QTransform()
+        if self.ui.checkBox_rot_droite.isChecked(): 
+            self.my_transform.rotate(90)
+            self.ui.checkBox_rot_gauche.setChecked(0)
+        elif self.ui.checkBox_rot_gauche.isChecked(): 
+            self.my_transform.rotate(-90)
+            self.ui.checkBox_rot_droite.setChecked(0)
+        else : 
+            self.my_transform.rotate(0)
+        self.affiche_image()
 
     def change_axe_ou_origine(self):
         """mets à jour le tableau de données"""
@@ -1816,9 +1836,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
                 self.extract_image(self.index_de_l_image)
                 self.imageExtraite = QImage(toQImage(self.image_opencv))
-                self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
+                self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio).transformed(self.my_transform, mode=Qt.SmoothTransformation)
 
-                # self.imageAffichee = image.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
                 if hasattr(self, "label_video"):
                     self.afficheJusteImage()
 
@@ -1836,7 +1855,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans AffichejusteImage affiche_image video, largeur %s, hauteur, %s" % (self.largeur, self.hauteur))
-        self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
+        self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio).transformed(self.my_transform, mode=Qt.SmoothTransformation)
         self.label_video.setMouseTracking(True)
         self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
         self.label_video.met_a_jour_crop()
