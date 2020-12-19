@@ -489,7 +489,7 @@ class StartQt5(QMainWindow):
 
         self.ui.pushButtonEnregistreChrono.clicked.connect(self.enregistreChrono)
         self.stopCalculs.connect(self.stopComputing)
-        # self.ui.pushButton_video.clicked.connect(self.stopComputing)
+        self.ui.pushButton_stopCalculs.clicked.connect(self.stopCalculs)
         self.updateProgressBar.connect(self.updatePB)
 
         self.ui.exportCombo.currentIndexChanged.connect(self.export)
@@ -655,6 +655,7 @@ class StartQt5(QMainWindow):
         if self.index_de_l_image == self.image_max:
             if self.indexMotif == 0 and not self.goCalcul:  # dernier passage
                 self.stopCalculs.emit()
+                
             elif self.indexMotif == 0 and self.goCalcul:  # premier passage, premier calcul de la dernière image
                 self.goCalcul = False
 
@@ -662,6 +663,7 @@ class StartQt5(QMainWindow):
     def stopComputing(self):
         self.dbg.p(1, "rentre dans 'stopComputing'")
         self.pileDeDetections=[] # vide la liste des points à détecter encore
+        self.monThread.stopped=True
         self.label_video.setEnabled(1)
         self.ui.pushButton_stopCalculs.setEnabled(0)
         self.ui.pushButton_stopCalculs.hide()
