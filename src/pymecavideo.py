@@ -1026,7 +1026,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.filename, self.sens_X, self.sens_Y, self.largeur, self.hauteur,self.rotation,self.origine, \
         self.premiere_image, self.echelle_image.longueur_reelle_etalon \
             , point, self.deltaT, self.nb_de_points = s.splitlines()[1:-1]
-        
+        print(s.splitlines()[1:-1])
         self.filename = self.filename.split('=')[-1][1:]
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.filename))
         self.sens_X = int(self.sens_X.split()[-1])
