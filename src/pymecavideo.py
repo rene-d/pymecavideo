@@ -133,6 +133,8 @@ class StartQt5(QMainWindow):
         self.decalh = 120
         self.decalw = 197
         self.rotation=0 #permet de retourner une vidéo mal prise
+        self.my_transform = QTransform() #va avec self.rotation
+        self.checkBox_rot = "None"
         self.pointsProbables=[None] # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         #### Mode plein écran
         self.plein_ecran = False
@@ -723,17 +725,34 @@ class StartQt5(QMainWindow):
         label.show()
 
     def tourne_image(self):
-        self.my_transform = QTransform()
-        if self.ui.checkBox_rot_droite.isChecked(): 
-            self.rotation=90
-            self.ui.checkBox_rot_gauche.setChecked(0)
-        elif self.ui.checkBox_rot_gauche.isChecked(): 
-            self.rotation=-90
-            self.ui.checkBox_rot_droite.setChecked(0)
-        else : 
+        self.dbg.p(1, "rentre dans 'tourne_image'")
+        if self.ui.checkBox_rot_droite.isChecked() and  self.ui.checkBox_rot_gauche.isChecked():
             self.rotation=0
+            self.ui.checkBox_rot_droite.setChecked(0)
+            self.ui.checkBox_rot_gauche.setChecked(0)
+            self.checkbox_rot = "None"
+        
+        if self.ui.checkBox_rot_droite.isChecked() and not self.ui.checkBox_rot_gauche.isChecked(): 
+            self.rotation=90
+            self.checkbox_rot = "droite"
+            
+            
+        if self.ui.checkBox_rot_gauche.isChecked() and not self.ui.checkBox_rot_droite.isChecked(): 
+            self.rotation=-90
+            self.checkbox_rot = "gauche"
+            
+        if not self.ui.checkBox_rot_droite.isChecked() and  not self.ui.checkBox_rot_gauche.isChecked():
+            self.rotation = 0
+
+            self.checkbox_rot = "None"
+            
+        self.dbg.p(1, "Dans 'tourne_image' self rotation vaut" + str(self.rotation))
+        self.largeur, self.hauteur = self.hauteur, self.largeur
+
+        self.my_transform = QTransform()
         self.my_transform.rotate(self.rotation)
         self.affiche_image()
+
 
     def change_axe_ou_origine(self):
         """mets à jour le tableau de données"""
@@ -1858,30 +1877,23 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.affiche_image()
 
     def affiche_image(self):
-        self.dbg.p(1, "rentre dans 'affiche_image'")
-        try:
-            self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' + str(self.index_de_l_image) + ' ' + str(self.image_max))
+        self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' + str(self.index_de_l_image) + ' ' + str(self.image_max))
+        if self.index_de_l_image <= self.image_max:
+            self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
+            self.extract_image(self.index_de_l_image)
+            self.imageExtraite = QImage(toQImage(self.image_opencv))
+            #self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio).transformed(self.my_transform, mode=Qt.SmoothTransformation)
 
-            if self.index_de_l_image <= self.image_max:
-                self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
-                self.extract_image(self.index_de_l_image)
-                self.imageExtraite = QImage(toQImage(self.image_opencv))
-                self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio).transformed(self.my_transform, mode=Qt.SmoothTransformation)
+            if hasattr(self, "label_video"):
+                self.afficheJusteImage()
 
-                if hasattr(self, "label_video"):
-                    self.afficheJusteImage()
-
-                if self.ui.horizontalSlider.value() != self.index_de_l_image:
-                    self.dbg.p(1, "affiche_image " + "horizontal")
-                    self.ui.horizontalSlider.setValue(self.index_de_l_image)
-                    self.ui.spinBox_image.setValue(self.index_de_l_image)
-            elif self.index_de_l_image > self.image_max:
-                self.index_de_l_image = self.image_max
-                self.lance_capture = False
-
-        except AttributeError:
-            pass
-
+            if self.ui.horizontalSlider.value() != self.index_de_l_image:
+                self.dbg.p(1, "affiche_image " + "horizontal")
+                self.ui.horizontalSlider.setValue(self.index_de_l_image)
+                self.ui.spinBox_image.setValue(self.index_de_l_image)
+        elif self.index_de_l_image > self.image_max:
+            self.index_de_l_image = self.image_max
+            self.lance_capture = False
 
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans AffichejusteImage affiche_image video, largeur %s, hauteur, %s" % (self.largeur, self.hauteur))
@@ -1889,8 +1901,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.label_video.setMouseTracking(True)
         self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
         self.label_video.met_a_jour_crop()
-        # self.label_video.update()
-        #self.label_video.show()
 
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
@@ -2080,8 +2090,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
                 self.prefs.lastVideo = self.filename
                 self.determineRatio()
-                #self.determineHauteurLargeur()
-
+                
                 self.init_image()
                 self.devineLargeurHauteur()
 
@@ -2093,7 +2102,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.label_video.origine = self.origine
                 self.label_video.repaint()
                 self.metsAjourLesDimensions()
-                #self.redimensionne(premier=1)
                 self.label_video.repaint()
                 self.label_video.show()
                 self.prefs.videoDir = os.path.dirname(self.filename)
