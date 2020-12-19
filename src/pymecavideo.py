@@ -1021,27 +1021,33 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
     def loads(self, s):
         self.dbg.p(1, "rentre dans 'loads'")
         s = s[1:-2].replace("\n#", "\n")
-
-        #TODO : A protéger avec un dictionnaire et des clés.
-        self.filename, self.sens_X, self.sens_Y, self.largeur, self.hauteur,self.rotation,self.origine, \
-        self.premiere_image, self.echelle_image.longueur_reelle_etalon \
-            , point, self.deltaT, self.nb_de_points = s.splitlines()[1:-1]
-        print(s.splitlines()[1:-1])
-        self.filename = self.filename.split('=')[-1][1:]
+        self.echelle_image.longueur_reelle_etalon, point, self.deltaT, self.nb_de_points = s.splitlines()[1:-1][-4:]
+        
+        donnees_fichier = s.splitlines()[1:-1]
+        dico_donnee = {}
+        for donnee in donnees_fichier :
+            if len(donnee.split('='))==2:
+                cle, valeur = donnee.split('=')
+                dico_donnee[cle.strip()]=valeur.strip()
+        
+        self.filename = dico_donnee["video"]
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.filename))
-        self.sens_X = int(self.sens_X.split()[-1])
+        self.sens_X = int(dico_donnee['sens axe des X'])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.sens_X))
-        self.sens_Y = int(self.sens_Y.split()[-1])
+        self.sens_Y = int(dico_donnee['sens axe des Y'])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.sens_Y))
-        self.largeur = int(self.largeur.split()[-1])
+        self.largeur = int(dico_donnee['largeur video'])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.largeur))
-        self.hauteur = int(self.hauteur.split()[-1])
+        self.hauteur = int(dico_donnee['hauteur video'])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.hauteur))
-        self.rotation = int(self.rotation.split()[-1])
+        try : 
+            self.rotation = int(dico_donnee['rotation'])
+        except KeyError: 
+            self.rotation=0
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.rotation))      
-        self.origine = vecteur(self.origine.split()[-2][1:-1], self.origine.split()[-1][:-1])
+        self.origine = vecteur(dico_donnee['origine de pointage'].split()[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])        
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.origine))
-        self.premiere_image = int(self.premiere_image.split()[-1])
+        self.premiere_image = int(dico_donnee['index de depart'])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.premiere_image))
         self.echelle_image.longueur_reelle_etalon = float(self.echelle_image.longueur_reelle_etalon.split()[1])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.echelle_image.longueur_reelle_etalon))
