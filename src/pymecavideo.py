@@ -1032,20 +1032,35 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         
         self.filename = dico_donnee["video"]
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.filename))
-        self.sens_X = int(dico_donnee['sens axe des X'])
+        try : 
+            self.sens_X = int(dico_donnee['sens axe des X'])
+        except KeyError: 
+            self.sens_X = 1
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.sens_X))
-        self.sens_Y = int(dico_donnee['sens axe des Y'])
+        try : 
+            self.sens_Y = int(dico_donnee['sens axe des Y'])
+        except KeyError : 
+            self.sens_Y = 1
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.sens_Y))
-        self.largeur = int(dico_donnee['largeur video'])
+        try : 
+            self.largeur = int(dico_donnee['largeur video'])
+        except KeyError:
+            self.largeur = 640
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.largeur))
-        self.hauteur = int(dico_donnee['hauteur video'])
+        try : 
+            self.hauteur = int(dico_donnee['hauteur video'])
+        except KeyError : 
+            self.largeur = 480
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.hauteur))
         try : 
             self.rotation = int(dico_donnee['rotation'])
         except KeyError: 
             self.rotation=0
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.rotation))      
-        self.origine = vecteur(dico_donnee['origine de pointage'].split()[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])        
+        try : 
+            self.origine = vecteur(dico_donnee['origine de pointage'].split()[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])        
+        except KeyError:
+            self.origine = vecteur(self.largeur//2, self.hauteur//2)
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.origine))
         self.premiere_image = int(dico_donnee['index de depart'])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.premiere_image))
