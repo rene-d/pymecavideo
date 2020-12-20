@@ -1228,7 +1228,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         """@params from_tourne : booléen vaut vrai si ce signal est appelé depuis la fonction tourne_uimage. A ce moment là, on doit calculer la valeur des widgets à partir de la largeur et la hauteur du film.
         Dans le cas contraire, on doit adapter la largeur et longueur du film en fonction de la fenêtre"""
         
-        print('redim h%s, w%s'%(self.width(), self.height()), from_tourne)
         if not from_tourne : 
             if not self.lance_capture:
                 self.dbg.p(2, "dans 'redimensionneFenetre', self.stopRedimensionne==False")
@@ -1268,22 +1267,15 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                     #la hauteur est prédominante
                     self.hauteur = 1.0*(self.height()-self.decalh)
                     self.largeur = int(self.hauteur * ratioFilm)
-                        
-                    
 
-                print(1)    
                 self.ui.label.setFixedHeight(self.hauteur)
                 self.ui.label.setFixedWidth(self.largeur)
-                print(2, self.hauteur, self.largeur)
                 self.ui.tabWidget.setFixedHeight(self.hauteur+self.decalh)
                 self.ui.tabWidget.setFixedWidth(self.largeur+self.decalw)
-                print(3)
                 #redimensionne le widget central pour coller à la fenêtre entrain de se faire étirer
                 self.ui.centralwidget.resize(self.size()-QSize(1,1))
                 self.ui.tabWidget.resize(self.size()-QSize(20,20))
-                print(4)
                 if hasattr(self, 'label_video'):
-                    print(5)
                     self.label_video.setFixedHeight(self.hauteur)
                     self.label_video.setFixedWidth(self.largeur)
 
@@ -1297,24 +1289,18 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 except AttributeError:
                     pass
                 #self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
-                print(6)
                 self.affiche_image()
-                print(7)
                 if hasattr(self, 'label_video'):
                         self.label_video.origine = self.origine
-                        print(8)
                         self.label_video.maj()
-                        print(9)
                         self.label_trajectoire.maj()
-                        print(10)
                         self.afficheJusteImage()
-                        print("largeur label %s, hauteur label %s, largeur label_video %s, hauteur label_video %s"%(self.ui.label.width(), self.ui.label.height(), self.label_video.width(), self.label_video.height()))
+                        #print("largeur label %s, hauteur label %s, largeur label_video %s, hauteur label_video %s"%(self.ui.label.width(), self.ui.label.height(), self.label_video.width(), self.label_video.height()))
         else : #si on vient de tourne_image
             hauteur_appli = self.hauteur+self.decalh
             largeur_appli = self.largeur+self.decalw
             
             if hauteur_appli > self.height_screen*0.8 :
-                print('OOKKK',hauteur_appli )
                 hauteur_appli  = self.height_screen*0.8
                 self.hauteur = hauteur_appli-self.decalh
                 self.largeur = self.hauteur*self.ratio
@@ -1326,14 +1312,12 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 self.hauteur = self.largeur/self.ratio
             self.setFixedWidth(largeur_appli)
             self.setFixedHeight(hauteur_appli)
-            print('OOKKK',hauteur_appli, largeur_appli )
             self.redimensionneSignal.emit(0)
             
             
     def heightForWidth(self, w):
         #calcul self.largeur et self.hauteur
         #si la largeur est trop petite, ne permet plus de redimensionnement
-        print("heightForWidth", w)
         if self.width() <875 or self.height() < 615:
             self.stopRedimensionne = True
             self.setMinimumWidth(875)
@@ -1349,12 +1333,10 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans 'resizeEvent'")
         self.compteur_sa_mere+=1
-        print('resizing', self.compteur_sa_mere)
         #if self.width()>=875 : #largeur à partir de laquelle on redimensionne
         if not self.lance_capture and not self.stopRedimensionne:
             self.dbg.p(2, "dans resizeevent, émet le signal")
             #self.stopRedimensionne = True
-            print('emet le signal')
             self.redimensionneSignal.emit(0)
         return super(StartQt5, self).resizeEvent(event)
 
