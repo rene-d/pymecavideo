@@ -1262,7 +1262,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             print(1)    
             self.ui.label.setFixedHeight(self.hauteur)
             self.ui.label.setFixedWidth(self.largeur)
-            print(2)
+            print(2, self.hauteur, self.largeur)
             self.ui.tabWidget.setFixedHeight(self.hauteur+self.decalh)
             self.ui.tabWidget.setFixedWidth(self.largeur+self.decalw)
             print(3)
