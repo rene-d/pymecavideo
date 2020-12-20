@@ -1208,12 +1208,10 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.largeur = QApplication.desktop().screenGeometry().width()*0.9
         else :
             self.largeur = self.largeurFilm
-
         self.hauteur = self.largeur/self.ratio
 
     def determineRatio(self):
         self.dbg.p(1, "rentre dans 'determineRatio'")
-
         if self.premierResize:
             if self.cvReader is None:
                 self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
@@ -1238,9 +1236,19 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 self.largeurAvant = self.largeur
                 self.hauteurAvant  = self.hauteur
                 self.origineAvant = self.origine
-                if self.width()<875 : 
-                    self.setFixedWidth(875)
-                self.setFixedHeight(self.heightForWidth(self.width()))
+                
+                ###dimension minimales : 
+                if self.ratio > 1 : #film horizontal, la largeur compte en 1er
+                    if self.width()<875 : 
+                        self.setFixedWidth(875)
+                    self.setFixedHeight(self.heightForWidth(self.width()))
+                else : 
+                    if self.height()<1000: 
+                        self.setFixedHeight(1000)
+                    self.setFixedWidth((self.height()-self.decalh)*self.ratio+self.decalw)
+                        
+                
+                
                 try :
                     self.label_echelle_p1Avant = self.label_echelle_trace.p1
                     self.label_echelle_p2Avant = self.label_echelle_trace.p2
@@ -1300,24 +1308,31 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                         self.label_trajectoire.maj()
                         print(10)
                         self.afficheJusteImage()
-                        print("largeur, hauteurs", self.ui.label.width(), self.ui.label.height(), self.label_video.width(), self.label_video.height())
-        else :
+                        print("largeur label %s, hauteur label %s, largeur label_video %s, hauteur label_video %s"%(self.ui.label.width(), self.ui.label.height(), self.label_video.width(), self.label_video.height()))
+        else : #si on vient de tourne_image
             hauteur_appli = self.hauteur+self.decalh
             largeur_appli = self.largeur+self.decalw
-            if hauteur_appli > self.height_screen : 
-                hauteur_appli  = self.height_screen
+            
+            if hauteur_appli > self.height_screen*0.8 :
+                print('OOKKK',hauteur_appli )
+                hauteur_appli  = self.height_screen*0.8
                 self.hauteur = hauteur_appli-self.decalh
                 self.largeur = self.hauteur*self.ratio
-            if largeur_appli > self.width_screen : 
-                largeur_appli  = self.width_screen
+                largeur_appli = hauteur_appli*self.ratio
+            if largeur_appli > self.width_screen*0.8 : 
+                largeur_appli  = self.width_screen*0.8
+                hauteur_appli = largeur_appli/self.ratio
                 self.largeur = largeur_appli-self.decalw
-                self.hauteur = self.hauteur/self.ratio
-            self.setMinimumSize(QSize(largeur_appli, hauteur_appli))
+                self.hauteur = self.largeur/self.ratio
+            self.setFixedWidth(largeur_appli)
+            self.setFixedHeight(hauteur_appli)
+            print('OOKKK',hauteur_appli, largeur_appli )
+            self.redimensionneSignal.emit(0)
             
             
     def heightForWidth(self, w):
         #calcul self.largeur et self.hauteur
-        #si la largeur est trop pétite, ne permet plus de redimensionnement
+        #si la largeur est trop petite, ne permet plus de redimensionnement
         print("heightForWidth", w)
         if self.width() <875 or self.height() < 615:
             self.stopRedimensionne = True

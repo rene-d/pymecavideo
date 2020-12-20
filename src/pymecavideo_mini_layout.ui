@@ -70,6 +70,9 @@
      <pointsize>9</pointsize>
     </font>
    </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <widget class="widgetratio" name="tabWidget">
@@ -86,7 +89,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -869,6 +872,12 @@ photographie</string>
              <layout class="QHBoxLayout" name="horizontalLayout_8">
               <item>
                <widget class="QLabel" name="label_8">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>85</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>Définir un autre référentiel : </string>
                 </property>
