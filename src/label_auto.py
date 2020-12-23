@@ -36,7 +36,6 @@ class Label_Auto(QLabel):
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
         self.setAutoFillBackground(False)
 
-        #self.setCursor(Qt.CrossCursor)
         ### prend un beau gros curseur rouge inmanquable
         self.cible_icon = os.path.join(self.app._dir("icones"), "curseur_cible.svg")
         pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
@@ -56,15 +55,17 @@ class Label_Auto(QLabel):
         x = event.x()
         y = event.y()
 
-        if not self.hasMouseTracking():
-            if x > self.x_1:
-                self.x_2 = x
-            elif x < self.x_1:
-                self.x_1 = x
-            if y > self.y_1:
-                self.y_2 = y
-            elif y < self.y_1:
-                self.y_1 = y
+        if not self.hasMouseTracking(): #lancé lors de la sélection.
+            self.x_2 = x
+            self.y_2 = y
+            #if x > self.x_1:
+                #self.x_2 = x
+            #elif x < self.x_1:
+                #self.x_1 = x
+            #if y > self.y_1:
+                #self.y_2 = y
+            #elif y < self.y_1:
+                #self.y_1 = y
         self.pos = vecteur(x, y)
         self.parent.pos = self.pos
         self.app.label_video.zoom_croix.show()
@@ -85,7 +86,12 @@ class Label_Auto(QLabel):
         sur les images successives.
         @result une QImage représentant le motif.
         """
-        rectangle = QRect(self.x_1, self.y_1, self.x_2 - self.x_1, self.y_2 - self.y_1)
+        x_depart = self.x_1 if self.x_1<self.x_2 else self.x_2
+        y_depart = self.y_1 if self.y_1<self.y_2 else self.y_2
+        longueur = abs(self.x_2 - self.x_1)
+        hauteur = abs(self.y_2 - self.y_1)
+        
+        rectangle = QRect(x_depart, y_depart, longueur, hauteur)
         return self.app.imageAffichee.copy(rectangle)
 
 

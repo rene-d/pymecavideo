@@ -434,6 +434,8 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
         self.ui.checkBox_auto.setEnabled(1)
+        self.ui.checkBox_rot_droite.setEnabled(1)
+        self.ui.checkBox_rot_gauche.setEnabled(1)
         self.ui.checkBox_abscisses.setCheckState(Qt.Unchecked)
         self.ui.checkBox_ordonnees.setCheckState(Qt.Unchecked)
         self.ui.checkBox_auto.setCheckState(Qt.Unchecked)
