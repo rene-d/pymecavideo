@@ -180,6 +180,7 @@ class openCvReader:
         """
         self.filename = filename
         self.autoTest()
+        self.index_precedent = 0
         if self.ok :
             self.capture = cv2.VideoCapture(self.filename)
 
@@ -201,11 +202,13 @@ class openCvReader:
         @param index le numéro de l'image, commence à 1.
         @return le statut, l'image trouvée
         """
+        temps0 = time.time()
         if self.capture:
-            self.capture.set(cv2.CAP_PROP_POS_FRAMES, index-1)
-
+            if index != self.index_precedent+1:
+                self.capture.set(cv2.CAP_PROP_POS_FRAMES, index-1)
             try :
                 status, img =  self.capture.read()
+                self.index_precedent = index
             except cv2.error:
                 print("Erreur, image non décodée")
                 return False,None
