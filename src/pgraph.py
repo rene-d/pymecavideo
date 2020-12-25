@@ -43,13 +43,7 @@ class traceur2d:
         self.plotWidget.setLabel('left', ylabel)
         self.plotWidget.show()
 
-
-
-
-
 if __name__ == "__main__":
-    
-    
     #lecture des données x,y depuis l'entrée standard
     xy=[list(map(float, ln.split())) for ln in sys.stdin if ln.strip()]
     x=[coord[0] for coord in xy]
@@ -64,12 +58,12 @@ if __name__ == "__main__":
         plotWidget.setLabel('bottom', unicode(sys.argv[2],"UTF-8"))
         plotWidget.setLabel('left', unicode(sys.argv[3],"UTF-8"))
         plotWidget.plot(x, y)
+    #Si python3
     except NameError :
         plotWidget = pg.plot(title=sys.argv[1])
         plotWidget.setLabel('bottom', sys.argv[2])
         plotWidget.setLabel('left', sys.argv[3])
         plotWidget.plot(x, y)        
-    
     
     
     plotWidget.show()
