@@ -80,7 +80,7 @@ def filter_picture(parts, num, image, points=None):
         return (point[0]+part.shape[1]/2, point[1]+part.shape[0]/2)
     
     elif "QImage" in str(type(image)):
-        image = QImage2CVImage(image) #TODO 110ms
+        image = QImage2CVImage(image) 
         point = detect_part(part, image, point) #TODO 130ms
         return (point[0]+part.shape[1]/2, point[1]+part.shape[0]/2)
 
