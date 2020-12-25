@@ -666,7 +666,7 @@ class StartQt5(QMainWindow):
             # d'être traités en priorité
             timer=QTimer.singleShot(50, self.detecteUnPoint)
     
-    @time_it
+    #@time_it
     def detecteUnPoint(self):
         """
         méthode (re)lancée pour les détections automatiques de points
@@ -684,7 +684,7 @@ class StartQt5(QMainWindow):
             texteDuBouton = "STOP CALCULS (%d)" %index_de_l_image
             self.ui.pushButton_stopCalculs.setText(texteDuBouton)
 
-            #TODO : ce point est un point noir -> 250 ms
+            #TODO : le temps de calcule vient de là.
             point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.pointsProbables)
 
             self.pointsProbables[0]=point
@@ -727,7 +727,6 @@ class StartQt5(QMainWindow):
         self.motifs : tableau des motifs
 
         """
-        print("picture_detect")
         self.dbg.p(1, "rentre dans 'picture_detect'")
         self.dbg.p(3, "début 'picture_detect'" + str(self.indexMotif))
         if self.index_de_l_image <= self.image_max:
@@ -1806,11 +1805,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             labelOrdonnee = typeDeCourbe + " (m)"
         else:
             labelOrdonnee = typeDeCourbe + " (m/s)"
-
+        
         cmd=u"""python pgraph.py "{0}" "{1}" "{2}" """.format(
             titre, labelAbscisse, labelOrdonnee).encode("utf-8")
         xy ="\n".join(["{0} {1}". format(abscisse[i], ordonnee[i]) for i in range(len(abscisse))])
-        print(type(xy), xy)
         thread=plotThread(cmd, xy)
         thread.daemon=True
         thread.start()
