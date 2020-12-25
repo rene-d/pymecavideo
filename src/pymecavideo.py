@@ -91,6 +91,32 @@ def _translate(context, text, disambig):
     return QApplication.translate(context, text, disambig)
 
 
+
+class MonThreadDeCalcul2(QThread):
+    """Thread permettant le calcul des points automatiquement. Version Qt. 20/04/2015 : focntionne mal sous windows"""
+
+    def __init__(self, parent, motif, image, tmpdir):
+        QThread.__init__(self)
+        self.parent = parent
+        self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
+        self.motif = motif
+        self.image = image
+        self.tmpdir=tmpdir
+        self.stopped = False
+
+    def run(self):
+        """
+        lance le thread.
+        stocke les coordonnées des points trouvés
+        Envoi un signal quand terminé.
+        """
+        while not self.stopped:
+            self.parent.picture_detect(self.tmpdir)
+        self.terminate
+
+    def stop(self):
+        self.stopped = True
+
 class MonThreadDeCalcul(QThread):
     """Thread permettant le calcul des points automatiquement. Version Qt. 20/04/2015 : focntionne mal sous windows"""
 
@@ -140,6 +166,8 @@ class StartQt5(QMainWindow):
         self.my_transform = QTransform() #va avec self.rotation
         self.checkBox_rot = "None"
         self.pointsProbables=[None] # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
+        self.methode_thread = 3 # définit la methoéd e thread à utiliser. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
+        
         #### Mode plein écran
         self.plein_ecran = False
         QShortcut(QKeySequence(Qt.Key_F11), self, self.basculer_plein_ecran)
@@ -171,6 +199,7 @@ class StartQt5(QMainWindow):
         if len(self.args) > 0:
             # le premier argument éventuel est le nom d'une vidéo
             self.prefs.lastVideo = args[0]
+            
         ####intialise les répertoires
         self._dir()
         defait_icon = os.path.join(self._dir("icones"), "undo.png")
@@ -285,6 +314,7 @@ class StartQt5(QMainWindow):
         self.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
 
         self.listePoints = listePointee()
+        self.pileDeDetections = []
 
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
         self.chrono = False
@@ -428,7 +458,11 @@ class StartQt5(QMainWindow):
         self.enableRefaire(False)
         self.affiche_nb_points(1)
         self.ui.Bouton_lance_capture.setEnabled(1)
-
+        
+        ##désactive le bouton de calculs si existant : 
+        self.ui.pushButton_stopCalculs.setEnabled(0)
+        self.ui.pushButton_stopCalculs.hide()
+        
         ### Réactiver checkBox_avancees après réinitialisation ###
         self.ui.pushButton_origine.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
@@ -441,6 +475,11 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_auto.setCheckState(Qt.Unchecked)
         self.ui.checkBox_rot_droite.setCheckState(Qt.Unchecked)
         self.ui.checkBox_rot_gauche.setCheckState(Qt.Unchecked)
+        
+        #remets le signal enlevé : 
+        self.ui.horizontalSlider.valueChanged.connect(self.affiche_image_slider_move)
+        self.ui.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
+
         
         
         #self.determineHauteurLargeur()
@@ -505,7 +544,9 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_rot_gauche.stateChanged.connect(self.tourne_image)
         self.change_axe_origine.connect(self.change_axe_ou_origine)
         self.selection_done.connect(self.picture_detect)
-        self.selection_motif_done.connect(self.storeMotif)
+        #self.selection_motif_done.connect(self.storeMotif)
+        self.selection_motif_done.connect(self.suiviDuMotif)
+        
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
         self.redimensionneSignal.connect(self.redimensionneFenetre)
@@ -615,7 +656,6 @@ class StartQt5(QMainWindow):
         et relance un signal si la pile n'est pas vide après chacun
         des traitements.
         """
-
         if self.pileDeDetections:
             if len(self.pileDeDetections)%self.nb_de_points!=0:
                 self.indexMotif+=1
@@ -624,13 +664,18 @@ class StartQt5(QMainWindow):
             index_de_l_image=self.pileDeDetections.pop(0)
             texteDuBouton = "STOP CALCULS (%d)" %index_de_l_image
             self.ui.pushButton_stopCalculs.setText(texteDuBouton)
+            
+            #TODO : ce point est un point noir -> 250 ms
             point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.dossTemp, self.pointsProbables)
             self.pointsProbables[0]=point
+            
+            #TODO : ce point est un point noir -> 70 ms
             self.label_video.storePoint(vecteur(point[0], point[1]))
+            
             # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
-            timer=QTimer.singleShot(50, self.detecteUnPoint)
+            timer=QTimer.singleShot(5, self.detecteUnPoint)
         else:
             os.unlink(self.dossTemp)
                       
@@ -650,8 +695,15 @@ class StartQt5(QMainWindow):
 
             # Python
             dossTemp = tempfile.NamedTemporaryFile(delete=False).name
-            self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee, dossTemp)
-            self.monThread.start()
+            if self.methode_thread == 1 : 
+                self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee, dossTemp)
+                self.monThread.start()
+            elif self.methode_thread==2 : ##1 thread par image
+                for i in range((self.image_max-self.premiere_image)*self.nb_de_points) :
+                    self.liste_thread = [MonThreadDeCalcul2(self, self.image, self.motif[self.indexMotif], self.imageAffichee, dossTemp)]
+            elif self.methode_thread==3 :  #pour l'instant celle qui foncitonne le mieux
+                timer=QTimer.singleShot(5, self.detecteUnPoint)
+                
 
     def picture_detect(self, dossTemp=None):
         """
@@ -659,6 +711,7 @@ class StartQt5(QMainWindow):
         self.motifs : tableau des motifs
 
         """
+        print("picture_detect")
         self.dbg.p(1, "rentre dans 'picture_detect'")
         self.dbg.p(3, "début 'picture_detect'" + str(self.indexMotif))
         if self.index_de_l_image <= self.image_max:
@@ -684,7 +737,11 @@ class StartQt5(QMainWindow):
     def stopComputing(self):
         self.dbg.p(1, "rentre dans 'stopComputing'")
         self.pileDeDetections=[] # vide la liste des points à détecter encore
-        self.monThread.stopped=True
+        try : 
+            if self.monThread :                 
+                self.monThread.stopped=True
+        except AttributeError : 
+            pass
         self.label_video.setEnabled(1)
         self.ui.pushButton_stopCalculs.setEnabled(0)
         self.ui.pushButton_stopCalculs.hide()
@@ -1205,12 +1262,12 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
     def devineLargeurHauteur(self):
         if self.largeurFilm<640:
             self.largeur = 640
-            self.hauteur = self.largeur/self.ratio
+            self.hauteur = int(self.largeur/self.ratio)
         elif self.largeurFilm > QApplication.desktop().screenGeometry().width() :
-            self.largeur = QApplication.desktop().screenGeometry().width()*0.9
+            self.largeur = int(QApplication.desktop().screenGeometry().width()*0.9)
         else :
             self.largeur = self.largeurFilm
-        self.hauteur = self.largeur/self.ratio
+        self.hauteur = int(self.largeur/self.ratio)
 
     def determineRatio(self):
         self.dbg.p(1, "rentre dans 'determineRatio'")
@@ -1246,7 +1303,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 else : 
                     if self.height()<1000: 
                         self.setFixedHeight(1000)
-                    self.setFixedWidth((self.height()-self.decalh)*self.ratio+self.decalw)
+                    self.setFixedWidth(int((self.height()-self.decalh)*self.ratio+self.decalw))
                         
                 
                 
@@ -1263,11 +1320,11 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 self.dbg.p(3, "dans 'redimensionneFenetre' ratioFilm = %s et ratioLabel = %s"  % (ratioFilm, ratioLabel) )
                 if ratioFilm > ratioLabel:
                     #la largeur est prédominante
-                    self.largeur = 1.0*(self.width()-self.decalw)
+                    self.largeur = int(1.0*(self.width()-self.decalw))
                     self.hauteur = int(self.largeur / ratioFilm)
                 else:
                     #la hauteur est prédominante
-                    self.hauteur = 1.0*(self.height()-self.decalh)
+                    self.hauteur = int(1.0*(self.height()-self.decalh))
                     self.largeur = int(self.hauteur * ratioFilm)
 
                 self.ui.label.setFixedHeight(self.hauteur)
@@ -1303,17 +1360,17 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             largeur_appli = self.largeur+self.decalw
             
             if hauteur_appli > self.height_screen*0.8 :
-                hauteur_appli  = self.height_screen*0.8
+                hauteur_appli  = int(self.height_screen*0.8)
                 self.hauteur = hauteur_appli-self.decalh
-                self.largeur = self.hauteur*self.ratio
-                largeur_appli = hauteur_appli*self.ratio
+                self.largeur = int(self.hauteur*self.ratio)
+                largeur_appli = int(hauteur_appli*self.ratio)
             if largeur_appli > self.width_screen*0.8 : 
-                largeur_appli  = self.width_screen*0.8
-                hauteur_appli = largeur_appli/self.ratio
+                largeur_appli  = int(self.width_screen*0.8)
+                hauteur_appli = int(largeur_appli/self.ratio)
                 self.largeur = largeur_appli-self.decalw
-                self.hauteur = self.largeur/self.ratio
-            self.setFixedWidth(largeur_appli)
-            self.setFixedHeight(hauteur_appli)
+                self.hauteur = int(self.largeur/self.ratio)
+            self.setFixedWidth(int(largeur_appli))
+            self.setFixedHeight(int(hauteur_appli))
             self.redimensionneSignal.emit(0)
             
             
@@ -1508,7 +1565,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
             self.label_auto = Label_Auto(self.label_video, self)  # in this label, motif(s) are defined.
             self.label_auto.show()
-
+            #IMPORTANT : permet de gagner en fluidité de l'affichage lors du poitnage autmatique. BUG lié au rafraichissment du slider.
+            self.ui.horizontalSlider.valueChanged.disconnect()
+            self.ui.spinBox_image.valueChanged.disconnect()
 
     def cree_tableau(self):
         """
@@ -1752,7 +1811,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
-        self.lance_capture = True
+        self.lance_capture = True 
 
         ### on fait des marques pour les points déjà visités
         etiquette = "@abcdefghijklmnopqrstuvwxyz"[len(self.listePoints)%self.nb_de_points]
@@ -1764,13 +1823,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if self.index_de_l_image <= self.image_max:  ##si on n'atteint pas encore la fin de la vidéo
                 self.lance_capture = True
                 self.stock_coordonnees_image(ligne=int((len(self.listePoints)-1)/self.nb_de_points))
-
                 self.index_de_l_image += 1
                 if interactif:
                     self.modifie = True
                 self.clic_sur_label_video_ajuste_ui(self.point_attendu)
 
             if self.index_de_l_image > self.image_max:
+                
                 self.lance_capture = False
                 self.mets_a_jour_label_infos(_translate("pymecavideo", "Vous avez atteint la fin de la vidéo", None))
                 self.index_de_l_image = self.image_max
@@ -1806,14 +1865,16 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'clic_sur_label_video_ajuste_ui'")
         self.lance_capture = True
+                        
         if point_attendu == 1:  # pour une acquisition sur une nouvelle image
             self.dbg.p(1, "self.nb_image_deja_analysees >= len(self.points) ? %s %s" % (
+                
                 len(self.listePoints), self.nb_de_points-len(self.listePoints)%self.nb_de_points))
             self.affiche_image()
             self.tracer_trajectoires("absolu")
         self.affiche_image()
         self.enableDefaire(len(self.listePoints) > 0)
-        self.enableRefaire(self.listePoints.nextCount() > 0)
+        self.enableRefaire(self.listePoints.nextCount() > 0)                
 
     def enregistre_dans_listePoints(self, point, index=None):
         """
@@ -1912,27 +1973,27 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' + str(self.index_de_l_image) + ' ' + str(self.image_max))
         if self.index_de_l_image <= self.image_max:
             self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
-            self.extract_image(self.index_de_l_image)
-            self.imageExtraite = QImage(toQImage(self.image_opencv))
-            #self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio).transformed(self.my_transform, mode=Qt.SmoothTransformation)
+            self.extract_image(self.index_de_l_image) #2ms
+            self.imageExtraite = QImage(toQImage(self.image_opencv)) 
 
             if hasattr(self, "label_video"):
-                self.afficheJusteImage()
+                self.afficheJusteImage()  #4 ms
 
             if self.ui.horizontalSlider.value() != self.index_de_l_image:
                 self.dbg.p(1, "affiche_image " + "horizontal")
-                self.ui.horizontalSlider.setValue(self.index_de_l_image)
-                self.ui.spinBox_image.setValue(self.index_de_l_image)
+                self.ui.horizontalSlider.setValue(self.index_de_l_image) 
+                self.ui.spinBox_image.setValue(self.index_de_l_image) #0.01 ms
         elif self.index_de_l_image > self.image_max:
             self.index_de_l_image = self.image_max
             self.lance_capture = False
 
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans AffichejusteImage affiche_image video, largeur %s, hauteur, %s" % (self.largeur, self.hauteur))
-        self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio).transformed(self.my_transform, mode=Qt.SmoothTransformation)
+        self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio).transformed(self.my_transform, mode=Qt.SmoothTransformation) #4-6 ms
         self.label_video.setMouseTracking(True)
         self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
         self.label_video.met_a_jour_crop()
+
 
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
@@ -2232,7 +2293,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         @param force permet de forcer l'écriture d'une image
         """
         self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
-
         ok, self.image_opencv = self.cvReader.getImage(index)
         if not ok :
             self.mets_a_jour_label_infos(
