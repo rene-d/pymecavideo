@@ -51,17 +51,26 @@ if __name__ == "__main__":
     
     
     #lecture des données x,y depuis l'entrée standard
-    xy=[map(float, ln.split()) for ln in sys.stdin if ln.strip()]
+    xy=[list(map(float, ln.split())) for ln in sys.stdin if ln.strip()]
     x=[coord[0] for coord in xy]
     y=[coord[1] for coord in xy]
-    
     app = QtWidgets.QApplication(sys.argv)
     pg.setConfigOption('background', 'w')
     pg.setConfigOption('foreground', 'k')
-    plotWidget = pg.plot(title=unicode(sys.argv[1],"UTF-8"))
-    plotWidget.setLabel('bottom', unicode(sys.argv[2],"UTF-8"))
-    plotWidget.setLabel('left', unicode(sys.argv[3],"UTF-8"))
-    plotWidget.plot(x, y)
+    
+    #Si python2
+    try : 
+        plotWidget = pg.plot(title=unicode(sys.argv[1],"UTF-8"))
+        plotWidget.setLabel('bottom', unicode(sys.argv[2],"UTF-8"))
+        plotWidget.setLabel('left', unicode(sys.argv[3],"UTF-8"))
+        plotWidget.plot(x, y)
+    except NameError :
+        plotWidget = pg.plot(title=sys.argv[1])
+        plotWidget.setLabel('bottom', sys.argv[2])
+        plotWidget.setLabel('left', sys.argv[3])
+        plotWidget.plot(x, y)        
+    
+    
     
     plotWidget.show()
 
