@@ -87,6 +87,24 @@ from globdef import HOME_PATH,APP_DATA_PATH, VIDEO,\
 
 from detect import filter_picture
 
+import functools
+
+
+def time_it(func):
+    """Timestamp decorator for dedicated functions"""
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()                 
+        result = func(*args, **kwargs)
+        elapsed = time.time() - start
+        mlsec = repr(elapsed).split('.')[1][:3]
+        readable = time.strftime("%H:%M:%S.{}".format(mlsec), time.gmtime(elapsed))
+        print('Function "{}": {} sec'.format(func.__name__, readable))
+        return result
+    return wrapper
+
+
+
 def _translate(context, text, disambig):
     return QApplication.translate(context, text, disambig)
 
@@ -638,7 +656,6 @@ class StartQt5(QMainWindow):
             self.ui.pushButton_stopCalculs.setEnabled(1)
             self.ui.pushButton_stopCalculs.show()
             self.label_video.setEnabled(0)
-            self.dossTemp = tempfile.NamedTemporaryFile(delete=False).name
             #self.pileDeDetections=zip(range(self.index_de_l_image, int(self.image_max)+1))
             self.pileDeDetections = []
             for i in range(self.index_de_l_image, int(self.image_max)+1):
@@ -648,7 +665,8 @@ class StartQt5(QMainWindow):
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
             timer=QTimer.singleShot(50, self.detecteUnPoint)
-
+    
+    @time_it
     def detecteUnPoint(self):
         """
         méthode (re)lancée pour les détections automatiques de points
@@ -661,23 +679,22 @@ class StartQt5(QMainWindow):
                 self.indexMotif+=1
             else :
                 self.indexMotif=0
+                
             index_de_l_image=self.pileDeDetections.pop(0)
             texteDuBouton = "STOP CALCULS (%d)" %index_de_l_image
             self.ui.pushButton_stopCalculs.setText(texteDuBouton)
-            
+
             #TODO : ce point est un point noir -> 250 ms
-            point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.dossTemp, self.pointsProbables)
+            point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.pointsProbables)
+
             self.pointsProbables[0]=point
-            
-            #TODO : ce point est un point noir -> 70 ms
             self.label_video.storePoint(vecteur(point[0], point[1]))
-            
-            # programme le suivi du point suivant après un délai de 50 ms,
+
+            # programme le suivi du point suivant après un délai de 5 ms,
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
             timer=QTimer.singleShot(5, self.detecteUnPoint)
-        else:
-            os.unlink(self.dossTemp)
+
                       
     def storeMotif(self):
         self.dbg.p(1, "rentre dans 'storeMotif'")
@@ -694,18 +711,17 @@ class StartQt5(QMainWindow):
             # TODO : tests avec les différents mode de threading
 
             # Python
-            dossTemp = tempfile.NamedTemporaryFile(delete=False).name
             if self.methode_thread == 1 : 
-                self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee, dossTemp)
+                self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee)
                 self.monThread.start()
             elif self.methode_thread==2 : ##1 thread par image
                 for i in range((self.image_max-self.premiere_image)*self.nb_de_points) :
-                    self.liste_thread = [MonThreadDeCalcul2(self, self.image, self.motif[self.indexMotif], self.imageAffichee, dossTemp)]
+                    self.liste_thread = [MonThreadDeCalcul2(self, self.image, self.motif[self.indexMotif], self.imageAffichee)]
             elif self.methode_thread==3 :  #pour l'instant celle qui foncitonne le mieux
                 timer=QTimer.singleShot(5, self.detecteUnPoint)
                 
 
-    def picture_detect(self, dossTemp=None):
+    def picture_detect(self):
         """
         Est lancée lors de la détection automatique des points. Gère l'ajout des thread de calcul.
         self.motifs : tableau des motifs
@@ -718,7 +734,7 @@ class StartQt5(QMainWindow):
             self.pointsFound = []
             if self.indexMotif <= len(self.motif) - 1:
                 self.dbg.p(1, "'picture_detect' : While") 
-                self.pointTrouve = filter_picture(self.motif, self.indexMotif, self.imageAffichee, dossTemp, self.listePoints)
+                self.pointTrouve = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.listePoints)
                 self.dbg.p(3, "Point Trouve dans mon Thread : " + str(self.pointTrouve))
                 self.onePointFind()
 
@@ -1794,6 +1810,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         cmd=u"""python pgraph.py "{0}" "{1}" "{2}" """.format(
             titre, labelAbscisse, labelOrdonnee).encode("utf-8")
         xy ="\n".join(["{0} {1}". format(abscisse[i], ordonnee[i]) for i in range(len(abscisse))])
+        print(type(xy), xy)
         thread=plotThread(cmd, xy)
         thread.daemon=True
         thread.start()
