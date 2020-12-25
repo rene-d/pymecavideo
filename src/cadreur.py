@@ -27,7 +27,7 @@ import subprocess
 import re
 import subprocess
 import shutil
-
+import numpy as np
 import cv2
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -80,7 +80,7 @@ class Cadreur(QObject):
         echy = 1.0 * m.height() / self.app.hauteur
         # permet de prendre en compte les vidéos à un format différent de 4:3
         ech = max(echx, echy)
-        return ech, m.width() / ech, m.height() / ech
+        return ech, int(m.width() / ech), int(m.height() / ech)
 
 
     def controleRalenti(self, position):
@@ -152,7 +152,7 @@ class Cadreur(QObject):
                 x, y = int(hautgauche.x()), int(hautgauche.y())
                 w, h = int(taille.x()), int(taille.y())
 
-                crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
+                crop_img = self.rotateImage(img[y:y+h, x:x+w], self.app.rotation) # Crop from x, y, w, h -> 100, 200, 300, 400
                 # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
 
                 cv2.imshow(self.titre, crop_img)
@@ -164,6 +164,11 @@ class Cadreur(QObject):
 
         cv2.destroyAllWindows()
         fini = True
+
+    def rotateImage(self,image, angle):
+       center=tuple(np.array(image.shape[0:2])/2)
+       rot_mat = cv2.getRotationMatrix2D(center,-angle,1.0)
+       return cv2.warpAffine(image, rot_mat, image.shape[0:2],flags=cv2.INTER_LINEAR)
 
 
 class openCvReader:
@@ -196,7 +201,7 @@ class openCvReader:
     def __nonzero__(self):
         return self.ok
 
-    def getImage(self, index):
+    def getImage(self, index, angle):
         """
         récupère un array numpy
         @param index le numéro de l'image, commence à 1.
@@ -218,10 +223,16 @@ class openCvReader:
             img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #convertit dans le bon format de couleurs
         else:
             return False, None
+        if angle !=0 : 
+            img2 = self.rotateImage(img2, angle)
         return True, img2
 
-
-    def recupere_avi_infos(self):
+    def rotateImage(self,image, angle):
+       center=tuple(np.array(image.shape[0:2])/2)
+       rot_mat = cv2.getRotationMatrix2D(center,-angle,1.0)
+       return cv2.warpAffine(image, rot_mat, image.shape[0:2],flags=cv2.INTER_LINEAR)
+   
+    def recupere_avi_infos(self, angle=0):
         """
         Détermine les fps, le nombre de frames, la largeur, la hauteur d'un fichier vidéo
         @return un quadruplet (framerate,nombre d'images,la largeur, la hauteur)
@@ -229,8 +240,11 @@ class openCvReader:
         try:
             fps = self.capture.get(cv2.CAP_PROP_FPS)
             fcount = self.capture.get(cv2.CAP_PROP_FRAME_COUNT)
+            
             largeur = self.capture.get(cv2.CAP_PROP_FRAME_WIDTH)
             hauteur = self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            if abs(angle) == 90 : #on a retourné la vidéo
+                largeur, hauteur = hauteur, largeur
         except:
             print ("could not retrieve informations from the video file.")
             print ("assuming fps = 25, frame count = 10.")

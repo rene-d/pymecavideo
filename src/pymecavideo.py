@@ -181,10 +181,9 @@ class StartQt5(QMainWindow):
         self.decalw = 197
         self.compteur_sa_mere=0
         self.rotation=0 #permet de retourner une vidéo mal prise
-        self.my_transform = QTransform() #va avec self.rotation
         self.checkBox_rot = "None"
         self.pointsProbables=[None] # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
-        self.methode_thread = 3 # définit la methoéd e thread à utiliser. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
+        self.methode_thread = 3 # définit la methode de calcul à utiliser pour la détection auto. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
         
         #### Mode plein écran
         self.plein_ecran = False
@@ -583,20 +582,20 @@ class StartQt5(QMainWindow):
         # self.label_trajectoire.render()
         self.pixmapChrono = QPixmap(self.label_trajectoire.size())
         self.label_trajectoire.render(self.pixmapChrono)
-        dir_ = self._dir("home")
-        fichier = QFileDialog.getSaveFileName(self,
-                                              _translate("pymecavideo", "Enregistrer la chronophotographie", None),
-                                              dir_,
-                                              _translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
-        self.pixmapChrono.save(fichier)
+        dir_ = str(self._dir("home")[0])
+                
+        fichier = QFileDialog.getSaveFileName(self, 
+                        caption = _translate("pymecavideo", "Enregistrer la chronophotographie", None),
+                        directory =  dir_, filter =  _translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
+        self.pixmapChrono.save(fichier[0])
 
     def chronoPhoto(self):
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         ##ajoute la première image utilisée pour le pointage sur le fond du label
         self.chrono = not self.chrono
         if self.chrono :
-            ok,img = self.cvReader.getImage(1)
-            self.imageChrono = QImage(toQImage(img)).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio)
+            ok,img = self.cvReader.getImage(self.premiere_image, self.rotation)
+            self.imageChrono = QImage(toQImage(img)).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) 
             self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
             self.ui.pushButtonEnregistreChrono.setVisible(1)
             self.ui.pushButtonChrono.setStyleSheet("background-color: red");
@@ -838,9 +837,6 @@ class StartQt5(QMainWindow):
         self.largeur, self.hauteur = self.hauteur, self.largeur
         self.ratio = 1/self.ratio
 
-        self.my_transform = QTransform()
-        self.my_transform.rotate(self.rotation)
-        #self.affiche_image()
         self.redimensionneSignal.emit(1)
 
 
@@ -1209,7 +1205,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.change_axe_ou_origine()
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(self.rotation)
         self.rouvert = True
 
         self.premierResize = False
@@ -1275,6 +1271,8 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
 
     def devineLargeurHauteur(self):
+        self.dbg.p(1, "rentre dans 'devineLargeurHauteur'")
+        self.dbg.p(2, "largeur %s, hauteur %s, ratio %s"%(self.largeur, self.hauteur, self.ratio))
         if self.largeurFilm<640:
             self.largeur = 640
             self.hauteur = int(self.largeur/self.ratio)
@@ -1530,8 +1528,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 
         self.arretAuto = False
 
-        if departManuel == True:  # si on a mis la première image à la main
-            self.premiere_image = self.ui.horizontalSlider.value()
+        self.premiere_image = self.ui.horizontalSlider.value()
         self.affiche_point_attendu(1)
         self.lance_capture = True
         self.fixeLesDimensions()
@@ -1989,8 +1986,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if self.index_de_l_image <= self.image_max:
             self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
             self.extract_image(self.index_de_l_image) #2ms
-            self.imageExtraite = QImage(toQImage(self.image_opencv)) 
-
+            
+            
+            self.imageExtraite = QImage(toQImage(self.image_opencv))
+            
             if hasattr(self, "label_video"):
                 self.afficheJusteImage()  #4 ms
 
@@ -2004,7 +2003,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans AffichejusteImage affiche_image video, largeur %s, hauteur, %s" % (self.largeur, self.hauteur))
-        self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio).transformed(self.my_transform, mode=Qt.SmoothTransformation) #4-6 ms
+        self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) #4-6 ms
         self.label_video.setMouseTracking(True)
         self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
         self.label_video.met_a_jour_crop()
@@ -2308,7 +2307,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         @param force permet de forcer l'écriture d'une image
         """
         self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
-        ok, self.image_opencv = self.cvReader.getImage(index)
+        ok, self.image_opencv = self.cvReader.getImage(index, self.rotation)
         if not ok :
             self.mets_a_jour_label_infos(
             _translate("pymecavideo", "Pymecavideo n'arrive pas à lire l'image", None))
