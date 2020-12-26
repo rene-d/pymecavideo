@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import *
 class widgetratio(QTabWidget):
     def __init__(self, parent):
         QTabWidget.__init__(self,parent)
-        self.setMinimumSize(QSize(876, 618))
+        self.setMinimumSize(QSize(800, 600))
 
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -22,7 +22,7 @@ class centralwidgetratio(QWidget):
         self.parent = parent
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(True)
+    #    sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
         self.setGeometry(0,15,876,615)
 
@@ -40,7 +40,4 @@ class centralwidgetratio(QWidget):
         w = self.width()
         return QSize( w, self.heightForWidth(w) )
 
-    def resizeEvent(self, e):
-        #QApplication.instance().processEvents()
-        self.setFixedHeight(self.heightForWidth(self.width()))
         

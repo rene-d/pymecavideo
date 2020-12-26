@@ -109,3 +109,12 @@ class vecteur:
             else:
                 y = self.y()
             return vecteur(x, y)
+    def rotate(self, angle, largeur, hauteur):
+        x1, y1 = self.x(), self.y()
+        print(largeur, hauteur, angle)
+        if angle==90 :
+            
+            return vecteur(largeur-y1, x1)
+        elif angle==-90 : 
+            return vecteur(y1, hauteur-x1)
+        
