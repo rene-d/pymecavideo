@@ -103,12 +103,8 @@ def time_it(func):
         return result
     return wrapper
 
-
-
 def _translate(context, text, disambig):
     return QApplication.translate(context, text, disambig)
-
-
 
 class MonThreadDeCalcul2(QThread):
     """Thread permettant le calcul des points automatiquement. Version Qt. 20/04/2015 : focntionne mal sous windows"""
@@ -198,7 +194,7 @@ class StartQt5(QMainWindow):
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
 
-        self.setMinimumSize(QSize(self.width_screen, self.height_screen))
+        self.setMaximumSize(QSize(self.width_screen, self.height_screen))
         self.dbg = Dbg(0)
         for o in opts:
             if ('-d' in o[0]) or ('--debug' in o[0]):
@@ -330,6 +326,7 @@ class StartQt5(QMainWindow):
         self.nb_de_points = 1  # nombre de points suivis
         self.premiere_image = 1  # n° de la première image cliquée
         self.index_de_l_image = 1  # image à afficher
+        self.ratio=1
         self.filename = filename
         self.opts = opts
         self.stdout_file = os.path.join(APP_DATA_PATH, "stdout")
@@ -459,11 +456,16 @@ class StartQt5(QMainWindow):
         """
         self.dbg.p(1, "rentre dans 'reinitialise_capture'")
         self.montre_vitesses = False
-
-        self.label_trajectoire.update()
+        try : 
+            self.label_trajectoire.update() #premier lancement sans fichier
+        except AttributeError:
+            pass
         self.ui.label.update()
-        self.label_video.update()
-        self.label_video.setCursor(Qt.ArrowCursor)
+        try : 
+            self.label_video.update()
+            self.label_video.setCursor(Qt.ArrowCursor)
+        except AttributeError: 
+            pass
         try:
             self.label_echelle_trace.hide()
             del self.label_echelle_trace
@@ -471,7 +473,10 @@ class StartQt5(QMainWindow):
             pass  # quand on demande un effacement tout au début. Comme par exemple, ouvrir les exmples.
 
         self.init_variables(None, filename=self.filename)
-        self.affiche_image()
+        try  : 
+            self.affiche_image()
+        except AttributeError:
+            pass
 
         self.echelle_image = echelle()
         self.affiche_echelle()
@@ -1263,18 +1268,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.label_video.setFixedSize(self.largeur, self.hauteur)
         self.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
 
-    #def devineLargeurHauteur(self):
-        #self.dbg.p(1, "rentre dans 'devineLargeurHauteur'")
-        #self.dbg.p(2, "largeur %s, hauteur %s, ratio %s"%(self.largeur, self.hauteur, self.ratio))
-        #if self.largeurFilm<640:
-            #self.largeur = 640
-            #self.hauteur = int(self.largeur/self.ratio)
-        #elif self.largeurFilm > QApplication.desktop().screenGeometry().width() :
-            #self.largeur = int(QApplication.desktop().screenGeometry().width()*0.9)
-        #else :
-            #self.largeur = self.largeurFilm
-        #self.hauteur = int(self.largeur/self.ratio)
-
     def determineRatio(self):
         self.dbg.p(1, "rentre dans 'determineRatio'")
         if self.premierResize:
@@ -1302,7 +1295,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 
         ###dimensions minimum
         
-        if self.ratio > 1 : 
+        if self.ratio >= 1 : 
             self.dbg.p(2, "self.ratio supérieur à 1'")
 
             self.setMinimumSize(QSize(800, self.heightForWidth(800)))
@@ -1343,9 +1336,11 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.affiche_image() 
             
         else : 
-            self.dbg.p(2, "L'image est juste affichée, non rééextraite.")
-            self.afficheJusteImage()
-        
+            try : #gère le  cas où on démarre sans vidéos
+                self.dbg.p(2, "L'image est juste affichée, non rééextraite.")
+                self.afficheJusteImage()
+            except AttributeError:
+                pass
         
         #prise en compte de l'échelle 
         
@@ -1367,8 +1362,8 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 self.label_video.maj()
                 self.label_trajectoire.maj()
                 self.afficheJusteImage()
-        
-        self.dbg.p(3, """largeur LABEL %s  hauteur LABEL, %s position LABEL %s %s \n
+        try : 
+            self.dbg.p(3, """largeur LABEL %s  hauteur LABEL, %s position LABEL %s %s \n
                    self.largeur %s  self.hauteur %s \n, 
                    largeur FENETRE : %s  hauteur FENETRE : %s\n, 
                    largeur label_video %s, hauteur label_video %s, position label_video %s %s\n
@@ -1376,6 +1371,8 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                    largeur centralwidget %s, hauteur centralwidget %s\n
                    """
                    % (self.ui.label.width(), self.ui.label.height(), self.ui.label.pos().x(), self.ui.label.pos().y(), self.largeur, self.hauteur, self.width(), self.height(), self.label_video.width(), self.label_video.height(), self.label_video.pos().x(), self.label_video.pos().y(), self.ui.tabWidget.width(), self.ui.tabWidget.height(), self.ui.centralwidget.width(), self.ui.centralwidget.height()))
+        except : 
+            pass
         
     def widthForHeight(self, h):
         #calcule self.largeur et self.hauteur si la hauteur est prédominante
