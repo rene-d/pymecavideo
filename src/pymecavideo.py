@@ -179,9 +179,7 @@ class StartQt5(QMainWindow):
         self.largeur = 640
         self.decalh = 120
         self.decalw = 197
-        self.compteur_sa_mere=0
         self.rotation=0 #permet de retourner une vidéo mal prise
-        self.checkBox_rot = "None"
         self.pointsProbables=[None] # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         self.methode_thread = 3 # définit la methode de calcul à utiliser pour la détection auto. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
         
@@ -200,7 +198,7 @@ class StartQt5(QMainWindow):
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
 
-        self.setMinimumSize(QSize(876, 618))
+        self.setMinimumSize(QSize(self.width_screen, self.height_screen))
         self.dbg = Dbg(0)
         for o in opts:
             if ('-d' in o[0]) or ('--debug' in o[0]):
@@ -261,6 +259,9 @@ class StartQt5(QMainWindow):
 
         # chargement d'un éventuel premier fichier
         self.splashVideo()
+        
+        #reinitialise_capture HACK pour le redimensionnement de l'échelle.
+        self.reinitialise_capture()
     
     def hasHeightForWidth(self):
         # This tells the layout manager that the banner's height does depend on its width
@@ -304,8 +305,14 @@ class StartQt5(QMainWindow):
         self.repere = 0
         try:
             self.origine = vecteur(self.largeur/2, self.hauteur/2)
+            self.largeurAvant = self.largeur
+            self.hauteurAvant  = self.hauteur
+            self.origineAvant = self.origine
         except AttributeError:
             self.origine = vecteur(320, 240)
+            self.largeurAvant = self.largeur
+            self.hauteurAvant  = self.hauteur
+            self.origineAvant = self.origine
         self.rouvert = False #positionné a vrai si on vien d'ouvrir un fichier mecavideo
 
         self.auto = False
@@ -485,21 +492,16 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
         self.ui.checkBox_auto.setEnabled(1)
-        self.ui.checkBox_rot_droite.setEnabled(1)
-        self.ui.checkBox_rot_gauche.setEnabled(1)
         self.ui.checkBox_abscisses.setCheckState(Qt.Unchecked)
         self.ui.checkBox_ordonnees.setCheckState(Qt.Unchecked)
         self.ui.checkBox_auto.setCheckState(Qt.Unchecked)
-        #self.ui.checkBox_rot_droite.setCheckState(Qt.Unchecked)
-        #self.ui.checkBox_rot_gauche.setCheckState(Qt.Unchecked)
+        
+        self.ui.pushButton_rot_droite.setEnabled(1)
+        self.ui.pushButton_rot_gauche.setEnabled(1)
         
         #remets le signal enlevé : 
         self.ui.horizontalSlider.valueChanged.connect(self.affiche_image_slider_move)
         self.ui.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
-
-        
-        
-        #self.determineHauteurLargeur()
 
         if self.ui.tableWidget:
             self.ui.tableWidget.clear()
@@ -557,8 +559,9 @@ class StartQt5(QMainWindow):
 
         self.ui.checkBox_abscisses.stateChanged.connect(self.change_sens_X)
         self.ui.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
-        self.ui.checkBox_rot_droite.stateChanged.connect(self.tourne_image)
-        self.ui.checkBox_rot_gauche.stateChanged.connect(self.tourne_image)
+        self.ui.pushButton_rot_droite.clicked.connect(self.tourne_droite)
+        self.ui.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
+        
         self.change_axe_origine.connect(self.change_axe_ou_origine)
         self.selection_done.connect(self.picture_detect)
         #self.selection_motif_done.connect(self.storeMotif)
@@ -595,7 +598,7 @@ class StartQt5(QMainWindow):
         self.chrono = not self.chrono
         if self.chrono :
             ok,img = self.cvReader.getImage(self.premiere_image, self.rotation)
-            self.imageChrono = QImage(toQImage(img)).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) 
+            self.imageChrono = toQImage(img).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) 
             self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
             self.ui.pushButtonEnregistreChrono.setVisible(1)
             self.ui.pushButtonChrono.setStyleSheet("background-color: red");
@@ -810,32 +813,30 @@ class StartQt5(QMainWindow):
 
         label = Label_Origine(parent=self.ui.label, app=self)
         label.show()
+    
+    def tourne_droite(self):
+        self.tourne_image("droite")
 
-    def tourne_image(self):
+    def tourne_gauche(self):
+        self.tourne_image("gauche")
+
+    def tourne_image(self, sens=None):
         self.dbg.p(1, "rentre dans 'tourne_image'")
-        if self.ui.checkBox_rot_droite.isChecked() and  self.ui.checkBox_rot_gauche.isChecked():
-            self.rotation=0
-            self.ui.checkBox_rot_droite.setChecked(0)
-            self.ui.checkBox_rot_gauche.setChecked(0)
-            self.checkbox_rot = "None"
+        if sens=="droite" : 
+            self.rotation+=90
+        elif sens=="gauche" : 
+            self.rotation-=90
         
-        if self.ui.checkBox_rot_droite.isChecked() and not self.ui.checkBox_rot_gauche.isChecked(): 
-            self.rotation=90
-            self.checkbox_rot = "droite"
-            
-            
-        if self.ui.checkBox_rot_gauche.isChecked() and not self.ui.checkBox_rot_droite.isChecked(): 
-            self.rotation=-90
-            self.checkbox_rot = "gauche"
-            
-        if not self.ui.checkBox_rot_droite.isChecked() and  not self.ui.checkBox_rot_gauche.isChecked():
-            self.rotation = 0
-
-            self.checkbox_rot = "None"
-            
-        self.dbg.p(1, "Dans 'tourne_image' self rotation vaut" + str(self.rotation))
-        self.largeur, self.hauteur = self.hauteur, self.largeur
-        self.ratio = 1/self.ratio
+        if self.rotation>180 : 
+            self.rotation=self.rotation-360 #arrive pour 270° par exemple
+        elif self.rotation<=-180 :
+            self.rotation=self.rotation+360
+        
+        self.dbg.p(2, "Dans 'tourne_image' self rotation vaut" + str(self.rotation))
+        
+        #self.largeur, self.hauteur = self.hauteur, self.largeur
+        #self.dbg.p(2, "self.largeur : %s, self.hauteur : %s"%(self.largeur, self.hauteur))
+        #self.ratio = 1/self.ratio
 
         self.redimensionneSignal.emit(1)
 
@@ -850,7 +851,7 @@ class StartQt5(QMainWindow):
         self.label_video.origine = self.origine
         self.label_video.update()
         self.echelle_faite=True ###TODO
-        self.stopRedimensionnement.emit()
+        #self.stopRedimensionnement.emit()
 
         # construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
         if self.points_ecran != {}:
@@ -1247,15 +1248,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.ui.tableWidget.show()
         self.recalculLesCoordonnees()
         # On met à jour les préférences
-        if self.rotation==90 : 
-            self.ui.checkBox_rot_droite.setChecked(1)
-            self.ui.checkBox_rot_gauche.setChecked(0)
-        elif self.rotation==-90 : 
-            self.ui.checkBox_rot_droite.setChecked(0)
-            self.ui.checkBox_rot_gauche.setChecked(1)
-        else : 
-            self.ui.checkBox_rot_droite.setChecked(0)
-            self.ui.checkBox_rot_gauche.setChecked(0)
+        
         self.prefs.lastVideo = self.filename
         self.prefs.videoDir = os.path.dirname(self.filename)
         self.prefs.save()
@@ -1270,17 +1263,17 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.label_video.setFixedSize(self.largeur, self.hauteur)
         self.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
 
-    def devineLargeurHauteur(self):
-        self.dbg.p(1, "rentre dans 'devineLargeurHauteur'")
-        self.dbg.p(2, "largeur %s, hauteur %s, ratio %s"%(self.largeur, self.hauteur, self.ratio))
-        if self.largeurFilm<640:
-            self.largeur = 640
-            self.hauteur = int(self.largeur/self.ratio)
-        elif self.largeurFilm > QApplication.desktop().screenGeometry().width() :
-            self.largeur = int(QApplication.desktop().screenGeometry().width()*0.9)
-        else :
-            self.largeur = self.largeurFilm
-        self.hauteur = int(self.largeur/self.ratio)
+    #def devineLargeurHauteur(self):
+        #self.dbg.p(1, "rentre dans 'devineLargeurHauteur'")
+        #self.dbg.p(2, "largeur %s, hauteur %s, ratio %s"%(self.largeur, self.hauteur, self.ratio))
+        #if self.largeurFilm<640:
+            #self.largeur = 640
+            #self.hauteur = int(self.largeur/self.ratio)
+        #elif self.largeurFilm > QApplication.desktop().screenGeometry().width() :
+            #self.largeur = int(QApplication.desktop().screenGeometry().width()*0.9)
+        #else :
+            #self.largeur = self.largeurFilm
+        #self.hauteur = int(self.largeur/self.ratio)
 
     def determineRatio(self):
         self.dbg.p(1, "rentre dans 'determineRatio'")
@@ -1305,134 +1298,85 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 on détermine la largeur minimale et on la fixe 
             
         """
+        self.dbg.p(1, "rentre dans 'redimensionne Fenetre'")
+
         ###dimensions minimum
+        
         if self.ratio > 1 : 
+            self.dbg.p(2, "self.ratio supérieur à 1'")
+
             self.setMinimumSize(QSize(800, self.heightForWidth(800)))
             self.largeur = self.width()-self.decalw
             self.hauteur = self.heightForWidth(self.largeur)
             
-            print('OKKK', self.height()!= int(self.heightForWidth(self.width())),self.height(), int(self.heightForWidth(self.width())) )
             if abs(self.height()- int(self.heightForWidth(self.width())))>10: #si la hauteur est vraiment différente, on redimensionne
                 self.setFixedHeight(self.heightForWidth(self.width())) 
         else : 
+            self.dbg.p(2, "self.ratio < à 1'")
             self.setMinimumSize(QSize(self.widthForHeight(600), 600))
+            
+            #traitement spécial si on vient de tourner l'image : on détermine la hauteur maximale de la vidéo
+            if tourne : 
+                self.setFixedHeight(self.hauteur+self.decalh)
             self.hauteur = self.height()-self.decalh
             self.largeur = self.widthForHeight(self.hauteur)
             if abs(self.width()-int(self.widthForHeight(self.height())))>10 : 
                 self.setFixedWidth(self.widthForHeight(self.height()))
 
-        
+        self.dbg.p(2, "on fixe les hauteurs du label")
         self.ui.label.setFixedHeight(self.hauteur)
         self.ui.label.setFixedWidth(self.largeur)
+        
         if hasattr(self, 'label_video'):
+            self.dbg.p(2, "on fixe les hauteurs de label_video")            
             self.label_video.setFixedHeight(self.hauteur)
             self.label_video.setFixedWidth(self.largeur)
-        self.ui.centralwidget.resize(self.size()-QSize(1,1))
-        self.ui.tabWidget.resize(self.size()-QSize(1,1))
+            self.dbg.p(2, "label_vidéo situé en %s %s"%(self.label_video.pos().x(),self.label_video.pos().y() ))
+            self.dbg.p(3, "label_vidéo largeur :  %s hauteur : %s"%(self.label_video.width(),self.label_video.height()))
+         
+        self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget") 
+        self.ui.centralwidget.setFixedSize(self.size()-QSize(1,1))
+        self.ui.tabWidget.setFixedSize(self.size()-QSize(1,1))
         
-        if tourne : 
-            self.affiche_image() #besoin de changer l'image lors d'un retournement
+        if tourne : #besoin de changer l'image lors d'un retournement
+            self.dbg.p(2, "image tournée -> affiche_image pour mettre à jour l'extraction de l'image")
+            self.affiche_image() 
+            
         else : 
+            self.dbg.p(2, "L'image est juste affichée, non rééextraite.")
             self.afficheJusteImage()
-        #self.update()
-                        #self.label_video.origine = self.origine
-                        #self.label_video.maj()
-                        #self.label_trajectoire.maj()
-                        #self.afficheJusteImage()
         
         
-                
-                
-    def redimensionneFenetre_(self, from_tourne=False):
-        self.dbg.p(1, "rentre dans 'redimensionne Fenetre'")
-        """@params from_tourne : booléen vaut vrai si ce signal est appelé depuis la fonction tourne_image. A ce moment là, on doit calculer la valeur des widgets à partir de la largeur et la hauteur du film.
-        Dans le cas contraire, on doit adapter la largeur et longueur du film en fonction de la fenêtre"""
+        #prise en compte de l'échelle 
         
-        if not from_tourne : 
-            if not self.lance_capture:
-                self.dbg.p(2, "dans 'redimensionneFenetre', self.stopRedimensionne==False")
-                #garde un historique pour l'origine
-                self.largeurAvant = self.largeur
-                self.hauteurAvant  = self.hauteur
-                self.origineAvant = self.origine
-                
-                ###dimension minimales : 
-                if self.ratio > 1 : #film horizontal, la largeur compte en 1er
-                    if self.width()<875 : 
-                        self.setFixedWidth(875)
-                    self.setFixedHeight(self.heightForWidth(self.width()))
-                else : 
-                    if self.height()<1000: 
-                        self.setFixedHeight(1000)
-                    self.setFixedWidth(int((self.height()-self.decalh)*self.ratio+self.decalw))
-                
-                try :
-                    self.label_echelle_p1Avant = self.label_echelle_trace.p1
-                    self.label_echelle_p2Avant = self.label_echelle_trace.p2
-                except AttributeError:
-                    pass
-                
+        self.dbg.p(2, "Recalcul de l'origine")
+        self.dbg.p(3, "origine_avant : %s"%self.origine)
+        self.origine = vecteur(self.origineAvant.x()*float(self.largeur)/self.largeurAvant, self.origineAvant.y()*float(self.largeur)/self.largeurAvant)
+        self.dbg.p(3, "origine_après : %s"%self.origine)
+        try :
+            self.dbg.p(2, "traçage de l'échelle")
+            self.label_echelle_trace.p1 = vecteur(self.label_echelle_p1Avant.x()*float(self.largeur)/self.largeurAvant, self.label_echelle_p1Avant.y()*float(self.largeur)/self.largeurAvant)
+            self.label_echelle_trace.p2 = vecteur(self.label_echelle_p2Avant.x()*float(self.largeur)/self.largeurAvant, self.label_echelle_p2Avant.y()*float(self.largeur)/self.largeurAvant)
+            self.label_echelle_trace.setGeometry(0,0,self.label_video.width(), self.label_video.height())
+        except : pass
+        
+        if hasattr(self, 'label_video'):
+                self.dbg.p(2, "MAJ de label_video")
 
-
-                ratioFilm = self.ratio
-                ratioLabel = 1.0*(self.width()-self.decalw) / (self.height()-self.decalh)
-                self.dbg.p(3, "dans 'redimensionneFenetre' ratioFilm = %s et ratioLabel = %s"  % (ratioFilm, ratioLabel) )
-                if ratioFilm > ratioLabel:
-                    #la largeur est prédominante
-                    self.largeur = int(1.0*(self.width()-self.decalw))
-                    self.hauteur = int(self.largeur / ratioFilm)
-                    
-                else:
-                    #la hauteur est prédominante
-                    self.hauteur = int(1.0*(self.height()-self.decalh))
-                    self.largeur = int(self.hauteur * ratioFilm)
-
-                self.ui.label.setFixedHeight(self.hauteur)
-                self.ui.label.setFixedWidth(self.largeur)
-                self.ui.tabWidget.setFixedHeight(self.hauteur+self.decalh)
-                self.ui.tabWidget.setFixedWidth(self.largeur+self.decalw)
-                #redimensionne le widget central pour coller à la fenêtre entrain de se faire étirer
-                self.ui.centralwidget.resize(self.size()-QSize(1,1))
-                self.ui.tabWidget.resize(self.size()-QSize(20,20))
-                if hasattr(self, 'label_video'):
-                    self.label_video.setFixedHeight(self.hauteur)
-                    self.label_video.setFixedWidth(self.largeur)
-
-
-
-                self.origine = vecteur(self.origineAvant.x()*float(self.largeur)/self.largeurAvant, self.origineAvant.y()*float(self.largeur)/self.largeurAvant)
-                try :
-                    self.label_echelle_trace.p1 = vecteur(self.label_echelle_p1Avant.x()*float(self.largeur)/self.largeurAvant, self.label_echelle_p1Avant.y()*float(self.largeur)/self.largeurAvant)
-                    self.label_echelle_trace.p2 = vecteur(self.label_echelle_p2Avant.x()*float(self.largeur)/self.largeurAvant, self.label_echelle_p2Avant.y()*float(self.largeur)/self.largeurAvant)
-                    self.label_echelle_trace.setGeometry(0,0,self.label_video.width(), self.label_video.height())
-                except AttributeError:
-                    pass
-                #self.origine = vecteur(int(self.largeur / 2), int(self.hauteur / 2))
-                self.affiche_image()
-                if hasattr(self, 'label_video'):
-                        self.label_video.origine = self.origine
-                        self.label_video.maj()
-                        self.label_trajectoire.maj()
-                        self.afficheJusteImage()
-                        #print("largeur label %s, hauteur label %s, largeur label_video %s, hauteur label_video %s"%(self.ui.label.width(), self.ui.label.height(), self.label_video.width(), self.label_video.height()))
-        else : #si on vient de tourne_image
-            hauteur_appli = self.hauteur+self.decalh
-            largeur_appli = self.largeur+self.decalw
-            
-            if hauteur_appli > self.height_screen*0.8 :
-                hauteur_appli  = int(self.height_screen*0.8)
-                self.hauteur = hauteur_appli-self.decalh
-                self.largeur = int(self.hauteur*self.ratio)
-                largeur_appli = int(hauteur_appli*self.ratio)
-            if largeur_appli > self.width_screen*0.8 : 
-                largeur_appli  = int(self.width_screen*0.8)
-                hauteur_appli = int(largeur_appli/self.ratio)
-                self.largeur = largeur_appli-self.decalw
-                self.hauteur = int(self.largeur/self.ratio)
-            self.setFixedWidth(int(largeur_appli))
-            self.setFixedHeight(int(hauteur_appli))
-            self.redimensionneSignal.emit(0)
-            
+                self.label_video.origine = self.origine
+                self.label_video.maj()
+                self.label_trajectoire.maj()
+                self.afficheJusteImage()
+        
+        self.dbg.p(3, """largeur LABEL %s  hauteur LABEL, %s position LABEL %s %s \n
+                   self.largeur %s  self.hauteur %s \n, 
+                   largeur FENETRE : %s  hauteur FENETRE : %s\n, 
+                   largeur label_video %s, hauteur label_video %s, position label_video %s %s\n
+                   largeur tabWidget %s, hauteur tabWidget %s\n
+                   largeur centralwidget %s, hauteur centralwidget %s\n
+                   """
+                   % (self.ui.label.width(), self.ui.label.height(), self.ui.label.pos().x(), self.ui.label.pos().y(), self.largeur, self.hauteur, self.width(), self.height(), self.label_video.width(), self.label_video.height(), self.label_video.pos().x(), self.label_video.pos().y(), self.ui.tabWidget.width(), self.ui.tabWidget.height(), self.ui.centralwidget.width(), self.ui.centralwidget.height()))
+        
     def widthForHeight(self, h):
         #calcule self.largeur et self.hauteur si la hauteur est prédominante
         #si la hauteur est trop petite, ne permet plus de redimensionnement
@@ -1450,32 +1394,9 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         
         return int(w/self.ratio)
         
-        
-    def heightForWidth_(self, w):
-        #calcul self.largeur et self.hauteur
-        #si la largeur est trop petite, ne permet plus de redimensionnement
-        self.dbg.p(1, "retre dans 'heightForWidth'")
-        self.dbg.p(2, "argument w : %s"%(str(w)))
-        if self.width() <875 or self.height() < 615:
-            self.stopRedimensionne = True
-            self.setMinimumWidth(875)
-            return 615
-        else :
-            self.stopRedimensionne = False
-            try:
-                hauteur = int((self.width()-self.decalw)/self.ratio)+self.decalh
-                return hauteur if hauteur >= 615 else 615
-            except AttributeError:
-                return 615
-
+    
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans 'resizeEvent'")
-        #if self.width()>=875 : #largeur à partir de laquelle on redimensionne
-        #if not self.lance_capture and not self.stopRedimensionne:
-            #self.dbg.p(2, "dans resizeevent, émet le signal")
-
-            #self.redimensionneSignal.emit(0)
-            
         self.redimensionneFenetre()    
         return super(StartQt5, self).resizeEvent(event)
 
@@ -1483,23 +1404,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.dbg.p(1, "rentre dans 'showEvent'")
 
         self.redimensionneSignal.emit(0)
-        
-    #def redimensionne(self, premier=False):
-        #"""
-        #redimensionne la fenêtre principale
-        #@param premier booléen, force le redimensionnement comme la première fois s'il est
-        #vrai ; faux par défaut.
-        #"""
-        #self.dbg.p(1, "rentre dans 'redimensionne'")
-        #self.layout()
-        #self.dbg.p(1, "dans 'redimensionne, self.height = %s, self.width = %s'"% (self.height(), self.width()))
-
-        ##self.determineHauteurLargeur(self.width())        
-        #if hasattr(self, 'label_video'):
-            #self.label_video.maj()
-            #self.label_trajectoire.maj()
-            #self.affiche_image()
-            
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
@@ -1616,15 +1520,14 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.ui.pushButton_origine.setEnabled(0)
         self.ui.checkBox_abscisses.setEnabled(0)
         self.ui.checkBox_ordonnees.setEnabled(0)
-        self.ui.checkBox_rot_droite.setEnabled(0)
-        self.ui.checkBox_rot_gauche.setEnabled(0)
         self.ui.checkBox_auto.setEnabled(0)
         self.ui.Bouton_Echelle.setEnabled(0)
         self.ui.Bouton_lance_capture.setEnabled(0)
+        self.ui.pushButton_rot_droite.setEnabled(0)
+        self.ui.pushButton_rot_gauche.setEnabled(0)
 
         #on empêche le redimensionnement
         self.fixeLesDimensions()
-
 
         #si aucune échelle n'a été définie, on place l'étalon à 1 px pou 1 m.
         if not self.echelle_faite:
@@ -2055,10 +1958,15 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if self.index_de_l_image <= self.image_max:
             self.index_avant = self.index_de_l_image
             self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
-            self.extract_image(self.index_de_l_image) #2ms
+            ok, self.image_opencv = self.extract_image(self.index_de_l_image) #2ms
             
-            
-            self.imageExtraite = QImage(toQImage(self.image_opencv))
+            self.imageExtraite = toQImage(self.image_opencv)
+            self.dbg.p(2, "Image extraite : largeur : %s, hauteur %s: "%(self.imageExtraite.width(), self.imageExtraite.height()))
+            #TODO A ENLEVER
+            #self.imageExtraite.save("essai_tourne.jpg")
+            #import cv2
+            #cv2.imwrite("essai_tourne_cv.jpg", self.image_opencv)
+                        
             
             if hasattr(self, "label_video"):
                 self.afficheJusteImage()  #4 ms
@@ -2072,7 +1980,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.lance_capture = False
 
     def afficheJusteImage(self):
-        self.dbg.p(1, "Rentre dans AffichejusteImage affiche_image video\n largeur LABEL %s \n hauteur LABEL, %s \n self.largeur %s \n self.hauteur %s \n largeur FENETRE : %s \n hauteur FENETRE : %s" % (self.ui.label.width(), self.ui.label.height(), self.largeur, self.hauteur, self.width(), self.height()))
+        self.dbg.p(1, "Rentre dans 'AffichejusteImage'" )
         self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) #4-6 ms
         self.label_video.setMouseTracking(True)
         self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
@@ -2083,6 +1991,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
         self.ui.tabWidget.setCurrentIndex(0)
         self.echelle_image = echelle()
+
         self.affiche_echelle()
         try:
             self.job.dialog.close()
@@ -2127,6 +2036,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.job = Label_Echelle(self.label_video, self)
                 self.job.setPixmap(QPixmap(toQImage(self.image_opencv)))
                 self.job.show()
+            
 
         except ValueError:
             self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une échelle valable", None))
@@ -2156,6 +2066,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'feedbackEchelle'")
         from echelle import Label_Echelle_Trace
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1, p2)
+        
+        #on garde les valeurs pour le redimensionnement
+        self.dbg.p(2, "Points de l'echelle : p1 : %s, p2 : %s"%(p1, p2))
+        self.label_echelle_p1Avant = self.label_echelle_trace.p1
+        self.label_echelle_p2Avant = self.label_echelle_trace.p2
+        
         self.label_echelle_trace.show()
         #self.stopRedimensionnement.emit()
 
@@ -2296,8 +2212,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.horizontalSlider.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
-        self.ui.checkBox_rot_droite.setEnabled(1)
-        self.ui.checkBox_rot_gauche.setEnabled(1)
+
         self.ui.checkBox_auto.setEnabled(1)
         self.ui.Bouton_lance_capture.setEnabled(True)
 
@@ -2377,13 +2292,14 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         @param force permet de forcer l'écriture d'une image
         """
         self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
-        ok, self.image_opencv = self.cvReader.getImage(index, self.rotation)
+        ok, image_opencv = self.cvReader.getImage(index, self.rotation)
         if not ok :
             self.mets_a_jour_label_infos(
             _translate("pymecavideo", "Pymecavideo n'arrive pas à lire l'image", None))
-
-        self.a_une_image = True
-
+            return False, None
+        self.a_une_image = ok
+        return ok, image_opencv
+        
     def traiteOptions(self):
         self.dbg.p(1, "rentre dans 'traiteOptions'")
         for opt, val in self.opts:

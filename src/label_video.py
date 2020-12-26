@@ -37,19 +37,13 @@ class Label_Video(QLabel):
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
         self.setMinimumSize(QSize(640,480))
         self.liste_points = []
-        # sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        # sizePolicy.setHeightForWidth(True)
-        #
-        #
-        # self.setSizePolicy(sizePolicy)
-
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
         self.cible_icon = os.path.join(self.app._dir("icones"), "curseur_cible.svg")
         pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
-        self.pos = vecteur(50, 50)
+        self.pos_zoom = vecteur(50, 50)
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
@@ -80,9 +74,9 @@ class Label_Video(QLabel):
         if self.app.lance_capture == True:
             self.app.enregistre_dans_listePoints(point)
             self.liste_points.append(point)
-            self.pos_avant = self.pos
+            self.pos_avant = self.pos_zoom
             self.app.clic_sur_video.emit()
-            self.met_a_jour_crop(self.pos)
+            self.met_a_jour_crop(self.pos_zoom)
             self.update()
 
     def mouseReleaseEvent(self, event):
@@ -111,8 +105,8 @@ class Label_Video(QLabel):
     def mouseMoveEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
             self.zoom_croix.show()
-            self.pos = vecteur(event.x(), event.y())
-            self.fait_crop(self.pos)
+            self.pos_zoom = vecteur(event.x(), event.y())
+            self.fait_crop(self.pos_zoom)
             self.app.ui.label_zoom.setPixmap(self.cropX2)
 
     def cache_zoom(self):
@@ -121,7 +115,7 @@ class Label_Video(QLabel):
     def paintEvent(self, event):
 
         if self.app.echelle_faite and self.app.lance_capture:
-            self.fait_crop(self.pos)
+            self.fait_crop(self.pos_zoom)
             self.app.ui.label_zoom.setPixmap(self.cropX2)
 
         self.painter = QPainter()

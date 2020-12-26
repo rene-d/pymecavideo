@@ -165,10 +165,14 @@ class Cadreur(QObject):
         cv2.destroyAllWindows()
         fini = True
 
-    def rotateImage(self,image, angle):
-       center=tuple(np.array(image.shape[0:2])/2)
-       rot_mat = cv2.getRotationMatrix2D(center,-angle,1.0)
-       return cv2.warpAffine(image, rot_mat, image.shape[0:2],flags=cv2.INTER_LINEAR)
+    def rotateImage(self, img, angle):
+        if angle==90 : 
+            return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) 
+        elif angle==-90 : 
+            return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE) 
+        elif angle==180 : 
+            return cv2.rotate(img, cv2.ROTATE_180) 
+        else : return img #angle=0
 
 
 class openCvReader:
@@ -223,14 +227,17 @@ class openCvReader:
             img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #convertit dans le bon format de couleurs
         else:
             return False, None
-        if angle !=0 : 
-            img2 = self.rotateImage(img2, angle)
-        return True, img2
 
-    def rotateImage(self,image, angle):
-       center=tuple(np.array(image.shape[0:2])/2)
-       rot_mat = cv2.getRotationMatrix2D(center,-angle,1.0)
-       return cv2.warpAffine(image, rot_mat, image.shape[0:2],flags=cv2.INTER_LINEAR)
+        return True, self.rotateImage(img2, angle)
+
+    def rotateImage(self, img, angle):
+        if angle==90 : 
+            return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) 
+        elif angle==-90 : 
+            return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE) 
+        elif angle==180 : 
+            return cv2.rotate(img, cv2.ROTATE_180) 
+        else : return img #angle==0
    
     def recupere_avi_infos(self, angle=0):
         """
