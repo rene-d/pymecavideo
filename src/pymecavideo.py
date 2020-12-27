@@ -844,13 +844,16 @@ class StartQt5(QMainWindow):
         
         self.dbg.p(2, "Dans 'tourne_image' self rotation vaut" + str(self.rotation))
         
-        self.largeur, self.hauteur = self.hauteur, self.largeur
+        
         #self.dbg.p(2, "self.largeur : %s, self.hauteur : %s"%(self.largeur, self.hauteur))
         self.ratio = 1/self.ratio
                 
         #gestion de l'origine et de l'échelle : 
         x1, y1 = self.origine.y(), self.origine.x()
-        self.origine = vecteur(self.origine.y(), self.origine.x()).rotate(increment, self.largeur, self.hauteur)
+        self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, self.largeur%s, self.hauteur%s"%(self.origine, self.largeur, self.hauteur))
+        self.origine = self.origine.rotate(increment, self.largeur, self.hauteur)
+        self.largeur, self.hauteur = self.hauteur, self.largeur
+        self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.origine %s, self.largeur%s, self.hauteur%s"%(self.origine, self.largeur, self.hauteur))
         self.change_axe_origine.emit()
         
         #TODO rotation vecteur echelle
