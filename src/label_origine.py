@@ -42,8 +42,8 @@ class Label_Origine(QLabel):
 
     def mouseMoveEvent(self, event):
         self.zoom_croix.show()
-        self.pos = vecteur(event.x(), event.y())
-        self.fait_crop(self.pos)
+        self.pos_zoom = vecteur(event.x(), event.y())
+        self.fait_crop(self.pos_zoom)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
 
     def fait_crop(self, p):

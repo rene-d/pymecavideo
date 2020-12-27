@@ -1574,7 +1574,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.arretAuto = False
 
         self.premiere_image = self.ui.horizontalSlider.value()
-        self.affiche_point_attendu(1)
+        self.affiche_point_attendu(0)
         self.lance_capture = True
         self.fixeLesDimensions()
         
@@ -1612,6 +1612,8 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         #######automatic capture
         if self.ui.checkBox_auto.isChecked():
             self.auto = True
+            self.mets_a_jour_label_infos(
+            _translate("pymecavideo", "Pointage Automatique", None))
             reponse = QMessageBox.warning(None, "Capture Automatique",
                                           _translate("pymecavideo", """\
 Veuillez sélectionner un cadre autour de(s) l'objet(s) que vous voulez suivre.
@@ -1862,9 +1864,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         affecte la ligne de statut et la ligne sous le zoom
         """
         self.dbg.p(1, "rentre dans 'affiche_point_attendu'")
+        self.dbg.p(1, "Point n° %i"%n)
 
         self.mets_a_jour_label_infos(
-            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(n))
+            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(n+1))
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
@@ -1873,23 +1876,21 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         ### on fait des marques pour les points déjà visités
         etiquette = "@abcdefghijklmnopqrstuvwxyz"[len(self.listePoints)%self.nb_de_points]
         self.point_attendu = len(self.listePoints)%self.nb_de_points
-        if self.point_attendu != 0 :
-            self.affiche_point_attendu(self.point_attendu)
-        else: # self.point_attendu == 0, c'est le premier point ?
-            self.affiche_point_attendu(self.point_attendu)
-            if self.index_de_l_image <= self.image_max:  ##si on n'atteint pas encore la fin de la vidéo
-                self.lance_capture = True
-                self.stock_coordonnees_image(ligne=int((len(self.listePoints)-1)/self.nb_de_points))
-                self.index_de_l_image += 1
-                if interactif:
-                    self.modifie = True
-                self.clic_sur_label_video_ajuste_ui(self.point_attendu)
+        self.dbg.p(2, "self.point_attendu %s"%self.point_attendu)
+        self.affiche_point_attendu(self.point_attendu)
+        if self.index_de_l_image <= self.image_max:  ##si on n'atteint pas encore la fin de la vidéo
+            self.lance_capture = True
+            self.stock_coordonnees_image(ligne=int((len(self.listePoints)-1)/self.nb_de_points))
+            self.index_de_l_image += 1
+            if interactif:
+                self.modifie = True
+            self.clic_sur_label_video_ajuste_ui(self.point_attendu)
 
-            if self.index_de_l_image > self.image_max:
-                
-                self.lance_capture = False
-                self.mets_a_jour_label_infos(_translate("pymecavideo", "Vous avez atteint la fin de la vidéo", None))
-                self.index_de_l_image = self.image_max
+        if self.index_de_l_image > self.image_max:
+            
+            self.lance_capture = False
+            self.mets_a_jour_label_infos(_translate("pymecavideo", "Vous avez atteint la fin de la vidéo", None))
+            self.index_de_l_image = self.image_max
 
     def enableDefaire(self, value):
         """
