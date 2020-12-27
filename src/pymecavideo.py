@@ -868,10 +868,19 @@ class StartQt5(QMainWindow):
         # repaint axes and define origine
         self.label_trajectoire.origine_mvt = self.origine
         self.label_trajectoire.update()
-
+        
         self.label_video.origine = self.origine
-        print('change', self.origine)
+        
         self.origineAvant = self.origine
+        self.largeurAvant = self.largeur
+        self.hauteurAvant = self.hauteur
+        #try : 
+        try :
+            self.label_echelle_p1Avant = self.label_echelle_trace.p1
+            self.label_echelle_p2Avant = self.label_echelle_trace.p2
+        except AttributeError : 
+            pass 
+        
         self.label_video.update()
         self.echelle_faite=True ###TODO
         #self.stopRedimensionnement.emit()
@@ -1311,7 +1320,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             
         """
         self.dbg.p(1, "rentre dans 'redimensionne Fenetre'")
-        
         if not self.isFullScreen() : 
             ###dimensions minimum        
             if self.ratio >= 1 : 
@@ -1334,7 +1342,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 if abs(self.width()-int(self.largeur+self.decalw))>10 : 
                     self.setFixedWidth(self.largeur+self.decalw)
 
-            if self.largeurAvant==0 : 
+            if self.largeurAvant==0 : #premier redimensionnement
                 self.largeurAvant = self.largeur
                 self.hauteurAvant = self.hauteur
         
@@ -2072,6 +2080,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.job = Label_Echelle(self.label_video, self)
                 self.job.setPixmap(QPixmap(toQImage(self.image_opencv)))
                 self.job.show()
+                self.change_axe_ou_origine()
             
 
         except ValueError:
