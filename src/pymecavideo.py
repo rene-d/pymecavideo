@@ -623,7 +623,7 @@ class StartQt5(QMainWindow):
         self.setMaximumHeight(self.height())
 
     def defixeLesDimensions(self):
-        self.setMinimumWidth(833)
+        self.setMinimumWidth(800+self.decalw)
         self.setMaximumWidth(16000000)
 
     def updatePB(self):
@@ -1316,7 +1316,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             ###dimensions minimum        
             if self.ratio >= 1 : 
                 self.dbg.p(2, "self.ratio supérieur à 1'")
-                self.setMinimumSize(QSize(800, self.heightForWidth(800)))
+                self.setMinimumSize(QSize(800+self.decalw, self.heightForWidth(800)))
                 self.largeur = self.width()-self.decalw
                 self.hauteur = self.heightForWidth(self.largeur)
                 
