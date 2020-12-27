@@ -151,8 +151,9 @@ class Label_Echelle(QLabel):
 
         self.app.echelle_image.p1 = self.p1.copy()
         self.app.echelle_image.p2 = self.p2.copy()
-        self.app.p1 = self.p1.copy()
-        self.app.p2 = self.p2.copy()
+        
+        #self.app.p1 = self.p1.copy()
+        #self.app.p2 = self.p2.copy()
         epxParM = self.app.echelle_image.pxParM()
         self.app.affiche_echelle()
         # self.app.affiche_nb_points(True)
@@ -160,6 +161,7 @@ class Label_Echelle(QLabel):
 
         #self.app.affiche_lance_capture(False)
         self.app.feedbackEchelle(self.p1, self.p2)
+        self.app.change_axe_ou_origine()
         if len(self.app.listePoints) > 0:  #si on appelle l'échelle après avoir déjà pointé
             self.app.mets_a_jour_label_infos(self.app.tr("Vous pouvez continuer votre acquisition"))
             self.app.affiche_nb_points(False)

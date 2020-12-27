@@ -258,8 +258,8 @@ class StartQt5(QMainWindow):
         # chargement d'un éventuel premier fichier
         self.splashVideo()
         
-        #reinitialise_capture HACK pour le redimensionnement de l'échelle.
-        self.reinitialise_capture()
+        ##reinitialise_capture HACK pour le redimensionnement de l'échelle.
+        #self.reinitialise_capture()
     
     def hasHeightForWidth(self):
         # This tells the layout manager that the banner's height does depend on its width
@@ -676,6 +676,7 @@ class StartQt5(QMainWindow):
             # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
+            self.dbg.p(3, "self.pileDeDetections : %s"%self.pileDeDetections)
             timer=QTimer.singleShot(50, self.detecteUnPoint)
     
     #@time_it
@@ -686,6 +687,8 @@ class StartQt5(QMainWindow):
         et relance un signal si la pile n'est pas vide après chacun
         des traitements.
         """
+        self.dbg.p(1, "rentre dans 'detecteUnPoint'")
+
         if self.pileDeDetections:
             if len(self.pileDeDetections)%self.nb_de_points!=0:
                 self.indexMotif+=1
@@ -696,7 +699,8 @@ class StartQt5(QMainWindow):
             texteDuBouton = "STOP CALCULS (%d)" %index_de_l_image
             self.ui.pushButton_stopCalculs.setText(texteDuBouton)
 
-            #TODO : le temps de calcule vient de là.
+            #TODO : principal point noir du calcul.
+            self.dbg.p(2, "On lance la detection avec : self.motif %s, self.indexMotif %s"%(self.motif, self.indexMotif))
             point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.pointsProbables)
 
             self.pointsProbables[0]=point
@@ -837,6 +841,8 @@ class StartQt5(QMainWindow):
             
         elif sens=="gauche" : 
             increment = -90
+        else : 
+            increment=0
         self.rotation+=increment
         if self.rotation>180 : 
             self.rotation=self.rotation-360 #arrive pour 270° par exemple
@@ -862,7 +868,7 @@ class StartQt5(QMainWindow):
         self.origine = self.origine.rotate(increment, self.largeur, self.hauteur)
         
         
-        #TODO rotation vecteur echelle
+        #rotation vecteur echelle
         self.echelle_image.p1 = self.echelle_image.p1.rotate(increment, self.largeur, self.hauteur)
         self.echelle_image.p2 = self.echelle_image.p2.rotate(increment, self.largeur, self.hauteur) 
         

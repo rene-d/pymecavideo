@@ -60,12 +60,13 @@ def filter_picture(parts, num, image, points=None):
     motif partiel dans l'image.
     """
     part  = parts [num]
- 
+    
     if points:
+        print(points)
         point = points[num]
     else:
         point=None
-
+    
     if "QImage" in str(type(part)):
         part = QImage2CVImage(part)
 
@@ -86,6 +87,7 @@ def filter_picture(parts, num, image, points=None):
 
     else:
         return "Type Error"
+    
 #@time_it
 def gaussMatrix(forme, sommet, hauteur, largeur, inverse=False):
     """
