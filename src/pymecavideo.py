@@ -1544,11 +1544,11 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 
         """
 
-        try:
-            self.origine_trace.hide()
-            del self.origine_trace
-        except:
-            pass
+        #try:
+            #self.origine_trace.hide()
+            #del self.origine_trace
+        #except:
+            #pass
 
         self.label_video.setFocus()
         self.label_video.show()
@@ -2269,7 +2269,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.ratio = self.determineRatio()
                 #self.label_video.repaint()
                 #self.metsAjourLesDimensions()
-                s#elf.label_video.repaint()
+                self.label_video.repaint()
                 self.label_video.show()
                 self.origine = vecteur(self.largeur/2, self.hauteur/2)
                 self.change_axe_ou_origine()

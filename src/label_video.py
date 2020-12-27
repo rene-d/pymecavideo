@@ -94,8 +94,8 @@ class Label_Video(QLabel):
         self.app.dbg.p(1, "rentre dans 'label_video.maj'")
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
 
-    def met_a_jour_crop(self, pos = vecteur(50,50)):
-        self.fait_crop(pos)
+    def met_a_jour_crop(self, pos_zoom = vecteur(50,50)):
+        self.fait_crop(pos_zoom)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
 
     def leaveEvent(self, event):
