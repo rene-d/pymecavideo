@@ -71,6 +71,7 @@ from version import Version
 from label_auto import Label_Auto
 from dialogencode import QMessageBoxEncode
 from toQimage import toQImage
+from echelle import Label_Echelle_Trace
 
 import qtiplotexport
 import re
@@ -849,21 +850,39 @@ class StartQt5(QMainWindow):
         self.ratio = 1/self.ratio
                 
         #gestion de l'origine et de l'échelle : 
-        x1, y1 = self.origine.y(), self.origine.x()
+        
+        ###DEBUG
         self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, self.largeur%s, self.hauteur%s"%(self.origine, self.largeur, self.hauteur))
+        try :
+            self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.echelle_image.p1 %s, self.echelle_image.p2 %s"%(self.echelle_image.p1, self.echelle_image.p2))
+        except AttributeError : 
+            pass
+        ###
+        
         self.origine = self.origine.rotate(increment, self.largeur, self.hauteur)
         
         
         #TODO rotation vecteur echelle
         self.echelle_image.p1 = self.echelle_image.p1.rotate(increment, self.largeur, self.hauteur)
         self.echelle_image.p2 = self.echelle_image.p2.rotate(increment, self.largeur, self.hauteur) 
-        #self.label_echelle_trace.hide()
-        #del self.label_echelle_trace
-        #self.feedbackEchelle(p1, p2)
+        
         
         self.largeur, self.hauteur = self.hauteur, self.largeur
+        
+        ###DEBUG
         self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.origine %s, self.largeur%s, self.hauteur%s"%(self.origine, self.largeur, self.hauteur))
+        try :
+            self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.echelle_image.p1 %s, self.echelle_image.p2 %s"%(self.echelle_image.p1, self.echelle_image.p2))
+        except AttributeError : 
+            pass
+        ###
+        
         self.change_axe_origine.emit()
+        try : 
+            
+            self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        except AttributeError : 
+            pass # pas d'échelle
         
         self.redimensionneSignal.emit(1)
 
@@ -882,8 +901,8 @@ class StartQt5(QMainWindow):
         self.hauteurAvant = self.hauteur
         #try : 
         try :
-            self.label_echelle_p1Avant = self.label_echelle_trace.p1
-            self.label_echelle_p2Avant = self.label_echelle_trace.p2
+            self.echelle_imagep1Avant = self.echelle_image.p1
+            self.echelle_imagep2Avant = self.echelle_image.p2
         except AttributeError : 
             pass 
         
@@ -1398,9 +1417,12 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.dbg.p(3, "origine après transformation : %s"%self.origine)
         try :
             self.dbg.p(2, "traçage de l'échelle")
-            self.label_echelle_trace.p1 = vecteur(self.label_echelle_p1Avant.x()*float(self.largeur)/self.largeurAvant, self.label_echelle_p1Avant.y()*float(self.largeur)/self.largeurAvant)
-            self.label_echelle_trace.p2 = vecteur(self.label_echelle_p2Avant.x()*float(self.largeur)/self.largeurAvant, self.label_echelle_p2Avant.y()*float(self.largeur)/self.largeurAvant)
-            self.label_echelle_trace.setGeometry(0,0,self.label_video.width(), self.label_video.height())
+            self.dbg.p(3, "echelle avant transformation : p1 : %s  p2 : %s"%(self.echelle_image.p1, self.echelle_image.p2))
+            self.echelle_image.p1 = vecteur(self.echelle_imagep1Avant.x()*float(self.largeur)/self.largeurAvant, self.echelle_imagep1Avant.y()*float(self.largeur)/self.largeurAvant)
+            self.echelle_image.p2 = vecteur(self.echelle_imagep2Avant.x()*float(self.largeur)/self.largeurAvant, self.echelle_imagep2Avant.y()*float(self.largeur)/self.largeurAvant)
+            self.dbg.p(3, "echelle après transformation : p1 : %s  p2 : %s"%(self.echelle_image.p1, self.echelle_image.p2))
+            #self.label_echelle_trace.setGeometry(0,0,self.largeur, self.hauteur)
+            self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         except : pass
         
         if hasattr(self, 'label_video'):
@@ -2115,7 +2137,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         retenues pour l'échelle
         """
         self.dbg.p(1, "rentre dans 'feedbackEchelle'")
-        from echelle import Label_Echelle_Trace
+        try: 
+            self.label_echelle_trace.hide()
+            del self.label_echelle_trace
+        except :
+            pass
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1, p2)
         
         #on garde les valeurs pour le redimensionnement
