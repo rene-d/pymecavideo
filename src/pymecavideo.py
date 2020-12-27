@@ -852,15 +852,18 @@ class StartQt5(QMainWindow):
         x1, y1 = self.origine.y(), self.origine.x()
         self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, self.largeur%s, self.hauteur%s"%(self.origine, self.largeur, self.hauteur))
         self.origine = self.origine.rotate(increment, self.largeur, self.hauteur)
-        self.largeur, self.hauteur = self.hauteur, self.largeur
-        self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.origine %s, self.largeur%s, self.hauteur%s"%(self.origine, self.largeur, self.hauteur))
-        self.change_axe_origine.emit()
+        
         
         #TODO rotation vecteur echelle
-        #p1,p2 = self.echelle_image.p1, self.echelle_image.p2 
+        self.echelle_image.p1 = self.echelle_image.p1.rotate(increment, self.largeur, self.hauteur)
+        self.echelle_image.p2 = self.echelle_image.p2.rotate(increment, self.largeur, self.hauteur) 
         #self.label_echelle_trace.hide()
         #del self.label_echelle_trace
         #self.feedbackEchelle(p1, p2)
+        
+        self.largeur, self.hauteur = self.hauteur, self.largeur
+        self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.origine %s, self.largeur%s, self.hauteur%s"%(self.origine, self.largeur, self.hauteur))
+        self.change_axe_origine.emit()
         
         self.redimensionneSignal.emit(1)
 
