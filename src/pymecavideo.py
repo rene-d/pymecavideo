@@ -183,7 +183,7 @@ class StartQt5(QMainWindow):
         
         #### Mode plein écran
         self.plein_ecran = False
-        #TODO QShortcut(QKeySequence(Qt.Key_F11), self, self.basculer_plein_ecran)
+        QShortcut(QKeySequence(Qt.Key_F11), self, self.basculer_plein_ecran)
 
         self.height_screen, self.width_screen = QDesktopWidget().screenGeometry().height(), QDesktopWidget().screenGeometry().width()
 
@@ -269,16 +269,17 @@ class StartQt5(QMainWindow):
     def sizeHint(self):
         return QSize(1024, 800)
 
-    #def showFullScreen_(self):
-        ##"""gère les dimensions en fonction de la largeur et la hauteur de l'écran"""
+    def showFullScreen_(self):
+        #"""gère les dimensions en fonction de la largeur et la hauteur de l'écran"""
         #self.setFixedSize(QSize(self.width_screen,self.height_screen ))
+        self.showFullScreen()
         
         
     def basculer_plein_ecran(self):
         """Basculer en mode plein écran / mode fenétré"""
         self.dbg.p(1, "rentre dans 'basculer_plein_ecran'")
         if not self.plein_ecran:
-            self.showFullScreen_()
+            self.showFullScreen()
         else:
             self.showNormal()
         self.plein_ecran = not (self.plein_ecran)
