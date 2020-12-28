@@ -183,7 +183,7 @@ class StartQt5(QMainWindow):
         
         #### Mode plein écran
         self.plein_ecran = False
-        QShortcut(QKeySequence(Qt.Key_F11), self, self.basculer_plein_ecran)
+        #TODO QShortcut(QKeySequence(Qt.Key_F11), self, self.basculer_plein_ecran)
 
         self.height_screen, self.width_screen = QDesktopWidget().screenGeometry().height(), QDesktopWidget().screenGeometry().width()
 
@@ -270,7 +270,7 @@ class StartQt5(QMainWindow):
         return QSize(1024, 800)
 
     #def showFullScreen_(self):
-        #"""gère les dimensions en fonction de la largeur et la hauteur de l'écran"""
+        ##"""gère les dimensions en fonction de la largeur et la hauteur de l'écran"""
         #self.setFixedSize(QSize(self.width_screen,self.height_screen ))
         
         
@@ -1351,7 +1351,9 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             
         """
         self.dbg.p(1, "rentre dans 'redimensionne Fenetre'")
-        if not self.isFullScreen() : 
+        
+        #if not self.isFullScreen() : -> ne fonctionne pas. TODO
+        if not self.width()==self.width_screen : 
             ###dimensions minimum        
             if self.ratio >= 1 : 
                 self.dbg.p(2, "self.ratio supérieur à 1'")
@@ -1380,14 +1382,19 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         else : #isFullScreen
             #détermination de la valeur maximum de self.largeur et self.hauteur : 
             ratio_ecran = self.width_screen/self.height_screen
-            
-            if self.ratio >= ratio_ecran : #largeur qui fixe 
-                self.largeur = self.width()-self.decalw
+            self.dbg.p(2, "ratio ecran %s, ration %s"%(ratio_ecran, self.ratio))
+            if self.ratio >= ratio_ecran : #largeur qui fixe les dimensions 
+                self.largeur = self.width_screen()-self.decalw
                 self.hauteur = self.heightForWidth(self.largeur)
+                #if abs(self.height()- int(self.hauteur+self.decalh))>10: #si la hauteur est vraiment différente, on redimensionne. Permet de sortir d'une boucle infinie.
+                #self.setFixedHeight(self.hauteur+self.decalh) 
+                
             else : #hauteur qui est limitante
-                self.hauteur = self.height()-self.decalh
+                self.hauteur = self.height_screen-self.decalh
                 self.largeur = self.widthForHeight(self.hauteur)
-        
+                
+                #    self.setFixedWidth(self.largeur+self.decalw)
+            
         self.dbg.p(2, "on fixe les hauteurs du label")
         self.ui.label.setFixedHeight(self.hauteur)
         self.ui.label.setFixedWidth(self.largeur)
@@ -1442,11 +1449,12 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.dbg.p(3, """largeur LABEL %s  hauteur LABEL, %s position LABEL %s %s \n
                    self.largeur %s  self.hauteur %s \n, 
                    largeur FENETRE : %s  hauteur FENETRE : %s\n, 
+                   largeur ÉCRAN : %s  hauteur ÉCRAN : %s\n,
                    largeur label_video %s, hauteur label_video %s, position label_video %s %s\n
                    largeur tabWidget %s, hauteur tabWidget %s\n
                    largeur centralwidget %s, hauteur centralwidget %s\n
                    """
-                   % (self.ui.label.width(), self.ui.label.height(), self.ui.label.pos().x(), self.ui.label.pos().y(), self.largeur, self.hauteur, self.width(), self.height(), self.label_video.width(), self.label_video.height(), self.label_video.pos().x(), self.label_video.pos().y(), self.ui.tabWidget.width(), self.ui.tabWidget.height(), self.ui.centralwidget.width(), self.ui.centralwidget.height()))
+                   % (self.ui.label.width(), self.ui.label.height(), self.ui.label.pos().x(), self.ui.label.pos().y(), self.largeur, self.hauteur, self.width(), self.height(), self.width_screen, self.height_screen, self.label_video.width(), self.label_video.height(), self.label_video.pos().x(), self.label_video.pos().y(), self.ui.tabWidget.width(), self.ui.tabWidget.height(), self.ui.centralwidget.width(), self.ui.centralwidget.height()))
         except : 
             pass
         
