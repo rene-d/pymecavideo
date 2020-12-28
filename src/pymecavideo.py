@@ -51,9 +51,9 @@ sys.path.insert(0, thisDir)
 from vecteur import vecteur
 import time
 import locale, getopt
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 # création précoce de l'objet application, déjà nécessaire pour traiter les bugs
 app = QApplication(sys.argv)
@@ -617,7 +617,7 @@ class StartQt5(QMainWindow):
             self.ui.pushButtonEnregistreChrono.setVisible(0)
             self.ui.pushButtonChrono.setStyleSheet("background-color: transparent");
             self.label_trajectoire.setPixmap(QPixmap())
-
+        self.redimensionneFenetre()
     def fixeLesDimensions(self):
         self.setMinimumWidth(self.width())
         self.setMaximumWidth(self.width())
@@ -2221,8 +2221,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def openexample(self):
         self.dbg.p(1, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
-        self.reinitialise_tout()
-        filename = QFileDialog.getOpenFileName(
+        #self.reinitialise_tout()
+        filename,hints = QFileDialog.getOpenFileName(
             self, _translate("pymecavideo", "Ouvrir une vidéo", None), dir_,
             _translate(
                 "pymecavideo",
