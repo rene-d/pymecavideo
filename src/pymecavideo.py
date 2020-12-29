@@ -470,6 +470,7 @@ class StartQt5(QMainWindow):
         try : 
             self.label_video.update()
             self.label_video.setCursor(Qt.ArrowCursor)
+            self.label_video.setEnabled(1)
         except AttributeError: 
             pass
         try:
@@ -664,6 +665,7 @@ class StartQt5(QMainWindow):
             self.dbg.p(3, "selection des motifs finie")
             self.label_auto.hide()
             self.label_auto.close()
+            del self.label_auto
             self.indexMotif = 0
             self.ui.pushButton_stopCalculs.setText("STOP CALCULS")
             self.ui.pushButton_stopCalculs.setEnabled(1)
@@ -1620,7 +1622,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.echelle_faite = True
         #######automatic capture
         if self.ui.checkBox_auto.isChecked():
-            self.auto = True
+            #self.auto = True
             self.mets_a_jour_label_infos(
             _translate("pymecavideo", "Pointage Automatique", None))
             reponse = QMessageBox.warning(None, "Capture Automatique",
@@ -1629,7 +1631,11 @@ Veuillez sélectionner un cadre autour de(s) l'objet(s) que vous voulez suivre.
 Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                                                      None),
                                           QMessageBox.Ok, QMessageBox.Ok)
-
+            try: 
+                self.label_auto.hide()
+                del self.label_auto
+            except : 
+                pass
             self.label_auto = Label_Auto(self.label_video, self)  # in this label, motif(s) are defined.
             self.label_auto.show()
             #IMPORTANT : permet de gagner en fluidité de l'affichage lors du poitnage autmatique. BUG lié au rafraichissment du slider.
