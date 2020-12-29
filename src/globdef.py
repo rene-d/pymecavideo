@@ -51,7 +51,7 @@ from PyQt5.QtCore import QStandardPaths
 #
 # Version de pymecavideo
 #
-VERSION = "5.3"
+VERSION = "7.0alpha1"
 
 
 def testerDossier(listDir, defaut=""):

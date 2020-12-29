@@ -58,14 +58,6 @@ class Label_Auto(QLabel):
         if not self.hasMouseTracking(): #lancé lors de la sélection.
             self.x_2 = x
             self.y_2 = y
-            #if x > self.x_1:
-                #self.x_2 = x
-            #elif x < self.x_1:
-                #self.x_1 = x
-            #if y > self.y_1:
-                #self.y_2 = y
-            #elif y < self.y_1:
-                #self.y_1 = y
         self.pos_zoom = vecteur(x, y)
         self.parent.pos_zoom = self.pos_zoom
         self.app.label_video.zoom_croix.show()

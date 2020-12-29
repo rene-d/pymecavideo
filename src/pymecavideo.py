@@ -2283,14 +2283,8 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.prefs.lastVideo = self.filename
                 
                 self.init_image()
-                #self.devineLargeurHauteur()
-
-
-
                 self.init_capture()
                 self.ratio = self.determineRatio()
-                #self.label_video.repaint()
-                #self.metsAjourLesDimensions()
                 self.label_video.repaint()
                 self.label_video.show()
                 self.origine = vecteur(self.largeur/2, self.hauteur/2)
