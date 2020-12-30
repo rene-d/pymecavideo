@@ -1358,7 +1358,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.dbg.p(1, "rentre dans 'redimensionne Fenetre'")
         
         #if not self.isFullScreen() : -> ne fonctionne pas. TODO
-        if not self.width()==self.width_screen : 
+        if not self.width()==self.width_screen and not self.height()==self.height_screen : 
             ###dimensions minimum        
             if self.ratio >= 1 : 
                 self.dbg.p(2, "self.ratio supérieur à 1'")
@@ -1391,14 +1391,14 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             if self.ratio >= ratio_ecran : #largeur qui fixe les dimensions 
                 self.largeur = self.width_screen()-self.decalw
                 self.hauteur = self.heightForWidth(self.largeur)
-                #if abs(self.height()- int(self.hauteur+self.decalh))>10: #si la hauteur est vraiment différente, on redimensionne. Permet de sortir d'une boucle infinie.
-                #self.setFixedHeight(self.hauteur+self.decalh) 
+
                 
             else : #hauteur qui est limitante
                 self.hauteur = self.height_screen-self.decalh
                 self.largeur = self.widthForHeight(self.hauteur)
                 
                 #    self.setFixedWidth(self.largeur+self.decalw)
+            #self.setFixed
             
         self.dbg.p(2, "on fixe les hauteurs du label")
         self.ui.label.setFixedHeight(self.hauteur)
@@ -1867,8 +1867,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             labelOrdonnee = typeDeCourbe + " (m/s)"
         
         #TODO source de bug selon la PATH de python. A tester sous windows.
-        cmd=u"""python pgraph.py "{0}" "{1}" "{2}" """.format(
-            titre, labelAbscisse, labelOrdonnee).encode("utf-8")
+        if sys.platform == "win32" : 
+            python_exe = """python.exe"""
+        else : 
+            python_exe = """python3"""
+        cmd=str("""{0} pgraph.py "{1}" "{2}" "{3}" """.format(python_exe,
+            titre, labelAbscisse, labelOrdonnee))
         xy ="\n".join(["{0} {1}". format(abscisse[i], ordonnee[i]) for i in range(len(abscisse))])
         thread=plotThread(cmd, xy)
         thread.daemon=True
