@@ -331,7 +331,9 @@ class StartQt5(QMainWindow):
         self.echelle_image = echelle()  # objet gérant l'image
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray",
                          "green"]  # correspond aux couleurs des points de la trajectoire
-        self.nb_de_points = 1  # nombre de points suivis
+        self.nb_de_points = 0  # nombre de points suivis
+        self.point_attendu = 0
+        self.nb_clics = 0
         self.premiere_image = 1  # n° de la première image cliquée
         self.index_de_l_image = 1  # image à afficher
         #self.ratio = -1
@@ -1887,7 +1889,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def clic_sur_label_video(self, liste_points=None, interactif=True):
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
         self.lance_capture = True 
-
+        
         ### on fait des marques pour les points déjà visités
         etiquette = "@abcdefghijklmnopqrstuvwxyz"[len(self.listePoints)%self.nb_de_points]
         self.point_attendu = len(self.listePoints)%self.nb_de_points
@@ -1896,7 +1898,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if self.index_de_l_image <= self.image_max:  ##si on n'atteint pas encore la fin de la vidéo
             self.lance_capture = True
             self.stock_coordonnees_image(ligne=int((len(self.listePoints)-1)/self.nb_de_points))
-            self.index_de_l_image += 1
+                
             if interactif:
                 self.modifie = True
             self.clic_sur_label_video_ajuste_ui(self.point_attendu)
@@ -1906,7 +1908,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.lance_capture = False
             self.mets_a_jour_label_infos(_translate("pymecavideo", "Vous avez atteint la fin de la vidéo", None))
             self.index_de_l_image = self.image_max
-
+        self.nb_clics+=1
+        if self.nb_clics==self.nb_de_points : 
+            self.nb_clics=0
+            self.index_de_l_image += 1
+            self.affiche_image()
     def enableDefaire(self, value):
         """
         Contrôle la possibilité de défaire un clic
@@ -1939,7 +1945,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'clic_sur_label_video_ajuste_ui'")
         self.lance_capture = True
                         
-        if point_attendu == 1:  # pour une acquisition sur une nouvelle image
+        if point_attendu == 1:  # pour une acquisition sur une nouvelle image 
             self.dbg.p(1, "self.nb_image_deja_analysees >= len(self.points) ? %s %s" % (
                 
                 len(self.listePoints), self.nb_de_points-len(self.listePoints)%self.nb_de_points))
