@@ -51,8 +51,7 @@ def filter_picture(parts, num, image, points=None):
     """
     Trouve la position d'une image partielle dans une image donnée
     @param parts une liste d'images partielles
-    @param num un index signalant l'image active (couramment seul l'index zéro
-    est supporté)
+    @param num un index signalant le numéro du point à rechercher.
     @param image l'image où on va chercher à trouver le motif partiel
     @param points liste de points près desquels il est plus vraisemblable
     de trouver le motif.
@@ -61,10 +60,11 @@ def filter_picture(parts, num, image, points=None):
     """
     part  = parts [num]
     
-    if points:
-        print(points)
-        point = points[num]
-    else:
+    try : 
+        if points:
+            print(points)
+            point = points[num]
+    except IndexError : 
         point=None
     
     if "QImage" in str(type(part)):
