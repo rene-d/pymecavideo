@@ -21,7 +21,7 @@
 from math import sqrt, atan2, degrees
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QRect, QPoint
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage,QPicture,QPainter,QColor
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage,QPicture,QPainter,QColor, QFont
 from PyQt5.QtWidgets import QLabel,QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
