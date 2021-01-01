@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ #-*- coding: utf-8 -*-
 
 licence = {}
 licence['en'] = """
@@ -248,7 +248,7 @@ class StartQt5(QMainWindow):
             self.qtiplot_present = "qtiplot"
 
         self.init_variables(opts)
-
+        self.init_interface()
         # connections internes
         self.ui_connections()
 
@@ -371,7 +371,10 @@ class StartQt5(QMainWindow):
 
         self.ui.echelleEdit.setEnabled(0)
         self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
-        self.affiche_echelle()
+        try : 
+            self.affiche_echelle()
+        except : 
+            pass
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
@@ -390,7 +393,14 @@ class StartQt5(QMainWindow):
             self.desactiveExport("Qtiplot")
         if not self.scidavis_present:
             self.desactiveExport("SciDAVis")
+        
 
+        if not self.a_une_image : 
+            self.ui.pushButton_rot_droite.setEnabled(0)
+            self.ui.pushButton_rot_gauche.setEnabled(0)
+        else : 
+            self.ui.pushButton_rot_droite.setEnabled(1)
+            self.ui.pushButton_rot_gauche.setEnabled(1)
         # création du label qui contiendra la vidéo.
         try:
             self.dbg.p(3, "In : init_interface, clear Label_Video")
@@ -2085,10 +2095,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans 'AffichejusteImage'" )
-        self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) #4-6 ms
-        self.label_video.setMouseTracking(True)
-        self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
-        self.label_video.met_a_jour_crop()
+        if self.a_une_image :         
+            self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) #4-6 ms
+            
+            self.label_video.setMouseTracking(True)
+            self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
+            self.label_video.met_a_jour_crop()
 
 
     def recommence_echelle(self):
@@ -2173,7 +2185,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.label_echelle_trace.hide()
             del self.label_echelle_trace
         except :
-            pass
+            pass #si pas de vidéo preexistante
+        
+        
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1, p2)
         
         #on garde les valeurs pour le redimensionnement

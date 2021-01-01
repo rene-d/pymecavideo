@@ -3,8 +3,8 @@ import sys
 #from PyQt5.QtCore import *
 #from PyQt5.QtGui import *
 #from PyQt5.QtWidgets import *
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
 
 class widgetratio(QTabWidget):
     def __init__(self, parent):

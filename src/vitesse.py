@@ -21,8 +21,8 @@
 """
 from math import sqrt, acos, asin, pi, cos, sin, atan2
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
 
 from vecteur import vecteur
 

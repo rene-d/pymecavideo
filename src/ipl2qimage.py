@@ -41,7 +41,7 @@ licence['fr'] = u"""
 """
 
 import cv
-from PyQt5.QtGui import *
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
 
 import Image
 
