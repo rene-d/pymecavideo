@@ -45,13 +45,12 @@ import os
 import subprocess
 
 from PyQt5.QtCore import QStandardPaths
-
-# from PyQt5.QtGui import *
+from version import Version
 
 #
 # Version de pymecavideo
 #
-VERSION = "7.0alpha1"
+VERSION = Version
 
 
 def testerDossier(listDir, defaut=""):
@@ -60,12 +59,8 @@ def testerDossier(listDir, defaut=""):
             return dir_
     return defaut
 
-#
-# Dossier de l'application
-#
 FILE_ENCODING = sys.getfilesystemencoding()
 DEFAUT_ENCODING = "utf-8"
-print ("FILE_ENCODING", FILE_ENCODING)
 
 ######################################################################################  
 def toFileEncoding(path):
@@ -74,165 +69,75 @@ def toFileEncoding(path):
         return path.encode(FILE_ENCODING)
     except:
         return path
+#######################################################################################  
+#HOME_PATH : Dossier des documents
+#APP_PATH : Dossier du lancement de l'application pymecavideo
+#CONF_PATH : StandardPaths.standardLocations(QStandardPaths.DataLocation)[0] / pymecavideo/ data
+#DATA_PATH : Dossier contenant les datas, selon scenario
+#ICON_PATH : DATA_PATH / icones
+#LANG_PATH : DATA_PATH / lang
+#HELP_PATH : DATA_PATH / lang
+#VIDEO_PATH : DATA_PATH / videos
 
-if sys.platform == 'win32':
+
+####APP_PATH
+
     #
     # Les deuxlignes suivantes permettent de lancer le script pymecavideo.py depuis n'importe
     # quel répertoire  sans que l'utilisation de chemins
     # relatifs ne soit perturbée
     #
-    PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
-    PATH = os.path.split(PATH)[0]
-    os.chdir(PATH)
-    sys.path.append(PATH)
+PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
+sys.path.append(PATH)
+APP_DATA = PATH
 
-else:
-    pass
-
-#
-# Dossier des données "temporaires" (video*.jpg, crop*.jpg, out.avi)
-#
+####DATA_PATH
 if sys.platform == 'win32':
-    #On récupère le dossier "Application data" 
-    #On lit la clef de registre indiquant le type d'installation
-    import win32api, win32con
-
-    try:
-        regkey = win32api.RegOpenKeyEx(win32con.HKEY_LOCAL_MACHINE, 'SOFTWARE\\pymecavideo', 0, win32con.KEY_READ)
-        (value, keytype) = win32api.RegQueryValueEx(regkey, 'DataFolder')
-        APP_DATA_PATH = value
-        if not os.path.exists(APP_DATA_PATH):
-            os.makedirs(APP_DATA_PATH)
-    except:
-        APP_DATA_PATH = PATH
-    sys.path.append(os.path.join(PATH, 'bin'))
-
+    DATA_PATH = os.path.join(APP_PATH, "data")
 else:
-    datalocation = os.path.join(QStandardPaths.standardLocations(QStandardPaths.DataLocation)[0], "data", "pymecavideo")
-    PATH = APP_DATA_PATH = datalocation
-    if not os.path.exists(datalocation):
-        subprocess.call("mkdir -p %s" %datalocation, shell=True)
+    DATA_PATH = testerDossier((os.path.join("..", "data"),
+                               '/usr/share/python3-mecavideo/', '/usr/share/pymecavideo/'))
+    
+###CONF_PATH
+CONF_PATH = os.path.join(QStandardPaths.standardLocations(QStandardPaths.DataLocation)[0], "pymecavideo")
 
-
-#
-# Nom du dossier des images extraites et des vidéos créées
-#
-IMG_PATH = os.path.join(APP_DATA_PATH, "images_extraites")
-NEWVID_PATH = os.path.join(APP_DATA_PATH, "videos_recodees")
-#TODO
-#if not sys.platform == 'win32':
-#    if not os.path.exists(NEWVID_PATH):
-#        os.makedirs(NEWVID_PATH)
-
-#
-# Dossier gnuplot
-#
-def GetGnuplotPath():
-    paths = os.environ['PATH'].split(os.pathsep)
-    if 'PROGRAMFILES' in os.environ.keys():
-        paths.append(os.environ['PROGRAMFILES'])
-    GNUPLOT_PATH = None
-    for p in paths:
-        if os.access(os.path.join(p, "gnuplot"), os.X_OK):
-            GNUPLOT_PATH = p
-    if GNUPLOT_PATH != None:
-        return os.path.join(GNUPLOT_PATH, "gnuplot", "binary")
-    else:
-        return ""
-
-
-GNUPLOT_PATH = GetGnuplotPath()
-
-# Dossier "home"
-#
+###HOME_PATH
 HOME_PATH = QStandardPaths.standardLocations(QStandardPaths.HomeLocation)
 
+####DOSSIERS 
 #
-# Dossier "video"
+# dossier des icones
 #
-if sys.platform == 'win32':
-    VIDEO_PATH = os.path.join(PATH, "data", "video")
-else:
-    VIDEO_PATH = testerDossier((os.path.join("..", "data", "video"),
-                                '/usr/share/pymecavideo/video',
-                                '/usr/share/python3-mecavideo/video'),
-                               APP_DATA_PATH)
-
-#
-# Dossier pour testfilm.py
-#
-
-#PYMECA_SHARE = testerDossier(('/usr/share/pymecavideo',
-#                              '/usr/share/python3-mecavideo',
-#                              '.'),
-#                             '/usr/share/pymecavideo')
-
-
-#
-# Dossier de pymecavideo.conf
-#
-if sys.platform == 'win32':
-    CONF_PATH = APP_DATA_PATH
-else:
-    CONF_PATH = PATH
-
-#
-# Dossier des icones
-#
-if sys.platform == 'win32':
-    ICON_PATH = os.path.join(PATH, "data", "icones")
-else:
-    ICON_PATH = testerDossier(
-        (os.path.join("..", "data", "icones"),
+ICON_PATH = testerDossier(
+        (os.path.join(DATA_PATH, "icones"),os.path.join("..", "data", "icones"),
          '/usr/share/python3-mecavideo/icones',
          '/usr/share/pymecavideo/icones',
          '/usr/share/icons')
     )
+
 #
 # Dossier des langues
 #
-if sys.platform == 'win32':
-    LANG_PATH = os.path.join(PATH, r"data", r"lang")
-else:
-    LANG_PATH = testerDossier((os.path.join("..", "data", "lang"),
+LANG_PATH = testerDossier((os.path.join(DATA_PATH, "lang"),os.path.join("..", "data", "lang"),
                                '/usr/share/pyshared/pymecavideo/lang', '/usr/share/python3-mecavideo/lang',
                                '/usr/share/pymecavideo/lang'))
-
 #
-# Dossier "data"
+# Dossier des vidéos
 #
-if sys.platform == 'win32':
-    DATA_PATH = os.path.join(PATH, "data")
-else:
-    #DATA_PATH = os.path.join(PATH,"..","data")
-    DATA_PATH = testerDossier((os.path.join("..", "data"),
-                               '/usr/share/python3-mecavideo/', '/usr/share/pymecavideo/'))
+VIDEO_PATH = testerDossier((os.path.join(DATA_PATH, "video"),os.path.join("..", "data", "video"),
+                               '/usr/share/pyshared/pymecavideo/video', '/usr/share/python3-mecavideo/video',
+                               '/usr/share/pymecavideo/video'))
 
 #
 # Dossier de l'aide
 #
-if sys.platform == 'win32':
-    HELP_PATH = os.path.join(PATH, "data", "help")
-else:
-    HELP_PATH = testerDossier((os.path.join("..", "data", "help"), "/usr/share/doc/python-mecavideo/html",
+HELP_PATH = testerDossier((os.path.join(DATA_PATH, "help"),os.path.join("..", "data", "help"), "/usr/share/doc/python-mecavideo/html",
                                "/usr/share/doc/HTML/fr/pymecavideo"))
-#
-# Nom du fichier de sortie AVI
-#
-AVI_OUT = os.path.join(IMG_PATH, "out.avi")
 
-ERROR_FILE = os.path.join(APP_DATA_PATH, 'pymecavideo.exe' + '.log')
 
-#
-# Nom des fichiers "crop" et "video"
-#
-CROP = "crop"
-VIDEO = "video"
-SUFF = "%04d.jpg"
+ERROR_FILE = os.path.join(CONF_PATH, 'pymecavideo.exe' + '.log')
 
-#
-# Gestion des Popen()
-#
+
 def GetChildStdErr():
     """ Renvoie le handler par défaut pour les Popen()
         (pour contourner un bug ... sous windows)

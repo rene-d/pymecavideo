@@ -81,10 +81,9 @@ import platform
 import tempfile
 import math
 
-from globdef import HOME_PATH,APP_DATA_PATH, VIDEO,\
-    SUFF, VIDEO_PATH, CONF_PATH, \
-    IMG_PATH, ICON_PATH, LANG_PATH, \
-    DATA_PATH, HELP_PATH, NEWVID_PATH
+from globdef import HOME_PATH,VIDEO_PATH, CONF_PATH, \
+     ICON_PATH, LANG_PATH, \
+    DATA_PATH, HELP_PATH
 
 from detect import filter_picture
 
@@ -174,7 +173,7 @@ class StartQt5(QMainWindow):
         QWidget.__init__(self, parent)
         self.hauteur = 1
         self.largeur = 0
-        self.ratio = 1
+        self.ratio = 1.5
         self.decalh = 120
         self.decalw = 197
         self.rotation=0 #permet de retourner une vidéo mal prise
@@ -257,9 +256,6 @@ class StartQt5(QMainWindow):
 
         # chargement d'un éventuel premier fichier
         self.splashVideo()
-        
-        ##reinitialise_capture HACK pour le redimensionnement de l'échelle.
-        #self.reinitialise_capture()
     
     def hasHeightForWidth(self):
         # This tells the layout manager that the banner's height does depend on its width
@@ -339,7 +335,7 @@ class StartQt5(QMainWindow):
         #self.ratio = -1
         self.filename = filename
         self.opts = opts
-        self.stdout_file = os.path.join(APP_DATA_PATH, "stdout")
+        self.stdout_file = os.path.join(CONF_PATH, "stdout")
         self.exitDecode = False
         self.echelle_faite = False
         self.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
@@ -1144,14 +1140,13 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 
         quand le paramètre est absent, initialise les répertoires si nécessaire
         """
+
         if lequel == "home":
             return HOME_PATH
         elif lequel == "videos":
             return VIDEO_PATH
         elif lequel == "conf":
             return CONF_PATH
-        elif lequel == "images":
-            return IMG_PATH
         elif lequel == "icones":
             return ICON_PATH
         elif lequel == "langues":
@@ -1160,18 +1155,16 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             return DATA_PATH
         elif lequel == "help":
             return HELP_PATH
+        
         elif type(lequel) == type(""):
             self.dbg.p(1, "erreur, appel de _dir() avec le paramètre inconnu %s" % lequel)
             self.close()
         else:
             # vérifie/crée les repertoires
-            for d in ("conf", "images"):
-                dd = StartQt5._dir(str(d))
-                if not os.path.exists(dd):
-                    try : 
-                        os.makedirs(dd)
-                    except : #TODO régler pb de droits sous windows
-                        pass 
+            dd = StartQt5._dir("conf")
+            if not os.path.exists(dd):
+                os.makedirs(dd)
+
 
     _dir = staticmethod(_dir)
 
@@ -1185,15 +1178,12 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.cvReader = openCvReader(self.filename)
 
         time.sleep(0.1)
-        if not self.cvReader.ok and (
-                    "/".join(self.filename.split('/')[:-1]) != NEWVID_PATH):  # if video is ever encoded, don't get in
-
-            sansSuffixe = os.path.basename(self.filename)
-            match = re.match("(.*)\.(.*)$", sansSuffixe)
-            sansSuffixe = match.group(1)
-            dest = os.path.join(NEWVID_PATH, sansSuffixe + ".avi")
-            self.qmsgboxencode = QMessageBoxEncode(self, dest)  # in this, thread to encode
-            self.qmsgboxencode.show()
+        if not self.cvReader.ok : 
+            QMessageBox.warning(None, "Format vidéo non pris en charge",
+                                          _translate("pymecavideo", """\le format de cette vidéo n'est pas pris en charge par pymecavideo""",
+                                                     None),
+                                          QMessageBox.Ok, QMessageBox.Ok)
+            
         else:
             return True
 
@@ -1377,7 +1367,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             ###dimensions minimum        
             if self.ratio >= 1 : 
                 self.dbg.p(2, "self.ratio supérieur à 1'")
-                self.setMinimumSize(QSize(800+self.decalw, self.heightForWidth(800)))
+                self.setMinimumSize(QSize(600, self.heightForWidth(600)))
                 self.largeur = self.width()-self.decalw
                 self.hauteur = self.heightForWidth(self.largeur)
                 
@@ -2214,18 +2204,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'closeEvent'")
         from tempfile import gettempdir
-        self.nettoieVideosRecodees()
-
-
-    def nettoieVideosRecodees(self):
-        """
-        Retire les vidéos recodées automatiquement
-        """
-        self.dbg.p(1, "rentre dans 'nettoieVideosRecodees'")
-
-        for fichier in os.listdir(NEWVID_PATH):
-            os.remove(os.path.join(NEWVID_PATH, fichier))
-
 
     def verifie_donnees_sauvegardees(self):
         self.dbg.p(1, "rentre dans 'verifie_donnees_sauvegardees'")
@@ -2401,13 +2379,8 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.horizontalSlider.setMaximum(int(self.image_max))
         self.ui.spinBox_image.setMaximum(int(self.image_max))
 
-        fichier = os.path.join(IMG_PATH, VIDEO + SUFF % 1)
-        try:
-            os.remove(fichier)
-            self.extract_image(1)
-            os.remove(fichier)
-        except OSError:
-            pass
+        self.extract_image(1)
+
 
     def extract_image(self, index):
         """
