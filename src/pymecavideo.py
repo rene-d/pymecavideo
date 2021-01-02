@@ -1166,7 +1166,10 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             for d in ("conf", "images"):
                 dd = StartQt5._dir(str(d))
                 if not os.path.exists(dd):
-                    os.makedirs(dd)
+                    try : 
+                        os.makedirs(dd)
+                    except : #TODO régler pb de droits sous windows
+                        pass 
 
     _dir = staticmethod(_dir)
 
@@ -1883,6 +1886,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             python_exe = """python3"""
         cmd=str("""{0} pgraph.py "{1}" "{2}" "{3}" """.format(python_exe,
             titre, labelAbscisse, labelOrdonnee))
+
         xy ="\n".join(["{0} {1}". format(abscisse[i], ordonnee[i]) for i in range(len(abscisse))])
         thread=plotThread(cmd, xy)
         thread.daemon=True
@@ -2504,7 +2508,7 @@ class plotThread(threading.Thread):
         return
 
     def run(self):
-        p=subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE)
+        p=subprocess.Popen(str(self.cmd), shell=True, stdin=subprocess.PIPE)
         p.communicate(self.xy.encode("utf-8"))
         return
     
