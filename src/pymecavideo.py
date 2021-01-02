@@ -519,10 +519,12 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_abscisses.setCheckState(Qt.Unchecked)
         self.ui.checkBox_ordonnees.setCheckState(Qt.Unchecked)
         self.ui.checkBox_auto.setCheckState(Qt.Unchecked)
-        
-        self.ui.pushButton_rot_droite.setEnabled(1)
-        self.ui.pushButton_rot_gauche.setEnabled(1)
-        
+        if self.a_une_image : 
+            self.ui.pushButton_rot_droite.setEnabled(1)
+            self.ui.pushButton_rot_gauche.setEnabled(1)
+        else : 
+            self.ui.pushButton_rot_droite.setEnabled(0)
+            self.ui.pushButton_rot_gauche.setEnabled(0)
         #remets le signal enlevé : 
         self.ui.horizontalSlider.valueChanged.connect(self.affiche_image_slider_move)
         self.ui.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
