@@ -55,9 +55,9 @@ VERSION = "7.0alpha1"
 
 
 def testerDossier(listDir, defaut=""):
-    for dir in listDir:
-        if os.path.exists(dir):
-            return dir
+    for dir_ in listDir:
+        if os.path.exists(dir_):
+            return dir_
     return defaut
 
 #
@@ -93,7 +93,7 @@ else:
 # Dossier des données "temporaires" (video*.jpg, crop*.jpg, out.avi)
 #
 if sys.platform == 'win32':
-    #On récupèreﾠ le dossier "Application data" 
+    #On récupère le dossier "Application data" 
     #On lit la clef de registre indiquant le type d'installation
     import win32api, win32con
 
@@ -119,8 +119,10 @@ else:
 #
 IMG_PATH = os.path.join(APP_DATA_PATH, "images_extraites")
 NEWVID_PATH = os.path.join(APP_DATA_PATH, "videos_recodees")
-if not os.path.exists(NEWVID_PATH):
-    os.makedirs(NEWVID_PATH)
+#TODO
+#if not sys.platform == 'win32':
+#    if not os.path.exists(NEWVID_PATH):
+#        os.makedirs(NEWVID_PATH)
 
 #
 # Dossier gnuplot
@@ -160,10 +162,10 @@ else:
 # Dossier pour testfilm.py
 #
 
-PYMECA_SHARE = testerDossier(('/usr/share/pymecavideo',
-                              '/usr/share/python3-mecavideo',
-                              '.'),
-                             '/usr/share/pymecavideo')
+#PYMECA_SHARE = testerDossier(('/usr/share/pymecavideo',
+#                              '/usr/share/python3-mecavideo',
+#                              '.'),
+#                             '/usr/share/pymecavideo')
 
 
 #
