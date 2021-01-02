@@ -1,7 +1,7 @@
 
 ;This file is part of pymecavideo.
 ;
-; Copyright (C) 2009-2012 Cédrick FAURY
+; Copyright (C) 2009-2010 Cédrick FAURY
 ;
 ;pymecavideo is free software; you can redistribute it and/or modify
 ;it under the terms of the GNU General Public License as published by
@@ -17,25 +17,22 @@
 ;along with pymecavideo; if not, write to the Free Software
 ;Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#define AppVersion "6.2"
-
-
 [Setup]
 ;Informations générales sur l'application
-AppName=pymecavideo {#AppVersion}
-AppVerName=pymecavideo {#AppVersion}
-AppVersion={#AppVersion}
+AppName=pymecavideo 7
+AppVerName=pymecavideo 7.0.0.1
+AppVersion=7.0
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
 AppCopyright=Copyright (C) 2007-2018 Georges Khaznadar <georgesk.debian.org>
-VersionInfoVersion = 6.2.3.0
+VersionInfoVersion = 7.0.0.1
 
 ;Répertoire de base contenant les fichiers
-SourceDir=D:\Developpement\pymecavideo\
+SourceDir=D:\Documents\Developpement\pymecavideo
 
-;Repertoire d'installation
+;Repertoire d'installaotion
 DefaultDirName={pf}\pymecavideo
 DefaultGroupName=pymecavideo
-LicenseFile=COPYING
+LicenseFile=gpl-3.0.txt
 
 ;Paramètres de compression
 ;lzma ou zip
@@ -46,12 +43,12 @@ SolidCompression=yes
 PrivilegesRequired=none
 
 ;Nom du fichier généré et répertoire de destination
-OutputBaseFilename=pymecavideo_{#AppVersion}_setup
+OutputBaseFilename=pymecavideo_6.0_setup
 OutputDir=releases
 
 ;Dans le panneau de configuration de Windows2000/NT/XP, c'est l'icone de pymecavideo.exe qui
 ;apparaît à gauche du nom du fichier pour la désinstallation
-UninstallDisplayIcon={app}\data\icones\icone_pymecavideo.ico
+UninstallDisplayIcon={app}\data\icones\pymecavideo.ico
 
 ;Fenêtre en background
 WindowResizable=false
@@ -59,19 +56,17 @@ WindowStartMaximized=true
 WindowShowCaption=true
 BackColorDirection=lefttoright
 
-WizardImageFile=data\icones\pymecavideo_setup.bmp
 
 AlwaysUsePersonalGroup=no
 
 [Languages]
 Name: en; MessagesFile: "compiler:Default.isl"
 Name: fr; MessagesFile: "compiler:Languages\French.isl"
-Name: es; MessagesFile: "compiler:Languages\Spanish.isl"
 
 ;Name: fr; MessagesFile: "compiler:Languages\French.isl"
- 
+
 [Messages]
-BeveledLabel=pymecavideo {#AppVersion} installation
+BeveledLabel=pymecavideo 6.0 installation
 
 
 [CustomMessages]
@@ -90,7 +85,7 @@ fr.AllUsers=Tous les utilisateurs
 fr.JustMe=Seulement moi
 fr.ShortCut=Raccourcis :
 fr.Association=Association de fichier :
-;fr.ffmpeg_ffplay = Outils video : ffmpeg et ffplay
+fr.ffmpeg_ffplay = Outils video : ffmpeg et ffplay
 fr.HelpFiles = Fichiers d'aide
 fr.ExampleFiles = Fichiers d'exemple
 
@@ -109,29 +104,9 @@ en.AllUsers=All users
 en.JustMe=Just me
 en.ShortCut=Short cuts :
 en.Association=File association :
-;en.ffmpeg_ffplay = ffmpeg and ffplay video tools
+en.ffmpeg_ffplay = ffmpeg and ffplay video tools
 en.HelpFiles = Help Files
 en.ExampleFiles = Example Files
-
-;
-; Espanol
-;
-en.uninstall=Desinstalación
-en.gpl_licence=Leer el contrato de licencia para el software
-en.fdl_licence=Leer el contrato de licencia para la documentación
-en.AssocFileExtension=&Asociar pymecavideo con extensión .mecavideo
-en.CreateDesktopIcon=Crear acceso directo del escritorio a
-en.CreateQuickLaunchIcon=Crear un icono de inicio rápido para
-en.FileExtensionName=pymecavideo archivo
-en.InstallFor=Instalar para :
-en.AllUsers=Todos los usuarios
-en.JustMe=Sólo yo
-en.ShortCut=Accesos :
-en.Association=Asociación de archivo :
-;en.ffmpeg_ffplay = ffmpeg and ffplay video tools
-en.HelpFiles = Archivos de ayuda
-en.ExampleFiles = Archivos de ejemplo
-
 
 
 [Types]
@@ -141,6 +116,7 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 
 [Components]
 Name: "program"; Description: "pymecavideo"; Types: custom; Flags: fixed
+Name: "ff"; Description: {cm:ffmpeg_ffplay}; Types: custom
 Name: "help"; Description: {cm:HelpFiles}; Types: custom
 Name: "exemple"; Description: {cm:ExampleFiles}; Types: custom
 ;Name: "readme\en"; Description: "English"; Flags: exclusive
@@ -150,21 +126,28 @@ Name: "exemple"; Description: {cm:ExampleFiles}; Types: custom
 ;
 ; Fichiers de la distribution
 ;
-Source: src\build\*.*;    DestDir: {app};           Flags : ignoreversion recursesubdirs;
+Source: src\dist\*.*; DestDir: {app}\bin; Flags : ignoreversion recursesubdirs;
+Source: *.txt; DestDir: {app}; Flags : ignoreversion;
+Source: data\help\*.*; DestDir: {app}\data\help; Flags : ignoreversion recursesubdirs; Components : help
+Source: data\video\*.*; DestDir: {app}\data\video; Flags : ignoreversion recursesubdirs; Components : exemple
+Source: data\icones\*.*; DestDir: {app}\data\icones; Flags : ignoreversion recursesubdirs
+Source: data\lang\*.*; DestDir: {app}\data\lang; Flags : ignoreversion recursesubdirs
+Source: ff*.exe; DestDir: {app}; Flags : ignoreversion; Components : ff
+
 
 [Tasks]
-Name: desktopicon2; Description: {cm:CreateDesktopIcon} pymecavideo ;GroupDescription: {cm:ShortCut}; MinVersion: 4,4
+Name: desktopicon2; Description: {cm:CreateDesktopIcon} pyMecaVideo ;GroupDescription: {cm:ShortCut}; MinVersion: 4,4
 Name: fileassoc; Description: {cm:AssocFileExtension};GroupDescription: {cm:Association};
 Name: common; Description: {cm:AllUsers}; GroupDescription: {cm:InstallFor}; Flags: exclusive
 Name: local;  Description: {cm:JustMe}; GroupDescription: {cm:InstallFor}; Flags: exclusive unchecked
 
 [Icons]
-Name: {group}\pymecavideo;Filename: {app}\pymecavideo.exe; WorkingDir: {app}; IconFileName: {app}\pymecavideo.exe
-Name: {group}\{cm:uninstall} pymecavideo; Filename: {app}\unins_pmv.exe;IconFileName: {app}\unins_pmv.exe
+Name: {group}\pymecavideo;Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; IconFileName: {app}\bin\pymecavideo.exe
+Name: {group}\{cm:uninstall} pymecavideo; Filename: {app}\unins000.exe;IconFileName: {app}\unins000.exe
 ;
 ; On ajoute sur le Bureau l'icône pymecavideo
 ;
-Name: {code:DefDesktop}\pymecavideo {#AppVersion};   Filename: {app}\pymecavideo.exe; WorkingDir: {app}; MinVersion: 4,4; Tasks: desktopicon2; IconFileName: {app}\pymecavideo.exe
+Name: {code:DefDesktop}\pymecavideo 5.3;   Filename: {app}\bin\pymecavideo.exe; WorkingDir: {app}\bin; MinVersion: 4,4; Tasks: desktopicon2; IconFileName: {app}\bin\pymecavideo.exe
 
 
 [_ISTool]
@@ -175,8 +158,8 @@ Use7zip=true
 ; Tout ce qui concerne les fichiers .mecavideo
 Root: HKCR; SubKey: .mecavideo; ValueType: string; ValueData: {cm:FileExtensionName}; Flags: uninsdeletekey
 Root: HKCR; SubKey: {cm:FileExtensionName}; ValueType: string; Flags: uninsdeletekey; ValueData: {cm:FileExtensionName}
-Root: HKCR; SubKey: {cm:FileExtensionName}\Shell\Open\Command; ValueType: string; ValueData: """{app}\pymecavideo.exe"" ""-f %1"""; Flags: uninsdeletekey;
-Root: HKCR; Subkey: {cm:FileExtensionName}\DefaultIcon; ValueType: string; ValueData: {app}\data\icones\icone_pymecavideo.ico,0; Flags: uninsdeletekey;
+Root: HKCR; SubKey: {cm:FileExtensionName}\Shell\Open\Command; ValueType: string; ValueData: """{app}\bin\pymecavideo.exe"" ""-f %1"""; Flags: uninsdeletekey;
+Root: HKCR; Subkey: {cm:FileExtensionName}\DefaultIcon; ValueType: string; ValueData: {app}\data\icones\pymecavideo.ico,0; Flags: uninsdeletekey;
 
 ; Pour stocker le style d'installation : "All users" ou "Current user"
 Root: HKLM; Subkey: Software\pymecavideo; ValueType: string; ValueName: DataFolder; ValueData: {code:DefAppDataFolder}\pymecavideo ; Flags: uninsdeletekey;
@@ -188,7 +171,7 @@ Procedure URLLabelOnClick(Sender: TObject);
 var
   ErrorCode: Integer;
 begin
-  ShellExec('open', 'https://gitlab.com/oppl/pymecavideo', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  ShellExec('open', 'http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/pymecavideo', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
 end;
 
 {*** INITIALISATION ***}
@@ -219,7 +202,7 @@ begin
 end;
 
 
-{ Renvoie le bureau sur lequel placer le raccourci de pymecavideo }
+{ Renvoie le bureau sur lequel placer le raccourci de pyMecaVideo }
 function DefDesktop(Param: String): String;
 begin
   if IsTaskSelected('common') then
