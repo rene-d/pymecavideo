@@ -33,7 +33,6 @@ from PyQt5.QtCore import QObject,QThread, pyqtSignal, QLocale, QTranslator, Qt, 
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
 
 from vecteur import vecteur
-from globdef import PYMECA_SHARE
 
 
 class Cadreur(QObject):
