@@ -89,7 +89,7 @@ def toFileEncoding(path):
     #
 PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(PATH)
-APP_DATA = PATH
+APP_PATH = PATH
 
 ####DATA_PATH
 if sys.platform == 'win32':

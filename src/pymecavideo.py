@@ -1697,17 +1697,21 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         rapportées à un référentiel.
         """
         self.dbg.p(1, "rentre dans 'mediane_trajectoires'")
-        min = None
-        max = None
+        min_ = None
+        max_ = None
         for n in range(self.nb_de_points):
             if n == referentiel:
                 pass
             for i in self.points.keys():
-                p = self.points[i][1 + n] - self.points[i][1 + referentiel]
-                min = p.minXY(min)
-                max = p.maxXY(max)
-        if min != None and max != None:
-            return (min + max) * 0.5
+                try : 
+                    p = self.points[i][1 + n] - self.points[i][1 + referentiel]
+                    min_ = p.minXY(min_)
+                    max_ = p.maxXY(max_)
+                except: 
+                    pass #si on s'arrête de cliquer avant d'avoir fini l'image
+                
+        if min_ != None and max_ != None:
+            return (min_ + max_) * 0.5
         else:
             return vecteur(self.largeur / 2, self.hauteur / 2)
 

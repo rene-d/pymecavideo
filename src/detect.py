@@ -62,7 +62,6 @@ def filter_picture(parts, num, image, points=None):
     
     try : 
         if points:
-            print(points)
             point = points[num]
     except IndexError : 
         point=None
