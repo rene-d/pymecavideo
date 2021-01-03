@@ -1884,9 +1884,18 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             titre, labelAbscisse, labelOrdonnee))
 
         xy ="\n".join(["{0} {1}". format(abscisse[i], ordonnee[i]) for i in range(len(abscisse))])
-        thread=plotThread(cmd, xy)
-        thread.daemon=True
-        thread.start()
+        #thread=plotThread(cmd, xy)
+        #thread.daemon=True
+        #thread.start()
+        
+        import pyqtgraph as pg
+        plotWidget = pg.plot(title=titre)
+        plotWidget.setLabel('bottom', labelAbscisse)
+        plotWidget.setLabel('left', labelOrdonnee)
+        plotWidget.plot(abscisse, ordonnee)
+        plotWidget.show()
+        
+        
         return
 
     def affiche_point_attendu(self, n):
