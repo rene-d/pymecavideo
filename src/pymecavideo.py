@@ -2236,6 +2236,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         de la fermeture de l'application.
         """
         self.dbg.p(1, "rentre dans 'closeEvent'")
+        for plotwidget in self.dictionnairePlotWidget.values():
+            plotwidget.parentWidget().close()
+            plotwidget.close()
+            del plotwidget
         from tempfile import gettempdir
 
     def verifie_donnees_sauvegardees(self):
