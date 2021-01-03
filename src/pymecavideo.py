@@ -54,6 +54,7 @@ import locale, getopt
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+import pyqtgraph as pg
 
 # création précoce de l'objet application, déjà nécessaire pour traiter les bugs
 app = QApplication(sys.argv)
@@ -303,6 +304,7 @@ class StartQt5(QMainWindow):
         self.sens_X = 1
         self.sens_Y = 1
         self.repere = 0
+        self.dictionnairePlotWidget = {}
         try:
             self.origine = vecteur(self.largeur/2, self.hauteur/2)
             self.largeurAvant = self.largeur
@@ -474,6 +476,12 @@ class StartQt5(QMainWindow):
             self.label_trajectoire.update() #premier lancement sans fichier
         except AttributeError:
             pass
+        
+        for plotwidget in self.dictionnairePlotWidget.values():
+            plotwidget.parentWidget().close()
+            plotwidget.close()
+            del plotwidget
+            
         self.ui.label.update()
         try : 
             self.label_video.update()
@@ -486,6 +494,9 @@ class StartQt5(QMainWindow):
             del self.label_echelle_trace
         except AttributeError:
             pass  # quand on demande un effacement tout au début. Comme par exemple, ouvrir les exmples.
+
+
+            #del plotwidget
 
         self.init_variables(None, filename=self.filename)
         try  : 
@@ -527,6 +538,9 @@ class StartQt5(QMainWindow):
 
         if self.ui.tableWidget:
             self.ui.tableWidget.clear()
+            
+
+            
 
     ############ les signaux spéciaux #####################
     clic_sur_video = pyqtSignal()
@@ -1884,15 +1898,21 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             titre, labelAbscisse, labelOrdonnee))
 
         xy ="\n".join(["{0} {1}". format(abscisse[i], ordonnee[i]) for i in range(len(abscisse))])
-        #thread=plotThread(cmd, xy)
-        #thread.daemon=True
-        #thread.start()
-        
-        import pyqtgraph as pg
-        plotWidget = pg.plot(title=titre)
+               
+        pg.setConfigOption('background', 'w')
+        pg.setConfigOption('foreground', 'k')
+        if self.dictionnairePlotWidget.get(titre)  : 
+            plotWidget = self.dictionnairePlotWidget.get(titre)
+            if not plotWidget.isVisible():
+                plotWidget = pg.plot(title=titre)
+
+        else : 
+            plotWidget = pg.plot(title=titre, parent=self)
+            self.dictionnairePlotWidget[titre] = plotWidget #permet de ne pas recréer la fenêtre
         plotWidget.setLabel('bottom', labelAbscisse)
         plotWidget.setLabel('left', labelOrdonnee)
         plotWidget.plot(abscisse, ordonnee)
+        plotWidget.setVisible(1)
         plotWidget.show()
         
         
