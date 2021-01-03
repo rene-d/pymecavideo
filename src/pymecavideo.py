@@ -1888,16 +1888,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             labelOrdonnee = typeDeCourbe + " (m)"
         else:
             labelOrdonnee = typeDeCourbe + " (m/s)"
-        
-        #TODO source de bug selon la PATH de python. A tester sous windows.
-        if sys.platform == "win32" : 
-            python_exe = """python.exe"""
-        else : 
-            python_exe = """python3"""
-        cmd=str("""{0} pgraph.py "{1}" "{2}" "{3}" """.format(python_exe,
-            titre, labelAbscisse, labelOrdonnee))
-
-        xy ="\n".join(["{0} {1}". format(abscisse[i], ordonnee[i]) for i in range(len(abscisse))])
                
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
