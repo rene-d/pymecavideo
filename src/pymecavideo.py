@@ -344,6 +344,7 @@ class StartQt5(QMainWindow):
         self.echelle_faite = False
         self.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
 
+        self.rotation = 0
         self.listePoints = listePointee()
         self.pileDeDetections = []
 
@@ -354,6 +355,7 @@ class StartQt5(QMainWindow):
         self.resizing = False
         self.stopRedimensionne = False
         self.defixeLesDimensions()
+        
 
         
     def init_interface(self, refait=0):
