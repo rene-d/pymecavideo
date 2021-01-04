@@ -61,8 +61,8 @@ class Cadreur(QObject):
         self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
         self.fps = self.capture.get(cv2.CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
-
-        self.app.dbg.p(3, "In : Label_Video, __inti__, fps = %s and delay = %s" % (self.fps, self.delay))
+        self.app.dbg.p(2, "In : Label_Video, self.numpoint %s" % (self.numpoint))
+        self.app.dbg.p(3, "In : Label_Video, __init__, fps = %s and delay = %s" % (self.fps, self.delay))
 
         self.ralenti = 3
         self.fini = False
@@ -141,7 +141,7 @@ class Cadreur(QObject):
 
         self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
         while not fini:
-
+            print('r')
             for i in self.app.points.keys():
                 p = self.app.points[i][self.numpoint]
                 hautgauche = (p + self.decal - self.rayons) * ech
@@ -166,6 +166,7 @@ class Cadreur(QObject):
         fini = True
 
     def rotateImage(self, img, angle):
+        print('ANGLE', angle)
         if angle==90 : 
             return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) 
         elif angle==-90 : 
