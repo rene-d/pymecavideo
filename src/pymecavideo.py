@@ -336,7 +336,7 @@ class StartQt5(QMainWindow):
         self.nb_clics = 0
         self.premiere_image = 1  # n° de la première image cliquée
         self.index_de_l_image = 1  # image à afficher
-        #self.ratio = -1
+        
         self.filename = filename
         self.opts = opts
         self.stdout_file = os.path.join(APP_DATA_PATH, "stdout")
@@ -345,6 +345,10 @@ class StartQt5(QMainWindow):
         self.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
 
         self.rotation = 0
+        try : 
+            self.ratio = self.determineRatio()
+        except :
+            pass
         self.listePoints = listePointee()
         self.pileDeDetections = []
 
@@ -521,6 +525,7 @@ class StartQt5(QMainWindow):
 
         if self.ui.tableWidget:
             self.ui.tableWidget.clear()
+        
 
     ############ les signaux spéciaux #####################
     clic_sur_video = pyqtSignal()
@@ -632,6 +637,8 @@ class StartQt5(QMainWindow):
     def defixeLesDimensions(self):
         self.setMinimumWidth(800+self.decalw)
         self.setMaximumWidth(16000000)
+        self.setMinimumHeight(600+self.decalh)
+        self.setMaximumHeight(16000000)
 
     def updatePB(self):
         self.qmsgboxencode.updateProgressBar()
