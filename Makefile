@@ -20,8 +20,8 @@ clean:
 	rm -f video_*.jpg *~ src/Ui_* src/*.pyc *.txt *.1 data/lang/*.qm
 	make -C data/help clean
 
-install-for-debian: all install-bin install-man install-help install-media fix-install
-	cp src/testfilm.py $(DESTDIR)/usr/share/$(PACKAGE)
+#install-for-debian: all install-bin install-man install-help install-media fix-install
+#	cp src/testfilm.py $(DESTDIR)/usr/share/$(PACKAGE)
 
 install-bin:
 	install -m 755 pymecavideo $(DESTDIR)/usr/bin
