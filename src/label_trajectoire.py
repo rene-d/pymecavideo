@@ -44,7 +44,7 @@ class Label_Trajectoire(QLabel):
         self.setMouseTracking(True)
         self.speedToDraw = []
         self.speedtest = []
-        self.pos = None
+        self.pos_souris = None
         self.update()
         self.picture = QPicture()
 
@@ -81,9 +81,9 @@ class Label_Trajectoire(QLabel):
                         ptreferentielAfter = vecteur(0, 0)
 
                     if type(point) != type(""):
-                        if self.app.ui.radioButtonNearMouse.isChecked() and self.pos != None:
+                        if self.app.ui.radioButtonNearMouse.isChecked() and self.pos_souris != None:
                             near = 20
-                            pos = self.pos
+                            pos = self.pos_souris
                             distance = QPoint(point.x() + self.origine.x() - ptreferentiel.x(),
                                               point.y() + self.origine.y() - ptreferentiel.y()) - pos
                             if distance.manhattanLength() < near:
@@ -119,7 +119,7 @@ class Label_Trajectoire(QLabel):
 
     def mouseMoveEvent(self, event):
         ####Look if mouse is near a point
-        self.pos = event.pos()
+        self.pos_souris = event.pos()
         if self.app.ui.radioButtonNearMouse.isChecked():
             self.reDraw()
 

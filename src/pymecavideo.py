@@ -1707,9 +1707,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if n == referentiel:
                 pass
             for i in self.points.keys():
-                p = self.points[i][1 + n] - self.points[i][1 + referentiel]
-                min = p.minXY(min)
-                max = p.maxXY(max)
+                try : 
+                    p = self.points[i][1 + n] - self.points[i][1 + referentiel]
+                    min = p.minXY(min)
+                    max = p.maxXY(max)
+                except : 
+                    pass #arrive si on ne finit pas le bon nb de points d'un image
         if min != None and max != None:
             return (min + max) * 0.5
         else:
@@ -1782,48 +1785,50 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'tracer_trajectoires'")
 
-        try:
+        if self.ui.tabWidget.currentIndex() != 0:  # Pas le premier onglet
+            self.statusBar().hide()
+            if self.ui.tabWidget.currentIndex()==1 : #onglet trajectoire
+                try: 
+                    origine = vecteur(0, 0)
+                    if newValue == "absolu":
+                        ref = "camera"
+                    else:
+                        ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
 
-            if self.ui.tabWidget.currentIndex() != 0:  # Pas le premier onglet
-                self.statusBar().hide()
+                    if len(ref) == 0: return
+                    if ref != "camera":
+                        self.ui.pushButtonChrono.setEnabled(0)
+                        self.ui.pushButtonEnregistreChrono.setVisible(0)
+                        self.chrono = False
+                        bc = self.mediane_trajectoires(int(ref) - 1)
+                        origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
+                        self.label_trajectoire.origine = origine
 
-                origine = vecteur(0, 0)
-                if newValue == "absolu":
-                    ref = "camera"
-                else:
-                    ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+                        self.label_trajectoire.referentiel = ref
+                    else:  # if camera, all tranlsations are disabled
+                        self.ui.pushButtonChrono.setEnabled(1)
 
-                if len(ref) == 0: return
-                if ref != "camera":
-                    self.ui.pushButtonChrono.setEnabled(0)
-                    self.ui.pushButtonEnregistreChrono.setVisible(0)
-                    self.chrono = False
-                    bc = self.mediane_trajectoires(int(ref) - 1)
-                    origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
-                    self.label_trajectoire.origine = origine
+                        self.label_trajectoire.referentiel = 0
+                        self.label_trajectoire.origine = self.origine_avant
 
-                    self.label_trajectoire.referentiel = ref
-                else:  # if camera, all tranlsations are disabled
-                    self.ui.pushButtonChrono.setEnabled(1)
+                    # rempli le menu des courbes à tracer
+                    self.ui.comboBox_mode_tracer.clear()
+                    self.ui.comboBox_mode_tracer.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
+                    for i in range(self.nb_de_points):
+                        combo = self.ui.comboBox_mode_tracer
+                        combo.addItem(u"x%d(t)" % (i + 1))
+                        combo.addItem(u"y%d(t)" % (i + 1))
+                        combo.addItem(u"v%d(t)" % (i + 1))
 
-                    self.label_trajectoire.referentiel = 0
-                    self.label_trajectoire.origine = vecteur(0, 0)
-
-                # rempli le menu des courbes à tracer
-                self.ui.comboBox_mode_tracer.clear()
-                self.ui.comboBox_mode_tracer.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
-                for i in range(self.nb_de_points):
-                    combo = self.ui.comboBox_mode_tracer
-                    combo.addItem(u"x%d(t)" % (i + 1))
-                    combo.addItem(u"y%d(t)" % (i + 1))
-                    combo.addItem(u"v%d(t)" % (i + 1))
-
-                self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
-            else :
-                self.statusBar().show()
-        except ZeroDivisionError:
-            self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
-        self.label_trajectoire.reDraw()
+                    self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
+                except ZeroDivisionError:
+                    self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
+                self.label_trajectoire.reDraw()
+            else : #onglet tableau
+                self.affiche_tableau()
+        else :
+            self.statusBar().show()
+        
 
 
     def tracer_courbe(self, itemChoisi):
@@ -2008,11 +2013,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 listePointsCliquesParImage.append(point[2])
         self.points[ligne] = [t] + listePointsCliquesParImage
 
-        # rentre le temps dans la première colonne
-        self.ui.tableWidget.insertRow(ligne)
-        self.ui.tableWidget.setItem(ligne, 0, QTableWidgetItem(t))
+        
 
-        i = 0
+        
         # Pour chaque point dans liste_points, insère les valeur dans la ligne
         for point in listePointsCliquesParImage:
             # ajoute les coordonnées "en pixel" des points dans des dictionnaires de coordonnées
@@ -2028,19 +2031,24 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             else:
                 self.pY[y] = [point]
 
-            try:
-                pm = self.pointEnMetre(point)
-            except ZeroDivisionError:
-                pm = point
-
-            self.ui.tableWidget.setItem(ligne, i + 1, QTableWidgetItem(str(pm.x())))
-            self.ui.tableWidget.setItem(ligne, i + 2, QTableWidgetItem(str(pm.y())))
-            i += 2
-        if interactif:
-            self.ui.tableWidget.show()
-        # enlève la ligne supplémentaire, une fois qu'une ligne a été remplie
-        if ligne == 0:
-            self.ui.tableWidget.removeRow(1)
+    def affiche_tableau(self):
+        # rentre le temps dans la première colonne
+        {0: ['0.000000', vecteur (153.000000, 180.000000), vecteur (354.000000, 314.000000), vecteur (464.000000, 370.000000)], 1: ['0.040000', vecteur (365.000000, 413.000000), vecteur (468.000000, 412.000000), vecteur (548.000000, 429.000000)], 2: ['0.080000', vecteur (214.000000, 273.000000), vecteur (296.000000, 317.000000), vecteur (369.000000, 318.000000)]}
+        self.ui.tableWidget.setRowCount(len(self.points))
+        
+        for ligne in self.points.keys():
+            self.ui.tableWidget.setItem(ligne, 0, QTableWidgetItem(self.points[ligne][0]))
+            i=0
+            for point in self.points[ligne][1:] :  
+                try:
+                        pm = self.pointEnMetre(point)
+                except ZeroDivisionError:
+                        pm = point
+            
+                self.ui.tableWidget.setItem(ligne, i + 1, QTableWidgetItem(str(pm.x())))
+                self.ui.tableWidget.setItem(ligne, i + 2, QTableWidgetItem(str(pm.y())))
+                i += 2
+           
 
     def transforme_index_en_temps(self, index):
         self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")
@@ -2327,6 +2335,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
         self.ui.checkBox_auto.setEnabled(1)
         self.ui.Bouton_lance_capture.setEnabled(True)
+        self.origine_avant = self.origine
 
 
     def propos(self):
