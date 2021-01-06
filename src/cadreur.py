@@ -139,15 +139,15 @@ class Cadreur(QObject):
         ech, w, h = self.echelleTaille()
         self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
         while not fini:
+            print('r')
             for i in self.app.points.keys():
                 p = self.app.points[i][self.numpoint]
                 hautgauche = (p + self.decal - self.rayons) * ech
                 taille = self.sz * ech
                 self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
                 status, img =  self.capture.read()
-
-                x, y = int(hautgauche.x()), int(hautgauche.y())
                 w, h = int(taille.x()), int(taille.y())
+                x, y = int(hautgauche.x()), int(hautgauche.y())
 
                 crop_img = self.rotateImage(img[y:y+h, x:x+w], self.app.rotation) # Crop from x, y, w, h -> 100, 200, 300, 400
                 # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]

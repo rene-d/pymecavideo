@@ -116,4 +116,9 @@ class vecteur:
             return vecteur(hauteur-y1, x1)
         elif angle==-90 : 
             return vecteur(y1, largeur-x1)
-        
+        elif angle==0 : 
+            return vecteur(x1, y1)
+        elif angle==0 : 
+            return vecteur(x1, y1)
+        elif angle==180: 
+            return vecteur(-x1, -y1)
