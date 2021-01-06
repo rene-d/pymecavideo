@@ -42,7 +42,6 @@ class Cadreur(QObject):
     """
 
     def __init__(self, numpoint, app, titre=None):
-        QObject.__init__(app)
         """
         Le constructeur.
         @param numpoint le numéro du point qui doit rester immobile
@@ -77,7 +76,6 @@ class Cadreur(QObject):
         m = self.app.imageExtraite.size()
         echx = 1.0 * m.width() / self.app.largeur
         echy = 1.0 * m.height() / self.app.hauteur
-        # permet de prendre en compte les vidéos à un format différent de 4:3
         ech = max(echx, echy)
         return ech, int(m.width() / ech), int(m.height() / ech)
 
@@ -111,8 +109,9 @@ class Cadreur(QObject):
 
         self.decal = vecteur((adroite - agauche) / 2, (dessous - dessus) / 2)
         self.rayons = vecteur((agauche + adroite) / 2, (dessus + dessous) / 2)
-        print("agauche %s, adroite %s, dessus %s, dessous %s"%(agauche, adroite, dessus, dessous))
-        print("self.tl %s, self.sz %s, self.decal %s, self.rayons %s"%(self.tl, self.sz, self.decal, self.rayons))
+        #print("ech%s, w%s, h%s"%(ech, w, h))
+        #print("agauche %s, adroite %s, dessus %s, dessous %s"%(agauche, adroite, dessus, dessous))
+        #print("self.tl %s, self.sz %s, self.decal %s, self.rayons %s"%(self.tl, self.sz, self.decal, self.rayons))
 
     def queryFrame(self):
         """
@@ -138,10 +137,8 @@ class Cadreur(QObject):
 
         cv2.createTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
         ech, w, h = self.echelleTaille()
-
         self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
         while not fini:
-            print('r')
             for i in self.app.points.keys():
                 p = self.app.points[i][self.numpoint]
                 hautgauche = (p + self.decal - self.rayons) * ech
@@ -154,7 +151,6 @@ class Cadreur(QObject):
 
                 crop_img = self.rotateImage(img[y:y+h, x:x+w], self.app.rotation) # Crop from x, y, w, h -> 100, 200, 300, 400
                 # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
-                print(crop_img.shape)
                 cv2.imshow(self.titre, crop_img)
                 k = cv2.waitKey(int(self.delay * self.ralenti))
                 if k == 0x10001b or k == 27 or k==20:
@@ -166,7 +162,6 @@ class Cadreur(QObject):
         fini = True
 
     def rotateImage(self, img, angle):
-        print('ANGLE', angle)
         if angle==90 : 
             return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) 
         elif angle==-90 : 

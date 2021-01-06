@@ -483,6 +483,7 @@ class StartQt5(QMainWindow):
         except AttributeError:
             pass
         
+        #ferme les widget d'affichages des x, y, v du 2e onglets si elles existent
         for plotwidget in self.dictionnairePlotWidget.values():
             plotwidget.parentWidget().close()
             plotwidget.close()
@@ -500,9 +501,6 @@ class StartQt5(QMainWindow):
             del self.label_echelle_trace
         except AttributeError:
             pass  # quand on demande un effacement tout au début. Comme par exemple, ouvrir les exmples.
-
-
-            #del plotwidget
 
         self.init_variables(None, filename=self.filename)
         try  : 
@@ -544,7 +542,7 @@ class StartQt5(QMainWindow):
 
         if self.ui.tableWidget:
             self.ui.tableWidget.clear()
-
+        #self.ui_connections()
 
     ############ les signaux spéciaux #####################
     clic_sur_video = pyqtSignal()
@@ -857,14 +855,15 @@ class StartQt5(QMainWindow):
             self,
             u"NOUVELLE ORIGINE",
             u"Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
-
         label = Label_Origine(parent=self.ui.label, app=self)
         label.show()
     
     def tourne_droite(self):
+        self.dbg.p(1, "rentre dans 'tourne_droite'")
         self.tourne_image("droite")
 
     def tourne_gauche(self):
+        self.dbg.p(1, "rentre dans 'tourne_droite'")
         self.tourne_image("gauche")
 
     def tourne_image(self, sens=None):
@@ -916,13 +915,13 @@ class StartQt5(QMainWindow):
             pass
         ###
         
-        self.change_axe_origine.emit()
+        
         try : 
             
             self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         except AttributeError : 
             pass # pas d'échelle
-        
+        self.change_axe_origine.emit()
         self.redimensionneSignal.emit(1)
 
 
@@ -1383,8 +1382,10 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.dbg.p(1, "rentre dans 'redimensionne Fenetre'")
         
         #if not self.isFullScreen() : -> ne fonctionne pas. TODO
+        self.dbg.p(1, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
         if not self.width()==self.width_screen and not self.height()==self.height_screen : 
-            ###dimensions minimum        
+            ###dimensions minimum    
+            self.dbg.p(2, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
             if self.ratio >= 1 : 
                 self.dbg.p(2, "self.ratio supérieur à 1'")
                 self.setMinimumSize(QSize(600, self.heightForWidth(600)))
