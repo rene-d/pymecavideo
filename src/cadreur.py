@@ -60,8 +60,8 @@ class Cadreur(QObject):
         self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
         self.fps = self.capture.get(cv2.CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
-
-        self.app.dbg.p(3, "In : Label_Video, __inti__, fps = %s and delay = %s" % (self.fps, self.delay))
+        self.app.dbg.p(2, "In : Label_Video, self.numpoint %s" % (self.numpoint))
+        self.app.dbg.p(3, "In : Label_Video, __init__, fps = %s and delay = %s" % (self.fps, self.delay))
 
         self.ralenti = 3
         self.fini = False
@@ -96,7 +96,6 @@ class Cadreur(QObject):
         à suivre par rapport au centre du cadre.
         """
         ech, w, h = self.echelleTaille()
-
         agauche = [pp[self.numpoint].x() for pp in self.app.points.values()]
         dessus = [pp[self.numpoint].y() for pp in self.app.points.values()]
         adroite = [w - x - 1 for x in agauche]
@@ -106,12 +105,14 @@ class Cadreur(QObject):
         adroite = min(adroite)
         dessus = min(dessus)
         dessous = min(dessous)
+        
         self.tl = vecteur(agauche, dessus)  #topleft
         self.sz = vecteur(adroite + agauche, dessous + dessus)  #size
 
         self.decal = vecteur((adroite - agauche) / 2, (dessous - dessus) / 2)
         self.rayons = vecteur((agauche + adroite) / 2, (dessus + dessous) / 2)
-
+        print("agauche %s, adroite %s, dessus %s, dessous %s"%(agauche, adroite, dessus, dessous))
+        print("self.tl %s, self.sz %s, self.decal %s, self.rayons %s"%(self.tl, self.sz, self.decal, self.rayons))
 
     def queryFrame(self):
         """
@@ -140,7 +141,7 @@ class Cadreur(QObject):
 
         self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
         while not fini:
-
+            print('r')
             for i in self.app.points.keys():
                 p = self.app.points[i][self.numpoint]
                 hautgauche = (p + self.decal - self.rayons) * ech
@@ -153,7 +154,7 @@ class Cadreur(QObject):
 
                 crop_img = self.rotateImage(img[y:y+h, x:x+w], self.app.rotation) # Crop from x, y, w, h -> 100, 200, 300, 400
                 # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
-
+                print(crop_img.shape)
                 cv2.imshow(self.titre, crop_img)
                 k = cv2.waitKey(int(self.delay * self.ralenti))
                 if k == 0x10001b or k == 27 or k==20:
@@ -165,6 +166,7 @@ class Cadreur(QObject):
         fini = True
 
     def rotateImage(self, img, angle):
+        print('ANGLE', angle)
         if angle==90 : 
             return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) 
         elif angle==-90 : 
