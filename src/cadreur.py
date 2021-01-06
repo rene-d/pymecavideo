@@ -94,8 +94,19 @@ class Cadreur(QObject):
         à suivre par rapport au centre du cadre.
         """
         ech, w, h = self.echelleTaille()
-        agauche = [pp[self.numpoint].x() for pp in self.app.points.values()]
-        dessus = [pp[self.numpoint].y() for pp in self.app.points.values()]
+
+
+        #agauche = [pp[self.numpoint].x() for pp in self.app.points.values()]  #ne gère pas les excemtion si il manqu eun point
+        #dessus = [pp[self.numpoint].y() for pp in self.app.points.values()]
+        
+        agauche=[]
+        dessus = []
+        for pp in self.app.points.values() :
+            try : 
+                agauche.append(pp[self.numpoint].x())
+                dessus.append(pp[self.numpoint].y())
+            except : pass #si il manque des points dans la dernière image)
+        
         adroite = [w - x - 1 for x in agauche]
         dessous = [h - y - 1 for y in dessus]
 
@@ -103,7 +114,6 @@ class Cadreur(QObject):
         adroite = min(adroite)
         dessus = min(dessus)
         dessous = min(dessous)
-        
         self.tl = vecteur(agauche, dessus)  #topleft
         self.sz = vecteur(adroite + agauche, dessous + dessus)  #size
 
@@ -137,23 +147,25 @@ class Cadreur(QObject):
         self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
         while not fini:
             for i in self.app.points.keys():
-                p = self.app.points[i][self.numpoint]
-                hautgauche = (p + self.decal - self.rayons) * ech
-                taille = self.sz * ech
-                self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
-                status, img =  self.capture.read()
-                img = self.rotateImage(img, self.app.rotation)
-                w, h = int(taille.x()), int(taille.y())
-                x, y = int(hautgauche.x()), int(hautgauche.y())
+                try :
+                    p = self.app.points[i][self.numpoint]
+                    hautgauche = (p + self.decal - self.rayons) * ech
+                    taille = self.sz * ech
+                    self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
+                    status, img =  self.capture.read()
+                    img = self.rotateImage(img, self.app.rotation)
+                    w, h = int(taille.x()), int(taille.y())
+                    x, y = int(hautgauche.x()), int(hautgauche.y())
 
-                crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
-                # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
-                cv2.imshow(self.titre, crop_img)
-                k = cv2.waitKey(int(self.delay * self.ralenti))
-                if k == 0x10001b or k == 27 or k==20:
-                    fini = True
-                    cv2.destroyAllWindows()
-                    break
+                    crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
+                    # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
+                    cv2.imshow(self.titre, crop_img)
+                    k = cv2.waitKey(int(self.delay * self.ralenti))
+                    if k == 0x10001b or k == 27 or k==20:
+                        fini = True
+                        cv2.destroyAllWindows()
+                        break
+                except : pass #si pas le bon nombre de points dans la dernière image
 
         cv2.destroyAllWindows()
         fini = True

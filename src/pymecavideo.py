@@ -419,6 +419,7 @@ class StartQt5(QMainWindow):
 
         self.ui.pushButton_stopCalculs.setEnabled(0)
         self.ui.pushButton_stopCalculs.hide()
+        self.ui.button_video.setEnabled(0)
         
 
 
@@ -945,7 +946,7 @@ class StartQt5(QMainWindow):
             pass 
         
         self.label_video.update()
-        self.echelle_faite=True ###TODO
+        
         #self.stopRedimensionnement.emit()
 
         # construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
@@ -1816,6 +1817,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
                     if len(ref) == 0: return
                     if ref != "camera":
+                        print('RRRREEEFF', ref)
+                        self.ui.button_video.setEnabled(1)
                         self.ui.pushButtonChrono.setEnabled(0)
                         self.ui.pushButtonEnregistreChrono.setVisible(0)
                         self.chrono = False
