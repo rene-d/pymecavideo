@@ -171,7 +171,6 @@ class Points:
 
 
 if __name__ == "__main__":
-    print ("coucou")
     pts = Points(8, 2)  # 8 trames vidéo, deux points suivis
     try:
         p = Point(10, 20, Point.userClick)

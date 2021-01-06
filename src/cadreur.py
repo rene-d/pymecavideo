@@ -139,7 +139,6 @@ class Cadreur(QObject):
         ech, w, h = self.echelleTaille()
         self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
         while not fini:
-            print('r')
             for i in self.app.points.keys():
                 p = self.app.points[i][self.numpoint]
                 hautgauche = (p + self.decal - self.rayons) * ech
