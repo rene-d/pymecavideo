@@ -1114,11 +1114,22 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 QMessageBox.Ok, QMessageBox.Ok)
             # on essaie d'ouvrir le programme Python dans un
             # éditeur approprié
-            for editor in ("geany", "thonny", "gedit"):
-                if os.path.exists(f"/usr/bin/{editor}"):
-                    subprocess.call(f"({editor} {fname}&)", shell=True)
-                    # un éditeur est trouvé, inutile d'en essayer d'autres
-                    break
+            
+            
+            if sys.platform.startswith('linux'):
+                ret_code = subprocess.call(['xdg-open', fname])
+
+            elif sys.platform.startswith('darwin'):
+                ret_code = subprocess.call(['open', fname])
+
+            elif sys.platform.startswith('win'):
+                ret_code = subprocess.call(['start', fname], shell=True)
+                    
+                    #for editor in ("geany", "thonny", "gedit"):
+                        #if os.path.exists(f"/usr/bin/{editor}"):
+                            #subprocess.call(f"({editor} {fname}&)", shell=True)
+                            ## un éditeur est trouvé, inutile d'en essayer d'autres
+                            #break
         return
         
     def qtiplot(self):
@@ -1817,7 +1828,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
                     if len(ref) == 0: return
                     if ref != "camera":
-                        print('RRRREEEFF', ref)
                         self.ui.button_video.setEnabled(1)
                         self.ui.pushButtonChrono.setEnabled(0)
                         self.ui.pushButtonEnregistreChrono.setVisible(0)
