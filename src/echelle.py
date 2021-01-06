@@ -21,9 +21,9 @@
 
 from math import sqrt
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage,QPainter, QCursor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel,QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
@@ -62,13 +62,13 @@ class echelle(QObject):
         else :
             return 1
 
-    def applique_echelle(self, pos):
+    def applique_echelle(self, pos_echelle):
         """
         les positions pos sont en pixels, ça renvoie une liste
         de positions (vecteurs) en mètre.
         """
         result = []
-        for p in pos:
+        for p in pos_echelle:
             result.append((vecteur(0, self.app.hauteur) - p) * self.mParPx())
         return result
 
@@ -127,8 +127,8 @@ class Label_Echelle(QLabel):
     def mouseMoveEvent(self, event):
         self.zoom_croix.show()
         if (event.x()>0 and event.x()<self.app.largeur) and (event.y()>0 and event.y()<self.app.hauteur):
-            self.pos = vecteur(event.x(), event.y())
-        self.fait_crop(self.pos)
+            self.pos_echelle = vecteur(event.x(), event.y())
+        self.fait_crop(self.pos_echelle)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
 
         if self.pressed:
@@ -193,7 +193,10 @@ class Label_Echelle_Trace(QLabel):
     def paintEvent(self, event):
         painter = QPainter()
         painter.begin(self)
-        painter.setPen(Qt.green)
-        painter.drawLine(self.p1.x(), self.p1.y(), self.p2.x(), self.p2.y())
+        try : 
+            painter.setPen(Qt.green)
+            painter.drawLine(self.p1.x(), self.p1.y(), self.p2.x(), self.p2.y())
+        except AttributeError:
+            pass #arrive au premier lancement sans vidéos
         painter.end()
 

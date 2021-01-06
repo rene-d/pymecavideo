@@ -17,7 +17,7 @@
 ;along with pymecavideo; if not, write to the Free Software
 ;Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#define AppVersion "6.2"
+#define AppVersion "7.0.0.1"
 
 
 [Setup]
@@ -26,11 +26,11 @@ AppName=pymecavideo {#AppVersion}
 AppVerName=pymecavideo {#AppVersion}
 AppVersion={#AppVersion}
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
-AppCopyright=Copyright (C) 2007-2018 Georges Khaznadar <georgesk.debian.org>
-VersionInfoVersion = 6.2.3.0
+AppCopyright=Copyright (C) 2007-2030 Georges Khaznadar <georgesk.debian.org>
+VersionInfoVersion = 7.0.01
 
 ;Répertoire de base contenant les fichiers
-SourceDir=D:\Developpement\pymecavideo\
+SourceDir=C:\Users\JB\Documents\pymecavideo
 
 ;Repertoire d'installation
 DefaultDirName={pf}\pymecavideo
@@ -150,7 +150,7 @@ Name: "exemple"; Description: {cm:ExampleFiles}; Types: custom
 ;
 ; Fichiers de la distribution
 ;
-Source: src\build\*.*;    DestDir: {app};           Flags : ignoreversion recursesubdirs;
+Source: src\build/*.*;    DestDir: {app};           Flags : ignoreversion recursesubdirs;
 
 [Tasks]
 Name: desktopicon2; Description: {cm:CreateDesktopIcon} pymecavideo ;GroupDescription: {cm:ShortCut}; MinVersion: 4,4

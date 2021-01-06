@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ #-*- coding: utf-8 -*-
 
 licence = {}
 licence['en'] = """
@@ -54,6 +54,7 @@ import locale, getopt
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+import pyqtgraph as pg
 
 # création précoce de l'objet application, déjà nécessaire pour traiter les bugs
 app = QApplication(sys.argv)
@@ -81,10 +82,9 @@ import platform
 import tempfile
 import math
 
-from globdef import HOME_PATH,APP_DATA_PATH, VIDEO,\
-    SUFF, VIDEO_PATH, CONF_PATH, \
-    IMG_PATH, ICON_PATH, LANG_PATH, \
-    DATA_PATH, HELP_PATH, NEWVID_PATH
+from globdef import HOME_PATH,VIDEO_PATH, CONF_PATH, \
+     ICON_PATH, LANG_PATH, \
+    DATA_PATH, HELP_PATH
 
 from detect import filter_picture
 
@@ -174,7 +174,7 @@ class StartQt5(QMainWindow):
         QWidget.__init__(self, parent)
         self.hauteur = 1
         self.largeur = 0
-        self.ratio = 1
+        self.ratio = 1.5
         self.decalh = 120
         self.decalw = 197
         self.rotation=0 #permet de retourner une vidéo mal prise
@@ -248,7 +248,7 @@ class StartQt5(QMainWindow):
             self.qtiplot_present = "qtiplot"
 
         self.init_variables(opts)
-
+        self.init_interface()
         # connections internes
         self.ui_connections()
 
@@ -257,9 +257,6 @@ class StartQt5(QMainWindow):
 
         # chargement d'un éventuel premier fichier
         self.splashVideo()
-        
-        ##reinitialise_capture HACK pour le redimensionnement de l'échelle.
-        #self.reinitialise_capture()
     
     def hasHeightForWidth(self):
         # This tells the layout manager that the banner's height does depend on its width
@@ -307,6 +304,7 @@ class StartQt5(QMainWindow):
         self.sens_X = 1
         self.sens_Y = 1
         self.repere = 0
+        self.dictionnairePlotWidget = {}
         try:
             self.origine = vecteur(self.largeur/2, self.hauteur/2)
             self.largeurAvant = self.largeur
@@ -339,7 +337,7 @@ class StartQt5(QMainWindow):
         
         self.filename = filename
         self.opts = opts
-        self.stdout_file = os.path.join(APP_DATA_PATH, "stdout")
+        self.stdout_file = os.path.join(CONF_PATH, "stdout")
         self.exitDecode = False
         self.echelle_faite = False
         self.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
@@ -377,7 +375,10 @@ class StartQt5(QMainWindow):
 
         self.ui.echelleEdit.setEnabled(0)
         self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
-        self.affiche_echelle()
+        try : 
+            self.affiche_echelle()
+        except : 
+            pass
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
@@ -396,7 +397,14 @@ class StartQt5(QMainWindow):
             self.desactiveExport("Qtiplot")
         if not self.scidavis_present:
             self.desactiveExport("SciDAVis")
+        
 
+        if not self.a_une_image : 
+            self.ui.pushButton_rot_droite.setEnabled(0)
+            self.ui.pushButton_rot_gauche.setEnabled(0)
+        else : 
+            self.ui.pushButton_rot_droite.setEnabled(1)
+            self.ui.pushButton_rot_gauche.setEnabled(1)
         # création du label qui contiendra la vidéo.
         try:
             self.dbg.p(3, "In : init_interface, clear Label_Video")
@@ -474,6 +482,12 @@ class StartQt5(QMainWindow):
             self.label_trajectoire.update() #premier lancement sans fichier
         except AttributeError:
             pass
+        
+        for plotwidget in self.dictionnairePlotWidget.values():
+            plotwidget.parentWidget().close()
+            plotwidget.close()
+            del plotwidget
+            
         self.ui.label.update()
         try : 
             self.label_video.update()
@@ -486,6 +500,9 @@ class StartQt5(QMainWindow):
             del self.label_echelle_trace
         except AttributeError:
             pass  # quand on demande un effacement tout au début. Comme par exemple, ouvrir les exmples.
+
+
+            #del plotwidget
 
         self.init_variables(None, filename=self.filename)
         try  : 
@@ -515,17 +532,19 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_abscisses.setCheckState(Qt.Unchecked)
         self.ui.checkBox_ordonnees.setCheckState(Qt.Unchecked)
         self.ui.checkBox_auto.setCheckState(Qt.Unchecked)
-        
-        self.ui.pushButton_rot_droite.setEnabled(1)
-        self.ui.pushButton_rot_gauche.setEnabled(1)
-        
+        if self.a_une_image : 
+            self.ui.pushButton_rot_droite.setEnabled(1)
+            self.ui.pushButton_rot_gauche.setEnabled(1)
+        else : 
+            self.ui.pushButton_rot_droite.setEnabled(0)
+            self.ui.pushButton_rot_gauche.setEnabled(0)
         #remets le signal enlevé : 
         self.ui.horizontalSlider.valueChanged.connect(self.affiche_image_slider_move)
         self.ui.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
 
         if self.ui.tableWidget:
             self.ui.tableWidget.clear()
-        
+
 
     ############ les signaux spéciaux #####################
     clic_sur_video = pyqtSignal()
@@ -1141,14 +1160,13 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 
         quand le paramètre est absent, initialise les répertoires si nécessaire
         """
+
         if lequel == "home":
             return HOME_PATH
         elif lequel == "videos":
             return VIDEO_PATH
         elif lequel == "conf":
             return CONF_PATH
-        elif lequel == "images":
-            return IMG_PATH
         elif lequel == "icones":
             return ICON_PATH
         elif lequel == "langues":
@@ -1157,15 +1175,16 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             return DATA_PATH
         elif lequel == "help":
             return HELP_PATH
+        
         elif type(lequel) == type(""):
             self.dbg.p(1, "erreur, appel de _dir() avec le paramètre inconnu %s" % lequel)
             self.close()
         else:
             # vérifie/crée les repertoires
-            for d in ("conf", "images"):
-                dd = StartQt5._dir(str(d))
-                if not os.path.exists(dd):
-                    os.makedirs(dd)
+            dd = StartQt5._dir("conf")
+            if not os.path.exists(dd):
+                os.makedirs(dd)
+
 
     _dir = staticmethod(_dir)
 
@@ -1179,15 +1198,12 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.cvReader = openCvReader(self.filename)
 
         time.sleep(0.1)
-        if not self.cvReader.ok and (
-                    "/".join(self.filename.split('/')[:-1]) != NEWVID_PATH):  # if video is ever encoded, don't get in
-
-            sansSuffixe = os.path.basename(self.filename)
-            match = re.match("(.*)\.(.*)$", sansSuffixe)
-            sansSuffixe = match.group(1)
-            dest = os.path.join(NEWVID_PATH, sansSuffixe + ".avi")
-            self.qmsgboxencode = QMessageBoxEncode(self, dest)  # in this, thread to encode
-            self.qmsgboxencode.show()
+        if not self.cvReader.ok : 
+            QMessageBox.warning(None, "Format vidéo non pris en charge",
+                                          _translate("pymecavideo", """\le format de cette vidéo n'est pas pris en charge par pymecavideo""",
+                                                     None),
+                                          QMessageBox.Ok, QMessageBox.Ok)
+            
         else:
             return True
 
@@ -1371,7 +1387,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             ###dimensions minimum        
             if self.ratio >= 1 : 
                 self.dbg.p(2, "self.ratio supérieur à 1'")
-                self.setMinimumSize(QSize(800+self.decalw, self.heightForWidth(800)))
+                self.setMinimumSize(QSize(600, self.heightForWidth(600)))
                 self.largeur = self.width()-self.decalw
                 self.hauteur = self.heightForWidth(self.largeur)
                 
@@ -1701,20 +1717,22 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         rapportées à un référentiel.
         """
         self.dbg.p(1, "rentre dans 'mediane_trajectoires'")
-        min = None
-        max = None
+        min_ = None
+        max_ = None
         for n in range(self.nb_de_points):
             if n == referentiel:
                 pass
             for i in self.points.keys():
                 try : 
                     p = self.points[i][1 + n] - self.points[i][1 + referentiel]
-                    min = p.minXY(min)
-                    max = p.maxXY(max)
-                except : 
-                    pass #arrive si on ne finit pas le bon nb de points d'un image
-        if min != None and max != None:
-            return (min + max) * 0.5
+                    min_ = p.minXY(min_)
+                    max_ = p.maxXY(max_)
+                except: 
+                    pass #si on s'arrête de cliquer avant d'avoir fini l'image
+                
+        if min_ != None and max_ != None:
+            return (min_ + max_) * 0.5
+
         else:
             return vecteur(self.largeur / 2, self.hauteur / 2)
 
@@ -1879,18 +1897,24 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             labelOrdonnee = typeDeCourbe + " (m)"
         else:
             labelOrdonnee = typeDeCourbe + " (m/s)"
-        
-        #TODO source de bug selon la PATH de python. A tester sous windows.
-        if sys.platform == "win32" : 
-            python_exe = """python.exe"""
+               
+        pg.setConfigOption('background', 'w')
+        pg.setConfigOption('foreground', 'k')
+        if self.dictionnairePlotWidget.get(titre)  : 
+            plotWidget = self.dictionnairePlotWidget.get(titre)
+            if not plotWidget.isVisible():
+                plotWidget = pg.plot(title=titre)
+
         else : 
-            python_exe = """python3"""
-        cmd=str("""{0} pgraph.py "{1}" "{2}" "{3}" """.format(python_exe,
-            titre, labelAbscisse, labelOrdonnee))
-        xy ="\n".join(["{0} {1}". format(abscisse[i], ordonnee[i]) for i in range(len(abscisse))])
-        thread=plotThread(cmd, xy)
-        thread.daemon=True
-        thread.start()
+            plotWidget = pg.plot(title=titre, parent=self)
+            self.dictionnairePlotWidget[titre] = plotWidget #permet de ne pas recréer la fenêtre
+        plotWidget.setLabel('bottom', labelAbscisse)
+        plotWidget.setLabel('left', labelOrdonnee)
+        plotWidget.plot(abscisse, ordonnee)
+        plotWidget.setVisible(1)
+        plotWidget.show()
+        
+        
         return
 
     def affiche_point_attendu(self, n):
@@ -2102,10 +2126,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans 'AffichejusteImage'" )
-        self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) #4-6 ms
-        self.label_video.setMouseTracking(True)
-        self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
-        self.label_video.met_a_jour_crop()
+        if self.a_une_image :         
+            self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) #4-6 ms
+            
+            self.label_video.setMouseTracking(True)
+            self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
+            self.label_video.met_a_jour_crop()
 
 
     def recommence_echelle(self):
@@ -2190,7 +2216,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.label_echelle_trace.hide()
             del self.label_echelle_trace
         except :
-            pass
+            pass #si pas de vidéo preexistante
+        
+        
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1, p2)
         
         #on garde les valeurs pour le redimensionnement
@@ -2210,19 +2238,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         de la fermeture de l'application.
         """
         self.dbg.p(1, "rentre dans 'closeEvent'")
+        for plotwidget in self.dictionnairePlotWidget.values():
+            plotwidget.parentWidget().close()
+            plotwidget.close()
+            del plotwidget
         from tempfile import gettempdir
-        self.nettoieVideosRecodees()
-
-
-    def nettoieVideosRecodees(self):
-        """
-        Retire les vidéos recodées automatiquement
-        """
-        self.dbg.p(1, "rentre dans 'nettoieVideosRecodees'")
-
-        for fichier in os.listdir(NEWVID_PATH):
-            os.remove(os.path.join(NEWVID_PATH, fichier))
-
 
     def verifie_donnees_sauvegardees(self):
         self.dbg.p(1, "rentre dans 'verifie_donnees_sauvegardees'")
@@ -2399,13 +2419,8 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.horizontalSlider.setMaximum(int(self.image_max))
         self.ui.spinBox_image.setMaximum(int(self.image_max))
 
-        fichier = os.path.join(IMG_PATH, VIDEO + SUFF % 1)
-        try:
-            os.remove(fichier)
-            self.extract_image(1)
-            os.remove(fichier)
-        except OSError:
-            pass
+        self.extract_image(1)
+
 
     def extract_image(self, index):
         """
@@ -2508,7 +2523,7 @@ class plotThread(threading.Thread):
         return
 
     def run(self):
-        p=subprocess.Popen(self.cmd, shell=True, stdin=subprocess.PIPE)
+        p=subprocess.Popen(str(self.cmd), shell=True, stdin=subprocess.PIPE)
         p.communicate(self.xy.encode("utf-8"))
         return
     

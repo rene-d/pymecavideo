@@ -47,9 +47,9 @@ import subprocess
 import time
 from subprocess import Popen, PIPE, STDOUT
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
+from PyQt5.QtWidgets import QProgressDialog, QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 
 class MyReaderThread(QThread):

@@ -29,11 +29,10 @@ import subprocess
 import shutil
 import numpy as np
 import cv2
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from PyQt5.QtCore import QObject,QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
 
 from vecteur import vecteur
-from globdef import PYMECA_SHARE
 
 
 class Cadreur(QObject):
