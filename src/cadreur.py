@@ -109,9 +109,6 @@ class Cadreur(QObject):
 
         self.decal = vecteur((adroite - agauche) / 2, (dessous - dessus) / 2)
         self.rayons = vecteur((agauche + adroite) / 2, (dessus + dessous) / 2)
-        #print("ech%s, w%s, h%s"%(ech, w, h))
-        #print("agauche %s, adroite %s, dessus %s, dessous %s"%(agauche, adroite, dessus, dessous))
-        #print("self.tl %s, self.sz %s, self.decal %s, self.rayons %s"%(self.tl, self.sz, self.decal, self.rayons))
 
     def queryFrame(self):
         """
@@ -145,10 +142,11 @@ class Cadreur(QObject):
                 taille = self.sz * ech
                 self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
                 status, img =  self.capture.read()
+                img = self.rotateImage(img, self.app.rotation)
                 w, h = int(taille.x()), int(taille.y())
                 x, y = int(hautgauche.x()), int(hautgauche.y())
 
-                crop_img = self.rotateImage(img[y:y+h, x:x+w], self.app.rotation) # Crop from x, y, w, h -> 100, 200, 300, 400
+                crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
                 # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
                 cv2.imshow(self.titre, crop_img)
                 k = cv2.waitKey(int(self.delay * self.ralenti))
