@@ -66,19 +66,23 @@ class Label_Trajectoire(QLabel):
                     wroteSpeed = False
 
                     point = points[i]
-                    if self.referentiel != 0:
-                        ptreferentiel = points[int(self.referentiel)]
+                    try : 
+                        if self.referentiel != 0:
+                            ptreferentiel = points[int(self.referentiel)]
 
-                        try:
-                            ptreferentielAfter = self.app.points[key + 1][int(self.referentiel)]
-                            ptreferentielBefore = self.app.points[key - 1][int(self.referentiel)]
-                        except KeyError:  #last point -> can't compute speed
-                            break
+                            try:
+                                ptreferentielAfter = self.app.points[key + 1][int(self.referentiel)]
+                                ptreferentielBefore = self.app.points[key - 1][int(self.referentiel)]
+                            except KeyError:  #last point -> can't compute speed
+                                break
+                   
+                        else:
+                            ptreferentiel = vecteur(0, 0)
+                            ptreferentielBefore = vecteur(0, 0)
+                            ptreferentielAfter = vecteur(0, 0)
+                    except IndexError : #si pas le bon nb de points
+                        pass
 
-                    else:
-                        ptreferentiel = vecteur(0, 0)
-                        ptreferentielBefore = vecteur(0, 0)
-                        ptreferentielAfter = vecteur(0, 0)
 
                     if type(point) != type(""):
                         if self.app.ui.radioButtonNearMouse.isChecked() and self.pos_souris != None:
@@ -114,6 +118,8 @@ class Label_Trajectoire(QLabel):
                                                                     point.y() + self.origine.y() - ptreferentiel.y()),
                                                              vector_speed, i))
                                 except KeyError:  #last point -> can't compute speed
+                                    pass
+                                except IndexError : #si pas le bon nb de points
                                     pass
 
 
