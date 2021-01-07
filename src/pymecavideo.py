@@ -1392,11 +1392,11 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.dbg.p(2, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
             if self.ratio >= 1 : 
                 self.dbg.p(2, "self.ratio supérieur à 1'")
-                self.setMinimumSize(QSize(600, self.heightForWidth(600)))
+                self.setMinimumSize(QSize(800, self.heightForWidth(800)))
                 self.largeur = self.width()-self.decalw
                 self.hauteur = self.heightForWidth(self.largeur)
                 
-                if abs(self.height()- int(self.hauteur+self.decalh))>10: #si la hauteur est vraiment différente, on redimensionne. Permet de sortir d'une boucle infinie.
+                if abs(self.height()- int(self.hauteur+self.decalh))>100: #si la hauteur est vraiment différente, on redimensionne. Permet de sortir d'une boucle infinie.
                     self.setFixedHeight(self.hauteur+self.decalh) 
             else : 
                 self.dbg.p(2, "self.ratio < à 1'")
@@ -1407,7 +1407,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                     #self.setFixedHeight(self.hauteur+self.decalh)
                 self.hauteur = self.height()-self.decalh
                 self.largeur = self.widthForHeight(self.hauteur)
-                if abs(self.width()-int(self.largeur+self.decalw))>10 : 
+                if abs(self.width()-int(self.largeur+self.decalw))>100 : 
                     self.setFixedWidth(self.largeur+self.decalw)
 
             if self.largeurAvant==0 : #premier redimensionnement
