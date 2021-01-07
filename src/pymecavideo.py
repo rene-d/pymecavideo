@@ -1889,22 +1889,25 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         ancienPoint = None
         ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
         for i in self.points.keys():
-            if ref == "camera":
-                p = self.pointEnMetre(self.points[i][1 + numero])
-            else:
-                ref = int(ref)
-                p = self.pointEnMetre(self.points[i][1 + numero]) - self.pointEnMetre(self.points[i][ref])
-            if typeDeCourbe == "x": ordonnee.append(p.x())
-            if typeDeCourbe == "y": ordonnee.append(p.y())
-            if typeDeCourbe == "v":
-                if ancienPoint != None:
+            try : 
+                if ref == "camera":
+                    p = self.pointEnMetre(self.points[i][1 + numero])
+                else:
+                    ref = int(ref)
+                    p = self.pointEnMetre(self.points[i][1 + numero]) - self.pointEnMetre(self.points[i][ref])
+                if typeDeCourbe == "x": ordonnee.append(p.x())
+                if typeDeCourbe == "y": ordonnee.append(p.y())
+                if typeDeCourbe == "v":
+                    if ancienPoint != None:
+                        abscisse.append(t)
+                        v = (p - ancienPoint).norme() / self.deltaT
+                        ordonnee.append(v)
+                else:
                     abscisse.append(t)
-                    v = (p - ancienPoint).norme() / self.deltaT
-                    ordonnee.append(v)
-            else:
-                abscisse.append(t)
-            t += self.deltaT
-            ancienPoint = p
+                t += self.deltaT
+                ancienPoint = p
+            except : 
+                pass #si pas le bon nb de points cliqués.
         # les abscisses et les ordonnées sont prêtes
         labelAbscisse = "t (s)"
         if typeDeCourbe != "v":
