@@ -362,6 +362,8 @@ class StartQt5(QMainWindow):
         
     def init_interface(self, refait=0):
         self.ui.tabWidget.setEnabled(1)
+        self.ui.tabWidget.setTabEnabled(2, False)
+        self.ui.tabWidget.setTabEnabled(1, False)
         self.ui.actionExemples.setEnabled(1)
         self.cree_tableau()
         try:
@@ -540,7 +542,10 @@ class StartQt5(QMainWindow):
         #remets le signal enlevé : 
         self.ui.horizontalSlider.valueChanged.connect(self.affiche_image_slider_move)
         self.ui.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
-
+        
+        self.ui.tabWidget.setTabEnabled(2, False)
+        self.ui.tabWidget.setTabEnabled(1, False)
+        
         if self.ui.tableWidget:
             self.ui.tableWidget.clear()
         #self.ui_connections()
@@ -1613,6 +1618,9 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
         self.ui.spinBox_image.setEnabled(1)
+        self.ui.tabWidget.setTabEnabled(2, True)
+        self.ui.tabWidget.setTabEnabled(1, True)
+        
 
         self.arretAuto = False
 
