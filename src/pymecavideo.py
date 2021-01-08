@@ -304,6 +304,7 @@ class StartQt5(QMainWindow):
         self.sens_X = 1
         self.sens_Y = 1
         self.repere = 0
+        self.masse_objet = 0
         self.dictionnairePlotWidget = {}
         try:
             self.origine = vecteur(self.largeur/2, self.hauteur/2)
@@ -2104,13 +2105,35 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         #active ou désactive les checkbox énergies (n'ont un intérêt que si les échelles sont faites)
         if self.echelle_faite:
             self.ui.checkBox_Ec.setEnabled(1)
-            self.ui.checkBox_Em.setEnabled(1)
             self.ui.checkBox_Epp.setEnabled(1)
+            if self.ui.checkBox_Ec.isChecked() and self.ui.checkBox_Epp.isChecked() : 
+                self.ui.checkBox_Em.setEnabled(1)
         else : 
             self.ui.checkBox_Ec.setEnabled(0)
             self.ui.checkBox_Em.setEnabled(0)
             self.ui.checkBox_Epp.setEnabled(0)
             
+        #masse de l'objet
+        if self.ui.checkBox_Ec.isChecked() : 
+            if self.masse_objet==0 : 
+                masse_objet_raw = QInputDialog.getText(None,
+                                                    _translate("pymecavideo", "Masse de l'objet", None),
+                                                    _translate("pymecavideo",
+                                                                "Quelle est la masse de l'objet ? (en kg)",
+                                                                None),
+                                                    QLineEdit.Normal, u"1.0")
+                if masse_objet_raw[1] == False:
+                    return None
+                try:
+                    masse_objet = [float(masse_objet_raw[0].replace(",", ".")), masse_objet_raw[1]]
+
+                    if masse_objet[0] <= 0 or masse_objet[1] == False:
+                        self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une masse valable", None))
+                    self.masse_objet = float(masse_objet[0])
+                except :
+                    self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une masse valable", None))
+                    self.ui.checkBox_Ec.setChecked(0)
+       
         #initialise tout le tableau (nb de colonnes, unités etc.)
         self.cree_tableau()
         
@@ -2130,43 +2153,38 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 i += 2+colonnes_sup
                 
         #calculs des énergies
-        
+        ancienPoint=None
         for ligne in self.points.keys():
-            try :
-                i=0
-                for point in self.points[ligne][1:] :  
-                    try:
-                            pm = self.pointEnMetre(point)
-                    except ZeroDivisionError:
-                            pm = point
-
-                
-        
-                
-                    if ancienPoint != None:
-                        v = (pm - ancienPoint).norme() / self.deltaT
-                    ancienPoint = p
-                    
-                
+            
+            i=0
+            
+            for point in self.points[ligne][1:] :  
+                try:
+                        pm = self.pointEnMetre(point)
+                except ZeroDivisionError:
+                        pm = point
+                if ancienPoint != None:
+                    v = (pm - ancienPoint).norme() / self.deltaT
+                ancienPoint = pm                
+                try : 
                     for j in range(colonnes_sup):
                         cptr =0
                         if self.ui.checkBox_Ec.isChecked():
-                            
-                            self.ui.tableWidget.setItem(ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Ec%d (J)" % (1 + i)))
+                            Ec = 0.5*self.masse_objet*v*v
+                            self.ui.tableWidget.setItem(ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Ec)))
                             cptr+=1
                         if self.ui.checkBox_Epp.isChecked():
-                            
-                            self.ui.tableWidget.setHorizontalHeaderItem(3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Epp%d (J)" % (1 + i)))
+                            Epp = self.masse_objet*9.81*pm.y() #TODO faire varier g
+                            self.ui.tableWidget.setItem(ligne,3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Epp)))  
                             cptr+=1
                         if self.ui.checkBox_Em.isChecked():
-                            
-                            self.ui.tableWidget.setHorizontalHeaderItem(3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Em%d (J)" % (1 + i)))
+                            self.ui.tableWidget.setItem(ligne,3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Ec+Epp)))
                             cptr+=1
-                    i += 2+colonnes_sup
+                except UnboundLocalError: #pour premier point, la vitesse n'est pas définie
+                    pass
+                i += 1
                 
-            except : 
-                pass
-        
+            
         
 
     def transforme_index_en_temps(self, index):
@@ -2295,9 +2313,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.ui.tableWidget.insertRow(i)
             self.ui.tableWidget.setItem(i, 0, QTableWidgetItem(self.points[i][0]))
             for j in range(self.nb_de_points):
-                p = self.pointEnMetre(self.points[i][j+1])
-                self.ui.tableWidget.setItem(i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x())))
-                self.ui.tableWidget.setItem(i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y())))
+                try : 
+                    p = self.pointEnMetre(self.points[i][j+1])
+                    self.ui.tableWidget.setItem(i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x())))
+                    self.ui.tableWidget.setItem(i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y())))
+                except : pass #si pas le bon nb de points cliqués
         #esthétique : enleve la derniere ligne
         self.ui.tableWidget.removeRow(len(self.points))
 
