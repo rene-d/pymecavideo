@@ -365,7 +365,6 @@ class StartQt5(QMainWindow):
         self.ui.tabWidget.setTabEnabled(2, False)
         self.ui.tabWidget.setTabEnabled(1, False)
         self.ui.actionExemples.setEnabled(1)
-        #self.cree_tableau()
         try:
             self.label_trajectoire.clear()
         except AttributeError:
@@ -864,7 +863,6 @@ class StartQt5(QMainWindow):
     def refait_echelle(self):
         # """Permet de retracer une échelle et de recalculer les points"""
         self.dbg.p(1, "rentre dans 'refait_echelle'")
-        #self.cree_tableau()
         self.recalculLesCoordonnees()
 
     def choisi_nouvelle_origine(self):
@@ -1652,7 +1650,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points):
             self.ui.comboBox_referentiel.insertItem(-1, _translate("pymecavideo", "point N° {0}", None).format(i+1))
-        #self.cree_tableau()
 
         self.ui.pushButton_origine.setEnabled(0)
         self.ui.checkBox_abscisses.setEnabled(0)
@@ -2132,29 +2129,43 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.ui.tableWidget.setItem(ligne, i + 2, QTableWidgetItem(str(pm.y())))
                 i += 2+colonnes_sup
                 
-        ##calculs des énergies
-        #for ligne in self.points.keys():
-            #try :
-                #i=0
-                #for point in self.points[ligne][1:] :  
-                    #try:
-                            #pm = self.pointEnMetre(point)
-                    #except ZeroDivisionError:
-                            #pm = point
+        #calculs des énergies
+        
+        for ligne in self.points.keys():
+            try :
+                i=0
+                for point in self.points[ligne][1:] :  
+                    try:
+                            pm = self.pointEnMetre(point)
+                    except ZeroDivisionError:
+                            pm = point
 
                 
-                #append(p.y())
+        
                 
-                #if ancienPoint != None:
-                    #abscisse.append(t)
-                    #v = (p - ancienPoint).norme() / self.deltaT
-                    #ordonnee.append(v)
-                #else:
-                    #abscisse.append(t)
-                #t += self.deltaT
-                #ancienPoint = p
-            #except : 
-                #pass
+                    if ancienPoint != None:
+                        v = (pm - ancienPoint).norme() / self.deltaT
+                    ancienPoint = p
+                    
+                
+                    for j in range(colonnes_sup):
+                        cptr =0
+                        if self.ui.checkBox_Ec.isChecked():
+                            
+                            self.ui.tableWidget.setItem(ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Ec%d (J)" % (1 + i)))
+                            cptr+=1
+                        if self.ui.checkBox_Epp.isChecked():
+                            
+                            self.ui.tableWidget.setHorizontalHeaderItem(3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Epp%d (J)" % (1 + i)))
+                            cptr+=1
+                        if self.ui.checkBox_Em.isChecked():
+                            
+                            self.ui.tableWidget.setHorizontalHeaderItem(3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Em%d (J)" % (1 + i)))
+                            cptr+=1
+                    i += 2+colonnes_sup
+                
+            except : 
+                pass
         
         
 
