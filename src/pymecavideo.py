@@ -49,7 +49,7 @@ thisDir=os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, thisDir)
 
 from vecteur import vecteur
-import time
+import time, traceback
 import locale, getopt
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
@@ -363,6 +363,7 @@ class StartQt5(QMainWindow):
         
     def init_interface(self, refait=0):
         self.ui.tabWidget.setEnabled(1)
+        self.ui.tabWidget.setTabEnabled(3, False)
         self.ui.tabWidget.setTabEnabled(2, False)
         self.ui.tabWidget.setTabEnabled(1, False)
         self.ui.actionExemples.setEnabled(1)
@@ -546,6 +547,7 @@ class StartQt5(QMainWindow):
         self.ui.horizontalSlider.valueChanged.connect(self.affiche_image_slider_move)
         self.ui.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
         
+        self.ui.tabWidget.setTabEnabled(3, False)
         self.ui.tabWidget.setTabEnabled(2, False)
         self.ui.tabWidget.setTabEnabled(1, False)
         
@@ -1629,6 +1631,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
         self.ui.spinBox_image.setEnabled(1)
+        self.ui.tabWidget.setTabEnabled(3, True)
         self.ui.tabWidget.setTabEnabled(2, True)
         self.ui.tabWidget.setTabEnabled(1, True)
         
@@ -1868,10 +1871,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 dictionnaire_grandeurs["X"+str(i+1)].append(pm.x())
                 dictionnaire_grandeurs["Y"+str(i+1)].append(pm.y())
                 i+=1
-        for i in range(self.nb_de_points):
-            print(dictionnaire_grandeurs["X"+str(i+1)])
-            print(dictionnaire_grandeurs["Y"+str(i+1)])
-        print(dictionnaire_grandeurs.keys())
+        #for i in range(self.nb_de_points):
+            #print(dictionnaire_grandeurs["X"+str(i+1)])
+            #print(dictionnaire_grandeurs["Y"+str(i+1)])
+        #print(dictionnaire_grandeurs.keys())
         
         
         for i in range(self.nb_de_points):
@@ -1883,49 +1886,77 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 grandeurEc = "dictionnaire_grandeurs['Ec"+str(i+1)+"']"
                 grandeurEpp = "dictionnaire_grandeurs['Epp"+str(i+1)+"']"
                 grandeurEm = "dictionnaire_grandeurs['Em"+str(i+1)+"']"
-                expression_v = self.ui.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('v',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_Ec = self.ui.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('v',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_Epp = self.ui.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('v',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_Em = self.ui.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('v',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                print("grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm", grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm)
-                print("expression_v, expression_Ec, expression_Epp, expression_Em", expression_v, expression_Ec, expression_Epp, expression_Em)
+                expression_v = self.ui.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Ec = self.ui.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Epp = self.ui.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Em = self.ui.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #print("grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm", grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm)
+                #print("expression_v, expression_Ec, expression_Epp, expression_Em", expression_v, expression_Ec, expression_Epp, expression_Em)
                 
                 #for grandeur in dictionnaire_grandeurs.keys() :  
-                try : 
-                    
-                    dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_v))
-                    
-                except IndexError : 
-                    print("la vitesse du point %s, n'a pas pu être calculée"%(i+1))
-                except SyntaxError : 
-                    print("l'expression python '%s' n'est pas correcte"%(str(expression_v)))
-                    
-                try : 
-                    
-                    dictionnaire_grandeurs["Ec"+str(i+1)].append( eval(expression_Ec))
-                    
-                except IndexError : 
-                    print("l'énergie Cinétique du point %s, n'a pas pu être calculée"%(i+1))
-                except SyntaxError : 
-                    print("l'expression python '%s' n'est pas correcte"%(str(expression_v)))
-                    
-                try : 
-                    
-                    dictionnaire_grandeurs["Epp"+str(i+1)].append( eval(expression_Epp))
-                    
-                except IndexError : 
-                    print("l'énergie cinétique du point %s, n'a pas pu être calculée"%(i+1))
-                except SyntaxError : 
-                    print("l'expression python '%s' n'est pas correcte"%(str(expression_v)))
-                    
-                try : 
-                    
-                    dictionnaire_grandeurs["Em"+str(i+1)].append( eval(expression_Em))
-                    
-                except IndexError : 
-                    print("l'énergie mécanique du point %s, n'a pas pu être calculée"%(i+1))
-                except SyntaxError : 
-                    print("l'expression python '%s' n'est pas correcte"%(str(expression_v)))
+                erreurs_python1 = """
+                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+                <html><head><meta name="qrichtext" content="1" /><style type="text/css">
+                p, li { white-space: pre-wrap; }
+                </style></head><body style=" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;" bgcolor="#808080">
+                <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
+                erreurs_python2 = """</p></body></html>"""
+                erreur=""
+                if expression_v!='' : 
+                    try : 
+                        dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_v))
+                        
+                    except IndexError : 
+                        erreur += "la vitesse du point %s, n'a pas pu être calculée"%(i+1)
+                    except : 
+                        
+                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_v))
+                        erreur+=traceback.format_exc()
+                    finally : 
+                        if erreur!="" : 
+                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
+                
+                if expression_Ec!='' : 
+                    try :
+                        dictionnaire_grandeurs["Ec"+str(i+1)].append( eval(expression_Ec))
+                        
+                    except IndexError : 
+                        erreur += "l'énergie Cinétique du point %s, n'a pas pu être calculée"%(i+1)
+                    except : 
+                        
+                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_v))
+                        erreur+=traceback.format_exc()
+                    finally : 
+                        if erreur!="" : 
+                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
+                
+                if expression_Epp!='' : 
+                    try : 
+                        
+                        dictionnaire_grandeurs["Epp"+str(i+1)].append( eval(expression_Epp))
+                        
+                    except IndexError : 
+                        erreur += "l'énergie cinétique du point %s, n'a pas pu être calculée"%(i+1)
+                    except : 
+                        
+                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_v))
+                        erreur+=traceback.format_exc()
+                    finally : 
+                        if erreur!="" : 
+                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
+                
+                if expression_Em!='' : 
+                    try : 
+                        
+                        dictionnaire_grandeurs["Em"+str(i+1)].append( eval(expression_Em))
+                    except IndexError : 
+                        erreur += "l'énergie mécanique du point %s, n'a pas pu être calculée"%(i+1)
+                    except SyntaxError : 
+                        erreur += "l'expression python '%s' n'est pas correcte"%(str(expression_v))
+                    finally : 
+                        if erreur!="" : 
+                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
+                        
         for grandeur in dictionnaire_grandeurs.keys():
             print(grandeur, dictionnaire_grandeurs[grandeur])
 
