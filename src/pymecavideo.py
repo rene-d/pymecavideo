@@ -593,7 +593,7 @@ class StartQt5(QMainWindow):
         self.clic_sur_video.connect(self.clic_sur_label_video)
         self.ui.comboBox_referentiel.currentIndexChanged.connect(self.tracer_trajectoires)
         self.ui.comboBox_mode_tracer.currentIndexChanged.connect(self.tracer_courbe)
-        self.ui.tabWidget.currentChanged.connect(self.tracer_trajectoires)
+        self.ui.tabWidget.currentChanged.connect(self.choix_onglets)
 
         self.ui.checkBoxScale.currentIndexChanged.connect(self.enableSpeed)
         self.ui.checkBoxVectorSpeed.stateChanged.connect(self.enableSpeed)
@@ -1831,12 +1831,107 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if len(ref) == 0 or ref == "camera": return
         c = Cadreur(int(ref), self)
         c.montrefilm()
+    
+    def choix_onglets(self, newValue):
+        """
+        traite les signaux émis par le changement d'onglet, ou
+        par le changement de référentiel dans l'onglet des trajectoires."""
+        self.dbg.p(1, "rentre dans 'choix_onglets'")
+        if self.ui.tabWidget.currentIndex()==1 :
+            self.statusBar().hide()
+            self.tracer_trajectoires("absolu")
+        elif self.ui.tabWidget.currentIndex()==0:
+            self.statusBar().show()
+        elif self.ui.tabWidget.currentIndex()==2:
+            self.statusBar().hide()
+            self.affiche_tableau()
+        elif self.ui.tabWidget.currentIndex()==3:
+            self.statusBar().hide()
+            self.affiche_grapheur()
+        
 
+    def affiche_grapheur(self):
+        dictionnaire_grandeurs = {} #contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
+        for i in range(self.nb_de_points):
+            dictionnaire_grandeurs["X"+str(i+1)] = []
+            dictionnaire_grandeurs["Y"+str(i+1)] = []
+            dictionnaire_grandeurs["V"+str(i+1)] = []
+            dictionnaire_grandeurs["Ec"+str(i+1)] = []
+            dictionnaire_grandeurs["Epp"+str(i+1)] = []
+            dictionnaire_grandeurs["Em"+str(i+1)] = []
+        deltaT=self.deltaT
+        #try : 
+        for ligne in self.points.keys():
+            i=0
+            for point in self.points[ligne][1:] :  
+                pm = self.pointEnMetre(point) 
+                dictionnaire_grandeurs["X"+str(i+1)].append(pm.x())
+                dictionnaire_grandeurs["Y"+str(i+1)].append(pm.y())
+                i+=1
+        for i in range(self.nb_de_points):
+            print(dictionnaire_grandeurs["X"+str(i+1)])
+            print(dictionnaire_grandeurs["Y"+str(i+1)])
+        print(dictionnaire_grandeurs.keys())
+        
+        
+        for i in range(self.nb_de_points):
+            for n in range(len(self.points.keys())):
+            
+                grandeurX = "dictionnaire_grandeurs['X"+str(i+1)+"']"
+                grandeurY = "dictionnaire_grandeurs['Y"+str(i+1)+"']"
+                grandeurv = "dictionnaire_grandeurs['V"+str(i+1)+"']"
+                grandeurEc = "dictionnaire_grandeurs['Ec"+str(i+1)+"']"
+                grandeurEpp = "dictionnaire_grandeurs['Epp"+str(i+1)+"']"
+                grandeurEm = "dictionnaire_grandeurs['Em"+str(i+1)+"']"
+                expression_v = self.ui.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('v',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Ec = self.ui.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('v',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Epp = self.ui.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('v',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Em = self.ui.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('v',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                print("grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm", grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm)
+                print("expression_v, expression_Ec, expression_Epp, expression_Em", expression_v, expression_Ec, expression_Epp, expression_Em)
+                
+                #for grandeur in dictionnaire_grandeurs.keys() :  
+                try : 
+                    
+                    dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_v))
+                    
+                except IndexError : 
+                    print("la vitesse du point %s, n'a pas pu être calculée"%(i+1))
+                except SyntaxError : 
+                    print("l'expression python '%s' n'est pas correcte"%(str(expression_v)))
+                    
+                try : 
+                    
+                    dictionnaire_grandeurs["Ec"+str(i+1)].append( eval(expression_Ec))
+                    
+                except IndexError : 
+                    print("l'énergie Cinétique du point %s, n'a pas pu être calculée"%(i+1))
+                except SyntaxError : 
+                    print("l'expression python '%s' n'est pas correcte"%(str(expression_v)))
+                    
+                try : 
+                    
+                    dictionnaire_grandeurs["Epp"+str(i+1)].append( eval(expression_Epp))
+                    
+                except IndexError : 
+                    print("l'énergie cinétique du point %s, n'a pas pu être calculée"%(i+1))
+                except SyntaxError : 
+                    print("l'expression python '%s' n'est pas correcte"%(str(expression_v)))
+                    
+                try : 
+                    
+                    dictionnaire_grandeurs["Em"+str(i+1)].append( eval(expression_Em))
+                    
+                except IndexError : 
+                    print("l'énergie mécanique du point %s, n'a pas pu être calculée"%(i+1))
+                except SyntaxError : 
+                    print("l'expression python '%s' n'est pas correcte"%(str(expression_v)))
+        for grandeur in dictionnaire_grandeurs.keys():
+            print(grandeur, dictionnaire_grandeurs[grandeur])
 
     def tracer_trajectoires(self, newValue):
         """
-        traite les signaux émis par le changement d'onglet, ou
-        par le changement de référentiel dans l'onglet des trajectoires.
+        Cette fonction est appelée par un changement de référentiel.
         On peut aussi appeler cette fonction directement, auquel cas on
         donne la valeur "absolu" à newValue pour reconnaître ce cas.
         efface les trajectoires anciennes, puis
@@ -1844,51 +1939,44 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
        
         """
         self.dbg.p(1, "rentre dans 'tracer_trajectoires'")
+        try: 
+            origine = vecteur(0, 0)
+            if newValue == "absolu":
+                ref = "camera"
+            else:
+                ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
 
-        if self.ui.tabWidget.currentIndex() != 0:  # Pas le premier onglet
-            self.statusBar().hide()
-            if self.ui.tabWidget.currentIndex()==1 : #onglet trajectoire
-                try: 
-                    origine = vecteur(0, 0)
-                    if newValue == "absolu":
-                        ref = "camera"
-                    else:
-                        ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+            if len(ref) == 0: return
+            if ref != "camera":
+                self.ui.button_video.setEnabled(1)
+                self.ui.pushButtonChrono.setEnabled(0)
+                self.ui.pushButtonEnregistreChrono.setVisible(0)
+                self.chrono = False
+                bc = self.mediane_trajectoires(int(ref) - 1)
+                origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
+                self.label_trajectoire.origine = origine
 
-                    if len(ref) == 0: return
-                    if ref != "camera":
-                        self.ui.button_video.setEnabled(1)
-                        self.ui.pushButtonChrono.setEnabled(0)
-                        self.ui.pushButtonEnregistreChrono.setVisible(0)
-                        self.chrono = False
-                        bc = self.mediane_trajectoires(int(ref) - 1)
-                        origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
-                        self.label_trajectoire.origine = origine
+                self.label_trajectoire.referentiel = ref
+            else:  # if camera, all tranlsations are disabled
+                self.ui.pushButtonChrono.setEnabled(1)
 
-                        self.label_trajectoire.referentiel = ref
-                    else:  # if camera, all tranlsations are disabled
-                        self.ui.pushButtonChrono.setEnabled(1)
+                self.label_trajectoire.referentiel = 0
+                self.label_trajectoire.origine = self.origine_avant
 
-                        self.label_trajectoire.referentiel = 0
-                        self.label_trajectoire.origine = self.origine_avant
+            # rempli le menu des courbes à tracer
+            self.ui.comboBox_mode_tracer.clear()
+            self.ui.comboBox_mode_tracer.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
+            for i in range(self.nb_de_points):
+                combo = self.ui.comboBox_mode_tracer
+                combo.addItem(u"x%d(t)" % (i + 1))
+                combo.addItem(u"y%d(t)" % (i + 1))
+                combo.addItem(u"v%d(t)" % (i + 1))
 
-                    # rempli le menu des courbes à tracer
-                    self.ui.comboBox_mode_tracer.clear()
-                    self.ui.comboBox_mode_tracer.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
-                    for i in range(self.nb_de_points):
-                        combo = self.ui.comboBox_mode_tracer
-                        combo.addItem(u"x%d(t)" % (i + 1))
-                        combo.addItem(u"y%d(t)" % (i + 1))
-                        combo.addItem(u"v%d(t)" % (i + 1))
+            self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
+        except ZeroDivisionError:
+            self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
+        self.label_trajectoire.reDraw()
 
-                    self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
-                except ZeroDivisionError:
-                    self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
-                self.label_trajectoire.reDraw()
-            else : #onglet tableau
-                self.affiche_tableau()
-        else :
-            self.statusBar().show()
         
 
 
