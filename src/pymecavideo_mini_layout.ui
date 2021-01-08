@@ -89,7 +89,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <property name="sizePolicy">
@@ -1087,6 +1087,31 @@ photographie</string>
             </widget>
            </item>
            <item>
+            <widget class="QCheckBox" name="checkBox_Ec">
+             <property name="text">
+              <string>Ajouter
+l'énergie cinétique</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_Epp">
+             <property name="text">
+              <string>Ajouter
+l'énergie potentielle
+de pesanteur</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_Em">
+             <property name="text">
+              <string>Ajouter
+l'énergie mécanique</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="horizontalSpacer_2">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -1117,7 +1142,7 @@ photographie</string>
      <x>0</x>
      <y>0</y>
      <width>1031</width>
-     <height>23</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

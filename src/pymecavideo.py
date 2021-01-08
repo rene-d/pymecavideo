@@ -365,7 +365,7 @@ class StartQt5(QMainWindow):
         self.ui.tabWidget.setTabEnabled(2, False)
         self.ui.tabWidget.setTabEnabled(1, False)
         self.ui.actionExemples.setEnabled(1)
-        self.cree_tableau()
+        #self.cree_tableau()
         try:
             self.label_trajectoire.clear()
         except AttributeError:
@@ -423,6 +423,9 @@ class StartQt5(QMainWindow):
         self.ui.pushButton_stopCalculs.hide()
         self.ui.button_video.setEnabled(0)
         
+        self.ui.checkBox_Ec.setChecked(0)
+        self.ui.checkBox_Em.setChecked(0)
+        self.ui.checkBox_Epp.setChecked(0)
 
 
     def desactiveExport(self, text):
@@ -546,6 +549,10 @@ class StartQt5(QMainWindow):
         self.ui.tabWidget.setTabEnabled(2, False)
         self.ui.tabWidget.setTabEnabled(1, False)
         
+        self.ui.checkBox_Ec.setChecked(0)
+        self.ui.checkBox_Em.setChecked(0)
+        self.ui.checkBox_Epp.setChecked(0)
+        
         if self.ui.tableWidget:
             self.ui.tableWidget.clear()
         #self.ui_connections()
@@ -624,6 +631,11 @@ class StartQt5(QMainWindow):
         self.ui.exportCombo.currentIndexChanged.connect(self.export)
 
         self.ui.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
+        
+        self.ui.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
+        self.ui.checkBox_Epp.stateChanged.connect(self.affiche_tableau)
+        self.ui.checkBox_Em.stateChanged.connect(self.affiche_tableau)
+        
 
     def enregistreChrono(self):
         # self.label_trajectoire.render()
@@ -852,7 +864,7 @@ class StartQt5(QMainWindow):
     def refait_echelle(self):
         # """Permet de retracer une échelle et de recalculer les points"""
         self.dbg.p(1, "rentre dans 'refait_echelle'")
-        self.cree_tableau()
+        #self.cree_tableau()
         self.recalculLesCoordonnees()
 
     def choisi_nouvelle_origine(self):
@@ -1003,8 +1015,8 @@ class StartQt5(QMainWindow):
         @param point un point en "coordonnées d\'écran"
         """
         self.dbg.p(1, "rentre dans 'pointEnMetre'")
-        if self.echelle_faite:
-            return vecteur(self.sens_X * (float(p.x() - self.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
+        
+        return vecteur(self.sens_X * (float(p.x() - self.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
                        float(self.origine.y() - p.y()) * self.echelle_image.mParPx())
 
 
@@ -1640,7 +1652,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.ui.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points):
             self.ui.comboBox_referentiel.insertItem(-1, _translate("pymecavideo", "point N° {0}", None).format(i+1))
-        self.cree_tableau()
+        #self.cree_tableau()
 
         self.ui.pushButton_origine.setEnabled(0)
         self.ui.checkBox_abscisses.setEnabled(0)
@@ -1659,7 +1671,8 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.echelle_image.longueur_reelle_etalon = 1
             self.echelle_image.p1 = vecteur(0,0)
             self.echelle_image.p1 = vecteur(0,1)
-            self.echelle_faite = True
+            #self.echelle_faite = True
+            
         #######automatic capture
         if self.ui.checkBox_auto.isChecked():
             #self.auto = True
@@ -1690,11 +1703,15 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.ui.tableWidget.clear()
         self.ui.tab_coord.setEnabled(1)
         self.ui.tableWidget.setRowCount(1)
-        self.ui.tableWidget.setColumnCount(self.nb_de_points * 2 + 1)
+        
+        colonnes_sup = self.ui.checkBox_Ec.isChecked()+self.ui.checkBox_Epp.isChecked()+self.ui.checkBox_Em.isChecked()
+        self.ui.tableWidget.setColumnCount(self.nb_de_points * 2 + 1 + colonnes_sup*self.nb_de_points)
+        
         self.ui.tableWidget.setDragEnabled(True)
         # on met des titres aux colonnes.
         self.ui.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem('t (s)'))
-
+        
+        self.ui.tableWidget.setRowCount(len(self.points))
         for i in range(self.nb_de_points):
             if  self.echelle_faite:
                 x = "X%d (m)" % (1 + i)
@@ -1703,8 +1720,22 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 x = "X%d (px)" % (1 + i)
                 y = "Y%d (px)" % (1 + i)
 
-            self.ui.tableWidget.setHorizontalHeaderItem(1 + 2 * i, QTableWidgetItem(x))
-            self.ui.tableWidget.setHorizontalHeaderItem(2 + 2 * i, QTableWidgetItem(y))
+            self.ui.tableWidget.setHorizontalHeaderItem(1 + (2+colonnes_sup) * i, QTableWidgetItem(x))
+            self.ui.tableWidget.setHorizontalHeaderItem(2 + (2+colonnes_sup) * i, QTableWidgetItem(y))
+            for j in range(colonnes_sup):
+                cptr =0
+                if self.ui.checkBox_Ec.isChecked():
+                    
+                    self.ui.tableWidget.setHorizontalHeaderItem(3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Ec%d (J)" % (1 + i)))
+                    cptr+=1
+                if self.ui.checkBox_Epp.isChecked():
+                    
+                    self.ui.tableWidget.setHorizontalHeaderItem(3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Epp%d (J)" % (1 + i)))
+                    cptr+=1
+                if self.ui.checkBox_Em.isChecked():
+                    
+                    self.ui.tableWidget.setHorizontalHeaderItem(3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Em%d (J)" % (1 + i)))
+                    cptr+=1
 
 
     def barycentre_trajectoires(self, referentiel):
@@ -2073,11 +2104,22 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.pY[y] = [point]
 
     def affiche_tableau(self):
-        # rentre le temps dans la première colonne
-        {0: ['0.000000', vecteur (153.000000, 180.000000), vecteur (354.000000, 314.000000), vecteur (464.000000, 370.000000)], 1: ['0.040000', vecteur (365.000000, 413.000000), vecteur (468.000000, 412.000000), vecteur (548.000000, 429.000000)], 2: ['0.080000', vecteur (214.000000, 273.000000), vecteur (296.000000, 317.000000), vecteur (369.000000, 318.000000)]}
-        self.ui.tableWidget.setRowCount(len(self.points))
+        #active ou désactive les checkbox énergies (n'ont un intérêt que si les échelles sont faites)
+        if self.echelle_faite:
+            self.ui.checkBox_Ec.setEnabled(1)
+            self.ui.checkBox_Em.setEnabled(1)
+            self.ui.checkBox_Epp.setEnabled(1)
+        else : 
+            self.ui.checkBox_Ec.setEnabled(0)
+            self.ui.checkBox_Em.setEnabled(0)
+            self.ui.checkBox_Epp.setEnabled(0)
+            
+        #initialise tout le tableau (nb de colonnes, unités etc.)
+        self.cree_tableau()
         
+        colonnes_sup = self.ui.checkBox_Ec.isChecked()+self.ui.checkBox_Epp.isChecked()+self.ui.checkBox_Em.isChecked()
         for ligne in self.points.keys():
+            # rentre le temps dans la première colonne
             self.ui.tableWidget.setItem(ligne, 0, QTableWidgetItem(self.points[ligne][0]))
             i=0
             for point in self.points[ligne][1:] :  
@@ -2088,8 +2130,33 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             
                 self.ui.tableWidget.setItem(ligne, i + 1, QTableWidgetItem(str(pm.x())))
                 self.ui.tableWidget.setItem(ligne, i + 2, QTableWidgetItem(str(pm.y())))
-                i += 2
-           
+                i += 2+colonnes_sup
+                
+        ##calculs des énergies
+        #for ligne in self.points.keys():
+            #try :
+                #i=0
+                #for point in self.points[ligne][1:] :  
+                    #try:
+                            #pm = self.pointEnMetre(point)
+                    #except ZeroDivisionError:
+                            #pm = point
+
+                
+                #append(p.y())
+                
+                #if ancienPoint != None:
+                    #abscisse.append(t)
+                    #v = (p - ancienPoint).norme() / self.deltaT
+                    #ordonnee.append(v)
+                #else:
+                    #abscisse.append(t)
+                #t += self.deltaT
+                #ancienPoint = p
+            #except : 
+                #pass
+        
+        
 
     def transforme_index_en_temps(self, index):
         self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")
