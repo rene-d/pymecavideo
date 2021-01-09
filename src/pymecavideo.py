@@ -306,6 +306,7 @@ class StartQt5(QMainWindow):
         self.repere = 0
         self.masse_objet = 0
         self.dictionnairePlotWidget = {}
+        self.dictionnaire_grandeurs = {} #contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
         try:
             self.origine = vecteur(self.largeur/2, self.hauteur/2)
             self.largeurAvant = self.largeur
@@ -637,6 +638,9 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
         self.ui.checkBox_Epp.stateChanged.connect(self.affiche_tableau)
         self.ui.checkBox_Em.stateChanged.connect(self.affiche_tableau)
+        self.ui.commandLinkButton_lance_python.clicked.connect(self.affiche_grapheur)
+        self.ui.comboBox_X.currentIndexChanged.connect(self.dessine_graphe)
+        self.ui.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe)
         
 
     def enregistreChrono(self):
@@ -1410,7 +1414,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.dbg.p(2, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
             if self.ratio >= 1 : 
                 self.dbg.p(2, "self.ratio supérieur à 1'")
-                self.setMinimumSize(QSize(800, self.heightForWidth(800)))
+                self.setMinimumSize(QSize(1000, self.heightForWidth(1000)))
                 self.largeur = self.width()-self.decalw
                 self.hauteur = self.heightForWidth(self.largeur)
                 
@@ -1418,7 +1422,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                     self.setFixedHeight(self.hauteur+self.decalh) 
             else : 
                 self.dbg.p(2, "self.ratio < à 1'")
-                self.setMinimumSize(QSize(self.widthForHeight(600), 600))
+                self.setMinimumSize(QSize(self.widthForHeight(800), 800))
                 
                 #traitement spécial si on vient de tourner l'image : on détermine la hauteur maximale de la vidéo
                 #if tourne : 
@@ -1850,26 +1854,26 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.affiche_tableau()
         elif self.ui.tabWidget.currentIndex()==3:
             self.statusBar().hide()
-            self.affiche_grapheur()
+            
         
 
     def affiche_grapheur(self):
-        dictionnaire_grandeurs = {} #contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
+        
         for i in range(self.nb_de_points):
-            dictionnaire_grandeurs["X"+str(i+1)] = []
-            dictionnaire_grandeurs["Y"+str(i+1)] = []
-            dictionnaire_grandeurs["V"+str(i+1)] = []
-            dictionnaire_grandeurs["Ec"+str(i+1)] = []
-            dictionnaire_grandeurs["Epp"+str(i+1)] = []
-            dictionnaire_grandeurs["Em"+str(i+1)] = []
+            self.dictionnaire_grandeurs["X"+str(i+1)] = []
+            self.dictionnaire_grandeurs["Y"+str(i+1)] = []
+            self.dictionnaire_grandeurs["V"+str(i+1)] = []
+            self.dictionnaire_grandeurs["Ec"+str(i+1)] = []
+            self.dictionnaire_grandeurs["Epp"+str(i+1)] = []
+            self.dictionnaire_grandeurs["Em"+str(i+1)] = []
         deltaT=self.deltaT
         #try : 
         for ligne in self.points.keys():
             i=0
             for point in self.points[ligne][1:] :  
                 pm = self.pointEnMetre(point) 
-                dictionnaire_grandeurs["X"+str(i+1)].append(pm.x())
-                dictionnaire_grandeurs["Y"+str(i+1)].append(pm.y())
+                self.dictionnaire_grandeurs["X"+str(i+1)].append(pm.x())
+                self.dictionnaire_grandeurs["Y"+str(i+1)].append(pm.y())
                 i+=1
         #for i in range(self.nb_de_points):
             #print(dictionnaire_grandeurs["X"+str(i+1)])
@@ -1880,12 +1884,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         for i in range(self.nb_de_points):
             for n in range(len(self.points.keys())):
             
-                grandeurX = "dictionnaire_grandeurs['X"+str(i+1)+"']"
-                grandeurY = "dictionnaire_grandeurs['Y"+str(i+1)+"']"
-                grandeurv = "dictionnaire_grandeurs['V"+str(i+1)+"']"
-                grandeurEc = "dictionnaire_grandeurs['Ec"+str(i+1)+"']"
-                grandeurEpp = "dictionnaire_grandeurs['Epp"+str(i+1)+"']"
-                grandeurEm = "dictionnaire_grandeurs['Em"+str(i+1)+"']"
+                grandeurX = "self.dictionnaire_grandeurs['X"+str(i+1)+"']"
+                grandeurY = "self.dictionnaire_grandeurs['Y"+str(i+1)+"']"
+                grandeurv = "self.dictionnaire_grandeurs['V"+str(i+1)+"']"
+                grandeurEc = "self.dictionnaire_grandeurs['Ec"+str(i+1)+"']"
+                grandeurEpp = "self.dictionnaire_grandeurs['Epp"+str(i+1)+"']"
+                grandeurEm = "self.dictionnaire_grandeurs['Em"+str(i+1)+"']"
                 expression_v = self.ui.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
                 expression_Ec = self.ui.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
                 expression_Epp = self.ui.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
@@ -1904,7 +1908,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 erreur=""
                 if expression_v!='' : 
                     try : 
-                        dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_v))
+                        self.dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_v))
                         
                     except IndexError : 
                         erreur += "la vitesse du point %s, n'a pas pu être calculée"%(i+1)
@@ -1915,10 +1919,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     finally : 
                         if erreur!="" : 
                             self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
+                        else : 
+                            congrat="Les expressions python rentrées ont été calculées"
+                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
                 
                 if expression_Ec!='' : 
                     try :
-                        dictionnaire_grandeurs["Ec"+str(i+1)].append( eval(expression_Ec))
+                        self.dictionnaire_grandeurs["Ec"+str(i+1)].append( eval(expression_Ec))
                         
                     except IndexError : 
                         erreur += "l'énergie Cinétique du point %s, n'a pas pu être calculée"%(i+1)
@@ -1929,11 +1936,14 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     finally : 
                         if erreur!="" : 
                             self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
+                        else : 
+                            congrat="Les expressions python rentrées ont été calculées"
+                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
                 
                 if expression_Epp!='' : 
                     try : 
                         
-                        dictionnaire_grandeurs["Epp"+str(i+1)].append( eval(expression_Epp))
+                        self.dictionnaire_grandeurs["Epp"+str(i+1)].append( eval(expression_Epp))
                         
                     except IndexError : 
                         erreur += "l'énergie cinétique du point %s, n'a pas pu être calculée"%(i+1)
@@ -1944,11 +1954,14 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     finally : 
                         if erreur!="" : 
                             self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
-                
+                        else : 
+                            congrat="Les expressions python rentrées ont été calculées"
+                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
+                            
                 if expression_Em!='' : 
                     try : 
                         
-                        dictionnaire_grandeurs["Em"+str(i+1)].append( eval(expression_Em))
+                        self.dictionnaire_grandeurs["Em"+str(i+1)].append( eval(expression_Em))
                     except IndexError : 
                         erreur += "l'énergie mécanique du point %s, n'a pas pu être calculée"%(i+1)
                     except SyntaxError : 
@@ -1956,9 +1969,44 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     finally : 
                         if erreur!="" : 
                             self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
-                        
-        for grandeur in dictionnaire_grandeurs.keys():
-            print(grandeur, dictionnaire_grandeurs[grandeur])
+                        else : 
+                            congrat="Les expressions python rentrées ont été calculées"
+                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
+        #combobox
+        self.ui.comboBox_X.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
+        self.ui.comboBox_Y.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
+        self.ui.comboBox_X.addItem('t')
+        self.ui.comboBox_Y.addItem('t')
+        for grandeur in self.dictionnaire_grandeurs.keys():
+            print(grandeur, self.dictionnaire_grandeurs[grandeur])
+            if self.dictionnaire_grandeurs[grandeur] !=[] : 
+                self.ui.comboBox_X.addItem(grandeur)
+                self.ui.comboBox_Y.addItem(grandeur)
+                
+            
+    def dessine_graphe(self) :
+        X, Y = [], []
+        print(self.ui.comboBox_X.currentText())
+        if self.ui.comboBox_X.currentText()=='t':
+            X = [i*self.deltaT for i in range(len(self.points))]
+        elif self.ui.comboBox_X.currentText()!="Choisir ...": 
+            X = self.dictionnaire_grandeurs[self.ui.comboBox_X.currentText()]
+        if self.ui.comboBox_Y.currentText()=='t':
+            Y = [i*self.deltaT for i in range(len(self.points))]
+        elif self.ui.comboBox_X.currentText()!="Choisir ...":
+            Y = self.dictionnaire_grandeurs[self.ui.comboBox_Y.currentText()]
+        if X!=[] and Y != [] : 
+            pg.setConfigOption('background', 'w')
+            pg.setConfigOption('foreground', 'k')
+            titre = "%s en fonction de %s"%(self.ui.comboBox_X.currentText(), self.ui.comboBox_Y.currentText())
+            self.graphWidget = pg.PlotWidget(title=titre, parent=self.ui.widget_graph)
+#            plotWidget = pg.plot()
+            
+            self.graphWidget.setLabel('bottom', "t(s)" if self.ui.comboBox_X.currentText()=='t' else self.ui.comboBox_X.currentText()+'(m)' )
+            self.graphWidget.setLabel('left', "t(s)" if self.ui.comboBox_Y.currentText()=='t' else self.ui.comboBox_Y.currentText()+'(m)')
+            self.graphWidget.plot(X, Y)
+            self.graphWidget.setMinimumSize(QSize(self.ui.widget_graph.size()))
+            self.graphWidget.show()
 
     def tracer_trajectoires(self, newValue):
         """
