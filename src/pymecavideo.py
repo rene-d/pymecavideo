@@ -1903,6 +1903,16 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 #print("grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm", grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm)
                 #print("expression_v, expression_Ec, expression_Epp, expression_Em", expression_v, expression_Ec, expression_Epp, expression_Em)
                 
+                ##il faut traiter le cas particulier des indices négatifs : par défaut, si python évalue 'n-1' avec n qui vaut 0, il renvoie un résultat tout de même... ce qui fausse les calculs de vitesse.
+                expression_Vx = self.traite_indices(expression_Vx,n)
+                expression_Vy = self.traite_indices(expression_Vy,n)
+                expression_V = self.traite_indices(expression_V,n)
+                expression_Ec = self.traite_indices(expression_Ec,n)
+                expression_Epp = self.traite_indices(expression_Epp,n)
+                expression_Em = self.traite_indices(expression_Em,n)
+                
+                
+                
                 #for grandeur in dictionnaire_grandeurs.keys() :  
                 erreurs_python1 = """
                 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
@@ -1914,6 +1924,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 erreur=""
                 if expression_Vx!='' : 
                     try : 
+                        print("""expression_Vx""", expression_Vx)
                         self.dictionnaire_grandeurs["Vx"+str(i+1)].append( eval(expression_Vx))
                         
                     except IndexError : 
@@ -1970,7 +1981,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreur += "l'énergie Cinétique du point %s, n'a pas pu être calculée"%(i+1)
                     except : 
                         
-                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_v))
+                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Ec))
                         erreur+=traceback.format_exc()
                     finally : 
                         if erreur!="" : 
@@ -1988,7 +1999,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreur += "l'énergie cinétique du point %s, n'a pas pu être calculée"%(i+1)
                     except : 
                         
-                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_v))
+                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Epp))
                         erreur+=traceback.format_exc()
                     finally : 
                         if erreur!="" : 
@@ -2004,7 +2015,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     except IndexError : 
                         erreur += "l'énergie mécanique du point %s, n'a pas pu être calculée"%(i+1)
                     except SyntaxError : 
-                        erreur += "l'expression python '%s' n'est pas correcte"%(str(expression_v))
+                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Em))
                     finally : 
                         if erreur!="" : 
                             self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
@@ -2024,6 +2035,31 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.ui.comboBox_X.addItem(grandeur)
                 self.ui.comboBox_Y.addItem(grandeur)
                 
+    def traite_indices(self, expression,n):
+        #vérification de la présence d'une expression entre []
+        print(n, expression)
+        expr = ""
+        start=False
+        liste_expressions_entre_crochets = []
+        for c in expression : 
+            if start : 
+                expr+=c
+            if c=='[':
+                start=True
+            elif c==']':
+                start=False
+                liste_expressions_entre_crochets.append(expr[:-1])
+                expr=""
+        for expr_a_tester in liste_expressions_entre_crochets :
+            if 'n' in expr_a_tester : 
+                print("jjii",expr_a_tester)
+                if eval(expr_a_tester) < 0 : 
+                    print(expr_a_tester, "négtif")
+                    return "Nein"
+                else : 
+                    print(expr_a_tester, "positif")
+        
+        return expression
             
     def dessine_graphe(self) :
         X, Y = [], []
@@ -2045,6 +2081,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.graphWidget.setLabel('bottom', "t(s)" if self.ui.comboBox_X.currentText()=='t' else self.ui.comboBox_X.currentText()+'(m)' )
             self.graphWidget.setLabel('left', "t(s)" if self.ui.comboBox_Y.currentText()=='t' else self.ui.comboBox_Y.currentText()+'(m)')
             self.graphWidget.plot(X, Y)
+            self.graphWidget.plot([0,1,2,3,4], ["", 1, 2, 3, 4])
             self.graphWidget.setMinimumSize(QSize(self.ui.widget_graph.size()))
             self.graphWidget.show()
 
