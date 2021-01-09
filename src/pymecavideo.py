@@ -1858,6 +1858,17 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         
 
     def affiche_grapheur(self):
+        self.dbg.p(1,"rentre dans 'affiche_grapheur'")
+        
+        erreurs_python1 = """
+                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+                <html><head><meta name="qrichtext" content="1" /><style type="text/css">
+                p, li { white-space: pre-wrap; }
+                </style></head><body style=" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;" bgcolor="#808080">
+                <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
+        erreurs_python2 = """</p></body></html>"""
+        erreur_indices="Certains point n'ont pas pu être calculés : \n"
+        erreurs_python = ""
         
         for i in range(self.nb_de_points):
             self.dictionnaire_grandeurs["X"+str(i+1)] = []
@@ -1888,8 +1899,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             
                 grandeurX = "self.dictionnaire_grandeurs['X"+str(i+1)+"']"
                 grandeurY = "self.dictionnaire_grandeurs['Y"+str(i+1)+"']"
-                grandeurVx = "self.dictionnaire_grandeurs['Vx"+str(i+1)+"']"
-                grandeurVy = "self.dictionnaire_grandeurs['Vy"+str(i+1)+"']"
+                grandeurVx = "self.dictionnaire_grandeurs['xprime"+str(i+1)+"']"
+                grandeurVy = "self.dictionnaire_grandeurs['yprime"+str(i+1)+"']"
                 grandeurV = "self.dictionnaire_grandeurs['V"+str(i+1)+"']"
                 grandeurEc = "self.dictionnaire_grandeurs['Ec"+str(i+1)+"']"
                 grandeurEpp = "self.dictionnaire_grandeurs['Epp"+str(i+1)+"']"
@@ -1904,91 +1915,62 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 #print("expression_v, expression_Ec, expression_Epp, expression_Em", expression_v, expression_Ec, expression_Epp, expression_Em)
                 
                 ##il faut traiter le cas particulier des indices négatifs : par défaut, si python évalue 'n-1' avec n qui vaut 0, il renvoie un résultat tout de même... ce qui fausse les calculs de vitesse.
-                expression_Vx = self.traite_indices(expression_Vx,n)
-                expression_Vy = self.traite_indices(expression_Vy,n)
-                expression_V = self.traite_indices(expression_V,n)
-                expression_Ec = self.traite_indices(expression_Ec,n)
-                expression_Epp = self.traite_indices(expression_Epp,n)
-                expression_Em = self.traite_indices(expression_Em,n)
+                expression_Vx,err1 = self.traite_indices(expression_Vx,i,n, 'Vx')
+                expression_Vy,err2 = self.traite_indices(expression_Vy,i,n, 'Vy')
+                expression_V,err3 = self.traite_indices(expression_V,i,n, 'V')
+                expression_Ec,err4 = self.traite_indices(expression_Ec,i,n, 'Ec')
+                expression_Epp,err5 = self.traite_indices(expression_Epp,i,n, 'Epp')
+                expression_Em,err6 = self.traite_indices(expression_Em,i,n, 'Em')
                 
                 
                 
                 #for grandeur in dictionnaire_grandeurs.keys() :  
-                erreurs_python1 = """
-                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-                <html><head><meta name="qrichtext" content="1" /><style type="text/css">
-                p, li { white-space: pre-wrap; }
-                </style></head><body style=" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;" bgcolor="#808080">
-                <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
-                erreurs_python2 = """</p></body></html>"""
-                erreur=""
+                print("erreurs dans boucle",n, i, err1,err2,err3,err4,err5,err6)
+                erreur_indices+=err1+err2+err3+err4+err5+err6
                 if expression_Vx!='' : 
                     try : 
                         print("""expression_Vx""", expression_Vx)
-                        self.dictionnaire_grandeurs["Vx"+str(i+1)].append( eval(expression_Vx))
+                        self.dictionnaire_grandeurs["xprime"+str(i+1)].append( eval(expression_Vx))
                         
                     except IndexError : 
-                        erreur += "la vitesse en X du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
+                        erreur_indices += "la vitesse en X du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vx))
-                        erreur+=traceback.format_exc()
-                    finally : 
-                        if erreur!="" : 
-                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
-                        else : 
-                            congrat="Les expressions python rentrées ont été calculées"
-                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
+                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vx))
+                        erreurs_python+=traceback.format_exc()
+
                 if expression_Vy!='' : 
                     try : 
-                        self.dictionnaire_grandeurs["Vy"+str(i+1)].append( eval(expression_Vy))
+                        self.dictionnaire_grandeurs["yprime"+str(i+1)].append( eval(expression_Vy))
                         
                     except IndexError : 
-                        erreur += "la vitesse en Y du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
+                        erreur_indices += "la vitesse en Y du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vy))
-                        erreur+=traceback.format_exc()
-                    finally : 
-                        if erreur!="" : 
-                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
-                        else : 
-                            congrat="Les expressions python rentrées ont été calculées"
-                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
+                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vy))
+                        erreurs_python+=traceback.format_exc()
                 
                 if expression_V!='' : 
                     try : 
                         self.dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_V))
                         
                     except IndexError : 
-                        erreur += "la vitesse du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
+                        erreur_indices += "la vitesse du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_V))
-                        erreur+=traceback.format_exc()
-                    finally : 
-                        if erreur!="" : 
-                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
-                        else : 
-                            congrat="Les expressions python rentrées ont été calculées"
-                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
+                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_V))
+                        erreurs_python+=traceback.format_exc()
                 
                 if expression_Ec!='' : 
                     try :
                         self.dictionnaire_grandeurs["Ec"+str(i+1)].append( eval(expression_Ec))
                         
                     except IndexError : 
-                        erreur += "l'énergie Cinétique du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
+                        erreur_indices += "l'énergie Cinétique du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Ec))
-                        erreur+=traceback.format_exc()
-                    finally : 
-                        if erreur!="" : 
-                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
-                        else : 
-                            congrat="Les expressions python rentrées ont été calculées"
-                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
+                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Ec))
+                        erreurs_python+=traceback.format_exc()
                 
                 if expression_Epp!='' : 
                     try : 
@@ -1996,32 +1978,31 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         self.dictionnaire_grandeurs["Epp"+str(i+1)].append( eval(expression_Epp))
                         
                     except IndexError : 
-                        erreur += "l'énergie cinétique du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
+                        erreur_indices += "l'énergie cinétique du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Epp))
-                        erreur+=traceback.format_exc()
-                    finally : 
-                        if erreur!="" : 
-                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
-                        else : 
-                            congrat="Les expressions python rentrées ont été calculées"
-                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
+                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Epp))
+                        erreurs_python+=traceback.format_exc()
+
                             
                 if expression_Em!='' : 
                     try : 
                         
                         self.dictionnaire_grandeurs["Em"+str(i+1)].append( eval(expression_Em))
                     except IndexError : 
-                        erreur += "l'énergie mécanique du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
+                        erreur_indices += "l'énergie mécanique du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except SyntaxError : 
-                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Em))
-                    finally : 
-                        if erreur!="" : 
-                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
-                        else : 
-                            congrat="Les expressions python rentrées ont été calculées"
-                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
+                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Em))
+                        erreurs_python+=traceback.format_exc()
+
+        print("erreurs a la fin", erreur_indices)
+        print("erreurs a la fin", erreurs_python)
+        if erreurs_python == "":
+            congrat = "Les expressions python rentrées ont été calculées"
+        else :
+            congrat = ""
+        
+        self.ui.textEdit_python.setText(erreur_indices+erreurs_python1+erreurs_python+congrat+erreurs_python2)
         #combobox
         self.ui.comboBox_X.clear()
         self.ui.comboBox_Y.clear()
@@ -2032,12 +2013,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         for grandeur in self.dictionnaire_grandeurs.keys():
             print(grandeur, self.dictionnaire_grandeurs[grandeur])
             if self.dictionnaire_grandeurs[grandeur] !=[] : 
-                self.ui.comboBox_X.addItem(grandeur)
-                self.ui.comboBox_Y.addItem(grandeur)
+                self.ui.comboBox_X.addItem(grandeur if grandeur != 'xprime' and grandeur != 'yprime' else 'Vx' if grandeur=='xprime' else 'Vy')
+                self.ui.comboBox_Y.addItem(grandeur if grandeur != 'xprime' and grandeur != 'yprime' else 'Vx' if grandeur=='xprime' else 'Vy')
                 
-    def traite_indices(self, expression,n):
+    def traite_indices(self, expression,i, n, grandeur):
         #vérification de la présence d'une expression entre []
         print(n, expression)
+        erreur=""
         expr = ""
         start=False
         liste_expressions_entre_crochets = []
@@ -2054,12 +2036,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if 'n' in expr_a_tester : 
                 print("jjii",expr_a_tester)
                 if eval(expr_a_tester) < 0 : 
-                    print(expr_a_tester, "négtif")
-                    return "False"
+                    print(expr_a_tester, "négatif")
+                    erreur += "la variable %s du point %s, n'a pas pu être calculée à la position %s"%(grandeur, i+1, n)
+                    
+                    return "False", erreur
                 else : 
                     print(expr_a_tester, "positif")
-        
-        return expression
+        return expression, erreur
             
     def dessine_graphe(self) :
         X, Y = [], []
@@ -2077,7 +2060,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             pg.setConfigOption('foreground', 'k')
             titre = "%s en fonction de %s"%(self.ui.comboBox_Y.currentText(), self.ui.comboBox_X.currentText())
             self.graphWidget = pg.PlotWidget(title=titre, parent=self.ui.widget_graph)
-            
+            self.graphWidget.setRange(xRange=(min(X), max(X)), yRange = (min(Y), max(Y)))
             self.graphWidget.setLabel('bottom', "t(s)" if self.ui.comboBox_X.currentText()=='t' else self.ui.comboBox_X.currentText()+'(m)' )
             self.graphWidget.setLabel('left', "t(s)" if self.ui.comboBox_Y.currentText()=='t' else self.ui.comboBox_Y.currentText()+'(m)')
             X,Y = self.nettoyage_points(X,Y)
@@ -2092,6 +2075,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if X_[i]!=False and Y_[i]!=False : 
                 Y_f.append(Y_[i])
                 X_f.append(X_[i])
+                
         return X_f, Y_f
 
     def tracer_trajectoires(self, newValue):
