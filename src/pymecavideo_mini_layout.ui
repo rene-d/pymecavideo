@@ -1194,13 +1194,13 @@ l'énergie mécanique</string>
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>240</height>
+            <height>245</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>240</height>
+            <height>245</height>
            </size>
           </property>
           <property name="readOnly">
@@ -1220,7 +1220,8 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Oxygen-Sans';&quot;&gt;il suffit de noter &lt;/span&gt;&lt;span style=&quot; font-family:'Oxygen-Sans'; font-weight:600;&quot;&gt;X&lt;/span&gt;&lt;span style=&quot; font-family:'Oxygen-Sans';&quot;&gt;[n].&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Oxygen-Sans';&quot;&gt;Le temps entre 2 images est la variable &lt;/span&gt;&lt;span style=&quot; font-family:'Oxygen-Sans'; font-weight:600;&quot;&gt;deltaT.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Oxygen-Sans';&quot;&gt;Enfin, si vous voulez faire des calculs plus avancées, le module math est disponible, il a été importé ainsi : &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Oxygen-Sans'; font-weight:600;&quot;&gt;from math import *&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Oxygen-Sans'; font-weight:600;&quot;&gt;import math&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Cela signifie que pour utiliser une fonction de ce module, il faut mettre 'math' devant : math.sqrt() pour la racone carrée par exemple&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Oxygen-Sans';&quot;&gt;Une fois les formules rentrées, vous pouvez les évaluer avec la flèche verte.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Oxygen-Sans';&quot;&gt;Les erreurs s'affichront dans le console  dans la console.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Oxygen-Sans';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

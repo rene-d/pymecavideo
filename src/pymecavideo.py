@@ -1859,23 +1859,24 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def affiche_grapheur(self):
         self.dbg.p(1,"rentre dans 'affiche_grapheur'")
-        
-        erreurs_python1 = """
-                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+        entete ="""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
                 <html><head><meta name="qrichtext" content="1" /><style type="text/css">
                 p, li { white-space: pre-wrap; }
-                </style></head><body style=" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;" bgcolor="#808080">
-                <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
-        erreurs_python2 = """</p></body></html>"""
+                </style></head><body style=" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;" bgcolor="#808080"> 
+        erreurs_python1 = """
+                
+        erreurs_python1 = """<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
+        erreurs_python2 = """</p>"""
+        footer = """</body></html>"""
         erreur_indices="Certains point n'ont pas pu être calculés : \n"
-        erreurs_python = ""
+        erreurs_python = []
         
         for i in range(self.nb_de_points):
             self.dictionnaire_grandeurs["X"+str(i+1)] = []
             self.dictionnaire_grandeurs["Y"+str(i+1)] = []
             self.dictionnaire_grandeurs["V"+str(i+1)] = []
-            self.dictionnaire_grandeurs["xprime"+str(i+1)] = []
-            self.dictionnaire_grandeurs["yprime"+str(i+1)] = []
+            self.dictionnaire_grandeurs["xprime"+str(i+1)] = [] #doit s'appeler xprime pour que ça soit orthonal à V pour les replaces.
+            self.dictionnaire_grandeurs["yprime"+str(i+1)] = []#doit s'appeler yprime pour que ça soit orthonal à V pour les replaces.
             self.dictionnaire_grandeurs["Ec"+str(i+1)] = []
             self.dictionnaire_grandeurs["Epp"+str(i+1)] = []
             self.dictionnaire_grandeurs["Em"+str(i+1)] = []
@@ -1936,8 +1937,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreur_indices += "la vitesse en X du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vx))
-                        erreurs_python+=traceback.format_exc()
+                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vx))
+                        erreurs_python_+=traceback.format_exc()
+                        erreurs_python.append(erreurs_python_)
 
                 if expression_Vy!='' : 
                     try : 
@@ -1947,9 +1949,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreur_indices += "la vitesse en Y du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vy))
-                        erreurs_python+=traceback.format_exc()
-                
+                        erreurs_python_ += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vy))
+                        erreurs_python_+=traceback.format_exc()
+                        erreurs_python.append(erreurs_python_)
+
                 if expression_V!='' : 
                     try : 
                         self.dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_V))
@@ -1958,8 +1961,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreur_indices += "la vitesse du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_V))
-                        erreurs_python+=traceback.format_exc()
+                        erreurs_python_ += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_V))
+                        erreurs_python_ +=traceback.format_exc()
+                        erreurs_python.append(erreurs_python_)
+
                 
                 if expression_Ec!='' : 
                     try :
@@ -1968,10 +1973,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     except IndexError : 
                         erreur_indices += "l'énergie Cinétique du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
-                        
-                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Ec))
-                        erreurs_python+=traceback.format_exc()
-                
+                        erreurs_python_ += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Ec))
+                        erreurs_python_+=traceback.format_exc()
+                        erreurs_python.append(erreurs_python_)
+
                 if expression_Epp!='' : 
                     try : 
                         
@@ -1980,9 +1985,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     except IndexError : 
                         erreur_indices += "l'énergie cinétique du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
-                        
-                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Epp))
-                        erreurs_python+=traceback.format_exc()
+                        erreurs_python_ += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Epp))
+                        erreurs_python_ +=traceback.format_exc()
+                        erreurs_python.append(erreurs_python_)
+
 
                             
                 if expression_Em!='' : 
@@ -1992,17 +1998,24 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     except IndexError : 
                         erreur_indices += "l'énergie mécanique du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except SyntaxError : 
-                        erreurs_python += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Em))
-                        erreurs_python+=traceback.format_exc()
+                        erreurs_python_ += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Em))
+                        erreurs_python_ +=traceback.format_exc()
+                        erreurs_python.append(erreurs_python_)
 
         print("erreurs a la fin", erreur_indices)
         print("erreurs a la fin", erreurs_python)
-        if erreurs_python == "":
-            congrat = "Les expressions python rentrées ont été calculées"
-        else :
-            congrat = ""
         
-        self.ui.textEdit_python.setText(erreur_indices+erreurs_python1+erreurs_python+congrat+erreurs_python2)
+        text_textedit = entete + '<p>' + erreur_indices + '</p>'
+        if len(erreurs_python)>0 : 
+            for item in erreurs_python:
+                text_textedit+=erreurs_python1
+                text_textedit+=item
+                text_textedit+=erreurs_python2
+        else : 
+            text_textedit+="Les expressions python rentrées ont été calculées avec succès !"
+            
+        text_textedit+=footer
+        self.ui.textEdit_python.setText(text_textedit)
         #combobox
         self.ui.comboBox_X.clear()
         self.ui.comboBox_Y.clear()
