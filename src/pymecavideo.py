@@ -2055,7 +2055,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 print("jjii",expr_a_tester)
                 if eval(expr_a_tester) < 0 : 
                     print(expr_a_tester, "négtif")
-                    return "Nein"
+                    return "False"
                 else : 
                     print(expr_a_tester, "positif")
         
@@ -2080,10 +2080,19 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             
             self.graphWidget.setLabel('bottom', "t(s)" if self.ui.comboBox_X.currentText()=='t' else self.ui.comboBox_X.currentText()+'(m)' )
             self.graphWidget.setLabel('left', "t(s)" if self.ui.comboBox_Y.currentText()=='t' else self.ui.comboBox_Y.currentText()+'(m)')
+            X,Y = self.nettoyage_points(X,Y)
             self.graphWidget.plot(X, Y)
-            self.graphWidget.plot([0,1,2,3,4], ["", 1, 2, 3, 4])
             self.graphWidget.setMinimumSize(QSize(self.ui.widget_graph.size()))
             self.graphWidget.show()
+    
+    def nettoyage_points(self, X_, Y_):
+        """permet de tenir compte des expressions "négatives" quand on va chercher des indices : python évlaue corerctement X[-1] alors qu'on ne le veut pas. Un passage dans self.traite_indices à mis certaines valeurs non calculées à False. Il suffit de les enlever dans X et Y"""
+        X_f, Y_f = [], []
+        for i in range (len(X_)):
+            if X_[i]!=False and Y_[i]!=False : 
+                Y_f.append(Y_[i])
+                X_f.append(X_[i])
+        return X_f, Y_f
 
     def tracer_trajectoires(self, newValue):
         """
