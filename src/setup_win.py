@@ -32,7 +32,7 @@ includefiles = ['../AUTHORS', '../COPYING', '../README.fr',
 
 # Dependencies are automatically detected, but it might need fine tuning.
 build_exe_options = {'build_exe': 'build',
-                     "packages": ["os", "cv2"], 
+                     "packages": ["os", "cv2", "pygraph"], 
                      "includes": [],
                      "optimize" : 0,
 #                     "path" : ["../packages/html5lib"],#, "../packages/xhtml2pdf",  "../packages/xhtml2pdf/w3c"],
