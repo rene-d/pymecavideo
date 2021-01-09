@@ -1862,13 +1862,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         entete ="""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
                 <html><head><meta name="qrichtext" content="1" /><style type="text/css">
                 p, li { white-space: pre-wrap; }
-                </style></head><body style=" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;" bgcolor="#808080"> 
-        erreurs_python1 = """
+                </style></head><body style=" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;" bgcolor="#808080"> """
                 
         erreurs_python1 = """<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
         erreurs_python2 = """</p>"""
         footer = """</body></html>"""
-        erreur_indices="Certains point n'ont pas pu être calculés : \n"
+        erreur_indices=""
         erreurs_python = []
         
         for i in range(self.nb_de_points):
@@ -1937,7 +1936,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreur_indices += "la vitesse en X du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vx))
+                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vx.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         erreurs_python_+=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
@@ -1949,7 +1948,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreur_indices += "la vitesse en Y du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreurs_python_ += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vy))
+                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vy.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         erreurs_python_+=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
@@ -1961,7 +1960,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreur_indices += "la vitesse du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
                         
-                        erreurs_python_ += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_V))
+                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_V.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
@@ -1973,7 +1972,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     except IndexError : 
                         erreur_indices += "l'énergie Cinétique du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
-                        erreurs_python_ += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Ec))
+                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Ec.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         erreurs_python_+=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
@@ -1985,7 +1984,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     except IndexError : 
                         erreur_indices += "l'énergie cinétique du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except : 
-                        erreurs_python_ += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Epp))
+                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Epp.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
@@ -1998,7 +1997,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     except IndexError : 
                         erreur_indices += "l'énergie mécanique du point %s, n'a pas pu être calculée à la position %s\n"%(i+1, n)
                     except SyntaxError : 
-                        erreurs_python_ += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Em))
+                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Em.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
