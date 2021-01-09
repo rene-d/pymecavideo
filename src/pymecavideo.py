@@ -641,6 +641,8 @@ class StartQt5(QMainWindow):
         self.ui.commandLinkButton_lance_python.clicked.connect(self.affiche_grapheur)
         self.ui.comboBox_X.currentIndexChanged.connect(self.dessine_graphe)
         self.ui.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe)
+        self.ui.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
+        self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
         
 
     def enregistreChrono(self):
@@ -1880,7 +1882,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.dictionnaire_grandeurs["Epp"+str(i+1)] = []
             self.dictionnaire_grandeurs["Em"+str(i+1)] = []
         deltaT=self.deltaT
-        #try : 
         for ligne in self.points.keys():
             i=0
             for point in self.points[ligne][1:] :  
@@ -1888,11 +1889,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.dictionnaire_grandeurs["X"+str(i+1)].append(pm.x())
                 self.dictionnaire_grandeurs["Y"+str(i+1)].append(pm.y())
                 i+=1
-        #for i in range(self.nb_de_points):
-            #print(dictionnaire_grandeurs["X"+str(i+1)])
-            #print(dictionnaire_grandeurs["Y"+str(i+1)])
-        #print(dictionnaire_grandeurs.keys())
-        
         
         for i in range(self.nb_de_points):
             for n in range(len(self.points.keys())):
@@ -1905,14 +1901,14 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 grandeurEc = "self.dictionnaire_grandeurs['Ec"+str(i+1)+"']"
                 grandeurEpp = "self.dictionnaire_grandeurs['Epp"+str(i+1)+"']"
                 grandeurEm = "self.dictionnaire_grandeurs['Em"+str(i+1)+"']"
+                m = float(self.ui.lineEdit_m.text().replace(',', '.'))
+                g = float(self.ui.lineEdit_g.text().replace(',', '.'))
                 expression_Vx = self.ui.lineEdit_vx.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
                 expression_Vy = self.ui.lineEdit_vy.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
                 expression_V = self.ui.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
                 expression_Ec = self.ui.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
                 expression_Epp = self.ui.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
                 expression_Em = self.ui.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #print("grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm", grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm)
-                #print("expression_v, expression_Ec, expression_Epp, expression_Em", expression_v, expression_Ec, expression_Epp, expression_Em)
                 
                 ##il faut traiter le cas particulier des indices négatifs : par défaut, si python évalue 'n-1' avec n qui vaut 0, il renvoie un résultat tout de même... ce qui fausse les calculs de vitesse.
                 expression_Vx,err1 = self.traite_indices(expression_Vx,i,n, 'Vx')
@@ -1921,15 +1917,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 expression_Ec,err4 = self.traite_indices(expression_Ec,i,n, 'Ec')
                 expression_Epp,err5 = self.traite_indices(expression_Epp,i,n, 'Epp')
                 expression_Em,err6 = self.traite_indices(expression_Em,i,n, 'Em')
-                
-                
-                
-                #for grandeur in dictionnaire_grandeurs.keys() :  
-                print("erreurs dans boucle",n, i, err1,err2,err3,err4,err5,err6)
+
                 erreur_indices+=err1+err2+err3+err4+err5+err6
                 if expression_Vx!='' : 
                     try : 
-                        print("""expression_Vx""", expression_Vx)
                         self.dictionnaire_grandeurs["xprime"+str(i+1)].append( eval(expression_Vx))
                         
                     except IndexError : 
@@ -1937,20 +1928,19 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         self.dictionnaire_grandeurs["xprime"+str(i+1)].append(False)
                     except : 
                         
-                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br> """%(str(expression_Vx.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
+                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée ! <br> """%(str(expression_Vx.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_+=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
                 if expression_Vy!='' : 
-                    try : 
+                    try :
                         self.dictionnaire_grandeurs["yprime"+str(i+1)].append( eval(expression_Vy))
                         
                     except IndexError : 
                         erreur_indices += "la vitesse en Y du point %s, n'a pas pu être calculée à la position %s<br>"%(i+1, n)
                         self.dictionnaire_grandeurs["yprime"+str(i+1)].append(False)
                     except : 
-                        
-                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br> """%(str(expression_Vy.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
+                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """%(str(expression_Vy.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_+=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
@@ -1962,8 +1952,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreur_indices += "la vitesse du point %s, n'a pas pu être calculée à la position %s<br>"%(i+1, n)
                         self.dictionnaire_grandeurs["V"+str(i+1)].append(False)
                     except : 
-                        
-                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br>"""%(str(expression_V.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
+                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br>"""%(str(expression_V.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
@@ -1977,39 +1966,35 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         self.dictionnaire_grandeurs["Ec"+str(i+1)].append(False)
 
                     except : 
-                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br> """%(str(expression_Ec.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
+                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !<br> """%(str(expression_Ec.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_+=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
                 if expression_Epp!='' : 
                     try : 
-                        
                         self.dictionnaire_grandeurs["Epp"+str(i+1)].append( eval(expression_Epp))
                         
                     except IndexError : 
                         erreur_indices += "l'énergie cinétique du point %s, n'a pas pu être calculée à la position %s<br>"%(i+1, n)
                         self.dictionnaire_grandeurs["Epp"+str(i+1)].append(False)
                     except : 
-                        erreurs_python_ = """l'expression python '%s' n'est pas correcte :  <br> """%(str(expression_Epp.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
+                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """%(str(expression_Epp.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
-
-
-                            
+    
                 if expression_Em!='' : 
                     try : 
-                        
                         self.dictionnaire_grandeurs["Em"+str(i+1)].append( eval(expression_Em))
                     except IndexError : 
                         erreur_indices += "l'énergie mécanique du point %s, n'a pas pu être calculée à la position %s<br>"%(i+1, n)
                         self.dictionnaire_grandeurs["Em"+str(i+1)].append(False)
                     except SyntaxError : 
-                        erreurs_python_ = """l'expression python '%s' n'est pas correcte !  <br> """%(str(expression_Em.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
+                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """%(str(expression_Em.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
 
-        print("erreurs a la fin", erreur_indices)
-        print("erreurs a la fin", erreurs_python)
+        self.dbg.p(1,"erreurs a la fin : %s"%erreur_indices)
+        self.dbg.p(1,"erreurs python : %s"%erreurs_python)
         
         text_textedit = entete + '<p>' + erreur_indices + '</p>'
         if len(erreurs_python)>0 : 
@@ -2031,15 +2016,15 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.ui.comboBox_X.addItem('t')
         self.ui.comboBox_Y.addItem('t')
         for grandeur in self.dictionnaire_grandeurs.keys():
-            print(grandeur, self.dictionnaire_grandeurs[grandeur])
             if self.dictionnaire_grandeurs[grandeur] !=[] :
                 numero = ''.join([grandeur[-2] if grandeur[-2].isdigit() else "",grandeur[-1]] )
                 self.ui.comboBox_X.addItem(grandeur if not 'xprime' in grandeur and not 'yprime' in grandeur else 'Vx'+numero if 'xprime' in grandeur else 'Vy'+numero)
                 self.ui.comboBox_Y.addItem(grandeur if not 'xprime' in grandeur and not 'yprime' in grandeur else 'Vx'+numero if 'xprime' in grandeur else 'Vy'+numero)
                 
     def traite_indices(self, expression,i, n, grandeur):
+        """cette fonction traite les indices négatifs afin que python, justement... ne les traite pas"""
+        self.dbg(1, "rentre dans 'traite_indices'")
         #vérification de la présence d'une expression entre []
-        print(n, expression)
         erreur=""
         expr = ""
         start=False
@@ -2055,25 +2040,20 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 expr=""
         for expr_a_tester in liste_expressions_entre_crochets :
             if 'n' in expr_a_tester : 
-                print("jjii",expr_a_tester)
                 if eval(expr_a_tester) < 0 : 
-                    print(expr_a_tester, "négatif")
                     erreur += "la variable %s du point %s, n'a pas pu être calculée à la position %s<br>"%(grandeur, i+1, n)
-                    
                     return "False", erreur
-                else : 
-                    print(expr_a_tester, "positif")
         return expression, erreur
             
     def dessine_graphe(self) :
+        """dessine les graphes avec pyqtgraph au moment où les combobox sont choisies"""
+        self.dbg(1, "rentre dans 'dessine_graphe'")
         X, Y = [], []
-        print(self.ui.comboBox_X.currentText())
         grandeurX = self.ui.comboBox_X.currentText().replace('Vx', 'xprime').replace('Vy', 'yprime')
         grandeurY = self.ui.comboBox_Y.currentText().replace('Vx', 'xprime').replace('Vy', 'yprime')
         if grandeurX=='t':
             X = [i*self.deltaT for i in range(len(self.points))]
         elif grandeurX!="Choisir ...": 
-            
             X = self.dictionnaire_grandeurs[grandeurX]
         if grandeurY=='t':
             Y = [i*self.deltaT for i in range(len(self.points))]
@@ -2637,6 +2617,33 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 return False
         else:
             return True
+    def verifie_m_grapheur(self):
+        
+        m = self.ui.lineEdit_m.text().replace(',', '.')
+
+        if m != "" : 
+            try : 
+                float(m)
+            except : 
+                retour = QMessageBox.critical(
+                        self,
+                        _translate(u"pymecavideo", "MAUVAISE VALEUR !", None),
+                        _translate(u"pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
+                        QMessageBox.Yes )
+
+    def verifie_g_grapheur(self):
+        
+        g = self.ui.lineEdit_g.text().replace(',', '.')
+
+        if g != "" : 
+            try : 
+                float(g)
+            except : 
+                retour = QMessageBox.critical(
+                        self,
+                        _translate(u"pymecavideo", "MAUVAISE VALEUR !", None),
+                        _translate(u"pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
+                        QMessageBox.Yes )
 
     def mets_a_jour_label_infos(self, message):
         """
