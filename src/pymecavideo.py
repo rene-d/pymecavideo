@@ -1863,6 +1863,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.dictionnaire_grandeurs["X"+str(i+1)] = []
             self.dictionnaire_grandeurs["Y"+str(i+1)] = []
             self.dictionnaire_grandeurs["V"+str(i+1)] = []
+            self.dictionnaire_grandeurs["Vx"+str(i+1)] = []
+            self.dictionnaire_grandeurs["Vy"+str(i+1)] = []
             self.dictionnaire_grandeurs["Ec"+str(i+1)] = []
             self.dictionnaire_grandeurs["Epp"+str(i+1)] = []
             self.dictionnaire_grandeurs["Em"+str(i+1)] = []
@@ -1886,14 +1888,18 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             
                 grandeurX = "self.dictionnaire_grandeurs['X"+str(i+1)+"']"
                 grandeurY = "self.dictionnaire_grandeurs['Y"+str(i+1)+"']"
-                grandeurv = "self.dictionnaire_grandeurs['V"+str(i+1)+"']"
+                grandeurVx = "self.dictionnaire_grandeurs['Vx"+str(i+1)+"']"
+                grandeurVy = "self.dictionnaire_grandeurs['Vy"+str(i+1)+"']"
+                grandeurV = "self.dictionnaire_grandeurs['V"+str(i+1)+"']"
                 grandeurEc = "self.dictionnaire_grandeurs['Ec"+str(i+1)+"']"
                 grandeurEpp = "self.dictionnaire_grandeurs['Epp"+str(i+1)+"']"
                 grandeurEm = "self.dictionnaire_grandeurs['Em"+str(i+1)+"']"
-                expression_v = self.ui.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_Ec = self.ui.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_Epp = self.ui.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_Em = self.ui.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('V',grandeurv ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Vx = self.ui.lineEdit_vx.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Vy = self.ui.lineEdit_vy.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_V = self.ui.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Ec = self.ui.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Epp = self.ui.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                expression_Em = self.ui.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
                 #print("grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm", grandeurX,grandeurY, grandeurv, grandeurEc, grandeurEpp, grandeurEm)
                 #print("expression_v, expression_Ec, expression_Epp, expression_Em", expression_v, expression_Ec, expression_Epp, expression_Em)
                 
@@ -1906,15 +1912,48 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 <p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
                 erreurs_python2 = """</p></body></html>"""
                 erreur=""
-                if expression_v!='' : 
+                if expression_Vx!='' : 
                     try : 
-                        self.dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_v))
+                        self.dictionnaire_grandeurs["Vx"+str(i+1)].append( eval(expression_Vx))
+                        
+                    except IndexError : 
+                        erreur += "la vitesse en X du point %s, n'a pas pu être calculée"%(i+1)
+                    except : 
+                        
+                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vx))
+                        erreur+=traceback.format_exc()
+                    finally : 
+                        if erreur!="" : 
+                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
+                        else : 
+                            congrat="Les expressions python rentrées ont été calculées"
+                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
+                if expression_Vy!='' : 
+                    try : 
+                        self.dictionnaire_grandeurs["Vy"+str(i+1)].append( eval(expression_Vy))
+                        
+                    except IndexError : 
+                        erreur += "la vitesse en Y du point %s, n'a pas pu être calculée"%(i+1)
+                    except : 
+                        
+                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vy))
+                        erreur+=traceback.format_exc()
+                    finally : 
+                        if erreur!="" : 
+                            self.ui.textEdit_python.setText(erreurs_python1+erreur+erreurs_python2)
+                        else : 
+                            congrat="Les expressions python rentrées ont été calculées"
+                            self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
+                
+                if expression_V!='' : 
+                    try : 
+                        self.dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_V))
                         
                     except IndexError : 
                         erreur += "la vitesse du point %s, n'a pas pu être calculée"%(i+1)
                     except : 
                         
-                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_v))
+                        erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_V))
                         erreur+=traceback.format_exc()
                     finally : 
                         if erreur!="" : 
@@ -1973,6 +2012,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                             congrat="Les expressions python rentrées ont été calculées"
                             self.ui.textEdit_python.setText(erreurs_python1+congrat+erreurs_python2)
         #combobox
+        self.ui.comboBox_X.clear()
+        self.ui.comboBox_Y.clear()
         self.ui.comboBox_X.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
         self.ui.comboBox_Y.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
         self.ui.comboBox_X.addItem('t')
@@ -1998,9 +2039,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if X!=[] and Y != [] : 
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', 'k')
-            titre = "%s en fonction de %s"%(self.ui.comboBox_X.currentText(), self.ui.comboBox_Y.currentText())
+            titre = "%s en fonction de %s"%(self.ui.comboBox_Y.currentText(), self.ui.comboBox_X.currentText())
             self.graphWidget = pg.PlotWidget(title=titre, parent=self.ui.widget_graph)
-#            plotWidget = pg.plot()
             
             self.graphWidget.setLabel('bottom', "t(s)" if self.ui.comboBox_X.currentText()=='t' else self.ui.comboBox_X.currentText()+'(m)' )
             self.graphWidget.setLabel('left', "t(s)" if self.ui.comboBox_Y.currentText()=='t' else self.ui.comboBox_Y.currentText()+'(m)')
