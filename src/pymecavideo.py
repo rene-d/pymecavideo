@@ -1928,7 +1928,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         self.dictionnaire_grandeurs["Vx"+str(i+1)].append( eval(expression_Vx))
                         
                     except IndexError : 
-                        erreur += "la vitesse en X du point %s, n'a pas pu être calculée"%(i+1)
+                        erreur += "la vitesse en X du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
                     except : 
                         
                         erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vx))
@@ -1944,7 +1944,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         self.dictionnaire_grandeurs["Vy"+str(i+1)].append( eval(expression_Vy))
                         
                     except IndexError : 
-                        erreur += "la vitesse en Y du point %s, n'a pas pu être calculée"%(i+1)
+                        erreur += "la vitesse en Y du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
                     except : 
                         
                         erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Vy))
@@ -1961,7 +1961,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         self.dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_V))
                         
                     except IndexError : 
-                        erreur += "la vitesse du point %s, n'a pas pu être calculée"%(i+1)
+                        erreur += "la vitesse du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
                     except : 
                         
                         erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_V))
@@ -1978,7 +1978,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         self.dictionnaire_grandeurs["Ec"+str(i+1)].append( eval(expression_Ec))
                         
                     except IndexError : 
-                        erreur += "l'énergie Cinétique du point %s, n'a pas pu être calculée"%(i+1)
+                        erreur += "l'énergie Cinétique du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
                     except : 
                         
                         erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Ec))
@@ -1996,7 +1996,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         self.dictionnaire_grandeurs["Epp"+str(i+1)].append( eval(expression_Epp))
                         
                     except IndexError : 
-                        erreur += "l'énergie cinétique du point %s, n'a pas pu être calculée"%(i+1)
+                        erreur += "l'énergie cinétique du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
                     except : 
                         
                         erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Epp))
@@ -2013,7 +2013,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         
                         self.dictionnaire_grandeurs["Em"+str(i+1)].append( eval(expression_Em))
                     except IndexError : 
-                        erreur += "l'énergie mécanique du point %s, n'a pas pu être calculée"%(i+1)
+                        erreur += "l'énergie mécanique du point %s, n'a pas pu être calculée à la position %s"%(i+1, n)
                     except SyntaxError : 
                         erreur += """l'expression python '%s' n'est pas correcte :  <br><span style=" font-family:'Oxygen-Sans';">&gt;&gt;&gt;</span> """%(str(expression_Em))
                     finally : 
