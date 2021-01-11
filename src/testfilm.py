@@ -19,10 +19,10 @@ class film:
         @param filename le nom d'un fichier video
         """
         self.filename = filename
-        if os.name == 'nt':
-            self.filesize = os.path.getsize(self.filename.encode('cp1252'))
-        else:
-            self.filesize = os.path.getsize(self.filename.encode('utf8'))
+        #if os.name == 'nt':
+            #self.filesize = os.path.getsize(self.filename.encode('cp1252'))
+        #else:
+        self.filesize = os.path.getsize(self.filename)
         self.capture = cv2.VideoCapture(self.filename)
 
         t = threading.Thread(target=self.autoTest)

@@ -1416,7 +1416,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.dbg.p(2, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
             if self.ratio >= 1 : 
                 self.dbg.p(2, "self.ratio supérieur à 1'")
-                self.setMinimumSize(QSize(1000, self.heightForWidth(1000)))
+                self.setMinimumSize(QSize(1000, self.heightForWidth_app(1000)))
                 self.largeur = self.width()-self.decalw
                 self.hauteur = self.heightForWidth(self.largeur)
                 
@@ -1424,7 +1424,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                     self.setFixedHeight(self.hauteur+self.decalh) 
             else : 
                 self.dbg.p(2, "self.ratio < à 1'")
-                self.setMinimumSize(QSize(self.widthForHeight(800), 800))
+                self.setMinimumSize(QSize(self.widthForHeight_app(800), 800))
                 
                 #traitement spécial si on vient de tourner l'image : on détermine la hauteur maximale de la vidéo
                 #if tourne : 
@@ -1522,10 +1522,18 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         #si la hauteur est trop petite, ne permet plus de redimensionnement
         self.dbg.p(1, "retre dans 'widthForHeight'")
         self.dbg.p(2, "argument h : %s"%(str(h)))
-    
+        
         return int(h*self.ratio)
         
+    def widthForHeight_app(self, h):
+        #calcule self.largeur et self.hauteur si la hauteur est prédominante
+        #si la hauteur est trop petite, ne permet plus de redimensionnement
+        self.dbg.p(1, "retre dans 'widthForHeight_app'")
+        self.dbg.p(2, "argument h : %s"%(str(h)))
         
+        return self.largeur+self.decalw if self.width()>1024 else 1024
+    
+    
     def heightForWidth(self, w):
         #calcul self.largeur et self.hauteur
         #si la largeur est trop petite, ne permet plus de redimensionnement
@@ -1533,7 +1541,14 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.dbg.p(2, "argument w : %s"%(str(w)))
         
         return int(w/self.ratio)
+    
+    def heightForWidth_app(self, w):
+        #calcul self.largeur et self.hauteur
+        #si la largeur est trop petite, ne permet plus de redimensionnement
+        self.dbg.p(1, "retre dans 'heightForWidth'")
+        self.dbg.p(2, "argument w : %s"%(str(w)))
         
+        return self.hauteur+self.decalh if self.height()>800 else 800
     
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans 'resizeEvent'")
