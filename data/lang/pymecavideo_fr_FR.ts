@@ -1,79 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="fr_FR" sourcelanguage="fr">
+<!DOCTYPE TS><TS version="2.0" language="fr_FR" sourcelanguage="fr">
 <context>
     <name>StartQT4</name>
     <message>
         <location filename="pymecavideo.py" line="308"/>
-        <source>indéf</source>
+        <source>ind&#xe9;f</source>
         <translation type="obsolete">indéf</translation>
     </message>
     <message>
         <location filename="." line="115414494"/>
-        <source>indéf.</source>
+        <source>ind&#xe9;f.</source>
         <comment>utf8</comment>
         <translation type="obsolete">indéf.</translation>
     </message>
     <message>
         <location filename="." line="0"/>
-        <source>temps en seconde, positions en mètre</source>
+        <source>temps en seconde, positions en m&#xe8;tre</source>
         <translation type="obsolete">temps en seconde, positions en mètre</translation>
     </message>
     <message>
         <location filename="." line="0"/>
-        <source>point N°</source>
+        <source>point N&#xb0;</source>
         <translation type="obsolete">point N°</translation>
     </message>
     <message>
         <location filename="." line="0"/>
-        <source>Evolution de l&apos;ordonnée du point %1</source>
+        <source>Evolution de l&apos;ordonn&#xe9;e du point %1</source>
         <translation type="obsolete">Evolution de l&apos;ordonnée du point %1</translation>
     </message>
     <message>
         <location filename="." line="0"/>
-        <source>Vous avez atteint la fin de la vidéo</source>
+        <source>Vous avez atteint la fin de la vid&#xe9;o</source>
         <translation type="obsolete">Vous avez atteint la fin de la vidéo</translation>
     </message>
     <message>
         <location filename="." line="49"/>
-        <source>Quelle est la longueur en mètre de votre étalon sur l&apos;image ?</source>
+        <source>Quelle est la longueur en m&#xe8;tre de votre &#xe9;talon sur l&apos;image ?</source>
         <translation type="obsolete">Quelle est la longueur en mètre de votre étalon sur l&apos;image ?</translation>
     </message>
     <message>
         <location filename="." line="49"/>
-        <source> Merci d&apos;indiquer une échelle valable</source>
+        <source> Merci d&apos;indiquer une &#xe9;chelle valable</source>
         <translation type="obsolete"> Merci d&apos;indiquer une échelle valable</translation>
     </message>
     <message>
         <location filename="." line="38"/>
-        <source>Les données seront perdues</source>
+        <source>Les donn&#xe9;es seront perdues</source>
         <translation type="obsolete">Les données seront perdues</translation>
     </message>
     <message>
         <location filename="." line="38"/>
-        <source>Votre travail n&apos;a pas été sauvegardé
+        <source>Votre travail n&apos;a pas &#xe9;t&#xe9; sauvegard&#xe9;
 Voulez-vous les sauvegarder ?</source>
         <translation type="obsolete">Votre travail n&apos;a pas été sauvegardé
 Voulez-vous les sauvegarder ?</translation>
     </message>
     <message>
         <location filename="." line="22"/>
-        <source>Vous avez atteint le début de la vidéo</source>
+        <source>Vous avez atteint le d&#xe9;but de la vid&#xe9;o</source>
         <translation type="obsolete">Vous avez atteint le début de la vidéo</translation>
     </message>
     <message>
         <location filename="." line="14"/>
-        <source>Ouvrir une vidéo</source>
+        <source>Ouvrir une vid&#xe9;o</source>
         <translation type="obsolete">Ouvrir une vidéo</translation>
     </message>
     <message>
         <location filename="." line="0"/>
-        <source>fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
+        <source>fichiers vid&#xe9;os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
         <translation type="obsolete">fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</translation>
     </message>
     <message>
         <location filename="." line="0"/>
-        <source>fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
+        <source>fichiers vid&#xe9;os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
         <translation type="obsolete">fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</translation>
     </message>
     <message>
@@ -83,7 +82,7 @@ Voulez-vous les sauvegarder ?</translation>
     </message>
     <message>
         <location filename="." line="115413456"/>
-        <source>Le nom de votre fichier contient des caractères accentués ou des espaces.
+        <source>Le nom de votre fichier contient des caract&#xe8;res accentu&#xe9;s ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
         <comment>utf8</comment>
         <translation type="obsolete">Le nom de votre fichier contient des caractères accentués ou des espaces.
@@ -91,22 +90,22 @@ Merci de bien vouloir le renommer avant de continuer</translation>
     </message>
     <message>
         <location filename="." line="0"/>
-        <source>Veuillez choisir une image et définir l&apos;échelle</source>
+        <source>Veuillez choisir une image et d&#xe9;finir l&apos;&#xe9;chelle</source>
         <translation type="obsolete">Veuillez choisir une image et définir l&apos;échelle</translation>
     </message>
     <message>
         <location filename="." line="0"/>
-        <source>Désolé pas de fichier d&apos;aide pour le langage %1.</source>
+        <source>D&#xe9;sol&#xe9; pas de fichier d&apos;aide pour le langage %1.</source>
         <translation type="obsolete">Désolé pas de fichier d&apos;aide pour le langage %1.</translation>
     </message>
     <message>
         <location filename="." line="0"/>
-        <source>indÃ©f.</source>
+        <source>ind&#xc3;&#xa9;f.</source>
         <translation type="obsolete">indéf.</translation>
     </message>
     <message>
         <location filename="." line="1232"/>
-        <source>Le nom de votre fichier contient des caractÃ¨res accentuÃ©s ou des espaces.
+        <source>Le nom de votre fichier contient des caract&#xc3;&#xa8;res accentu&#xc3;&#xa9;s ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
         <translation type="obsolete">Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</translation>
@@ -116,12 +115,12 @@ Merci de bien vouloir le renommer avant de continuer</translation>
     <name>pymecavideo</name>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="37"/>
-        <source>PyMecaVideo, analyse mécanique des vidéos</source>
+        <source>PyMecaVideo, analyse m&#xe9;canique des vid&#xe9;os</source>
         <translation type="obsolete">PyMecaVideo, analyse mécanique des vidéos</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="86"/>
-        <source>Acquisition des données</source>
+        <source>Acquisition des donn&#xe9;es</source>
         <translation type="obsolete">Acquisition des données</translation>
     </message>
     <message>
@@ -136,44 +135,44 @@ Merci de bien vouloir le renommer avant de continuer</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="384"/>
-        <source>Démarrer</source>
+        <source>D&#xe9;marrer</source>
         <translation type="obsolete">Démarrer</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="418"/>
-        <source>efface la série précédente</source>
+        <source>efface la s&#xe9;rie pr&#xe9;c&#xe9;dente</source>
         <translation type="obsolete">efface la série précédente</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="455"/>
-        <source>rétablit le point suivant</source>
+        <source>r&#xe9;tablit le point suivant</source>
         <translation type="obsolete">rétablit le point suivant</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="535"/>
-        <source>Tout réinitialiser</source>
+        <source>Tout r&#xe9;initialiser</source>
         <translation type="obsolete">Tout réinitialiser</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="551"/>
-        <source>Définir l&apos;échelle</source>
+        <source>D&#xe9;finir l&apos;&#xe9;chelle</source>
         <translation type="obsolete">Définir l&apos;échelle</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="419"/>
-        <source>indéf.</source>
+        <source>ind&#xe9;f.</source>
         <translation type="obsolete">indéf.</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="621"/>
-        <source>Points à 
- étudier:</source>
+        <source>Points &#xe0; 
+ &#xe9;tudier:</source>
         <translation type="obsolete">Points à 
  étudier:</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="668"/>
-        <source>Ordonnées 
+        <source>Ordonn&#xe9;es 
 vers le bas</source>
         <translation type="obsolete">Ordonnées 
 vers le bas</translation>
@@ -181,28 +180,28 @@ vers le bas</translation>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="58"/>
         <source>Lancer le logiciel
- d&apos;acquisition Vidéo</source>
+ d&apos;acquisition Vid&#xe9;o</source>
         <translation type="obsolete">Lancer le logiciel
  d&apos;acquisition Vidéo</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="229"/>
-        <source>Image n°</source>
+        <source>Image n&#xb0;</source>
         <translation type="obsolete">Image n°</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="937"/>
-        <source>Voir la vidéo</source>
+        <source>Voir la vid&#xe9;o</source>
         <translation type="obsolete">Voir la vidéo</translation>
     </message>
     <message>
         <location filename="pymecavideo_mini.ui" line="897"/>
-        <source>Depuis ce référentiel</source>
+        <source>Depuis ce r&#xe9;f&#xe9;rentiel</source>
         <translation type="obsolete">Depuis ce référentiel</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="809"/>
-        <source>Échelle de vitesses</source>
+        <source>&#xc9;chelle de vitesses</source>
         <translation type="obsolete">Échelle de vitesses</translation>
     </message>
     <message>
@@ -223,7 +222,7 @@ automatique</translation>
         <translation type="obsolete">Changer d&apos;origine</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1828"/>
+        <location filename="../../src/pymecavideo.py" line="1848"/>
         <source>Choisir ...</source>
         <translation>Choisir ...</translation>
     </message>
@@ -241,12 +240,12 @@ photographie</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="972"/>
-        <source>Coordonnées</source>
+        <source>Coordonn&#xe9;es</source>
         <translation type="obsolete">Coordonnées</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="978"/>
-        <source>Tableau des dates et des coordonnées</source>
+        <source>Tableau des dates et des coordonn&#xe9;es</source>
         <translation type="obsolete">Tableau des dates et des coordonnées</translation>
     </message>
     <message>
@@ -276,7 +275,7 @@ photographie</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="1015"/>
-        <source>changer d&apos;échelle ?</source>
+        <source>changer d&apos;&#xe9;chelle ?</source>
         <translation type="obsolete">changer d&apos;échelle ?</translation>
     </message>
     <message>
@@ -301,7 +300,7 @@ photographie</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="1102"/>
-        <source>&amp;Ouvrir une vidéo (Ctrl-O)</source>
+        <source>&amp;Ouvrir une vid&#xe9;o (Ctrl-O)</source>
         <translation type="obsolete">&amp;Ouvrir une vidéo (Ctrl-O)</translation>
     </message>
     <message>
@@ -321,12 +320,12 @@ photographie</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="1128"/>
-        <source>Enregistrer les données (Ctrl-S)</source>
+        <source>Enregistrer les donn&#xe9;es (Ctrl-S)</source>
         <translation type="obsolete">Enregistrer les données (Ctrl-S)</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="1136"/>
-        <source>À &amp;propos</source>
+        <source>&#xc0; &amp;propos</source>
         <translation type="obsolete">À &amp;propos</translation>
     </message>
     <message>
@@ -341,12 +340,12 @@ photographie</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="1154"/>
-        <source>Ouvrir un projet &amp;mecavidéo</source>
+        <source>Ouvrir un projet &amp;mecavid&#xe9;o</source>
         <translation type="obsolete">Ouvrir un projet &amp;mecavidéo</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="1159"/>
-        <source>&amp;Préférences</source>
+        <source>&amp;Pr&#xe9;f&#xe9;rences</source>
         <translation type="obsolete">&amp;Préférences</translation>
     </message>
     <message>
@@ -356,7 +355,7 @@ photographie</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="1172"/>
-        <source>Défaire (Ctrl-Z)</source>
+        <source>D&#xe9;faire (Ctrl-Z)</source>
         <translation type="obsolete">Défaire (Ctrl-Z)</translation>
     </message>
     <message>
@@ -381,7 +380,7 @@ photographie</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="189"/>
-        <source>Pas de vidéos chargées</source>
+        <source>Pas de vid&#xe9;os charg&#xe9;es</source>
         <translation type="obsolete">Pas de vidéos chargées</translation>
     </message>
     <message>
@@ -400,7 +399,7 @@ vitesses</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="791"/>
-        <source>près de
+        <source>pr&#xe8;s de
 la souris</source>
         <translation type="obsolete">près de
 la souris</translation>
@@ -412,19 +411,19 @@ la souris</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="966"/>
-        <source>Définir un autre référentiel : </source>
+        <source>D&#xe9;finir un autre r&#xe9;f&#xe9;rentiel : </source>
         <translation type="obsolete">Définir un autre référentiel : </translation>
     </message>
     <message>
         <location filename="pymecavideo.py" line="314"/>
         <source>Lancer %1
- pour capturer une vidÃ©o</source>
+ pour capturer une vid&#xc3;&#xa9;o</source>
         <translation type="obsolete">Lancer %1
  pour capturer une vidéo</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="371"/>
-        <source>indÃ©f</source>
+        <location filename="../../src/pymecavideo.py" line="379"/>
+        <source>ind&#xc3;&#xa9;f</source>
         <translation>indéf</translation>
     </message>
     <message>
@@ -433,29 +432,29 @@ la souris</translation>
         <translation type="obsolete">NON DISPO : %1</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1207"/>
+        <location filename="../../src/pymecavideo.py" line="1221"/>
         <source>Ouvrir un projet Pymecavideo</source>
         <translation>Ouvrir un projet Pymecavideo</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1207"/>
+        <location filename="../../src/pymecavideo.py" line="1221"/>
         <source>fichiers pymecavideo(*.csv)</source>
         <translation>fichiers pymecavideo(*.csv)</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1551"/>
-        <source>temps en seconde, positions en mÃ¨tre</source>
+        <location filename="../../src/pymecavideo.py" line="1567"/>
+        <source>temps en seconde, positions en m&#xc3;&#xa8;tre</source>
         <translation>temps en seconde, positions en mètre</translation>
     </message>
     <message>
         <location filename="pymecavideo.py" line="1245"/>
-        <source>point NÂ° %1</source>
+        <source>point N&#xc2;&#xb0; %1</source>
         <translation type="obsolete">point N° %1</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1649"/>
-        <source>Veuillez sÃ©lectionner un cadre autour de(s) l&apos;objet(s) que vous voulez suivre.
-Vous pouvez arrÃªter Ã&#xa0; tous moments la capture en appuyant sur le bouton</source>
+        <location filename="../../src/pymecavideo.py" line="1668"/>
+        <source>Veuillez s&#xc3;&#xa9;lectionner un cadre autour de(s) l&apos;objet(s) que vous voulez suivre.
+Vous pouvez arr&#xc3;&#xaa;ter &#xc3;&#xa0; tous moments la capture en appuyant sur le bouton</source>
         <translation>Veuillez sélectionner un cadre autour de(s) l&apos;objet(s) que vous voulez suivre.
 Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton</translation>
     </message>
@@ -466,7 +465,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton</trans
     </message>
     <message>
         <location filename="pymecavideo.py" line="1432"/>
-        <source>Evolution de l&apos;ordonnÃ©e du point %1</source>
+        <source>Evolution de l&apos;ordonn&#xc3;&#xa9;e du point %1</source>
         <translation type="obsolete">Evolution de l&apos;ordonnée du point %1</translation>
     </message>
     <message>
@@ -476,169 +475,219 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton</trans
     </message>
     <message>
         <location filename="pymecavideo.py" line="1496"/>
-        <source>Pointage des positionsÂ&#xa0;: cliquer sur le point NÂ° %1</source>
+        <source>Pointage des positions&#xc2;&#xa0;: cliquer sur le point N&#xc2;&#xb0; %1</source>
         <translation type="obsolete">Pointage des positions : cliquer sur le point N° %1</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1942"/>
-        <source>Vous avez atteint la fin de la vidÃ©o</source>
+        <location filename="../../src/pymecavideo.py" line="1968"/>
+        <source>Vous avez atteint la fin de la vid&#xc3;&#xa9;o</source>
         <translation>Vous avez atteint la fin de la vidéo</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="2155"/>
-        <source>DÃ©finir une Ã©chelle</source>
+        <location filename="../../src/pymecavideo.py" line="2184"/>
+        <source>D&#xc3;&#xa9;finir une &#xc3;&#xa9;chelle</source>
         <translation>Définir une échelle</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="2155"/>
-        <source>Quelle est la longueur en mÃ¨tre de votre Ã©talon sur l&apos;image ?</source>
+        <location filename="../../src/pymecavideo.py" line="2184"/>
+        <source>Quelle est la longueur en m&#xc3;&#xa8;tre de votre &#xc3;&#xa9;talon sur l&apos;image ?</source>
         <translation>Quelle est la longueur en mètre de votre étalon sur l&apos;image ?</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="2178"/>
-        <source> Merci d&apos;indiquer une Ã©chelle valable</source>
+        <location filename="../../src/pymecavideo.py" line="2207"/>
+        <source> Merci d&apos;indiquer une &#xc3;&#xa9;chelle valable</source>
         <translation> Merci d&apos;indiquer une échelle valable</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="2238"/>
-        <source>Les donnÃ©es seront perdues</source>
+        <location filename="../../src/pymecavideo.py" line="2267"/>
+        <source>Les donn&#xc3;&#xa9;es seront perdues</source>
         <translation>Les données seront perdues</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="2238"/>
-        <source>Votre travail n&apos;a pas Ã©tÃ© sauvegardÃ©
+        <location filename="../../src/pymecavideo.py" line="2267"/>
+        <source>Votre travail n&apos;a pas &#xc3;&#xa9;t&#xc3;&#xa9; sauvegard&#xc3;&#xa9;
 Voulez-vous les sauvegarder ?</source>
         <translation>Votre travail n&apos;a pas été sauvegardé
 Voulez-vous les sauvegarder ?</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="1782"/>
-        <source>Vous avez atteint le dÃ©but de la vidÃ©o</source>
+        <source>Vous avez atteint le d&#xc3;&#xa9;but de la vid&#xc3;&#xa9;o</source>
         <translation type="obsolete">Vous avez atteint le début de la vidéo</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="2301"/>
-        <source>Ouvrir une vidÃ©o</source>
+        <location filename="../../src/pymecavideo.py" line="2330"/>
+        <source>Ouvrir une vid&#xc3;&#xa9;o</source>
         <translation>Ouvrir une vidéo</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="2296"/>
+        <location filename="../../src/pymecavideo.py" line="2325"/>
         <source>Nom de fichier non conforme</source>
         <translation>Nom de fichier non conforme</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="2296"/>
-        <source>Le nom de votre fichier contient des caractÃ¨res accentuÃ©s ou des espaces.
+        <location filename="../../src/pymecavideo.py" line="2325"/>
+        <source>Le nom de votre fichier contient des caract&#xc3;&#xa8;res accentu&#xc3;&#xa9;s ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
         <translation>Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="1862"/>
-        <source>Veuillez choisir une image et dÃ©finir l&apos;Ã©chelle</source>
+        <source>Veuillez choisir une image et d&#xc3;&#xa9;finir l&apos;&#xc3;&#xa9;chelle</source>
         <translation type="obsolete">Veuillez choisir une image et définir l&apos;échelle</translation>
     </message>
     <message>
         <location filename="pymecavideo.py" line="1907"/>
-        <source>DÃ©solÃ© pas de fichier d&apos;aide pour le langage %1.</source>
+        <source>D&#xc3;&#xa9;sol&#xc3;&#xa9; pas de fichier d&apos;aide pour le langage %1.</source>
         <translation type="obsolete">Désolé pas de fichier d&apos;aide pour le langage %1.</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="1798"/>
-        <source>fichiers vidÃ©os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
+        <source>fichiers vid&#xc3;&#xa9;os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
         <translation type="obsolete">fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="2282"/>
-        <source>fichiers vidÃ©os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
+        <location filename="../../src/pymecavideo.py" line="2311"/>
+        <source>fichiers vid&#xc3;&#xa9;os ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
         <translation>fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="626"/>
+        <location filename="../../src/pymecavideo.py" line="634"/>
         <source>Enregistrer la chronophotographie</source>
         <translation>Enregistrer la chronophotographie</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="626"/>
+        <location filename="../../src/pymecavideo.py" line="634"/>
         <source>fichiers images(*.png *.jpg)</source>
         <translation>fichiers images(*.png *.jpg)</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="429"/>
+        <location filename="../../src/pymecavideo.py" line="438"/>
         <source>NON DISPO : {0}</source>
         <translation>NON DISPO : {0}</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="1251"/>
-        <source>point N° {0}</source>
+        <source>point N&#xb0; {0}</source>
         <translation type="obsolete">point N° {0}</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1859"/>
+        <location filename="../../src/pymecavideo.py" line="1882"/>
         <source>Evolution de l&apos;abscisse du point {0}</source>
         <translation>Evolution de l&apos;abscisse du point {0}</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="1446"/>
-        <source>Evolution de l&apos;ordonnée du point {0}</source>
+        <source>Evolution de l&apos;ordonn&#xe9;e du point {0}</source>
         <translation type="obsolete">Evolution de l&apos;ordonnée du point {0}</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1859"/>
+        <location filename="../../src/pymecavideo.py" line="1882"/>
         <source>Evolution de la vitesse du point {0}</source>
         <translation>Evolution de la vitesse du point {0}</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="1494"/>
-        <source>Pointage des positions&#xa0;: cliquer sur le point N° {0}</source>
+        <source>Pointage des positions&#xa0;: cliquer sur le point N&#xb0; {0}</source>
         <translation type="obsolete">Pointage des positions : cliquer sur le point N° {0}</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="1901"/>
-        <source>Désolé pas de fichier d&apos;aide pour le langage {0}.</source>
+        <source>D&#xe9;sol&#xe9; pas de fichier d&apos;aide pour le langage {0}.</source>
         <translation type="obsolete">Désolé pas de fichier d&apos;aide pour le langage {0}.</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="1898"/>
-        <source>fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
+        <source>fichiers vid&#xe9;os (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
         <translation type="obsolete">fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="1976"/>
-        <source>Veuillez choisir une image (et définir l&apos;échelle)</source>
+        <source>Veuillez choisir une image (et d&#xe9;finir l&apos;&#xe9;chelle)</source>
         <translation type="obsolete">Veuillez choisir une image (et définir l&apos;échelle)</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="2066"/>
-        <source>Pymecavideo n&apos;arrive pas à lire l&apos;image</source>
+        <source>Pymecavideo n&apos;arrive pas &#xe0; lire l&apos;image</source>
         <translation type="obsolete">Pymecavideo n&apos;arrive pas à lire l&apos;image</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="882"/>
-        <source>Fichier Python créé</source>
+        <source>Fichier Python cr&#xe9;&#xe9;</source>
         <translation type="obsolete">Fichier Python créé</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1647"/>
+        <location filename="../../src/pymecavideo.py" line="1666"/>
         <source>Pointage Automatique</source>
         <translation>Pointage Automatique</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="1196"/>
+        <source>le format de cette vid&#xe9;o n&apos;est pas pris en charge par pymecavideo</source>
+        <translation type="obsolete">le format de cette vidéo n&apos;est pas pris en charge par pymecavideo</translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/pymecavideo.py" line="465"/>
+        <source>indéf.</source>
+        <translation type="unfinished">indéf.</translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/pymecavideo.py" line="1109"/>
+        <source>Fichier Python créé</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/pymecavideo.py" line="1210"/>
         <source>le format de cette vidéo n&apos;est pas pris en charge par pymecavideo</source>
-        <translation>le format de cette vidéo n&apos;est pas pris en charge par pymecavideo</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/pymecavideo.py" line="1642"/>
+        <source>point N° {0}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/pymecavideo.py" line="1882"/>
+        <source>Evolution de l&apos;ordonnée du point {0}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/pymecavideo.py" line="1945"/>
+        <source>Pointage des positions : cliquer sur le point N° {0}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/pymecavideo.py" line="2295"/>
+        <source>fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/pymecavideo.py" line="2365"/>
+        <source>Veuillez choisir une image (et définir l&apos;échelle)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/pymecavideo.py" line="2401"/>
+        <source>Désolé pas de fichier d&apos;aide pour le langage {0}.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/pymecavideo.py" line="2452"/>
+        <source>Pymecavideo n&apos;arrive pas à lire l&apos;image</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>self.app</name>
     <message>
-        <location filename="../../src/cadreur.py" line="55"/>
+        <location filename="../../src/cadreur.py" line="54"/>
         <source>Presser la touche ESC pour sortir</source>
         <translation>Presser la touche ESC pour sortir</translation>
     </message>
     <message>
         <location filename="../../src/echelle.py" line="160"/>
-        <source>Choisir le nombre de points puis Â«Â&#xa0;DÃ©marrer l&apos;acquisitionÂ&#xa0;Â» </source>
+        <source>Choisir le nombre de points puis &#xc2;&#xab;&#xc2;&#xa0;D&#xc3;&#xa9;marrer l&apos;acquisition&#xc2;&#xa0;&#xc2;&#xbb; </source>
         <translation>Choisir le nombre de points puis « Démarrer l&apos;acquisition » </translation>
     </message>
     <message>
@@ -677,7 +726,7 @@ Merci de bien vouloir le renommer avant de continuer</translation>
         <translation>; videoDir {0}</translation>
     </message>
     <message>
-        <location filename="../../src/cadreur.py" line="136"/>
+        <location filename="../../src/cadreur.py" line="143"/>
         <source>Choisir le ralenti</source>
         <translation>Choisir le ralenti</translation>
     </message>
