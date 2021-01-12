@@ -307,12 +307,12 @@ class StartQt5(QMainWindow):
         self.repere = 0
         self.dictionnairePlotWidget = {}
         try:
-            self.origine = vecteur(self.largeur/2, self.hauteur/2)
+            self.origine = None
             self.largeurAvant = self.largeur
             self.hauteurAvant  = self.hauteur
             self.origineAvant = self.origine
         except AttributeError:
-            self.origine = vecteur(320, 240)
+            self.origine = None
             self.largeurAvant = self.largeur
             self.hauteurAvant  = self.hauteur
             self.origineAvant = self.origine
@@ -366,6 +366,8 @@ class StartQt5(QMainWindow):
         self.ui.tabWidget.setEnabled(1)
         self.ui.tabWidget.setTabEnabled(2, False)
         self.ui.tabWidget.setTabEnabled(1, False)
+        if not self.a_une_image : 
+            self.ui.tabWidget.setTabEnabled(0, False)
         self.ui.actionExemples.setEnabled(1)
         self.cree_tableau()
         try:
@@ -376,8 +378,6 @@ class StartQt5(QMainWindow):
 
         self.update()
         self.ui.horizontalSlider.setEnabled(0)
-        print("déactive")
-
         self.ui.echelleEdit.setEnabled(0)
         self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
         try : 
@@ -517,7 +517,6 @@ class StartQt5(QMainWindow):
         self.echelle_image = echelle()
         self.affiche_echelle()
         self.ui.horizontalSlider.setEnabled(1)
-        print("active")
         self.ui.spinBox_image.setEnabled(1)
         self.ui.spinBox_image.setValue(1)
         self.enableDefaire(False)
@@ -657,14 +656,12 @@ class StartQt5(QMainWindow):
         self.redimensionneFenetre()
         
     def fixeLesDimensions(self):
-        print('fixeles dim')
         self.setMinimumWidth(self.width())
         self.setMaximumWidth(self.width())
         #self.emumHeight(self.height())
         self.setMaximumHeight(self.height())
 
     def defixeLesDimensions(self):
-        print('defixeles dim')
         self.setMinimumWidth(800+self.decalw)
         self.setMaximumWidth(16000000)
         self.setMinimumHeight(600+self.decalh)
@@ -910,8 +907,10 @@ class StartQt5(QMainWindow):
         except AttributeError : 
             pass
         ###
-        
-        self.origine = self.origine.rotate(increment, self.largeur, self.hauteur)
+        try: 
+            self.origine = self.origine.rotate(increment, self.largeur, self.hauteur)
+        except AttributeError : 
+            pass
         
         
         #rotation vecteur echelle
@@ -945,13 +944,9 @@ class StartQt5(QMainWindow):
         # repaint axes and define origine
         self.label_trajectoire.origine_mvt = self.origine
         self.label_trajectoire.update()
-        
-        self.label_video.origine = self.origine
-        
+
         self.origineAvant = self.origine
-        self.largeurAvant = self.largeur
-        self.hauteurAvant = self.hauteur
-        #try : 
+
         try :
             self.echelle_imagep1Avant = self.echelle_image.p1
             self.echelle_imagep2Avant = self.echelle_image.p2
@@ -1353,6 +1348,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.enableRefaire(False)
 
         self.affiche_image()  # on affiche l'image
+        
         self.debut_capture(departManuel=False)
         self.ui.tableWidget.show()
         self.recalculLesCoordonnees()
@@ -1451,8 +1447,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         #    self.setFixedWidth(800)
         
         #if self.premierResize : #premier redimensionnement
-        self.largeurAvant = self.largeur
-        self.hauteurAvant = self.hauteur
+        self.hauteurAvant = self.heightForWidth(self.largeurAvant)
         
         if (self.width()-self.decalw)/(self.height()-self.decalh) > self.ratio : #allongement horizontal, la hauteur doit être recalculée)
             #if self.hauteur+self.decalh < self.height():
@@ -1498,12 +1493,20 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             except AttributeError:
                 pass
         
+        try:
+            self.largeur/self.largeurAvant
+        except ZeroDivisionError:
+            self.gardeLargeur()
+        
         #prise en compte de l'échelle 
         
         self.dbg.p(2, "Recalcul de l'origine")
         self.dbg.p(3, "origine avant transformation : %s"%self.origine)
-        self.origine = vecteur(self.origineAvant.x()*float(self.largeur)/self.largeurAvant, self.origineAvant.y()*float(self.largeur)/self.largeurAvant)
-        self.dbg.p(3, "origine après transformation : %s"%self.origine)
+        try : 
+            self.origine = vecteur(self.origineAvant.x()*float(self.largeur)/self.largeurAvant, self.origineAvant.y()*float(self.largeur)/self.largeurAvant)
+        except AttributeError:
+            self.origine = vecteur(self.largeur/2, self.hauteur/2)
+        
         try :
             self.dbg.p(2, "traçage de l'échelle")
             self.dbg.p(3, "echelle avant transformation : p1 : %s  p2 : %s"%(self.echelle_image.p1, self.echelle_image.p2))
@@ -1516,8 +1519,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         
         if hasattr(self, 'label_video'):
                 self.dbg.p(2, "MAJ de label_video")
-
-                self.label_video.origine = self.origine
                 self.label_video.maj()
                 self.label_trajectoire.maj()
                 self.afficheJusteImage()
@@ -1551,11 +1552,18 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         
         return int(w/self.ratio)
         
-    
+    def enterEvent(self,e):
+        self.gardeLargeur()        
+        
+    def leaveEvent(self,e):
+        self.gardeLargeur()
+
+    def gardeLargeur(self):
+        self.largeurAvant = self.largeur
+        
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans 'resizeEvent'")
-        if self.largeur !=0 : 
-            self.redimensionneFenetre()    
+        self.redimensionneFenetre(tourne=False)    
         return super(StartQt5, self).resizeEvent(event)
 
     def showEvent(self, event):
@@ -1653,7 +1661,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
-        print("désactive")
         self.ui.spinBox_image.setEnabled(1)
         self.ui.tabWidget.setTabEnabled(2, True)
         self.ui.tabWidget.setTabEnabled(1, True)
@@ -2023,7 +2030,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if not value:
             # self.init_capture()
             #self.ui.horizontalSlider.setEnabled(True)  #TODO si décommenté, permet de revenir en arrière plus que 1er point et fourni un bug IndexError.
-            print("active")
             self.ui.spinBox_image.setEnabled(True)
 
     def enableRefaire(self, value):
@@ -2167,8 +2173,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if self.largeur==0 : 
                 self.largeur = self.imageExtraite.width()
                 self.hauteur = self.imageExtraite.height()
-                self.largeurAvant = self.largeur
-                self.hauteurAvant = self.hauteur
+                #self.largeurAvant = self.largeur
+                #self.hauteurAvant = self.hauteur
                            
             if hasattr(self, "label_video"):
                 self.afficheJusteImage()  #4 ms
@@ -2379,21 +2385,20 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         @param filename nom du fichier
         """
         self.dbg.p(1, "rentre dans 'openTheFile'")
+        print(filename)
         if filename != "":
             self.filename = filename
             goOn = self.init_cvReader()
             if goOn:  # video is in good format
 
                 self.prefs.lastVideo = self.filename
-                
+                self.ui.tabWidget.setTabEnabled(0, True)
                 self.init_image()
                 self.init_capture()
                 self.ratio = self.determineRatio()
                 self.label_video.repaint()
                 self.label_video.show()
-                self.origine = vecteur(self.largeur/2, self.hauteur/2)
                 self.change_axe_ou_origine()
-                self.label_video.origine = self.origine
                 self.prefs.videoDir = os.path.dirname(self.filename)
                 self.prefs.save()
 
@@ -2407,13 +2412,12 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.Bouton_Echelle.setEnabled(True)
         self.ui.spinBox_nb_de_points.setEnabled(True)
         self.ui.horizontalSlider.setEnabled(1)
-        print("active")
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
 
         self.ui.checkBox_auto.setEnabled(1)
         self.ui.Bouton_lance_capture.setEnabled(True)
-        self.origine_avant = self.origine
+        
 
 
     def propos(self):
