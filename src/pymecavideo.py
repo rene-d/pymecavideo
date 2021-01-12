@@ -195,8 +195,9 @@ class StartQt5(QMainWindow):
 
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
-
-        self.setMaximumSize(QSize(self.width_screen, self.height_screen))
+        #self.setMinimumWidth(1000)
+        #self.setMinimumHeight(800)
+        #self.setMaximumSize(QSize(self.width_screen, self.height_screen))
         self.dbg = Dbg(0)
         for o in opts:
             if ('-d' in o[0]) or ('--debug' in o[0]):
@@ -340,7 +341,8 @@ class StartQt5(QMainWindow):
         self.stdout_file = os.path.join(CONF_PATH, "stdout")
         self.exitDecode = False
         self.echelle_faite = False
-        self.layout().setSizeConstraint(QLayout.SetMinAndMaxSize)
+        
+        self.layout().setSizeConstraint(QLayout.SetMaximumSize) #TODO
 
         self.rotation = 0
         try : 
@@ -374,6 +376,7 @@ class StartQt5(QMainWindow):
 
         self.update()
         self.ui.horizontalSlider.setEnabled(0)
+        print("déactive")
 
         self.ui.echelleEdit.setEnabled(0)
         self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
@@ -514,6 +517,7 @@ class StartQt5(QMainWindow):
         self.echelle_image = echelle()
         self.affiche_echelle()
         self.ui.horizontalSlider.setEnabled(1)
+        print("active")
         self.ui.spinBox_image.setEnabled(1)
         self.ui.spinBox_image.setValue(1)
         self.enableDefaire(False)
@@ -651,17 +655,21 @@ class StartQt5(QMainWindow):
             self.ui.pushButtonChrono.setStyleSheet("background-color: transparent");
             self.label_trajectoire.setPixmap(QPixmap())
         self.redimensionneFenetre()
+        
     def fixeLesDimensions(self):
+        print('fixeles dim')
         self.setMinimumWidth(self.width())
         self.setMaximumWidth(self.width())
-        self.setMinimumHeight(self.height())
+        #self.emumHeight(self.height())
         self.setMaximumHeight(self.height())
 
     def defixeLesDimensions(self):
+        print('defixeles dim')
         self.setMinimumWidth(800+self.decalw)
         self.setMaximumWidth(16000000)
         self.setMinimumHeight(600+self.decalh)
         self.setMaximumHeight(16000000)
+        pass
 
     def updatePB(self):
         self.qmsgboxencode.updateProgressBar()
@@ -1392,49 +1400,77 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         
         #if not self.isFullScreen() : -> ne fonctionne pas. TODO
         self.dbg.p(1, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
-        if not self.width()==self.width_screen and not self.height()==self.height_screen : 
-            ###dimensions minimum    
-            self.dbg.p(2, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
-            if self.ratio >= 1 : 
-                self.dbg.p(2, "self.ratio supérieur à 1'")
-                self.setMinimumSize(QSize(800, self.heightForWidth(800)))
-                self.largeur = self.width()-self.decalw
-                self.hauteur = self.heightForWidth(self.largeur)
+        #if not self.width()==self.width_screen and not self.height()==self.height_screen : 
+            ####dimensions minimum    
+            #self.dbg.p(2, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
+            #if self.ratio >= 1 : 
+                #self.dbg.p(2, "self.ratio supérieur à 1'")
+                #self.setMinimumSize(QSize(800, self.heightForWidth(800)))
+                #self.largeur = self.width()-self.decalw
+                #self.hauteur = self.heightForWidth(self.largeur)
                 
-                if abs(self.height()- int(self.hauteur+self.decalh))>100: #si la hauteur est vraiment différente, on redimensionne. Permet de sortir d'une boucle infinie.
-                    self.setFixedHeight(self.hauteur+self.decalh) 
-            else : 
-                self.dbg.p(2, "self.ratio < à 1'")
-                self.setMinimumSize(QSize(self.widthForHeight(600), 600))
+                #if abs(self.height()- int(self.hauteur+self.decalh))>100: #si la hauteur est vraiment différente, on redimensionne. Permet de sortir d'une boucle infinie.
+                    #self.setFixedHeight(self.hauteur+self.decalh) 
+            #else : 
+                #self.dbg.p(2, "self.ratio < à 1'")
+                #self.setMinimumSize(QSize(self.widthForHeight(600), 600))
                 
-                #traitement spécial si on vient de tourner l'image : on détermine la hauteur maximale de la vidéo
-                #if tourne : 
-                    #self.setFixedHeight(self.hauteur+self.decalh)
+                ##traitement spécial si on vient de tourner l'image : on détermine la hauteur maximale de la vidéo
+                ##if tourne : 
+                    ##self.setFixedHeight(self.hauteur+self.decalh)
+                #self.hauteur = self.height()-self.decalh
+                #self.largeur = self.widthForHeight(self.hauteur)
+                #if abs(self.width()-int(self.largeur+self.decalw))>100 : 
+                    #self.setFixedWidth(self.largeur+self.decalw)
+
+            #if self.largeurAvant==0 : #premier redimensionnement
+                #self.largeurAvant = self.largeur
+                #self.hauteurAvant = self.hauteur
+            #if self.ratio > 1 : # image horizontale
+                
+        
+        #else : #isFullScreen
+            ##détermination de la valeur maximum de self.largeur et self.hauteur : 
+            #ratio_ecran = self.width_screen/self.height_screen
+            #self.dbg.p(2, "ratio ecran %s, ration %s"%(ratio_ecran, self.ratio))
+            #if self.ratio >= ratio_ecran : #largeur qui fixe les dimensions 
+                #self.largeur = self.width_screen()-self.decalw
+                #self.hauteur = self.heightForWidth(self.largeur)
+
+                
+            #else : #hauteur qui est limitante
+                #self.hauteur = self.height_screen-self.decalh
+                #self.largeur = self.widthForHeight(self.hauteur)
+                
+                ##    self.setFixedWidth(self.largeur+self.decalw)
+            ##self.setFixed
+        
+        #if self.width()<1000 : 
+        #    self.setFixedWidth(1000)
+        #if self.height()<800 : 
+        #    self.setFixedWidth(800)
+        
+        #if self.premierResize : #premier redimensionnement
+        self.largeurAvant = self.largeur
+        self.hauteurAvant = self.hauteur
+        
+        if (self.width()-self.decalw)/(self.height()-self.decalh) > self.ratio : #allongement horizontal, la hauteur doit être recalculée)
+            #if self.hauteur+self.decalh < self.height():
+                #self.hauteurAvant = self.hauteur
+                #self.largeurAvant = self.largeur
+
                 self.hauteur = self.height()-self.decalh
                 self.largeur = self.widthForHeight(self.hauteur)
-                if abs(self.width()-int(self.largeur+self.decalw))>100 : 
-                    self.setFixedWidth(self.largeur+self.decalw)
-
-            if self.largeurAvant==0 : #premier redimensionnement
-                self.largeurAvant = self.largeur
-                self.hauteurAvant = self.hauteur
-        
-        else : #isFullScreen
-            #détermination de la valeur maximum de self.largeur et self.hauteur : 
-            ratio_ecran = self.width_screen/self.height_screen
-            self.dbg.p(2, "ratio ecran %s, ration %s"%(ratio_ecran, self.ratio))
-            if self.ratio >= ratio_ecran : #largeur qui fixe les dimensions 
-                self.largeur = self.width_screen()-self.decalw
-                self.hauteur = self.heightForWidth(self.largeur)
-
                 
-            else : #hauteur qui est limitante
-                self.hauteur = self.height_screen-self.decalh
-                self.largeur = self.widthForHeight(self.hauteur)
-                
-                #    self.setFixedWidth(self.largeur+self.decalw)
-            #self.setFixed
+        else: 
+            #if self.largeur+self.decalw < self.width():
+            #self.largeurAvant = self.largeur
+            #self.hauteurAvant = self.hauteur
+            self.largeur = self.width()-self.decalw
+            self.hauteur = self.heightForWidth(self.largeur)
             
+        
+        
         self.dbg.p(2, "on fixe les hauteurs du label")
         self.ui.label.setFixedHeight(self.hauteur)
         self.ui.label.setFixedWidth(self.largeur)
@@ -1617,6 +1653,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
+        print("désactive")
         self.ui.spinBox_image.setEnabled(1)
         self.ui.tabWidget.setTabEnabled(2, True)
         self.ui.tabWidget.setTabEnabled(1, True)
@@ -1678,7 +1715,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 pass
             self.label_auto = Label_Auto(self.label_video, self)  # in this label, motif(s) are defined.
             self.label_auto.show()
-            #IMPORTANT : permet de gagner en fluidité de l'affichage lors du poitnage autmatique. BUG lié au rafraichissment du slider.
+            #IMPORTANT : permet de gagner en fluidité de l'affichage lors du pointage autmatique. BUG lié au rafraichissment du slider.
             self.ui.horizontalSlider.valueChanged.disconnect()
             self.ui.spinBox_image.valueChanged.disconnect()
 
@@ -1972,6 +2009,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.nb_clics=0
             self.index_de_l_image += 1
             self.affiche_image()
+            
     def enableDefaire(self, value):
         """
         Contrôle la possibilité de défaire un clic
@@ -1984,7 +2022,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         ##permet de remettre l'interface à zéro
         if not value:
             # self.init_capture()
-            self.ui.horizontalSlider.setEnabled(True)
+            #self.ui.horizontalSlider.setEnabled(True)  #TODO si décommenté, permet de revenir en arrière plus que 1er point et fourni un bug IndexError.
+            print("active")
             self.ui.spinBox_image.setEnabled(True)
 
     def enableRefaire(self, value):
@@ -2074,8 +2113,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
     def affiche_tableau(self):
         # rentre le temps dans la première colonne
-        {0: ['0.000000', vecteur (153.000000, 180.000000), vecteur (354.000000, 314.000000), vecteur (464.000000, 370.000000)], 1: ['0.040000', vecteur (365.000000, 413.000000), vecteur (468.000000, 412.000000), vecteur (548.000000, 429.000000)], 2: ['0.080000', vecteur (214.000000, 273.000000), vecteur (296.000000, 317.000000), vecteur (369.000000, 318.000000)]}
-        self.ui.tableWidget.setRowCount(len(self.points))
+        ###exemple de self.points
+        """{0: ['0.000000', vecteur (153.000000, 180.000000), vecteur (354.000000, 314.000000), vecteur (464.000000, 370.000000)], 1: ['0.040000', vecteur (365.000000, 413.000000), vecteur (468.000000, 412.000000), vecteur (548.000000, 429.000000)], 2: ['0.080000', vecteur (214.000000, 273.000000), vecteur (296.000000, 317.000000), vecteur (369.000000, 318.000000)]}
+        self.ui.tableWidget.setRowCount(len(self.points))"""
         
         for ligne in self.points.keys():
             self.ui.tableWidget.setItem(ligne, 0, QTableWidgetItem(self.points[ligne][0]))
@@ -2367,6 +2407,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.Bouton_Echelle.setEnabled(True)
         self.ui.spinBox_nb_de_points.setEnabled(True)
         self.ui.horizontalSlider.setEnabled(1)
+        print("active")
         self.ui.checkBox_abscisses.setEnabled(1)
         self.ui.checkBox_ordonnees.setEnabled(1)
 
