@@ -19,9 +19,6 @@ class film:
         @param filename le nom d'un fichier video
         """
         self.filename = filename
-        #if os.name == 'nt':
-            #self.filesize = os.path.getsize(self.filename.encode('cp1252'))
-        #else:
         self.filesize = os.path.getsize(self.filename)
         self.capture = cv2.VideoCapture(self.filename)
 
@@ -46,9 +43,6 @@ class film:
         except ZeroDivisionError:
             print ("szero"+str(self.fps)+str(self.framecount))
 
-            pass
-        #if self.filename.split('.')[-1].lower() == "ogv":  # never work with ogv. need encoding.
-        #self.ok = False
 
     def __int__(self):
         return int(self.ok)
