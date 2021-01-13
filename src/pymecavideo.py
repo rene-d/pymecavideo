@@ -656,16 +656,18 @@ class StartQt5(QMainWindow):
         self.redimensionneFenetre()
         
     def fixeLesDimensions(self):
-        self.setMinimumWidth(self.width())
-        self.setMaximumWidth(self.width())
+        pass
+        #self.setMinimumWidth(self.width())
+        #self.setMaximumWidth(self.width())
         #self.emumHeight(self.height())
-        self.setMaximumHeight(self.height())
+        #self.setMaximumHeight(self.height())
+        #self.setFixedSize(QSize(self.width(), self.height()))
 
     def defixeLesDimensions(self):
-        self.setMinimumWidth(800+self.decalw)
-        self.setMaximumWidth(16000000)
-        self.setMinimumHeight(600+self.decalh)
-        self.setMaximumHeight(16000000)
+        #self.setMinimumWidth(800+self.decalw)
+        #self.setMaximumWidth(16000000)
+        #self.setMinimumHeight(600+self.decalh)
+        #self.setMaximumHeight(16000000)
         pass
 
     def updatePB(self):
@@ -1006,9 +1008,9 @@ class StartQt5(QMainWindow):
         @param point un point en "coordonnées d\'écran"
         """
         self.dbg.p(1, "rentre dans 'pointEnMetre'")
-        if self.echelle_faite:
-            return vecteur(self.sens_X * (float(p.x() - self.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
-                       float(self.origine.y() - p.y()) * self.echelle_image.mParPx())
+    
+        return vecteur(self.sens_X * (float(p.x() - self.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
+                    float(self.origine.y() - p.y()) * self.echelle_image.mParPx())
 
 
     def presse_papier(self):
@@ -1280,7 +1282,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.echelle_faite = False
         else :
             self.echelle_faite = True
-
         self.echelle_image.p1, self.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]) \
             , vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
         self.dbg.p(3, "rentre dans 'loads' %s" % ([self.echelle_image.p1, self.echelle_image.p2]))
@@ -1440,31 +1441,24 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 
                 ##    self.setFixedWidth(self.largeur+self.decalw)
             ##self.setFixed
-        
-        #if self.width()<1000 : 
-        #    self.setFixedWidth(1000)
-        #if self.height()<800 : 
-        #    self.setFixedWidth(800)
-        
-        #if self.premierResize : #premier redimensionnement
-        self.hauteurAvant = self.heightForWidth(self.largeurAvant)
-        
-        if (self.width()-self.decalw)/(self.height()-self.decalh) > self.ratio : #allongement horizontal, la hauteur doit être recalculée)
-            #if self.hauteur+self.decalh < self.height():
-                #self.hauteurAvant = self.hauteur
-                #self.largeurAvant = self.largeur
 
-                self.hauteur = self.height()-self.decalh
-                self.largeur = self.widthForHeight(self.hauteur)
-                
-        else: 
-            #if self.largeur+self.decalw < self.width():
-            #self.largeurAvant = self.largeur
-            #self.hauteurAvant = self.hauteur
-            self.largeur = self.width()-self.decalw
-            self.hauteur = self.heightForWidth(self.largeur)
-            
         
+
+        if not self.lance_capture :  #on recalcule la largeur et la hauteur de l'image si on n'est pas entrain de pointer
+            
+            self.hauteurAvant = self.heightForWidth(self.largeurAvant)
+            
+            if (self.width()-self.decalw)/(self.height()-self.decalh) > self.ratio : #allongement horizontal, la hauteur doit être recalculée)
+                    self.hauteur = self.height()-self.decalh
+                    self.largeur = self.widthForHeight(self.hauteur)
+                    
+            else: 
+                self.largeur = self.width()-self.decalw
+                self.hauteur = self.heightForWidth(self.largeur)
+            self.setMinimumSize(QSize(1000,760))
+            
+        else: 
+            self.setMinimumSize(QSize(self.largeur+self.decalw,self.hauteur+self.decalh))
         
         self.dbg.p(2, "on fixe les hauteurs du label")
         self.ui.label.setFixedHeight(self.hauteur)
@@ -1703,7 +1697,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.echelle_image.longueur_reelle_etalon = 1
             self.echelle_image.p1 = vecteur(0,0)
             self.echelle_image.p1 = vecteur(0,1)
-            self.echelle_faite = True
         #######automatic capture
         if self.ui.checkBox_auto.isChecked():
             #self.auto = True
@@ -1885,8 +1878,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         self.ui.pushButtonChrono.setEnabled(1)
 
                         self.label_trajectoire.referentiel = 0
-                        self.label_trajectoire.origine = self.origine_avant
-
+                        try :
+                            self.label_trajectoire.origine = self.origine_avant
+                        except : pass
                     # rempli le menu des courbes à tracer
                     self.ui.comboBox_mode_tracer.clear()
                     self.ui.comboBox_mode_tracer.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
@@ -1901,6 +1895,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
                 self.label_trajectoire.reDraw()
             else : #onglet tableau
+                self.cree_tableau()
+                self.recalculLesCoordonnees()
                 self.affiche_tableau()
         else :
             self.statusBar().show()
@@ -2122,7 +2118,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         ###exemple de self.points
         """{0: ['0.000000', vecteur (153.000000, 180.000000), vecteur (354.000000, 314.000000), vecteur (464.000000, 370.000000)], 1: ['0.040000', vecteur (365.000000, 413.000000), vecteur (468.000000, 412.000000), vecteur (548.000000, 429.000000)], 2: ['0.080000', vecteur (214.000000, 273.000000), vecteur (296.000000, 317.000000), vecteur (369.000000, 318.000000)]}
         self.ui.tableWidget.setRowCount(len(self.points))"""
-        
         for ligne in self.points.keys():
             self.ui.tableWidget.setItem(ligne, 0, QTableWidgetItem(self.points[ligne][0]))
             i=0
@@ -2131,7 +2126,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         pm = self.pointEnMetre(point)
                 except ZeroDivisionError:
                         pm = point
-            
                 self.ui.tableWidget.setItem(ligne, i + 1, QTableWidgetItem(str(pm.x())))
                 self.ui.tableWidget.setItem(ligne, i + 2, QTableWidgetItem(str(pm.y())))
                 i += 2
@@ -2263,9 +2257,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.ui.tableWidget.insertRow(i)
             self.ui.tableWidget.setItem(i, 0, QTableWidgetItem(self.points[i][0]))
             for j in range(self.nb_de_points):
-                p = self.pointEnMetre(self.points[i][j+1])
-                self.ui.tableWidget.setItem(i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x())))
-                self.ui.tableWidget.setItem(i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y())))
+                try:
+                    p = self.pointEnMetre(self.points[i][j+1])
+                    self.ui.tableWidget.setItem(i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x())))
+                    self.ui.tableWidget.setItem(i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y())))
+                except : pass
         #esthétique : enleve la derniere ligne
         self.ui.tableWidget.removeRow(len(self.points))
 
@@ -2385,7 +2381,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         @param filename nom du fichier
         """
         self.dbg.p(1, "rentre dans 'openTheFile'")
-        print(filename)
         if filename != "":
             self.filename = filename
             goOn = self.init_cvReader()
