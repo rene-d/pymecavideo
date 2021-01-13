@@ -2043,7 +2043,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 
     def traite_indices(self, expression,i, n, grandeur):
         """cette fonction traite les indices négatifs afin que python, justement... ne les traite pas"""
-        self.dbg(1, "rentre dans 'traite_indices'")
+        self.dbg.p(1, "rentre dans 'traite_indices'")
         #vérification de la présence d'une expression entre []
         erreur=""
         expr = ""
@@ -2067,7 +2067,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             
     def dessine_graphe(self) :
         """dessine les graphes avec pyqtgraph au moment où les combobox sont choisies"""
-        self.dbg(1, "rentre dans 'dessine_graphe'")
+        self.dbg.p(1, "rentre dans 'dessine_graphe'")
         X, Y = [], []
         grandeurX = self.ui.comboBox_X.currentText().replace('Vx', 'xprime').replace('Vy', 'yprime')
         grandeurY = self.ui.comboBox_Y.currentText().replace('Vx', 'xprime').replace('Vy', 'yprime')
