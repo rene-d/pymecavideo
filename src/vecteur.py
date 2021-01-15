@@ -109,6 +109,7 @@ class vecteur:
             else:
                 y = self.y()
             return vecteur(x, y)
+        
     def rotate(self, angle, largeur, hauteur):
         x1, y1 = self.x(), self.y()
         if angle==90 :
@@ -122,3 +123,5 @@ class vecteur:
             return vecteur(x1, y1)
         elif angle==180: 
             return vecteur(-x1, -y1)
+    def homothetie(self,ratio):
+        return vecteur(self.x()*ratio, self.y()*ratio)

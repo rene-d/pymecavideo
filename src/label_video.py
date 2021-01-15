@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel,QWidget, QShortcut
 from vecteur import vecteur
 from zoom import Zoom_Croix
 import os
-
+from echelle import echelle
 
 class Label_Video(QLabel):
     def __init__(self, parent, app):
@@ -48,26 +48,24 @@ class Label_Video(QLabel):
         self.zoom_croix.hide()
         self.setMouseTracking(True)
         self.origine = vecteur(self.width()//2, self.height()//2)
-        
+        self.echelle_image = echelle()  # objet gérant l'image
         #####################TODO
         self.decal = vecteur(0, 0)  #if video is not 4:3, center video
 
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray", "green", "red", "blue", "cyan", "magenta",
                          "yellow", "gray", "green"]
 
-    #def sizeHint(self):
-
-        #return QSize(self.app.largeur, self.app.hauteur)
-
-    #def heightForWidth(self, width):
-
-        #return QtGui.QLabel.heightForWidth(self, width)
-
     def resizeEvent(self,e):
+        print('oooooooooo', e.oldSize())
         if e.oldSize()!=QSize(-1, -1) : 
             ratio = self.width()/e.oldSize().width()
-            self.origine = vecteur(self.origine.x()*ratio, self.origine.y()*ratio)
-        
+            self.origine = self.origine.homothetie(ratio)
+            self.echelle_image.p1 = self.echelle_image.p1.homothetie(ratio)
+            self.echelle_image.p2 = self.echelle_image.p2.homothetie(ratio)
+            self.app.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        else : #premier passage lors de l'__init__
+            self.reinit_origine()
+    
     def reinit(self):
         try:
             del self.zoom_croix
@@ -75,6 +73,9 @@ class Label_Video(QLabel):
             pass
         self.met_a_jour_crop()
         self.setMouseTracking(True)
+        
+    def reinit_origine(self):
+         self.origine = vecteur(self.width()//2, self.height()//2)
 
     def storePoint(self, point):
         if self.app.lance_capture == True:

@@ -149,15 +149,17 @@ class Label_Echelle(QLabel):
         del self.zoom_croix
         self.parent.index_du_point = 0
 
-        self.app.echelle_image.p1 = self.p1.copy()
-        self.app.echelle_image.p2 = self.p2.copy()
+        self.app.label_video.echelle_image.p1 = self.p1.copy()
+        self.app.label_video.echelle_image.p2 = self.p2.copy()
         
         #self.app.p1 = self.p1.copy()
         #self.app.p2 = self.p2.copy()
-        epxParM = self.app.echelle_image.pxParM()
+        epxParM = self.app.label_video.echelle_image.pxParM()
         self.app.affiche_echelle()
         # self.app.affiche_nb_points(True)
         self.app.mets_a_jour_label_infos(self.app.tr(u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
+        self.app.ui.Bouton_Echelle.setText("refaire une échelle")
+        self.app.ui.Bouton_Echelle.setStyleSheet("background-color:orange;")
 
         #self.app.affiche_lance_capture(False)
         self.app.feedbackEchelle(self.p1, self.p2)

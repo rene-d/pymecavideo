@@ -322,7 +322,7 @@ class StartQt5(QMainWindow):
         self.pX = {}  # points apparaissant à l'écran, indexés par X
         self.pY = {}  # points apparaissant à l'écran, indexés par Y
         self.index_du_point = 0
-        self.echelle_image = echelle()  # objet gérant l'image
+        #self.label_video.echelle_image = echelle()  # objet gérant l'image
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray",
                          "green"]  # correspond aux couleurs des points de la trajectoire
         self.nb_de_points = 0  # nombre de points suivis
@@ -462,18 +462,19 @@ class StartQt5(QMainWindow):
         affiche l'échelle courante pour les distances sur l'image
         """
         self.dbg.p(1, "rentre dans 'affiche_echelle'")
-        if self.echelle_image.isUndef():
+        if self.label_video.echelle_image.isUndef():
             self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf.", None))
             self.ui.Bouton_Echelle.setEnabled(True)
         else:
-            epxParM = self.echelle_image.pxParM()
+            epxParM = self.label_video.echelle_image.pxParM()
             if epxParM > 20:
                 self.ui.echelleEdit.setText("%.1f" % epxParM)
             else:
                 self.ui.echelleEdit.setText("%8e" % epxParM)
-            self.ui.Bouton_Echelle.setEnabled(False)
+            #self.ui.Bouton_Echelle.setEnabled(False)
         self.ui.echelleEdit.show()
         self.ui.Bouton_Echelle.show()
+        
 
     def reinitialise_capture(self):
         """
@@ -498,6 +499,7 @@ class StartQt5(QMainWindow):
             self.label_video.update()
             self.label_video.setCursor(Qt.ArrowCursor)
             self.label_video.setEnabled(1)
+            self.label_video.reinit_origine()
         except AttributeError: 
             pass
         try:
@@ -512,7 +514,7 @@ class StartQt5(QMainWindow):
         except AttributeError:
             pass
 
-        self.echelle_image = echelle()
+        self.label_video.echelle_image = echelle()
         self.affiche_echelle()
         self.ui.horizontalSlider.setEnabled(1)
         self.ui.spinBox_image.setEnabled(1)
@@ -667,6 +669,7 @@ class StartQt5(QMainWindow):
             self.ui.pushButtonChrono.setStyleSheet("background-color: transparent");
             self.label_trajectoire.setPixmap(QPixmap())
         self.redimensionneFenetre()
+        self.update()
         
     def fixeLesDimensions(self):
         pass
@@ -917,7 +920,7 @@ class StartQt5(QMainWindow):
         ###DEBUG
         self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, self.largeur%s, self.hauteur%s"%(self.label_video.origine, self.largeur, self.hauteur))
         try :
-            self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.echelle_image.p1 %s, self.echelle_image.p2 %s"%(self.echelle_image.p1, self.echelle_image.p2))
+            self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.echelle_image.p1 %s, self.echelle_image.p2 %s"%(self.label_video.echelle_image.p1, self.label_video.echelle_image.p2))
         except AttributeError : 
             pass
         ###
@@ -925,27 +928,16 @@ class StartQt5(QMainWindow):
         
         
         #rotation vecteur echelle
-        self.echelle_image.p1 = self.echelle_image.p1.rotate(self.increment, self.largeur, self.hauteur)
-        self.echelle_image.p2 = self.echelle_image.p2.rotate(self.increment, self.largeur, self.hauteur) 
+        #self.label_video.echelle_image.p1 = self.echelle_image.p1.rotate(self.increment, self.largeur, self.hauteur)
+        #self.label_video.echelle_image.p2 = self.echelle_image.p2.rotate(self.increment, self.largeur, self.hauteur) 
         
         
-        self.largeur, self.hauteur = self.hauteur, self.largeur
+        self.largeur, self.hauteur = self.hauteur, self.largeur 
         
         ###DEBUG
         self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.origine %s, self.largeur%s, self.hauteur%s"%(self.label_video.origine, self.largeur, self.hauteur))
-        try :
-            self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.echelle_image.p1 %s, self.echelle_image.p2 %s"%(self.echelle_image.p1, self.echelle_image.p2))
-        except AttributeError : 
-            pass
+
         ###
-        
-        
-        try : 
-            
-            self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        except AttributeError : 
-            pass # pas d'échelle
-        self.change_axe_origine.emit()
         self.redimensionneSignal.emit(1)
 
 
@@ -958,11 +950,11 @@ class StartQt5(QMainWindow):
 
         #self.origineAvant = self.origine
 
-        try :
-            self.echelle_imagep1Avant = self.echelle_image.p1
-            self.echelle_imagep2Avant = self.echelle_image.p2
-        except AttributeError : 
-            pass 
+        #try :
+            #self.echelle_imagep1Avant = self.echelle_image.p1
+            #self.echelle_imagep2Avant = self.echelle_image.p2
+        #except AttributeError : 
+            #pass 
         
         self.label_video.update()
         
@@ -1017,8 +1009,7 @@ class StartQt5(QMainWindow):
         @param point un point en "coordonnées d\'écran"
         """
         self.dbg.p(1, "rentre dans 'pointEnMetre'")
-        return vecteur(self.sens_X * (float(p.x() - self.label_video.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
-                       float(self.label_video.origine.origine.y() - p.y()) * self.echelle_image.mParPx())
+        return vecteur(self.sens_X * (float(p.x() - self.label_video.origine.x()) * self.label_video.echelle_image.mParPx()), self.sens_Y * float(self.label_video.origine.y() - p.y()) * self.label_video.echelle_image.mParPx())
 
 
 
@@ -1242,7 +1233,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
     def loads(self, s):
         self.dbg.p(1, "rentre dans 'loads'")
         s = s[1:-2].replace("\n#", "\n")
-        self.echelle_image.longueur_reelle_etalon, point, self.deltaT, self.nb_de_points = s.splitlines()[1:-1][-4:]
+        self.label_video.echelle_image.longueur_reelle_etalon, point, self.deltaT, self.nb_de_points = s.splitlines()[1:-1][-4:]
         
         donnees_fichier = s.splitlines()[1:-1]
         dico_donnee = {}
@@ -1285,15 +1276,15 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.label_video.origine.origine))
         self.premiere_image = int(dico_donnee['index de depart'])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.premiere_image))
-        self.echelle_image.longueur_reelle_etalon = float(self.echelle_image.longueur_reelle_etalon.split()[1])
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.echelle_image.longueur_reelle_etalon))
-        if self.echelle_image.mParPx() == 1 :
+        self.label_video.echelle_image.longueur_reelle_etalon = float(self.label_video.echelle_image.longueur_reelle_etalon.split()[1])
+        self.dbg.p(3, "rentre dans 'loads' %s" % (self.label_video.echelle_image.longueur_reelle_etalon))
+        if self.label_video.echelle_image.mParPx() == 1 :
             self.echelle_faite = False
         else :
             self.echelle_faite = True
-        self.echelle_image.p1, self.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]) \
+        self.label_video.echelle_image.p1, self.label_video.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]) \
             , vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
-        self.dbg.p(3, "rentre dans 'loads' %s" % ([self.echelle_image.p1, self.echelle_image.p2]))
+        self.dbg.p(3, "rentre dans 'loads' %s" % ([self.label_video.echelle_image.p1, self.label_video.echelle_image.p2]))
         self.deltaT = float(self.deltaT.split()[-1])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.deltaT))
         self.nb_de_points = int(self.nb_de_points.split()[-2])
@@ -1313,13 +1304,14 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         for l in lignes:
             if l[0] == "#":
                 dd += l
-        self.echelle_image = echelle()  # on réinitialise l'échelle
+        
         self.loads(dd)  # on récupère les données importantes
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
         self.init_interface()
         self.change_axe_ou_origine()
+        self.label_video.echelle_image = echelle()  # on réinitialise l'échelle
         # puis on trace le segment entre les points cliqués pour l'échelle
-        self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        self.feedbackEchelle(self.label_video.echelle_image.p1, self.label_video.echelle_image.p2)# on réinitialise l'échelle.p1, self.echelle_image.p2)
         framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(self.rotation)
         self.rouvert = True
 
@@ -1336,9 +1328,9 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 
                 self.points[i] = [t]
                 for j in range(1, len(d), 2):
-                    pos = vecteur(float(d[j].replace(",", ".")) * self.echelle_image.pxParM() \
-                                + self.label_video.origine.x(), self.label_video.origine.y() - float(
-                            d[j + 1].replace(",", ".")) * self.echelle_image.pxParM())
+                    pos = vecteur(float(d[j].replace(",", ".")) * self.label_video.echelle_image.pxParM() \
+                                + self.origine.x(), self.origine.y() - float(
+                            d[j + 1].replace(",", ".")) * self.label_video.echelle_image.pxParM())
 
                     self.enregistre_dans_listePoints(
                         pos, index=int(float(t)*framerate)+self.premiere_image
@@ -1424,8 +1416,17 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 #self.afficheJusteImage()
             #except AttributeError:
                 #pass
-        
-        
+        print("##########origine",self.label_video.origine, self.hauteur, self.largeur)
+        if tourne : #on vient de cliquer sur tourner. les largeur et hauteurs sont inversées mais pas encore calculées.
+            #on tourne l'origine
+            
+            self.label_video.origine = self.label_video.origine.rotate(self.increment, self.hauteur, self.largeur)
+            self.label_video.maj()
+            self.afficheJusteImage()
+            #on tourne l'échelle
+            #on mt à jour label_video
+            
+            
         if not self.lance_capture :  #on recalcule la largeur et la hauteur de l'image si on n'est pas entrain de pointer
             
             self.hauteurAvant = self.heightForWidth_label_video(self.largeurAvant)
@@ -1564,8 +1565,8 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 #suivi de %s point(s)
 #%s
 #""" % (self.filename, self.sens_X, self.sens_Y, self.largeur, self.hauteur,self.rotation, self.label_video.origine, self.premiere_image \
-                             , self.echelle_image.longueur_reelle_etalon, self.echelle_image.longueur_pixel_etalon(),
-        self.echelle_image.p1, self.echelle_image.p2, self.deltaT, self.nb_de_points, msg)
+                             , self.label_video.echelle_image.longueur_reelle_etalon, self.label_video.echelle_image.longueur_pixel_etalon(),
+        self.label_video.echelle_image.p1, self.label_video.echelle_image.p2, self.deltaT, self.nb_de_points, msg)
         return result
 
     def enregistre(self, fichier):
@@ -1642,7 +1643,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.ui.tabWidget.setTabEnabled(2, True)
         self.ui.tabWidget.setTabEnabled(1, True)
         
-
         self.arretAuto = False
 
         self.premiere_image = self.ui.horizontalSlider.value()
@@ -1666,7 +1666,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.ui.checkBox_abscisses.setEnabled(0)
         self.ui.checkBox_ordonnees.setEnabled(0)
         self.ui.checkBox_auto.setEnabled(0)
-        self.ui.Bouton_Echelle.setEnabled(0)
+        #self.ui.Bouton_Echelle.setEnabled(0)
         self.ui.Bouton_lance_capture.setEnabled(0)
         self.ui.pushButton_rot_droite.setEnabled(0)
         self.ui.pushButton_rot_gauche.setEnabled(0)
@@ -1676,9 +1676,9 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 
         #si aucune échelle n'a été définie, on place l'étalon à 1 px pou 1 m.
         if not self.echelle_faite:
-            self.echelle_image.longueur_reelle_etalon = 1
-            self.echelle_image.p1 = vecteur(0,0)
-            self.echelle_image.p1 = vecteur(0,1)
+            self.label_video.echelle_image.longueur_reelle_etalon = 1
+            self.label_video.echelle_image.p1 = vecteur(0,0)
+            self.label_video.echelle_image.p1 = vecteur(0,1)
 
         #######automatic capture
         if self.ui.checkBox_auto.isChecked():
@@ -2096,6 +2096,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
         if newValue == "absolu":
             ref = "camera"
+            self.label_trajectoire.origine_mvt = self.label_video.origine
         else:
             ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
 
@@ -2114,16 +2115,18 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.chrono = False
             bc = self.mediane_trajectoires(int(ref) - 1)
             origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
+            print("OK changement origine médiane")
             self.label_trajectoire.origine = origine
+            self.label_trajectoire.origine_mvt = origine
 
             self.label_trajectoire.referentiel = ref
         else:  # if camera, all tranlsations are disabled
             self.ui.pushButtonChrono.setEnabled(1)
 
             self.label_trajectoire.referentiel = 0
-            try :
-                self.label_trajectoire.origine = self.label_video.origine
-            except : pass
+            #try :
+            self.label_trajectoire.origine = vecteur(0,0)
+            #except : pass
         # rempli le menu des courbes à tracer
         self.ui.comboBox_mode_tracer.clear()
         self.ui.comboBox_mode_tracer.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
@@ -2136,7 +2139,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
     #except ZeroDivisionError:
                 #self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
-            #self.label_trajectoire.reDraw()
+        self.label_trajectoire.reDraw()
         
 
     def tracer_courbe(self, itemChoisi):
@@ -2392,12 +2395,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         pm = self.pointEnMetre(point)
                 except :
                         pm = point
-                try : 
-                    self.ui.tableWidget.setItem(ligne, i + 1, QTableWidgetItem(str(pm.x())))
-                    self.ui.tableWidget.setItem(ligne, i + 2, QTableWidgetItem(str(pm.y())))
-                    i += 2+colonnes_sup
-                except : 
-                    pass #si pas tous les points cliqués
+                #try : 
+                self.ui.tableWidget.setItem(ligne, i + 1, QTableWidgetItem(str(pm.x())))
+                self.ui.tableWidget.setItem(ligne, i + 2, QTableWidgetItem(str(pm.y())))
+                i += 2+colonnes_sup
+                #except : 
+                    #pass #si pas tous les points cliqués
                 
         #calculs des énergies
         ancienPoint=None
@@ -2494,7 +2497,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
         self.ui.tabWidget.setCurrentIndex(0)
-        self.echelle_image = echelle()
+        self.label_video.echelle_image = echelle()
 
         self.affiche_echelle()
         try:
@@ -2535,13 +2538,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if echelle_result[0] <= 0 or echelle_result[1] == False:
                 self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une échelle valable", None))
             else:
-                self.echelle_image.etalonneReel(echelle_result[0])
+                self.label_video.echelle_image.etalonneReel(echelle_result[0])
 
                 self.job = Label_Echelle(self.label_video, self)
                 self.job.setPixmap(QPixmap(toQImage(self.image_opencv)))
                 self.job.show()
                 self.change_axe_ou_origine()
-            
+                
 
         except ValueError:
             self.mets_a_jour_label_infos(_translate("pymecavideo", " Merci d'indiquer une échelle valable", None))
@@ -2779,7 +2782,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.trajectoire = {}
         self.ui.spinBox_image.setMinimum(1)
         self.defini_barre_avancement()
-        self.echelle_image = echelle()
+        self.label_video.echelle_image = echelle()
         self.affiche_echelle()
         self.ui.tab_traj.setEnabled(0)
         self.ui.spinBox_image.setEnabled(1)
