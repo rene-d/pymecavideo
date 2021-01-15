@@ -195,9 +195,7 @@ class StartQt5(QMainWindow):
 
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
-        #self.setMinimumWidth(1000)
-        #self.setMinimumHeight(800)
-        #self.setMaximumSize(QSize(self.width_screen, self.height_screen))
+
         self.dbg = Dbg(0)
         for o in opts:
             if ('-d' in o[0]) or ('--debug' in o[0]):
@@ -1402,7 +1400,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         return ratioFilm
 
     
-    def redimensionneFenetre(self, tourne=False):
+    def redimensionneFenetre(self, tourne=False, old=None):
         """si l'image est horizontale : (self.ratio >1)
                 on fixe la largeur minimale : 800
                 on détermine la hauteur minimale et on la fixe 
@@ -1413,39 +1411,26 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             
         """
         self.dbg.p(1, "rentre dans 'redimensionne Fenetre'")
-        
-        #if not self.isFullScreen() : -> ne fonctionne pas. TODO
-        self.dbg.p(1, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
-        if not self.width()==self.width_screen and not self.height()==self.height_screen : 
-            ###dimensions minimum    
-            self.dbg.p(2, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
-            if self.ratio >= 1 : 
-                self.dbg.p(2, "self.ratio supérieur à 1'")
-                self.setMinimumSize(QSize(1000, self.heightForWidth_app(1000)))
-                self.largeur = self.width()-self.decalw
-                self.hauteur = self.heightForWidth(self.largeur)
-                
-                if abs(self.height()- int(self.hauteur+self.decalh))>100: #si la hauteur est vraiment différente, on redimensionne. Permet de sortir d'une boucle infinie.
-                    self.setFixedHeight(self.hauteur+self.decalh) 
-            else : 
-                self.dbg.p(2, "self.ratio < à 1'")
-                self.setMinimumSize(QSize(self.widthForHeight_app(800), 800))
 
+        self.dbg.p(1, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
+        
         if not self.lance_capture :  #on recalcule la largeur et la hauteur de l'image si on n'est pas entrain de pointer
             
-            self.hauteurAvant = self.heightForWidth(self.largeurAvant)
+            self.hauteurAvant = self.heightForWidth_label_video(self.largeurAvant)
             
             if (self.width()-self.decalw)/(self.height()-self.decalh) > self.ratio : #allongement horizontal, la hauteur doit être recalculée)
+
                     self.hauteur = self.height()-self.decalh
-                    self.largeur = self.widthForHeight(self.hauteur)
+                    self.largeur = self.widthForHeight_label_video(self.hauteur)
+                    
                     
             else: 
                 self.largeur = self.width()-self.decalw
-                self.hauteur = self.heightForWidth(self.largeur)
+                self.hauteur = self.heightForWidth_label_video(self.largeur)
             self.setMinimumSize(QSize(1000,760))
             
         else: 
-            self.setMinimumSize(QSize(self.largeur+self.decalw,self.hauteur+self.decalh))
+            self.setMinimumSize(QSize(self.largeur+self.decalw,self.hauteur+self.decalh)) #si la capture est lancéeon ne peut aller en dessous du label_video
         
         self.dbg.p(2, "on fixe les hauteurs du label")
         self.ui.label.setFixedHeight(self.hauteur)
@@ -1461,7 +1446,6 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget") 
         self.ui.centralwidget.setFixedSize(self.size()-QSize(1,1))
         self.ui.tabWidget.setFixedSize(self.size()-QSize(1,1))
-        
         
         if tourne : #besoin de changer l'image lors d'un retournement
             self.dbg.p(2, "image tournée -> affiche_image pour mettre à jour l'extraction de l'image")
@@ -1516,37 +1500,21 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         except : 
             pass
         
-    def widthForHeight(self, h):
+    def widthForHeight_label_video(self, h):
         #calcule self.largeur et self.hauteur si la hauteur est prédominante
         #si la hauteur est trop petite, ne permet plus de redimensionnement
         self.dbg.p(1, "retre dans 'widthForHeight'")
         self.dbg.p(2, "argument h : %s"%(str(h)))
         
         return int(h*self.ratio)
-        
-    def widthForHeight_app(self, h):
-        #calcule self.largeur et self.hauteur si la hauteur est prédominante
-        #si la hauteur est trop petite, ne permet plus de redimensionnement
-        self.dbg.p(1, "retre dans 'widthForHeight_app'")
-        self.dbg.p(2, "argument h : %s"%(str(h)))
-        
-        return self.largeur+self.decalw if self.width()>1024 else 1024
     
-    
-    def heightForWidth(self, w):
+    def heightForWidth_label_video(self, w):
         #calcul self.largeur et self.hauteur
         #si la largeur est trop petite, ne permet plus de redimensionnement
         self.dbg.p(1, "retre dans 'heightForWidth'")
         self.dbg.p(2, "argument w : %s"%(str(w)))
         
         return int(w/self.ratio)
-    
-    def heightForWidth_app(self, w):
-        #calcul self.largeur et self.hauteur
-        #si la largeur est trop petite, ne permet plus de redimensionnement
-        self.dbg.p(1, "retre dans 'heightForWidth'")
-        self.dbg.p(2, "argument w : %s"%(str(w)))
-        return self.hauteur+self.decalh if self.height()>800 else 800
     
     def enterEvent(self,e):
         self.gardeLargeur()        
@@ -1559,7 +1527,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans 'resizeEvent'")
-        self.redimensionneFenetre(tourne=False)    
+        self.redimensionneFenetre(tourne=False, old=event.oldSize())    
         return super(StartQt5, self).resizeEvent(event)
 
     def showEvent(self, event):
@@ -2112,60 +2080,52 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
        
         """
         self.dbg.p(1, "rentre dans 'tracer_trajectoires'")
-        try: 
-            origine = vecteur(0, 0)
-            if newValue == "absolu":
-                ref = "camera"
-            else:
-                ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
 
-        if self.ui.tabWidget.currentIndex() != 0:  # Pas le premier onglet
-            self.statusBar().hide()
-            if self.ui.tabWidget.currentIndex()==1 : #onglet trajectoire
-                try: 
-                    origine = vecteur(0, 0)
-                    if newValue == "absolu":
-                        ref = "camera"
-                    else:
-                        ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
 
-                    if len(ref) == 0: return
-                    if ref != "camera":
-                        self.ui.button_video.setEnabled(1)
-                        self.ui.pushButtonChrono.setEnabled(0)
-                        self.ui.pushButtonEnregistreChrono.setVisible(0)
-                        self.chrono = False
-                        bc = self.mediane_trajectoires(int(ref) - 1)
-                        origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
-                        self.label_trajectoire.origine = origine
+        if newValue == "absolu":
+            ref = "camera"
+        else:
+            ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
 
-                        self.label_trajectoire.referentiel = ref
-                    else:  # if camera, all tranlsations are disabled
-                        self.ui.pushButtonChrono.setEnabled(1)
+        
+        origine = vecteur(0, 0)
+        if newValue == "absolu":
+            ref = "camera"
+        else:
+            ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
 
-                        self.label_trajectoire.referentiel = 0
-                        try :
-                            self.label_trajectoire.origine = self.origine_avant
-                        except : pass
-                    # rempli le menu des courbes à tracer
-                    self.ui.comboBox_mode_tracer.clear()
-                    self.ui.comboBox_mode_tracer.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
-                    for i in range(self.nb_de_points):
-                        combo = self.ui.comboBox_mode_tracer
-                        combo.addItem(u"x%d(t)" % (i + 1))
-                        combo.addItem(u"y%d(t)" % (i + 1))
-                        combo.addItem(u"v%d(t)" % (i + 1))
+        if len(ref) == 0: return
+        if ref != "camera":
+            self.ui.button_video.setEnabled(1)
+            self.ui.pushButtonChrono.setEnabled(0)
+            self.ui.pushButtonEnregistreChrono.setVisible(0)
+            self.chrono = False
+            bc = self.mediane_trajectoires(int(ref) - 1)
+            origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
+            self.label_trajectoire.origine = origine
 
-                    self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
-                except ZeroDivisionError:
-                    self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
-                self.label_trajectoire.reDraw()
-            else : #onglet tableau
-                self.cree_tableau()
-                self.recalculLesCoordonnees()
-                self.affiche_tableau()
-        else :
-            self.statusBar().show()
+            self.label_trajectoire.referentiel = ref
+        else:  # if camera, all tranlsations are disabled
+            self.ui.pushButtonChrono.setEnabled(1)
+
+            self.label_trajectoire.referentiel = 0
+            try :
+                self.label_trajectoire.origine = self.origine_avant
+            except : pass
+        # rempli le menu des courbes à tracer
+        self.ui.comboBox_mode_tracer.clear()
+        self.ui.comboBox_mode_tracer.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
+        for i in range(self.nb_de_points):
+            combo = self.ui.comboBox_mode_tracer
+            combo.addItem(u"x%d(t)" % (i + 1))
+            combo.addItem(u"y%d(t)" % (i + 1))
+            combo.addItem(u"v%d(t)" % (i + 1))
+
+        self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
+    #except ZeroDivisionError:
+                #self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
+            #self.label_trajectoire.reDraw()
+        
 
     def tracer_courbe(self, itemChoisi):
         """
@@ -2378,7 +2338,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.pY[y] = [point]
 
     def affiche_tableau(self):
-<<<<<<< HEAD
         #active ou désactive les checkbox énergies (n'ont un intérêt que si les échelles sont faites)
         if self.echelle_faite:
             self.ui.checkBox_Ec.setEnabled(1)
@@ -2422,11 +2381,14 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             for point in self.points[ligne][1:] :  
                 try:
                         pm = self.pointEnMetre(point)
-                except ZeroDivisionError:
+                except :
                         pm = point
-                self.ui.tableWidget.setItem(ligne, i + 1, QTableWidgetItem(str(pm.x())))
-                self.ui.tableWidget.setItem(ligne, i + 2, QTableWidgetItem(str(pm.y())))
-                i += 2+colonnes_sup
+                try : 
+                    self.ui.tableWidget.setItem(ligne, i + 1, QTableWidgetItem(str(pm.x())))
+                    self.ui.tableWidget.setItem(ligne, i + 2, QTableWidgetItem(str(pm.y())))
+                    i += 2+colonnes_sup
+                except : 
+                    pass #si pas tous les points cliqués
                 
         #calculs des énergies
         ancienPoint=None
@@ -2437,7 +2399,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             for point in self.points[ligne][1:] :  
                 try:
                         pm = self.pointEnMetre(point)
-                except ZeroDivisionError:
+                except :
                         pm = point
                 if ancienPoint != None:
                     v = (pm - ancienPoint).norme() / self.deltaT
@@ -2459,9 +2421,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 except UnboundLocalError: #pour premier point, la vitesse n'est pas définie
                     pass
                 i += 1
-                
-            
-        
 
     def transforme_index_en_temps(self, index):
         self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")
