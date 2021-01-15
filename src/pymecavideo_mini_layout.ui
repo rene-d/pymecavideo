@@ -6,10 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-
     <width>1000</width>
     <height>760</height>
-
    </rect>
   </property>
   <property name="sizePolicy">
@@ -91,7 +89,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <property name="sizePolicy">
@@ -1490,7 +1488,7 @@ p, li { white-space: pre-wrap; }
               </size>
              </property>
              <property name="autoFillBackground">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color:rgb(88, 216, 66)</string>
