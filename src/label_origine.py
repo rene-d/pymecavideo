@@ -53,7 +53,7 @@ class Label_Origine(QLabel):
 
 
     def mouseReleaseEvent(self, event):
-        self.app.origine = vecteur(event.x() + 1, event.y() + 1)
+        self.app.label_video.origine = vecteur(event.x() + 1, event.y() + 1)
         self.zoom_croix.hide()
         try :
             self.app.ui.label_zoom.setPixmap(QPixmap(None))

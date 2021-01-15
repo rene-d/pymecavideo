@@ -306,16 +306,11 @@ class StartQt5(QMainWindow):
         self.masse_objet = 0
         self.dictionnairePlotWidget = {}
         self.dictionnaire_grandeurs = {} #contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
-        try:
-            self.origine = None
-            self.largeurAvant = self.largeur
-            self.hauteurAvant  = self.hauteur
-            self.origineAvant = self.origine
-        except AttributeError:
-            self.origine = None
-            self.largeurAvant = self.largeur
-            self.hauteurAvant  = self.hauteur
-            self.origineAvant = self.origine
+
+        
+        self.largeurAvant = self.largeur
+        self.hauteurAvant  = self.hauteur
+
         self.rouvert = False #positionné a vrai si on vien d'ouvrir un fichier mecavideo
 
         self.auto = False
@@ -899,13 +894,13 @@ class StartQt5(QMainWindow):
     def tourne_image(self, sens=None):
         self.dbg.p(1, "rentre dans 'tourne_image'")
         if sens=="droite" :
-            increment = 90
+            self.increment = 90
             
         elif sens=="gauche" : 
-            increment = -90
+            self.increment = -90
         else : 
-            increment=0
-        self.rotation+=increment
+            self.increment=0
+        self.rotation+=self.increment
         if self.rotation>180 : 
             self.rotation=self.rotation-360 #arrive pour 270° par exemple
         elif self.rotation<=-180 :
@@ -920,27 +915,24 @@ class StartQt5(QMainWindow):
         #gestion de l'origine et de l'échelle : 
         
         ###DEBUG
-        self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, self.largeur%s, self.hauteur%s"%(self.origine, self.largeur, self.hauteur))
+        self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, self.largeur%s, self.hauteur%s"%(self.label_video.origine, self.largeur, self.hauteur))
         try :
             self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.echelle_image.p1 %s, self.echelle_image.p2 %s"%(self.echelle_image.p1, self.echelle_image.p2))
         except AttributeError : 
             pass
         ###
-        try: 
-            self.origine = self.origine.rotate(increment, self.largeur, self.hauteur)
-        except AttributeError : 
-            pass
+
         
         
         #rotation vecteur echelle
-        self.echelle_image.p1 = self.echelle_image.p1.rotate(increment, self.largeur, self.hauteur)
-        self.echelle_image.p2 = self.echelle_image.p2.rotate(increment, self.largeur, self.hauteur) 
+        self.echelle_image.p1 = self.echelle_image.p1.rotate(self.increment, self.largeur, self.hauteur)
+        self.echelle_image.p2 = self.echelle_image.p2.rotate(self.increment, self.largeur, self.hauteur) 
         
         
         self.largeur, self.hauteur = self.hauteur, self.largeur
         
         ###DEBUG
-        self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.origine %s, self.largeur%s, self.hauteur%s"%(self.origine, self.largeur, self.hauteur))
+        self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.origine %s, self.largeur%s, self.hauteur%s"%(self.label_video.origine, self.largeur, self.hauteur))
         try :
             self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.echelle_image.p1 %s, self.echelle_image.p2 %s"%(self.echelle_image.p1, self.echelle_image.p2))
         except AttributeError : 
@@ -961,10 +953,10 @@ class StartQt5(QMainWindow):
         """mets à jour le tableau de données"""
         self.dbg.p(1, "rentre dans 'change_axe_ou_origine'")
         # repaint axes and define origine
-        self.label_trajectoire.origine_mvt = self.origine
+        self.label_trajectoire.origine_mvt = self.label_video.origine
         self.label_trajectoire.update()
 
-        self.origineAvant = self.origine
+        #self.origineAvant = self.origine
 
         try :
             self.echelle_imagep1Avant = self.echelle_image.p1
@@ -1025,8 +1017,8 @@ class StartQt5(QMainWindow):
         @param point un point en "coordonnées d\'écran"
         """
         self.dbg.p(1, "rentre dans 'pointEnMetre'")
-        return vecteur(self.sens_X * (float(p.x() - self.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
-                       float(self.origine.y() - p.y()) * self.echelle_image.mParPx())
+        return vecteur(self.sens_X * (float(p.x() - self.label_video.origine.x()) * self.echelle_image.mParPx()), self.sens_Y *
+                       float(self.label_video.origine.origine.y() - p.y()) * self.echelle_image.mParPx())
 
 
 
@@ -1287,10 +1279,10 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
             self.rotation=0
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.rotation))      
         try : 
-            self.origine = vecteur(dico_donnee['origine de pointage'].split()[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])        
+            self.label_video.origine = vecteur(dico_donnee['origine de pointage'].split()[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])        
         except KeyError:
-            self.origine = vecteur(self.largeur//2, self.hauteur//2)
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.origine))
+            self.label_video.origine = vecteur(self.largeur//2, self.hauteur//2)
+        self.dbg.p(3, "rentre dans 'loads' %s" % (self.label_video.origine.origine))
         self.premiere_image = int(dico_donnee['index de depart'])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.premiere_image))
         self.echelle_image.longueur_reelle_etalon = float(self.echelle_image.longueur_reelle_etalon.split()[1])
@@ -1345,7 +1337,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
                 self.points[i] = [t]
                 for j in range(1, len(d), 2):
                     pos = vecteur(float(d[j].replace(",", ".")) * self.echelle_image.pxParM() \
-                                + self.origine.x(), self.origine.y() - float(
+                                + self.label_video.origine.x(), self.label_video.origine.y() - float(
                             d[j + 1].replace(",", ".")) * self.echelle_image.pxParM())
 
                     self.enregistre_dans_listePoints(
@@ -1399,20 +1391,40 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 
         return ratioFilm
 
-    
+   
     def redimensionneFenetre(self, tourne=False, old=None):
-        """si l'image est horizontale : (self.ratio >1)
-                on fixe la largeur minimale : 800
-                on détermine la hauteur minimale et on la fixe 
+        #"""si l'image est horizontale : (self.ratio >1)
+                #on fixe la largeur minimale : 800
+                #on détermine la hauteur minimale et on la fixe 
                 
-           Si l'image est verticale : (self.ratio <1)
-                on fixe la hauteur minimale  :600
-                on détermine la largeur minimale et on la fixe 
+           #Si l'image est verticale : (self.ratio <1)
+                #on fixe la hauteur minimale  :600
+                #on détermine la largeur minimale et on la fixe 
             
-        """
-        self.dbg.p(1, "rentre dans 'redimensionne Fenetre'")
+        #"""
+        #self.dbg.p(1, "rentre dans 'redimensionne Fenetre'")
 
-        self.dbg.p(1, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
+        #self.dbg.p(1, "self.ratio%s, self.rotation%s"%(self.ratio, self.rotation))
+        
+        #print('biiim', self.largeur, self.hauteur, self.origine)
+        #if tourne : #besoin de changer l'image lors d'un retournement
+            #self.dbg.p(2, "image tournée -> affiche_image pour mettre à jour l'extraction de l'image")
+            #try: 
+                #print('booom1', self.origine, self.largeur, self.hauteur, self.increment)
+                #self.origine = self.origine.rotate(self.increment, self.hauteur, self.largeur)
+                #print('booom2', self.origine, self.largeur, self.hauteur, self.increment)
+            #except AttributeError : 
+                #print('biiim')
+                #pass
+            #self.gardeLargeur()
+            #self.affiche_image() 
+        #else : 
+            #try : #gère le  cas où on démarre sans vidéos
+                #self.dbg.p(2, "L'image est juste affichée, non rééextraite.")
+                #self.afficheJusteImage()
+            #except AttributeError:
+                #pass
+        
         
         if not self.lance_capture :  #on recalcule la largeur et la hauteur de l'image si on n'est pas entrain de pointer
             
@@ -1432,73 +1444,73 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
         else: 
             self.setMinimumSize(QSize(self.largeur+self.decalw,self.hauteur+self.decalh)) #si la capture est lancéeon ne peut aller en dessous du label_video
         
-        self.dbg.p(2, "on fixe les hauteurs du label")
+        #self.dbg.p(2, "on fixe les hauteurs du label")
         self.ui.label.setFixedHeight(self.hauteur)
         self.ui.label.setFixedWidth(self.largeur)
         
         if hasattr(self, 'label_video'):
+            print(6, self.largeur, self.hauteur)
             self.dbg.p(2, "on fixe les hauteurs de label_video")            
             self.label_video.setFixedHeight(self.hauteur)
             self.label_video.setFixedWidth(self.largeur)
             self.dbg.p(2, "label_vidéo situé en %s %s"%(self.label_video.pos().x(),self.label_video.pos().y() ))
             self.dbg.p(3, "label_vidéo largeur :  %s hauteur : %s"%(self.label_video.width(),self.label_video.height()))
+    
+            self.dbg.p(2, "MAJ de label_video")
+            self.label_video.maj()
+            self.label_trajectoire.maj()
+            self.afficheJusteImage()
+
+
         
         self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget") 
         self.ui.centralwidget.setFixedSize(self.size()-QSize(1,1))
         self.ui.tabWidget.setFixedSize(self.size()-QSize(1,1))
         
-        if tourne : #besoin de changer l'image lors d'un retournement
-            self.dbg.p(2, "image tournée -> affiche_image pour mettre à jour l'extraction de l'image")
-            self.affiche_image() 
+        
+        
+        #try:
+            #self.largeur/self.largeurAvant
+        #except ZeroDivisionError:
+            #self.gardeLargeur()
+        
+        ##prise en compte de l'échelle 
+        
+        #self.dbg.p(2, "Recalcul de l'origine")
+        #self.dbg.p(3, "origine avant transformation : %s"%self.origine)
+         
             
-        else : 
-            try : #gère le  cas où on démarre sans vidéos
-                self.dbg.p(2, "L'image est juste affichée, non rééextraite.")
-                self.afficheJusteImage()
-            except AttributeError:
-                pass
         
-        try:
-            self.largeur/self.largeurAvant
-        except ZeroDivisionError:
-            self.gardeLargeur()
         
-        #prise en compte de l'échelle 
+        #try :
+            #self.dbg.p(2, "traçage de l'échelle")
+            #self.dbg.p(3, "echelle avant transformation : p1 : %s  p2 : %s"%(self.echelle_image.p1, self.echelle_image.p2))
+            #self.echelle_image.p1 = vecteur(self.echelle_imagep1Avant.x()*float(self.largeur)/self.largeurAvant, self.echelle_imagep1Avant.y()*float(self.largeur)/self.largeurAvant)
+            #self.echelle_image.p2 = vecteur(self.echelle_imagep2Avant.x()*float(self.largeur)/self.largeurAvant, self.echelle_imagep2Avant.y()*float(self.largeur)/self.largeurAvant)
+            #self.dbg.p(3, "echelle après transformation : p1 : %s  p2 : %s"%(self.echelle_image.p1, self.echelle_image.p2))
+            ##self.label_echelle_trace.setGeometry(0,0,self.largeur, self.hauteur)
+            #self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        #except : pass
         
-        self.dbg.p(2, "Recalcul de l'origine")
-        self.dbg.p(3, "origine avant transformation : %s"%self.origine)
-        try : 
-            self.origine = vecteur(self.origineAvant.x()*float(self.largeur)/self.largeurAvant, self.origineAvant.y()*float(self.largeur)/self.largeurAvant)
-        except AttributeError:
-            self.origine = vecteur(self.largeur/2, self.hauteur/2)
+
+        #try : 
+            #self.dbg.p(3, """largeur LABEL %s  hauteur LABEL, %s position LABEL %s %s \n
+                   #self.largeur %s  self.hauteur %s \n, 
+                   #largeur FENETRE : %s  hauteur FENETRE : %s\n, 
+                   #largeur ÉCRAN : %s  hauteur ÉCRAN : %s\n,
+                   #largeur label_video %s, hauteur label_video %s, position label_video %s %s\n
+                   #largeur tabWidget %s, hauteur tabWidget %s\n
+                   #largeur centralwidget %s, hauteur centralwidget %s\n
+                   #"""
+                   #% (self.ui.label.width(), self.ui.label.height(), self.ui.label.pos().x(), self.ui.label.pos().y(), self.largeur, self.hauteur, self.width(), self.height(), self.width_screen, self.height_screen, self.label_video.width(), self.label_video.height(), self.label_video.pos().x(), self.label_video.pos().y(), self.ui.tabWidget.width(), self.ui.tabWidget.height(), self.ui.centralwidget.width(), self.ui.centralwidget.height()))
+        #except : 
+            #pass
         
-        try :
-            self.dbg.p(2, "traçage de l'échelle")
-            self.dbg.p(3, "echelle avant transformation : p1 : %s  p2 : %s"%(self.echelle_image.p1, self.echelle_image.p2))
-            self.echelle_image.p1 = vecteur(self.echelle_imagep1Avant.x()*float(self.largeur)/self.largeurAvant, self.echelle_imagep1Avant.y()*float(self.largeur)/self.largeurAvant)
-            self.echelle_image.p2 = vecteur(self.echelle_imagep2Avant.x()*float(self.largeur)/self.largeurAvant, self.echelle_imagep2Avant.y()*float(self.largeur)/self.largeurAvant)
-            self.dbg.p(3, "echelle après transformation : p1 : %s  p2 : %s"%(self.echelle_image.p1, self.echelle_image.p2))
-            #self.label_echelle_trace.setGeometry(0,0,self.largeur, self.hauteur)
-            self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        except : pass
-        
-        if hasattr(self, 'label_video'):
-                self.dbg.p(2, "MAJ de label_video")
-                self.label_video.maj()
-                self.label_trajectoire.maj()
-                self.afficheJusteImage()
-        try : 
-            self.dbg.p(3, """largeur LABEL %s  hauteur LABEL, %s position LABEL %s %s \n
-                   self.largeur %s  self.hauteur %s \n, 
-                   largeur FENETRE : %s  hauteur FENETRE : %s\n, 
-                   largeur ÉCRAN : %s  hauteur ÉCRAN : %s\n,
-                   largeur label_video %s, hauteur label_video %s, position label_video %s %s\n
-                   largeur tabWidget %s, hauteur tabWidget %s\n
-                   largeur centralwidget %s, hauteur centralwidget %s\n
-                   """
-                   % (self.ui.label.width(), self.ui.label.height(), self.ui.label.pos().x(), self.ui.label.pos().y(), self.largeur, self.hauteur, self.width(), self.height(), self.width_screen, self.height_screen, self.label_video.width(), self.label_video.height(), self.label_video.pos().x(), self.label_video.pos().y(), self.ui.tabWidget.width(), self.ui.tabWidget.height(), self.ui.centralwidget.width(), self.ui.centralwidget.height()))
-        except : 
-            pass
+        #try:      
+            #self.origine = vecteur(self.origineAvant.x()*float(self.largeur)/self.largeurAvant, self.origineAvant.y()*float(self.largeur)/self.largeurAvant)
+        #except : 
+            #pass
+
         
     def widthForHeight_label_video(self, h):
         #calcule self.largeur et self.hauteur si la hauteur est prédominante
@@ -1551,7 +1563,7 @@ Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
 #intervalle de temps : %f
 #suivi de %s point(s)
 #%s
-#""" % (self.filename, self.sens_X, self.sens_Y, self.largeur, self.hauteur,self.rotation, self.origine, self.premiere_image \
+#""" % (self.filename, self.sens_X, self.sens_Y, self.largeur, self.hauteur,self.rotation, self.label_video.origine, self.premiere_image \
                              , self.echelle_image.longueur_reelle_etalon, self.echelle_image.longueur_pixel_etalon(),
         self.echelle_image.p1, self.echelle_image.p2, self.deltaT, self.nb_de_points, msg)
         return result
@@ -2110,7 +2122,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
             self.label_trajectoire.referentiel = 0
             try :
-                self.label_trajectoire.origine = self.origine_avant
+                self.label_trajectoire.origine = self.label_video.origine
             except : pass
         # rempli le menu des courbes à tracer
         self.ui.comboBox_mode_tracer.clear()
@@ -2318,9 +2330,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if point[0]==index_image :
                 listePointsCliquesParImage.append(point[2])
         self.points[ligne] = [t] + listePointsCliquesParImage
-
-        
-
         
         # Pour chaque point dans liste_points, insère les valeur dans la ligne
         for point in listePointsCliquesParImage:
@@ -2580,8 +2589,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.label_echelle_trace.show()
         #self.stopRedimensionnement.emit()
 
-    def reinitialise_environnement(self):
-        self.dbg.p(1, "rentre dans 'reinitialise_environnement'")
+
 
     def closeEvent(self, event):
         """
@@ -2775,9 +2783,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.affiche_echelle()
         self.ui.tab_traj.setEnabled(0)
         self.ui.spinBox_image.setEnabled(1)
-
         self.affiche_image()
-        self.reinitialise_environnement()
 
 
     def defini_barre_avancement(self):

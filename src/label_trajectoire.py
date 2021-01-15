@@ -55,7 +55,7 @@ class Label_Trajectoire(QLabel):
 
     def maj(self):
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
-        self.origine_mvt = self.app.origine
+        self.origine_mvt = self.app.label_video.origine
 
     def giveCoordonatesToPaint(self):
         self.speedToDraw = []

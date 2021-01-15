@@ -47,6 +47,7 @@ class Label_Video(QLabel):
         self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
+        self.origine = vecteur(self.width()//2, self.height()//2)
         
         #####################TODO
         self.decal = vecteur(0, 0)  #if video is not 4:3, center video
@@ -54,14 +55,19 @@ class Label_Video(QLabel):
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray", "green", "red", "blue", "cyan", "magenta",
                          "yellow", "gray", "green"]
 
-    def sizeHint(self):
+    #def sizeHint(self):
 
-        return QSize(self.app.largeur, self.app.hauteur)
+        #return QSize(self.app.largeur, self.app.hauteur)
 
-    def heightForWidth(self, width):
+    #def heightForWidth(self, width):
 
-        return QtGui.QLabel.heightForWidth(self, width)
+        #return QtGui.QLabel.heightForWidth(self, width)
 
+    def resizeEvent(self,e):
+        if e.oldSize()!=QSize(-1, -1) : 
+            ratio = self.width()/e.oldSize().width()
+            self.origine = vecteur(self.origine.x()*ratio, self.origine.y()*ratio)
+        
     def reinit(self):
         try:
             del self.zoom_croix
@@ -100,10 +106,10 @@ class Label_Video(QLabel):
         self.fait_crop(pos_zoom)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
 
-    def leaveEvent(self, event):
-        if self.app.lance_capture == True:
-            self.cache_zoom()
-        self.app.gardeLargeur()    
+    #def leaveEvent(self, event):
+        #if self.app.lance_capture == True:
+            #self.cache_zoom()
+        #self.app.gardeLargeur()    
         
     def mouseMoveEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
@@ -133,9 +139,9 @@ class Label_Video(QLabel):
             
             self.painter.setPen(Qt.green)
             try : 
-                self.painter.drawLine(self.app.origine.x() - 5, self.app.origine.y(), self.app.origine.x() + 5, self.app.origine.y())
-                self.painter.drawLine(self.app.origine.x(), self.app.origine.y() - 5, self.app.origine.x(), self.app.origine.y() + 5)
-                self.painter.drawText(self.app.origine.x(), self.app.origine.y() + 15, "O")
+                self.painter.drawLine(self.origine.x() - 5, self.origine.y(), self.origine.x() + 5, self.origine.y())
+                self.painter.drawLine(self.origine.x(), self.origine.y() - 5, self.origine.x(), self.origine.y() + 5)
+                self.painter.drawText(self.origine.x(), self.origine.y() + 15, "O")
             except : 
                 pass
 
@@ -163,7 +169,7 @@ class Label_Video(QLabel):
             self.painter.setPen(Qt.green)
             self.painter.translate(0, 0)
             try : 
-                self.painter.translate(self.app.origine.x(), self.app.origine.y())
+                self.painter.translate(self.origine.x(), self.origine.y())
             except AttributeError: 
                 pass
             p1 = QPoint(self.app.sens_X * (-40), 0)
