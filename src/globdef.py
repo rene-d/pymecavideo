@@ -104,6 +104,9 @@ CONF_PATH = os.path.join(QStandardPaths.standardLocations(QStandardPaths.DataLoc
 ###HOME_PATH
 HOME_PATH = QStandardPaths.standardLocations(QStandardPaths.HomeLocation)
 
+###DOCUMENTS_PATH
+DOCUMENT_PATH = QStandardPaths.standardLocations(QStandardPaths.DocumentsLocation)
+
 ####DOSSIERS 
 #
 # dossier des icones

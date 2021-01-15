@@ -53,9 +53,10 @@ import time, traceback
 import locale, getopt
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange, QDialog
 import pyqtgraph as pg
 
+from export_python import ExportDialog
 # création précoce de l'objet application, déjà nécessaire pour traiter les bugs
 app = QApplication(sys.argv)
 
@@ -84,7 +85,7 @@ import math
 
 from globdef import HOME_PATH,VIDEO_PATH, CONF_PATH, \
      ICON_PATH, LANG_PATH, \
-    DATA_PATH, HELP_PATH
+    DATA_PATH, HELP_PATH, DOCUMENT_PATH
 
 from detect import filter_picture
 
@@ -424,8 +425,9 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_Ec.setChecked(0)
         self.ui.checkBox_Em.setChecked(0)
         self.ui.checkBox_Epp.setChecked(0)
+        
 
-
+        
     def desactiveExport(self, text):
         """
         Désactive la possibilité d'exportation, pour l'application dénotée par
@@ -568,6 +570,7 @@ class StartQt5(QMainWindow):
     redimensionneSignal = pyqtSignal(bool)
     stopCalculs = pyqtSignal()
     updateProgressBar = pyqtSignal()
+    pythonsourceOK = pyqtSignal(list)
     
     def ui_connections(self):
         """connecte les signaux de QT"""
@@ -582,7 +585,7 @@ class StartQt5(QMainWindow):
         self.ui.actionSaveData.triggered.connect(self.enregistre_ui)
         self.ui.actionCopier_dans_le_presse_papier.triggered.connect(self.presse_papier)
         self.ui.actionOpenOffice_org_Calc.triggered.connect(self.oooCalc)
-        self.ui.action_Python_source.triggered.connect(self.pythonSource)
+        self.ui.action_Python_source.triggered.connect(self.pythonSource1)
         self.ui.actionQtiplot.triggered.connect(self.qtiplot)
         self.ui.actionScidavis.triggered.connect(self.scidavis)
         self.ui.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
@@ -641,6 +644,7 @@ class StartQt5(QMainWindow):
         self.ui.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe)
         self.ui.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
         self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
+        self.pythonsourceOK.connect(self.pythonSource2)
         
 
     def enregistreChrono(self):
@@ -1038,7 +1042,7 @@ class StartQt5(QMainWindow):
             if option == "LibreOffice Calc":
                 self.oooCalc()
             elif option == "Python (source)":
-                self.pythonSource()
+                self.pythonSource1()
             elif option == "Qtiplot":
                 self.qtiplot()
             elif option == "SciDAVis":
@@ -1057,35 +1061,77 @@ class StartQt5(QMainWindow):
         calc = oooexport.Calc()
         calc.importPymeca(self)
 
-    def pythonSource(self):
+
+    def recupinfos(self, liste):
+        print(liste)
+        self.dlg.hide()
+        if liste != [None, None]:
+            self.pythonsourceOK.emit(liste)
+        
+        self.update()
+        
+
+    def pythonSource1(self):
         """
         Exporte les données dans un fichier source Python3
         """
-        self.dbg.p(1, "rentre dans 'python source'")
-        f = tempfile.NamedTemporaryFile(prefix='pymecaTmp-', suffix=".py")
-        fname = f.name
-        f.close()
-        f = open(fname, "w")
-        date = time.strftime("%d/%m/%y %H:%M")
-        f.write(f"## Données exportées de Pymecavidéo\n## {date}\n")
-        f.write("\nimport numpy as np\nimport matplotlib.pyplot as plt\n")
-        f.write(f"\n# Intervalle de temps auto-détecté\ndt={self.deltaT}\n")
-        for i in range(self.nb_de_points):
-            f.write(f"\n# coordonnées du point numéro {i+1}\n")
-            ligne_x = f"x{i+1} = np.array(["
-            ligne_y = f"y{i+1} = np.array(["
-            for k in self.points.keys():
-                data = self.points[k]
-                for vect in data[1:]:
-                    vect=self.pointEnMetre(vect)
-                    ligne_x += f"{vect.x()}, "
-                    ligne_y += f"{vect.y()}, "
-            ligne_x += "])\n"
-            ligne_y += "])\n"
-            f.write(ligne_x)
-            f.write(ligne_y)
-            f.write("""
-
+        self.dbg.p(1, "rentre dans 'python source1'")
+        if self.nb_de_points==1 : 
+            self.dlg = ExportDialog(self)
+            self.dlg.donnees.connect(self.recupinfos)
+            self.dlg.exec_()
+        else : 
+            reponse = QMessageBox.warning(
+                    None,
+                    _translate("pymecavideo", "Impossible de créer le fichier source", None),
+                    _translate("pymecavideo", """\
+    L'export python n'est possible que pour 1 seul point cliqué.
+    """, None),QMessageBox.Ok, QMessageBox.Ok)
+    
+    def pythonSource2(self, liste):
+        ##traitement du scénario des vitesses/accélrations : 
+        ##si seule la vitesse est cochée, on calcule et affiche les vitesses
+        ##si les deux sont cochées, on calcule et affiche les vitesses et accélérations
+        ##si seule l'accélération est cochée, les vitesses sont calculées mais non affichées
+        self.dbg.p(1, "rentre dans 'python source2'")
+        calcule_vitesse, affiche_vitesse, calcule_accel, affiche_accel = liste
+        if affiche_vitesse : 
+            calcule_vitesse = True
+            
+        if calcule_accel or affiche_accel:
+            "on veut les accelerations, il faut les vitesse"
+            calcule_vitesse = True
+        if affiche_accel : 
+            calcule_accel = True
+            calcule_vitesse = True
+        
+        fichier, hints = QFileDialog.getSaveFileName(
+                self,
+                _translate("pymecavideo", "Sauvegarde fichier python", None),
+                os.path.join(str(DOCUMENT_PATH[0]), "pymecavideo.py"),
+                _translate("pymecavideo", "Fichiers Python (*.py)",None))
+        print(str(DOCUMENT_PATH), fichier)
+        try : 
+            f = open(fichier, "w")
+            date = time.strftime("%d/%m/%y %H:%M")
+            f.write(f"## Données exportées de Pymecavidéo\n## {date}\n")
+            f.write("\nimport numpy as np\nimport matplotlib.pyplot as plt\n")
+            f.write(f"\n# Intervalle de temps auto-détecté\ndt={self.deltaT}\n")
+            for i in range(self.nb_de_points):
+                f.write(f"\n# coordonnées du point numéro {i+1}\n")
+                ligne_x = f"x{i+1} = np.array(["
+                ligne_y = f"y{i+1} = np.array(["
+                for k in self.points.keys():
+                    data = self.points[k]
+                    for vect in data[1:]:
+                        vect=self.pointEnMetre(vect)
+                        ligne_x += f"{vect.x()}, "
+                        ligne_y += f"{vect.y()}, "
+                ligne_x += "])\n"
+                ligne_y += "])\n"
+                f.write(ligne_x)
+                f.write(ligne_y)
+                f.write("""
 ##############################################################
 # Le code auto-généré qui suit peut être effacé à volonté.   #
 ##############################################################
@@ -1098,40 +1144,66 @@ plt.plot(x1,y1,'o',markersize= 3)
 plt.xlabel("x (en m)")
 plt.ylabel("y (en m)")
 
-## affichage des vecteurs vitesses
-plt.title("Vecteurs vitesse")
+## calcul et affichage des vecteurs vitesses
 
-for k in range(1,len(x1)):
-    vx = (x1[k]-x1[k-1])/dt
-    vy = (y1[k]-y1[k-1])/dt
-    plt.quiver(x1[k-1], y1[k-1], vx, vy, scale=20, scale_units="xy")
+
+
+%s
+%s
+
+## calcul et affichage des vecteurs accélérations
+
+%s
+%s
 
 ## présentation du diagramme interactif
 plt.grid()
 plt.show()
-""")
-            f.close()
-            reponse = QMessageBox.warning(
-                None,
-                _translate("pymecavideo", "Fichier Python créé", None),
-                _translate("pymecavideo", """\
-Le fichier {filename} a été créé dans un espace temporaire.
-Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
-""".format(
-    filename=fname
-    ),
-                           None),
-                QMessageBox.Ok, QMessageBox.Ok)
-            # on essaie d'ouvrir le programme Python dans un
-            # éditeur approprié
-            if sys.platform.startswith('linux'):
-                ret_code = subprocess.call(['xdg-open', fname])
+"""%("""
+vx = np.array(np.zeros(len(x1)-1))
+vy = np.array(np.zeros(len(x1)-1))
+for k in range(0,len(x1)-1):
+    vx[k] = (x1[k+1]-x1[k])/dt
+    vy[k] = (y1[k+1]-y1[k])/dt""" if calcule_vitesse else """#####à compléter pour calculer les vitesses####
+    ##############
+    ##############""",
+    """
+    plt.title("Vecteurs vitesse")
+    plt.quiver(x1[k-1], y1[k-1], vx[k], vy[k], scale=20, scale_units="xy")""" if affiche_vitesse else "" ,
+    """
+ax = np.array(np.zeros(len(vx)-1))
+ay = np.array(np.zeros(len(vx)-1))
+for k in range(0, len(vx)-1): 
+    ax[k] = (vx[k+1]-vx[k])/dt
+    ay[k] = (vy[k+1]-vy[k])/dt""" if calcule_accel else """#####à compléter pour calculer les vitesses####
+    ##############
+    ##############""",
+    """
+    plt.title("Vecteurs accélérations")
+    plt.quiver(x1[k-1], y1[k-1], ax[k], ay[k],color='red', scale=60, scale_units="xy")""" if affiche_accel else ""))
+                f.close()
+                reponse = QMessageBox.warning(
+                    None,
+                    _translate("pymecavideo", "Fichier Python créé", None),
+                    _translate("pymecavideo", """\
+    Le fichier {filename} a été créé dans un espace temporaire.
+    Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
+    """.format(
+            filename=fichier
+            ), None),QMessageBox.Ok, QMessageBox.Ok)
+                # on essaie d'ouvrir le programme Python dans un
+                # éditeur approprié
+                
+                if sys.platform.startswith('linux'):
+                    ret_code = subprocess.call(['xdg-open', fichier])
+                elif sys.platform.startswith('darwin'):
+                    ret_code = subprocess.call(['open', fichier])
 
-            elif sys.platform.startswith('darwin'):
-                ret_code = subprocess.call(['open', fname])
-
-            elif sys.platform.startswith('win'):
-                ret_code = subprocess.call(['start', fname], shell=True)
+                elif sys.platform.startswith('win'):
+                    ret_code = subprocess.call(['start', fichier], shell=True)
+        
+        except FileNotFoundError : 
+            pass
         return
         
     def qtiplot(self):
@@ -2604,7 +2676,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             plotwidget.parentWidget().close()
             plotwidget.close()
             del plotwidget
-        from tempfile import gettempdir
 
     def verifie_donnees_sauvegardees(self):
         self.dbg.p(1, "rentre dans 'verifie_donnees_sauvegardees'")
