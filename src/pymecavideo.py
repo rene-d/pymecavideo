@@ -1301,10 +1301,15 @@ for k in range(0, len(vx)-1):
         dir_ = self._dir("home")[0]
         fichier, _ = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
                                               dir_,
-                                              _translate("pymecavideo", "fichiers pymecavideo(*.mecavideo, *.csv)", None))
+                                              _translate("pymecavideo", "fichiers pymecavideo(*.mecavideo *.csv)", None))
 
         if fichier != "":
             self.rouvre(fichier)
+    
+    def mets_en_orange_echelle(self):
+        self.ui.Bouton_Echelle.setText("refaire une échelle")
+        self.ui.Bouton_Echelle.setStyleSheet("background-color:orange;")
+
 
     def loads(self, s):
         self.dbg.p(1, "rentre dans 'loads'")
@@ -1368,6 +1373,7 @@ for k in range(0, len(vx)-1):
             self.echelle_faite = False
         else :
             self.echelle_faite = True
+            
         self.label_video.echelle_image.p1, self.label_video.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]) \
             , vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
         self.dbg.p(3, "rentre dans 'loads' %s" % ([self.label_video.echelle_image.p1, self.label_video.echelle_image.p2]))
@@ -2606,6 +2612,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 
         self.label_echelle_trace.show()
         #self.stopRedimensionnement.emit()
+        if self.echelle_faite: 
+            self.mets_en_orange_echelle()
+            self.ui.Bouton_Echelle.setEnabled(1)
 
 
 

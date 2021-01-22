@@ -158,8 +158,7 @@ class Label_Echelle(QLabel):
         self.app.affiche_echelle()
         # self.app.affiche_nb_points(True)
         self.app.mets_a_jour_label_infos(self.app.tr(u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
-        self.app.ui.Bouton_Echelle.setText("refaire une échelle")
-        self.app.ui.Bouton_Echelle.setStyleSheet("background-color:orange;")
+        self.app.mets_en_orange_echelle()
 
         #self.app.affiche_lance_capture(False)
         self.app.feedbackEchelle(self.p1, self.p2)

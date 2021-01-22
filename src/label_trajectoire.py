@@ -128,8 +128,7 @@ class Label_Trajectoire(QLabel):
         self.pos_souris = event.pos()
         if self.app.ui.radioButtonNearMouse.isChecked():
             self.reDraw()
-
-
+    
     def paintEvent(self, event):
         self.painter = QPainter()
         self.painter.begin(self)
@@ -173,7 +172,7 @@ class Label_Trajectoire(QLabel):
                 self.painter.drawLine(100,60,100,80)
                 self.painter.drawLine(100,70, longueur+100,70)
                 self.painter.drawLine(longueur+100,60,longueur+100,80)
-                self.painter.drawText((longueur)/2,120, unicode("D = {0:.2f} m").format(self.app.echelle_image.longueur_reelle_etalon))
+                self.painter.drawText((longueur)/2,120, unicode("D = {0:.2f} m").format(self.app.label_video.echelle_image.longueur_reelle_etalon))
             except AttributeError:
                 pass #échelle non faite
             except NameError : 
@@ -181,7 +180,7 @@ class Label_Trajectoire(QLabel):
                 self.painter.drawLine(100,60,100,80)
                 self.painter.drawLine(100,70, longueur+100,70)
                 self.painter.drawLine(longueur+100,60,longueur+100,80)
-                self.painter.drawText((longueur)/2,120, "D = {0:.2f} m".format(self.app.echelle_image.longueur_reelle_etalon))
+                self.painter.drawText((longueur)/2,120, "D = {0:.2f} m".format(self.app.label_video.echelle_image.longueur_reelle_etalon))
             self.painter.end()
 
 
@@ -257,7 +256,7 @@ class Label_Trajectoire(QLabel):
                     self.painter.setRenderHint(QPainter.Antialiasing)
                     self.painter.setPen(QColor(self.couleurs[i - 1]))
                     try :
-                        speed = sqrt(vector_speed.x() ** 2 + vector_speed.y() ** 2) * float(self.app.echelle_image.mParPx()) \
+                        speed = sqrt(vector_speed.x() ** 2 + vector_speed.y() ** 2) * float(self.app.label_video.echelle_image.mParPx()) \
                             / (2 * self.app.deltaT) * float(self.app.ui.checkBoxScale.currentText())
                         self.app.ui.checkBoxScale.setStyleSheet("background-color:none");
                         path = QPainterPath()
