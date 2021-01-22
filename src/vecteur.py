@@ -123,5 +123,6 @@ class vecteur:
             return vecteur(x1, y1)
         elif angle==180: 
             return vecteur(-x1, -y1)
+        
     def homothetie(self,ratio):
         return vecteur(self.x()*ratio, self.y()*ratio)

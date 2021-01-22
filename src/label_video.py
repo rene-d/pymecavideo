@@ -21,7 +21,7 @@
 """
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect, QPoint, QPointF
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage,QPainter, QCursor, QPen, QColor, QFont
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage,QPainter, QCursor, QPen, QColor, QFont, QResizeEvent
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel,QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
@@ -54,18 +54,51 @@ class Label_Video(QLabel):
 
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray", "green", "red", "blue", "cyan", "magenta",
                          "yellow", "gray", "green"]
+        self.tourne = False
+        self.premier_resize = True
 
     def resizeEvent(self,e):
-        print('oooooooooo', e.oldSize())
-        if e.oldSize()!=QSize(-1, -1) : 
-            ratio = self.width()/e.oldSize().width()
-            self.origine = self.origine.homothetie(ratio)
-            self.echelle_image.p1 = self.echelle_image.p1.homothetie(ratio)
-            self.echelle_image.p2 = self.echelle_image.p2.homothetie(ratio)
-            self.app.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        else : #premier passage lors de l'__init__
+        print('oooooooooo', e.oldSize(),e.size(), self.tourne, self.origine)
+        if self.premier_resize : #Au premier resize, la taille est changée mais pas l'origine.
+            self.premier_resize = False
             self.reinit_origine()
-    
+        if e.oldSize()!=QSize(-1, -1):
+            print('resize1', self.origine)
+            if not self.app.tourne: 
+                ratiow = self.width()/e.oldSize().width()
+                ratioh = self.height()/e.oldSize().height() 
+            else : 
+                ratiow = self.width()/e.oldSize().height()
+                ratioh = self.height()/e.oldSize().width() 
+            x = self.origine.x()*ratiow
+            y = self.origine.y()*ratioh
+            self.origine = vecteur(x,y)
+            print('resize2', self.origine)
+            
+            
+            x = self.echelle_image.p1.x()*ratiow
+            y = self.echelle_image.p1.y()*ratioh
+            self.echelle_image.p1 = vecteur(x,y)
+            x = self.echelle_image.p2.x()*ratiow
+            y = self.echelle_image.p2.y()*ratioh
+            self.echelle_image.p2 = vecteur(x,y)
+            #self.echelle_image.p2 = self.echelle_image.p2.homothetie(ratiow)
+            self.app.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        
+        elif self.tourne: 
+            print('resize tourne1', self.origine)
+
+            #self.origine = self.origine.rotate(self.app.increment, self.app.largeur, self.app.hauteur)
+            print('resize tourne2', self.origine)
+            #ratioh = self.width()/e.oldSize().width()
+            #ratiow = self.height()/e.oldSize().height() 
+            #x = self.origine.x()*ratiow
+            #y = self.origine.y()*ratioh
+            #self.origine = vecteur(x,y)
+            #print('origine tourne', self.origine)
+            self.tourne=False
+            self.update()
+      
     def reinit(self):
         try:
             del self.zoom_croix
@@ -99,9 +132,13 @@ class Label_Video(QLabel):
             self.setCursor(Qt.ArrowCursor)
             
         
-    def maj(self):
+    def maj(self, tourne=False):
         self.app.dbg.p(1, "rentre dans 'label_video.maj'")
+        if tourne : 
+            self.tourne=True
+        print('ok', tourne)
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.resizeEvent(QResizeEvent(self.size(), QSize()))
 
     def met_a_jour_crop(self, pos_zoom = vecteur(50,50)):
         self.fait_crop(pos_zoom)
