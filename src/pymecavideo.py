@@ -1496,18 +1496,11 @@ for k in range(0, len(vx)-1):
             self.dbg.p(2, "MAJ de label_video")
             self.label_video.maj()
             self.label_trajectoire.maj()
-            self.afficheJusteImage()
+            self.affiche_image()
 
-
-        
         self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget") 
         self.ui.centralwidget.setFixedSize(self.size()-QSize(1,1))
         self.ui.tabWidget.setFixedSize(self.size()-QSize(1,1))
-        
-        
-        
-        
-
         
     def widthForHeight_label_video(self, h):
         #calcule self.largeur et self.hauteur si la hauteur est prédominante
