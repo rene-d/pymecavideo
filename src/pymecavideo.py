@@ -252,11 +252,11 @@ class StartQt5(QMainWindow):
         # connections internes
         self.ui_connections()
 
-        # prise en compte d'options de la ligne de commande
-        self.traiteOptions()
-
         # chargement d'un éventuel premier fichier
         self.splashVideo()
+        
+        # prise en compte d'options de la ligne de commande
+        self.traiteOptions()
     
     def hasHeightForWidth(self):
         # This tells the layout manager that the banner's height does depend on its width
@@ -284,9 +284,10 @@ class StartQt5(QMainWindow):
 
     def splashVideo(self):
         self.dbg.p(1, "rentre dans 'splashVideo'")
-        for opt, val in self.opts:
-            if opt in ['-f', '--fichier_mecavideo']:
-                return
+        
+        #for opt, val in self.opts:
+            #if opt in ['-f', '--fichier_mecavideo']:
+                #return
         if os.path.isfile(self.filename):
             self.openTheFile(self.filename)
         elif os.path.isfile(self.prefs.lastVideo):
@@ -360,9 +361,14 @@ class StartQt5(QMainWindow):
         
     def init_interface(self, refait=0):
         self.ui.tabWidget.setEnabled(1)
-        self.ui.tabWidget.setTabEnabled(3, False)
-        self.ui.tabWidget.setTabEnabled(2, False)
-        self.ui.tabWidget.setTabEnabled(1, False)
+        if len(self.points) ==0 : 
+            self.ui.tabWidget.setTabEnabled(3, False)
+            self.ui.tabWidget.setTabEnabled(2, False)
+            self.ui.tabWidget.setTabEnabled(1, False)
+        else: #quando n ouvre un fichier via la ligne de commande
+            self.ui.tabWidget.setTabEnabled(3, True)
+            self.ui.tabWidget.setTabEnabled(2, True)
+            self.ui.tabWidget.setTabEnabled(1, True)
         if not self.a_une_image : 
             self.ui.tabWidget.setTabEnabled(0, False)
         self.ui.actionExemples.setEnabled(1)
@@ -1307,7 +1313,16 @@ for k in range(0, len(vx)-1):
     def loads(self, s):
         self.dbg.p(1, "rentre dans 'loads'")
         s = s[1:-2].replace("\n#", "\n")
-        self.label_video.echelle_image.longueur_reelle_etalon, point, self.deltaT, self.nb_de_points = s.splitlines()[1:-1][-4:]
+        echelle, point, self.deltaT, self.nb_de_points = s.splitlines()[1:-1][-4:]
+        
+        self.label_video.echelle_image.longueur_reelle_etalon = float(echelle.split()[1])
+        #self.label_video.echelle_image.longueur_pixel_etalon = float(echelle.split()[4])
+        
+
+        x, y = float(point.split()[3][1:-1]), float(point.split()[4][:-1])
+        self.label_video.echelle_image.p1 = vecteur(x,y)
+        x, y = float(point.split()[5][1:-1]), float(point.split()[6][:-1])
+        self.label_video.echelle_image.p2 = vecteur(x,y)
         
         donnees_fichier = s.splitlines()[1:-1]
         dico_donnee = {}
@@ -1350,7 +1365,8 @@ for k in range(0, len(vx)-1):
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.label_video.origine))
         self.premiere_image = int(dico_donnee['index de depart'])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.premiere_image))
-        self.label_video.echelle_image.longueur_reelle_etalon = float(self.label_video.echelle_image.longueur_reelle_etalon.split()[1])
+        
+        
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.label_video.echelle_image.longueur_reelle_etalon))
         if self.label_video.echelle_image.mParPx() == 1 :
             self.echelle_faite = False
@@ -1361,6 +1377,7 @@ for k in range(0, len(vx)-1):
         self.dbg.p(3, "rentre dans 'loads' %s" % ([self.label_video.echelle_image.p1, self.label_video.echelle_image.p2]))
         self.deltaT = float(self.deltaT.split()[-1])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.deltaT))
+        self.dbg.p(3, "rentre dans 'loads' %s" % (self.echelle_faite))
         self.nb_de_points = int(self.nb_de_points.split()[-2])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.nb_de_points))
 
@@ -1370,6 +1387,7 @@ for k in range(0, len(vx)-1):
         """Open a mecavideo file"""
         self.dbg.p(1, "rentre dans 'rouvre'")
         self.reinitialise_capture()
+        
         lignes = open(fichier, "r").readlines()
         i = 0
         self.points = {} #dictionnaire des données, simple. Les clefs sont les index de l'image. les données les
@@ -1378,16 +1396,17 @@ for k in range(0, len(vx)-1):
         for l in lignes:
             if l[0] == "#":
                 dd += l
-        
+        self.label_video.echelle_image = echelle()  # on réinitialise l'échelle
         self.loads(dd)  # on récupère les données importantes
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
         self.init_interface()
         self.change_axe_ou_origine()
-        self.label_video.echelle_image = echelle()  # on réinitialise l'échelle
+        
         # puis on trace le segment entre les points cliqués pour l'échelle
         self.feedbackEchelle(self.label_video.echelle_image.p1, self.label_video.echelle_image.p2)# on réinitialise l'échelle.p1, self.echelle_image.p2)
         framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(self.rotation)
         self.rouvert = True
+        
 
         self.premierResize = False
 
@@ -1425,17 +1444,20 @@ for k in range(0, len(vx)-1):
 
         self.affiche_image()  # on affiche l'image
         
-        self.debut_capture(departManuel=False)
+        
         self.ui.tableWidget.show()
         self.recalculLesCoordonnees()
-        # On met à jour les préférences
         
-        self.prefs.lastVideo = self.filename
-        self.prefs.videoDir = os.path.dirname(self.filename)
-        self.prefs.save()
-       # self.metsAjourLesDimensions()
-
-
+        # On met à jour les préférences
+        #self.prefs.lastVideo = self.filename
+        #self.prefs.videoDir = os.path.dirname(self.filename)
+        #self.prefs.save()
+       
+        #si il y a des points, on autorise le changement d'onglets
+        
+        self.debut_capture()
+            
+            
     def metsAjourLesDimensions(self):
         self.dbg.p(1, "rentre dans 'metsAjourLesDimensions'")
         self.resize(self.largeur+self.decalw,self.hauteur+self.decalh)
@@ -1628,6 +1650,7 @@ for k in range(0, len(vx)-1):
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
         self.ui.spinBox_image.setEnabled(1)
+        self.ui.tabWidget.setEnabled(1)
         self.ui.tabWidget.setTabEnabled(3, True)
         self.ui.tabWidget.setTabEnabled(2, True)
         self.ui.tabWidget.setTabEnabled(1, True)
@@ -2445,32 +2468,34 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             pass
 
     def affiche_image(self):
+        try :
+            self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' + str(self.index_de_l_image) + ' ' + str(self.image_max))
+        
 
-        self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' + str(self.index_de_l_image) + ' ' + str(self.image_max))
+            if self.index_de_l_image <= self.image_max:
+                self.index_avant = self.index_de_l_image
+                self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
+                ok, self.image_opencv = self.extract_image(self.index_de_l_image) #2ms
+                
+                self.imageExtraite = toQImage(self.image_opencv)
+                self.dbg.p(2, "Image extraite : largeur : %s, hauteur %s: "%(self.imageExtraite.width(), self.imageExtraite.height()))
+                if self.largeur==0 : 
+                    self.largeur = self.imageExtraite.width()
+                    self.hauteur = self.imageExtraite.height()
+                    #self.largeurAvant = self.largeur
+                    #self.hauteurAvant = self.hauteur
+                            
+                if hasattr(self, "label_video"):
+                    self.afficheJusteImage()  #4 ms
 
-        if self.index_de_l_image <= self.image_max:
-            self.index_avant = self.index_de_l_image
-            self.dbg.p(1, "affiche_image " + "self.index_de_l_image <= self.image_max")
-            ok, self.image_opencv = self.extract_image(self.index_de_l_image) #2ms
-            
-            self.imageExtraite = toQImage(self.image_opencv)
-            self.dbg.p(2, "Image extraite : largeur : %s, hauteur %s: "%(self.imageExtraite.width(), self.imageExtraite.height()))
-            if self.largeur==0 : 
-                self.largeur = self.imageExtraite.width()
-                self.hauteur = self.imageExtraite.height()
-                #self.largeurAvant = self.largeur
-                #self.hauteurAvant = self.hauteur
-                           
-            if hasattr(self, "label_video"):
-                self.afficheJusteImage()  #4 ms
-
-            if self.ui.horizontalSlider.value() != self.index_de_l_image:
-                self.dbg.p(1, "affiche_image " + "horizontal")
-                self.ui.horizontalSlider.setValue(self.index_de_l_image) 
-                self.ui.spinBox_image.setValue(self.index_de_l_image) #0.01 ms
-        elif self.index_de_l_image > self.image_max:
-            self.index_de_l_image = self.image_max
-            self.lance_capture = False
+                if self.ui.horizontalSlider.value() != self.index_de_l_image:
+                    self.dbg.p(1, "affiche_image " + "horizontal")
+                    self.ui.horizontalSlider.setValue(self.index_de_l_image) 
+                    self.ui.spinBox_image.setValue(self.index_de_l_image) #0.01 ms
+            elif self.index_de_l_image > self.image_max:
+                self.index_de_l_image = self.image_max
+                self.lance_capture = False
+        except : pass #arrive quand on ouvreun fichier pour la prmeière fois, au premier resize.
 
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans 'AffichejusteImage'" )
@@ -2569,14 +2594,11 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         except :
             pass #si pas de vidéo preexistante
         
-        
         self.label_echelle_trace = Label_Echelle_Trace(self.label_video, p1, p2)
         
         #on garde les valeurs pour le redimensionnement
         self.dbg.p(2, "Points de l'echelle : p1 : %s, p2 : %s"%(p1, p2))
-        self.label_echelle_p1Avant = self.label_echelle_trace.p1
-        self.label_echelle_p2Avant = self.label_echelle_trace.p2
-        
+                
         self.label_echelle_trace.show()
         #self.stopRedimensionnement.emit()
 

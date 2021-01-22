@@ -119,7 +119,6 @@ class Label_Video(QLabel):
         self.app.dbg.p(1, "rentre dans 'label_video.maj'")
         if tourne : 
             self.tourne=True
-        print('ok', tourne)
         self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
         self.resizeEvent(QResizeEvent(self.size(), QSize()))
 
