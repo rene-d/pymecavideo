@@ -1494,7 +1494,7 @@ for k in range(0, len(vx)-1):
             self.dbg.p(3, "label_vidéo largeur :  %s hauteur : %s"%(self.label_video.width(),self.label_video.height()))
     
             self.dbg.p(2, "MAJ de label_video")
-            #self.label_video.maj()
+            self.label_video.maj()
             self.label_trajectoire.maj()
             self.afficheJusteImage()
 

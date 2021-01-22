@@ -58,12 +58,10 @@ class Label_Video(QLabel):
         self.premier_resize = True
 
     def resizeEvent(self,e):
-        print('oooooooooo', e.oldSize(),e.size(), self.tourne, self.origine)
         if self.premier_resize : #Au premier resize, la taille est changée mais pas l'origine.
             self.premier_resize = False
             self.reinit_origine()
         if e.oldSize()!=QSize(-1, -1):
-            print('resize1', self.origine)
             if not self.app.tourne: 
                 ratiow = self.width()/e.oldSize().width()
                 ratioh = self.height()/e.oldSize().height() 
@@ -73,31 +71,16 @@ class Label_Video(QLabel):
             x = self.origine.x()*ratiow
             y = self.origine.y()*ratioh
             self.origine = vecteur(x,y)
-            print('resize2', self.origine)
-            
             
             x = self.echelle_image.p1.x()*ratiow
             y = self.echelle_image.p1.y()*ratioh
             self.echelle_image.p1 = vecteur(x,y)
+            
             x = self.echelle_image.p2.x()*ratiow
             y = self.echelle_image.p2.y()*ratioh
             self.echelle_image.p2 = vecteur(x,y)
-            #self.echelle_image.p2 = self.echelle_image.p2.homothetie(ratiow)
             self.app.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        
-        elif self.tourne: 
-            print('resize tourne1', self.origine)
 
-            #self.origine = self.origine.rotate(self.app.increment, self.app.largeur, self.app.hauteur)
-            print('resize tourne2', self.origine)
-            #ratioh = self.width()/e.oldSize().width()
-            #ratiow = self.height()/e.oldSize().height() 
-            #x = self.origine.x()*ratiow
-            #y = self.origine.y()*ratioh
-            #self.origine = vecteur(x,y)
-            #print('origine tourne', self.origine)
-            self.tourne=False
-            self.update()
       
     def reinit(self):
         try:
