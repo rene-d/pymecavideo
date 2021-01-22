@@ -159,9 +159,6 @@ class MonThreadDeCalcul(QThread):
         self.stopped = True
 
 class StartQt5(QMainWindow):
-    
-
-    
     def __init__(self, parent=None, opts=[], args=[]):
         """
         le constructeur reçoit les données principales du logiciel : 
@@ -169,7 +166,6 @@ class StartQt5(QMainWindow):
         @param opts les options de l'invocation bien rangées en tableau
         @param args les arguments restants après raitement des options
         """
-
         ######QT
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
@@ -566,7 +562,7 @@ class StartQt5(QMainWindow):
         
         if self.ui.tableWidget:
             self.ui.tableWidget.clear()
-        #self.ui_connections()
+        self.redimensionneFenetre()
 
     ############ les signaux spéciaux #####################
     clic_sur_video = pyqtSignal()
@@ -1305,7 +1301,7 @@ for k in range(0, len(vx)-1):
         dir_ = self._dir("home")[0]
         fichier, _ = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
                                               dir_,
-                                              _translate("pymecavideo", "fichiers pymecavideo(*.csv)", None))
+                                              _translate("pymecavideo", "fichiers pymecavideo(*.mecavideo, *.csv)", None))
 
         if fichier != "":
             self.rouvre(fichier)
@@ -1397,65 +1393,74 @@ for k in range(0, len(vx)-1):
             if l[0] == "#":
                 dd += l
         self.label_video.echelle_image = echelle()  # on réinitialise l'échelle
-        self.loads(dd)  # on récupère les données importantes
-        self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
-        self.init_interface()
-        self.change_axe_ou_origine()
+        try : 
+            self.loads(dd)  # on récupère les données importantes
+            self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
+            self.init_interface()
+            self.change_axe_ou_origine()
+            
+            # puis on trace le segment entre les points cliqués pour l'échelle
+            self.feedbackEchelle(self.label_video.echelle_image.p1, self.label_video.echelle_image.p2)# on réinitialise l'échelle.p1, self.echelle_image.p2)
+            framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(self.rotation)
+            self.rouvert = True
+            
+
+            self.premierResize = False
+
+            # on régénère self.listePoints et self.points
+            for l in lignes:
+                if l[0] == "#":
+                    pass
+                else:
+                    l = l.strip('\t\n')
+                    d = l.split("\t")
+                    t = "%4f" % (float(d[0].replace(",", ".")))
+
+                    self.points[i] = [t]
+                    for j in range(1, len(d), 2):
+                        pos = vecteur(float(d[j].replace(",", ".")) * self.label_video.echelle_image.pxParM() \
+                                    + self.label_video.origine.x(), self.label_video.origine.y() - float(
+                                d[j + 1].replace(",", ".")) * self.label_video.echelle_image.pxParM())
+
+                        self.enregistre_dans_listePoints(
+                            pos, index=int(float(t)*framerate)+self.premiere_image
+                        )
+                        self.points[i].append(pos)
+
+                    i += 1
+
+            self.defini_barre_avancement()
+
+            self.affiche_echelle()  # on met à jour le widget d'échelle
+            derniere_image = self.listePoints[len(self.listePoints)-1][0]+1
+            self.ui.horizontalSlider.setValue(derniere_image)
+            self.ui.spinBox_image.setValue(derniere_image)
+            self.affiche_nb_points(self.nb_de_points)
+            self.enableDefaire(True)
+            self.enableRefaire(False)
+
+            self.affiche_image()  # on affiche l'image
+            
+            
+            self.ui.tableWidget.show()
+            self.recalculLesCoordonnees()
+            
+            # On met à jour les préférences
+            #self.prefs.lastVideo = self.filename
+            #self.prefs.videoDir = os.path.dirname(self.filename)
+            #self.prefs.save()
         
-        # puis on trace le segment entre les points cliqués pour l'échelle
-        self.feedbackEchelle(self.label_video.echelle_image.p1, self.label_video.echelle_image.p2)# on réinitialise l'échelle.p1, self.echelle_image.p2)
-        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(self.rotation)
-        self.rouvert = True
+            #si il y a des points, on autorise le changement d'onglets
+            
+            self.debut_capture()
+        except : 
+            reponse = QMessageBox.warning(None, "Mauvais type de fichier",
+                                          _translate("pymecavideo", """\
+Le fichier choisi n'est pas compatible avec pymecavideo""",
+                                                     None),
+                                          QMessageBox.Ok, QMessageBox.Ok)
+            self.a_une_image=False
         
-
-        self.premierResize = False
-
-        # on régénère self.listePoints et self.points
-        for l in lignes:
-            if l[0] == "#":
-                pass
-            else:
-                l = l.strip('\t\n')
-                d = l.split("\t")
-                t = "%4f" % (float(d[0].replace(",", ".")))
-
-                self.points[i] = [t]
-                for j in range(1, len(d), 2):
-                    pos = vecteur(float(d[j].replace(",", ".")) * self.label_video.echelle_image.pxParM() \
-                                + self.label_video.origine.x(), self.label_video.origine.y() - float(
-                            d[j + 1].replace(",", ".")) * self.label_video.echelle_image.pxParM())
-
-                    self.enregistre_dans_listePoints(
-                        pos, index=int(float(t)*framerate)+self.premiere_image
-                    )
-                    self.points[i].append(pos)
-
-                i += 1
-
-        self.defini_barre_avancement()
-
-        self.affiche_echelle()  # on met à jour le widget d'échelle
-        derniere_image = self.listePoints[len(self.listePoints)-1][0]+1
-        self.ui.horizontalSlider.setValue(derniere_image)
-        self.ui.spinBox_image.setValue(derniere_image)
-        self.affiche_nb_points(self.nb_de_points)
-        self.enableDefaire(True)
-        self.enableRefaire(False)
-
-        self.affiche_image()  # on affiche l'image
-        
-        
-        self.ui.tableWidget.show()
-        self.recalculLesCoordonnees()
-        
-        # On met à jour les préférences
-        #self.prefs.lastVideo = self.filename
-        #self.prefs.videoDir = os.path.dirname(self.filename)
-        #self.prefs.save()
-       
-        #si il y a des points, on autorise le changement d'onglets
-        
-        self.debut_capture()
             
             
     def metsAjourLesDimensions(self):
@@ -1617,8 +1622,8 @@ for k in range(0, len(vx)-1):
             fichier, hints = QFileDialog.getSaveFileName(
                 self,
                 "FileDialog",
-                "data.csv",
-                "*.csv *.txt *.asc *.dat")
+                "data.mecavideo",
+                "*.csv *.txt *.asc *.dat *.mecavideo")
 
             self.enregistre(fichier)
 
