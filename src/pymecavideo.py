@@ -1347,7 +1347,7 @@ for k in range(0, len(vx)-1):
             self.label_video.origine = vecteur(dico_donnee['origine de pointage'].split()[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])        
         except KeyError:
             self.label_video.origine = vecteur(self.largeur//2, self.hauteur//2)
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.label_video.origine.origine))
+        self.dbg.p(3, "rentre dans 'loads' %s" % (self.label_video.origine))
         self.premiere_image = int(dico_donnee['index de depart'])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.premiere_image))
         self.label_video.echelle_image.longueur_reelle_etalon = float(self.label_video.echelle_image.longueur_reelle_etalon.split()[1])
@@ -1403,7 +1403,7 @@ for k in range(0, len(vx)-1):
                 self.points[i] = [t]
                 for j in range(1, len(d), 2):
                     pos = vecteur(float(d[j].replace(",", ".")) * self.label_video.echelle_image.pxParM() \
-                                + self.origine.x(), self.origine.y() - float(
+                                + self.label_video.origine.x(), self.label_video.origine.y() - float(
                             d[j + 1].replace(",", ".")) * self.label_video.echelle_image.pxParM())
 
                     self.enregistre_dans_listePoints(
