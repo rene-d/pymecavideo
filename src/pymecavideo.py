@@ -53,7 +53,7 @@ import time, traceback
 import locale, getopt
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange, QDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox,QVBoxLayout, QTableWidgetSelectionRange, QDialog
 import pyqtgraph as pg
 
 from export_python import ExportDialog
@@ -431,8 +431,16 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_Em.setChecked(0)
         self.ui.checkBox_Epp.setChecked(0)
         
-
+        self.ui.textEdit_consignes_python.hide()
         
+    def gere_aide_python(self):
+        if self.ui.textEdit_consignes_python.isHidden() : 
+            self.ui.pushButton_aide_python.setText(_translate("pymecavideo", "Cacher l'aide de cet onglet", None))
+            self.ui.textEdit_consignes_python.show()
+        else : 
+            self.ui.pushButton_aide_python.setText(_translate("pymecavideo", "Afficher l'aide de cet onglet", None))
+            self.ui.textEdit_consignes_python.hide()
+
     def desactiveExport(self, text):
         """
         Désactive la possibilité d'exportation, pour l'application dénotée par
@@ -649,6 +657,7 @@ class StartQt5(QMainWindow):
         self.ui.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
         self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
         self.pythonsourceOK.connect(self.pythonSource2)
+        self.ui.pushButton_aide_python.clicked.connect(self.gere_aide_python)
         
 
     def enregistreChrono(self):
@@ -1451,13 +1460,6 @@ for k in range(0, len(vx)-1):
             self.ui.tableWidget.show()
             self.recalculLesCoordonnees()
             
-            # On met à jour les préférences
-            #self.prefs.lastVideo = self.filename
-            #self.prefs.videoDir = os.path.dirname(self.filename)
-            #self.prefs.save()
-        
-            #si il y a des points, on autorise le changement d'onglets
-            
             self.debut_capture()
         except : 
             reponse = QMessageBox.warning(None, "Mauvais type de fichier",
@@ -2086,13 +2088,20 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', 'k')
             titre = "%s en fonction de %s"%(self.ui.comboBox_Y.currentText(), self.ui.comboBox_X.currentText())
+            self.ui.widget_graph.setText('')
             self.graphWidget = pg.PlotWidget(title=titre, parent=self.ui.widget_graph)
             self.graphWidget.setRange(xRange=(min(X), max(X)), yRange = (min(Y), max(Y)))
             self.graphWidget.setLabel('bottom', "t(s)" if self.ui.comboBox_X.currentText()=='t' else self.ui.comboBox_X.currentText()+'(m)' )
             self.graphWidget.setLabel('left', "t(s)" if self.ui.comboBox_Y.currentText()=='t' else self.ui.comboBox_Y.currentText()+'(m)')
             X,Y = self.nettoyage_points(X,Y)
+            
+            self.verticalLayout_onglet4 = QVBoxLayout(self.ui.widget_graph)
+            self.verticalLayout_onglet4.setContentsMargins(0,0,0,0)
+            self.verticalLayout_onglet4.setObjectName("verticalLayout_graph")
+            
+            self.verticalLayout_onglet4.addWidget(self.graphWidget)
+            
             self.graphWidget.plot(X, Y)
-            self.graphWidget.setMinimumSize(QSize(self.ui.widget_graph.size()))
             self.graphWidget.show()
     
     def nettoyage_points(self, X_, Y_):
