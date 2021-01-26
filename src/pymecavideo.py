@@ -1873,11 +1873,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.affiche_tableau()
         elif self.ui.tabWidget.currentIndex()==3:
             self.affiche_grapheur()
+            self.MAJ_combox_box_grapheur()
             self.statusBar().hide()
             
         
 
-    def affiche_grapheur(self):
+    def affiche_grapheur(self, MAJ=True):
         self.dbg.p(1,"rentre dans 'affiche_grapheur'")
         
         #######PARTIE OBSOLETE PERMETTANT DE RENVOYER DES ERREURS PYTHON D'UNE ÉVENTUELLE RENTRÉE MANUELLE DES EXPRESSIONS DES VITESSES ETC.
@@ -1933,7 +1934,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 expression_Vy = '(Y[n+1]-Y[n-1])/(2*deltaT)'
                 expression_V = 'math.sqrt(Vx[n]**2+Vy[n]**2)'
                 expression_Ec = '0.5*m*V[n]**2'
-                expression_Epp = 'm*g*Y[n]'  #sens origine à gérer
+                expression_Epp = 'm*g*Y[n]' if self.sens_Y==1 else '-m*g*Y[n]' 
                 expression_Em = 'Epp[n]+Ec[n]'
                 
                 expression_Vx = expression_Vx.replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
@@ -2059,10 +2060,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     text_textedit+=erreurs_python2
         else : 
             text_textedit+="Pour les points où c'était possible, les expressions python rentrées ont été calculées avec succès !"
-            
-        #text_textedit+=footer
-        #self.ui.textEdit_python.setText(text_textedit)
-        #combobox
+    
+    def MAJ_combox_box_grapheur(self):
         self.ui.comboBox_X.clear()
         self.ui.comboBox_Y.clear()
         self.ui.comboBox_X.insertItem(-1, _translate("pymecavideo", "Choisir ...", None))
@@ -2735,6 +2734,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         _translate(u"pymecavideo", "MAUVAISE VALEUR !", None),
                         _translate(u"pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
                         QMessageBox.Yes )
+        self.affiche_grapheur()
         self.dessine_graphe()
 
     def verifie_g_grapheur(self):
@@ -2750,6 +2750,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         _translate(u"pymecavideo", "MAUVAISE VALEUR !", None),
                         _translate(u"pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
                         QMessageBox.Yes )
+        self.affiche_grapheur()
         self.dessine_graphe()
 
     def mets_a_jour_label_infos(self, message):
