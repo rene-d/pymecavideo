@@ -433,13 +433,6 @@ class StartQt5(QMainWindow):
         
         self.ui.textEdit_consignes_python.hide()
         
-    def gere_aide_python(self):
-        if self.ui.textEdit_consignes_python.isHidden() : 
-            self.ui.pushButton_aide_python.setText(_translate("pymecavideo", "Cacher l'aide de cet onglet", None))
-            self.ui.textEdit_consignes_python.show()
-        else : 
-            self.ui.pushButton_aide_python.setText(_translate("pymecavideo", "Afficher l'aide de cet onglet", None))
-            self.ui.textEdit_consignes_python.hide()
 
     def desactiveExport(self, text):
         """
@@ -651,14 +644,11 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
         self.ui.checkBox_Epp.stateChanged.connect(self.affiche_tableau)
         self.ui.checkBox_Em.stateChanged.connect(self.affiche_tableau)
-        self.ui.commandLinkButton_lance_python.clicked.connect(self.affiche_grapheur)
         self.ui.comboBox_X.currentIndexChanged.connect(self.dessine_graphe)
         self.ui.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe)
         self.ui.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
         self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
-        self.pythonsourceOK.connect(self.pythonSource2)
-        self.ui.pushButton_aide_python.clicked.connect(self.gere_aide_python)
-        
+        self.pythonsourceOK.connect(self.pythonSource2)        
 
     def enregistreChrono(self):
         # self.label_trajectoire.render()
@@ -1880,23 +1870,29 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.statusBar().hide()
             self.affiche_tableau()
         elif self.ui.tabWidget.currentIndex()==3:
+            self.affiche_grapheur()
             self.statusBar().hide()
             
         
 
     def affiche_grapheur(self):
         self.dbg.p(1,"rentre dans 'affiche_grapheur'")
-        entete ="""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-                <html><head><meta name="qrichtext" content="1" /><style type="text/css">
-                p, li { white-space: pre-wrap; }
-                </style></head><body style=" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;" bgcolor="#808080"> """
+        
+        #######PARTIE OBSOLETE PERMETTANT DE RENVOYER DES ERREURS PYTHON D'UNE ÉVENTUELLE RENTRÉE MANUELLE DES EXPRESSIONS DES VITESSES ETC.
+        #entete ="""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+                #<html><head><meta name="qrichtext" content="1" /><style type="text/css">
+                #p, li { white-space: pre-wrap; }
+                #</style></head><body style=" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;" bgcolor="#808080"> """
                 
-        erreurs_python1 = """<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
-        erreurs_python2 = """</p>"""
-        footer = """</body></html>"""
+        #erreurs_python1 = """<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
+        #erreurs_python2 = """</p>"""
+        #footer = """</body></html>"""
         erreur_indices=""
         erreurs_python = []
+        ##################
         
+        
+        ######LE CODE SUIVANT PEUT ÊTRE REFACTORISÉ. IL UTILISE UN SYSTÈME DYNAMQIEU PERMETTANT DE PROPOSER DES EXPRESSIONS MANUELLES. JANVIER 2020
         for i in range(self.nb_de_points):
             self.dictionnaire_grandeurs["X"+str(i+1)] = []
             self.dictionnaire_grandeurs["Y"+str(i+1)] = []
@@ -1928,14 +1924,41 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 grandeurEm = "self.dictionnaire_grandeurs['Em"+str(i+1)+"']"
                 m = float(self.ui.lineEdit_m.text().replace(',', '.'))
                 g = float(self.ui.lineEdit_g.text().replace(',', '.'))
-                expression_Vx = self.ui.lineEdit_vx.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_Vy = self.ui.lineEdit_vy.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_V = self.ui.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_Ec = self.ui.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_Epp = self.ui.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                expression_Em = self.ui.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
                 
-                ##il faut traiter le cas particulier des indices négatifs : par défaut, si python évalue 'n-1' avec n qui vaut 0, il renvoie un résultat tout de même... ce qui fausse les calculs de vitesse.
+                
+                
+                expression_Vx = '(X[n+1]-X[n-1])/(2*deltaT)'
+                expression_Vy = '(Y[n+1]-Y[n-1])/(2*deltaT)'
+                expression_V = 'math.sqrt(Vx[n]**2+Vy[n]**2)'
+                expression_Ec = '0.5*m*V[n]**2'
+                expression_Epp = 'm*g*Y[n]'  #sens origine à gérer
+                expression_Em = 'Epp[n]+Ec[n]'
+                
+                expression_Vx = expression_Vx.replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                
+                expression_Vy = expression_Vy.replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                
+                expression_V = expression_V.replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                
+                expression_Ec = expression_Ec.replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                
+                expression_Epp = expression_Epp.replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                
+                expression_Em = expression_Em.replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                
+                
+                
+                
+                
+                ######CETTE PARTIE PERMET DE RENTRER MANUELLEMENT DES EXPRESSIONS.
+                #expression_Vx = self.ui.lineEdit_vx.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_Vy = self.ui.lineEdit_vy.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_V = self.ui.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_Ec = self.ui.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_Epp = self.ui.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_Em = self.ui.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                
+                #il faut traiter le cas particulier des indices négatifs : par défaut, si python évalue 'n-1' avec n qui vaut 0, il renvoie un résultat tout de même... ce qui fausse les calculs de vitesse.
                 expression_Vx,err1 = self.traite_indices(expression_Vx,i,n, 'Vx')
                 expression_Vy,err2 = self.traite_indices(expression_Vy,i,n, 'Vy')
                 expression_V,err3 = self.traite_indices(expression_V,i,n, 'V')
@@ -1944,6 +1967,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 expression_Em,err6 = self.traite_indices(expression_Em,i,n, 'Em')
 
                 erreur_indices+=err1+err2+err3+err4+err5+err6
+                
+                
+                
                 if expression_Vx!='' : 
                     try : 
                         self.dictionnaire_grandeurs["xprime"+str(i+1)].append( eval(expression_Vx))
@@ -2021,7 +2047,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1,"erreurs a la fin : %s"%erreur_indices)
         self.dbg.p(1,"erreurs python : %s"%erreurs_python)
         
-        text_textedit = entete + '<p>' + erreur_indices + '</p>'
+        #text_textedit = entete + '<p>' + erreur_indices + '</p>'
+        text_textedit = ""
         if len(erreurs_python)>0 : 
             for item in erreurs_python:
                 if not item in text_textedit : 
@@ -2031,8 +2058,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         else : 
             text_textedit+="Pour les points où c'était possible, les expressions python rentrées ont été calculées avec succès !"
             
-        text_textedit+=footer
-        self.ui.textEdit_python.setText(text_textedit)
+        #text_textedit+=footer
+        #self.ui.textEdit_python.setText(text_textedit)
         #combobox
         self.ui.comboBox_X.clear()
         self.ui.comboBox_Y.clear()
@@ -2088,22 +2115,62 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', 'k')
             titre = "%s en fonction de %s"%(self.ui.comboBox_Y.currentText(), self.ui.comboBox_X.currentText())
-            self.ui.widget_graph.setText('')
-            self.graphWidget = pg.PlotWidget(title=titre, parent=self.ui.widget_graph)
-            self.graphWidget.setRange(xRange=(min(X), max(X)), yRange = (min(Y), max(Y)))
-            self.graphWidget.setLabel('bottom', "t(s)" if self.ui.comboBox_X.currentText()=='t' else self.ui.comboBox_X.currentText()+'(m)' )
-            self.graphWidget.setLabel('left', "t(s)" if self.ui.comboBox_Y.currentText()=='t' else self.ui.comboBox_Y.currentText()+'(m)')
-            X,Y = self.nettoyage_points(X,Y)
-            
-            self.verticalLayout_onglet4 = QVBoxLayout(self.ui.widget_graph)
-            self.verticalLayout_onglet4.setContentsMargins(0,0,0,0)
-            self.verticalLayout_onglet4.setObjectName("verticalLayout_graph")
-            
-            self.verticalLayout_onglet4.addWidget(self.graphWidget)
-            
-            self.graphWidget.plot(X, Y)
-            self.graphWidget.show()
-    
+            print(titre)
+            #gestion des unités
+            if 't' in self.ui.comboBox_X.currentText() : 
+                unite_x = "t(s)"
+            elif 'V' in self.ui.comboBox_X.currentText() : 
+                unite_x = self.ui.comboBox_X.currentText()+'(m/s)'
+            elif 'E' in self.ui.comboBox_X.currentText() : 
+                unite_x = self.ui.comboBox_X.currentText()+'(J)'
+            else: 
+                unite_x = self.ui.comboBox_X.currentText()+'(m)'
+                
+            if 't' in self.ui.comboBox_Y.currentText() : 
+                unite_y = "t(s)"
+            elif 'V' in self.ui.comboBox_Y.currentText() : 
+                unite_y = self.ui.comboBox_Y.currentText()+'(m/s)'
+            elif 'E' in self.ui.comboBox_Y.currentText() : 
+                unite_y = self.ui.comboBox_Y.currentText()+'(J)'
+            else: 
+                unite_y = self.ui.comboBox_Y.currentText()+'(m)'
+                    
+            #print(globals())
+            if not hasattr(self, 'graphWidget') : #premier tour 
+                print('okkk')
+                self.ui.widget_graph.setText('')
+                self.graphWidget = pg.PlotWidget(title=titre, parent=self.ui.widget_graph)
+                #self.graphWidget.setRange(xRange=(min(X), max(X)), yRange = (min(Y), max(Y)))
+                
+                self.graphWidget.setLabel('bottom', unite_x )
+                self.graphWidget.setLabel('left', unite_y)
+                X,Y = self.nettoyage_points(X,Y)
+                
+                self.verticalLayout_onglet4 = QVBoxLayout(self.ui.widget_graph)
+                self.verticalLayout_onglet4.setContentsMargins(0,0,0,0)
+                self.verticalLayout_onglet4.setObjectName("verticalLayout_graph")
+                
+                self.verticalLayout_onglet4.addWidget(self.graphWidget)
+                
+                self.graphWidget.plot(X, Y)
+                self.graphWidget.autoRange()
+                self.graphWidget.show()
+            else : 
+                print('deux')
+                self.graphWidget.setTitle = titre
+                #self.graphWidget.setRange(xRange=(min(X), max(X)), yRange = (min(Y), max(Y)))
+                plotItem = self.graphWidget.getPlotItem()
+                
+                
+                self.graphWidget.setLabel('bottom', unite_x )
+                self.graphWidget.setLabel('left', unite_y)
+                X,Y = self.nettoyage_points(X,Y) #enlève si besoin les points non calculés
+                
+                self.graphWidget.plot(X, Y, 'clear')
+                self.graphWidget.autoRange()
+                #self.graphWidget.show()
+                
+                
     def nettoyage_points(self, X_, Y_):
         """permet de tenir compte des expressions "négatives" quand on va chercher des indices : python évlaue corerctement X[-1] alors qu'on ne le veut pas. Un passage dans self.traite_indices à mis certaines valeurs non calculées à False. Il suffit de les enlever dans X et Y"""
         X_f, Y_f = [], []
