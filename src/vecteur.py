@@ -27,7 +27,9 @@ import math
 
 class vecteur:
     def __init__(self, x=0, y=0):
-        self.value = (float(x), float(y))
+        self.precision = 4 #nb de  chiffres significatifs
+        self.value = (self.signif(float(x),self.precision), self.signif(float(y),self.precision))
+        
 
     def copy(self):
         return vecteur(self.x(), self.y())
@@ -45,7 +47,7 @@ class vecteur:
     def setValue(self, x=None, y=None):
         if x == None: x = self.value[0]
         if y == None: y = self.value[1]
-        self.value = (float(x), float(y))
+        self.value = (self.signif(float(x),self.precision), self.signif(float(y),self.precision))
 
     def rounded(self):
         self.value = (math.floor(self.value[0] + 0.5), math.floor(self.value[1] + 0.5))
@@ -68,7 +70,7 @@ class vecteur:
             # produit du vecteur par un nombre
             x = float(v) * self.x()
             y = float(v) * self.y()
-            return vecteur(x, y)
+            return vecteur(self.signif(x,self.precision), self.signif(y,self.precision))
 
     def __str__(self):
         return "(%5f, %5f)" % (self.x(), self.y())
@@ -123,6 +125,11 @@ class vecteur:
             return vecteur(x1, y1)
         elif angle==180: 
             return vecteur(-x1, -y1)
+    
+    def signif(self,x, digit):
+        if x == 0:
+            return 0
+        return round(x, digit - int(math.floor(math.log10(abs(x)))) - 1)
         
     def homothetie(self,ratio):
         return vecteur(self.x()*ratio, self.y()*ratio)

@@ -89,7 +89,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <property name="sizePolicy">
@@ -1043,6 +1043,15 @@ photographie</string>
           <property name="title">
            <string>Tableau des dates et des coordonnées</string>
           </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
             <widget class="QPushButton" name="pushButton_select_all_table">
@@ -1192,8 +1201,8 @@ l'énergie mécanique</string>
        <attribute name="title">
         <string>Grapheur</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_12">
-        <item>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <widget class="QTextEdit" name="textEdit_consignes_python">
@@ -1238,19 +1247,6 @@ p, li { white-space: pre-wrap; }
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_11">
             <item>
-             <spacer name="horizontalSpacer_11">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
              <widget class="QLabel" name="label_11">
               <property name="text">
                <string>masse (kg)</string>
@@ -1259,23 +1255,16 @@ p, li { white-space: pre-wrap; }
             </item>
             <item>
              <widget class="QLineEdit" name="lineEdit_m">
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="text">
                <string>1.0</string>
               </property>
              </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_12">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
             <item>
              <widget class="QLabel" name="label_20">
@@ -1286,6 +1275,12 @@ p, li { white-space: pre-wrap; }
             </item>
             <item>
              <widget class="QLineEdit" name="lineEdit_g">
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="text">
                <string>9.8</string>
               </property>
