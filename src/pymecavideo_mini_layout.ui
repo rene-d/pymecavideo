@@ -89,7 +89,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <property name="sizePolicy">
@@ -1086,6 +1086,11 @@ dans le presse papier</string>
              </item>
              <item>
               <property name="text">
+               <string>Fichier numpy </string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
                <string>Qtiplot</string>
               </property>
              </item>
@@ -1575,6 +1580,14 @@ p, li { white-space: pre-wrap; }
   <action name="action_Python_source">
    <property name="text">
     <string>&amp;Python (source)</string>
+   </property>
+  </action>
+  <action name="action_FichierNumpy">
+   <property name="text">
+    <string>&amp;Fichier numpy</string>
+   </property>
+   <property name="toolTip">
+    <string>Fichier Numpy</string>
    </property>
   </action>
  </widget>

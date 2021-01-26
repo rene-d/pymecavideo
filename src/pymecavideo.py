@@ -378,7 +378,7 @@ class StartQt5(QMainWindow):
         self.ui.horizontalSlider.setEnabled(0)
         self.ui.echelleEdit.setEnabled(0)
         self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
-        self.ui.Bouton_Echelle.setText(_translate("pymecavideo", "Définir une échelle", None))
+        self.ui.Bouton_Echelle.setText(_translate("pymecavideo", "Définir l'échelle", None))
         self.ui.Bouton_Echelle.setStyleSheet("background-color:None;")
         
         try : 
@@ -514,7 +514,9 @@ class StartQt5(QMainWindow):
             del self.label_echelle_trace
         except AttributeError:
             pass  # quand on demande un effacement tout au début. Comme par exemple, ouvrir les exmples.
-
+        self.ui.Bouton_Echelle.setText(_translate("pymecavideo", "Définir l'échelle", None))
+        self.ui.Bouton_Echelle.setStyleSheet("background-color:None;")
+        
         self.init_variables(None, filename=self.filename)
         try  : 
             self.affiche_image()
@@ -591,6 +593,7 @@ class StartQt5(QMainWindow):
         self.ui.actionCopier_dans_le_presse_papier.triggered.connect(self.presse_papier)
         self.ui.actionOpenOffice_org_Calc.triggered.connect(self.oooCalc)
         self.ui.action_Python_source.triggered.connect(self.pythonSource1)
+        self.ui.action_FichierNumpy.triggered.connect(self.pythonNumpy)
         self.ui.actionQtiplot.triggered.connect(self.qtiplot)
         self.ui.actionScidavis.triggered.connect(self.scidavis)
         self.ui.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
@@ -675,7 +678,7 @@ class StartQt5(QMainWindow):
             self.ui.pushButtonChrono.setStyleSheet("background-color: red");
         else:
             self.ui.pushButtonEnregistreChrono.setVisible(0)
-            self.ui.pushButtonChrono.setStyleSheet("background-color: transparent");
+            self.ui.pushButtonChrono.setStyleSheet("background-color: #f6f6f6");
             self.label_trajectoire.setPixmap(QPixmap())
         self.redimensionneFenetre()
         self.update()
@@ -1023,7 +1026,6 @@ class StartQt5(QMainWindow):
         return vecteur(self.sens_X * (float(p.x() - self.label_video.origine.x()) * self.label_video.echelle_image.mParPx()), self.sens_Y * float(self.label_video.origine.y() - p.y()) * self.label_video.echelle_image.mParPx())
 
 
-
     def presse_papier(self):
         """Sélectionne la totalité du tableau de coordonnées
         et l'exporte dans le presse-papier (l'exportation est implicitement
@@ -1043,21 +1045,49 @@ class StartQt5(QMainWindow):
         """
         Traite le signal venu de exportCombo, puis remet l\'index de ce 
         combo à zéro.
-        """
+        """        
         if self.ui.exportCombo.currentIndex() > 0:
-            option = self.ui.exportCombo.currentText()
-            if option == "LibreOffice Calc":
+            choix_export = self.ui.exportCombo.currentIndex()
+            if choix_export == 1:
                 self.oooCalc()
-            elif option == "Python (source)":
+            elif choix_export == 2:
                 self.pythonSource1()
-            elif option == "Qtiplot":
+            elif choix_export == 3:
+                self.pythonNumpy()
+            elif choix_export == 4:
                 self.qtiplot()
-            elif option == "SciDAVis":
+            elif choix_export == 5:
                 self.scidavis()
             self.ui.exportCombo.setCurrentIndex(0)
         return
 
-
+    def pythonNumpy(self): 
+        reponse = QMessageBox.warning(
+                    None,
+                    _translate("pymecavideo", "Export en numpy Array", None),
+                    _translate("pymecavideo", """\
+    Cet export enregistre les valeurs des abscises et ordonnées sous forme d'un fichier contenant les tableaux Numpy.
+    """, None),QMessageBox.Ok, QMessageBox.Ok)
+        fichier, hints = QFileDialog.getSaveFileName(
+                self,
+                _translate("pymecavideo", "Sauvegarde fichier numpy", None),
+                os.path.join(str(DOCUMENT_PATH[0]), "pymecavideo.npy"),
+                _translate("pymecavideo", "Fichiers Python (*.npy)",None))
+        import numpy as np
+        t = np.array(np.zeros(len(self.points)))
+        x = np.array(np.zeros(len(self.points)))
+        y = np.array(np.zeros(len(self.points)))
+        for i in range(self.nb_de_points):
+                for k in self.points.keys():
+                    data = self.points[k]
+                    for vect in data[1:]:
+                        vect=self.pointEnMetre(vect)
+                        x[k] = vect.x()
+                        y[k] = vect.y()
+                        t[k] = (self.premiere_image+k)*self.deltaT
+        
+        np.save(fichier, (t,x,y))
+        
     def oooCalc(self):
         """
         Exporte directement les données vers OpenOffice.org Calc
@@ -1308,7 +1338,7 @@ for k in range(0, len(vx)-1):
             self.rouvre(fichier)
     
     def mets_en_orange_echelle(self):
-        self.ui.Bouton_Echelle.setText("refaire une échelle")
+        self.ui.Bouton_Echelle.setText("refaire l'échelle")
         self.ui.Bouton_Echelle.setStyleSheet("background-color:orange;")
 
 
@@ -2116,7 +2146,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', 'k')
             titre = "%s en fonction de %s"%(self.ui.comboBox_Y.currentText(), self.ui.comboBox_X.currentText())
-            print(titre)
             #gestion des unités
             if 't' in self.ui.comboBox_X.currentText() : 
                 unite_x = "t(s)"
@@ -2136,7 +2165,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             else: 
                 unite_y = self.ui.comboBox_Y.currentText()+'(m)'
                     
-            #print(globals())
             if not hasattr(self, 'graphWidget') : #premier tour 
                 self.ui.widget_graph.setText('')
                 self.graphWidget = pg.PlotWidget(title=titre, parent=self.ui.widget_graph)
@@ -2624,7 +2652,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'demande_echelle'")
         echelle_result_raw = QInputDialog.getText(None,
-                                                  _translate("pymecavideo", "Définir une échelle", None),
+                                                  _translate("pymecavideo", "Définir léchelle", None),
                                                   _translate("pymecavideo",
                                                              "Quelle est la longueur en mètre de votre étalon sur l'image ?",
                                                              None),
