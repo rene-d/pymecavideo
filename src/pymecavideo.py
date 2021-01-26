@@ -649,6 +649,8 @@ class StartQt5(QMainWindow):
         self.ui.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
         self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
         self.pythonsourceOK.connect(self.pythonSource2)        
+        
+        
 
     def enregistreChrono(self):
         # self.label_trajectoire.render()
@@ -2137,7 +2139,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     
             #print(globals())
             if not hasattr(self, 'graphWidget') : #premier tour 
-                print('okkk')
                 self.ui.widget_graph.setText('')
                 self.graphWidget = pg.PlotWidget(title=titre, parent=self.ui.widget_graph)
                 #self.graphWidget.setRange(xRange=(min(X), max(X)), yRange = (min(Y), max(Y)))
@@ -2156,19 +2157,18 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
             else : 
-                print('deux')
                 self.graphWidget.setTitle = titre
                 #self.graphWidget.setRange(xRange=(min(X), max(X)), yRange = (min(Y), max(Y)))
                 plotItem = self.graphWidget.getPlotItem()
-                
-                
+                plotItem.setTitle(titre)
                 self.graphWidget.setLabel('bottom', unite_x )
                 self.graphWidget.setLabel('left', unite_y)
+
                 X,Y = self.nettoyage_points(X,Y) #enlève si besoin les points non calculés
-                
-                self.graphWidget.plot(X, Y, 'clear')
+                self.graphWidget.clear()
+                self.graphWidget.plot(X, Y)
                 self.graphWidget.autoRange()
-                #self.graphWidget.show()
+                self.graphWidget.show()
                 
                 
     def nettoyage_points(self, X_, Y_):
@@ -2735,6 +2735,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         _translate(u"pymecavideo", "MAUVAISE VALEUR !", None),
                         _translate(u"pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
                         QMessageBox.Yes )
+        self.dessine_graphe()
 
     def verifie_g_grapheur(self):
         
@@ -2749,6 +2750,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         _translate(u"pymecavideo", "MAUVAISE VALEUR !", None),
                         _translate(u"pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
                         QMessageBox.Yes )
+        self.dessine_graphe()
 
     def mets_a_jour_label_infos(self, message):
         """
