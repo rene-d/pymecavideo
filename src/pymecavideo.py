@@ -82,6 +82,7 @@ import threading
 import platform
 import tempfile
 import math
+import numpy as np
 
 from globdef import HOME_PATH,VIDEO_PATH, CONF_PATH, \
      ICON_PATH, LANG_PATH, \
@@ -593,7 +594,7 @@ class StartQt5(QMainWindow):
         self.ui.actionCopier_dans_le_presse_papier.triggered.connect(self.presse_papier)
         self.ui.actionOpenOffice_org_Calc.triggered.connect(self.oooCalc)
         self.ui.action_Python_source.triggered.connect(self.pythonSource1)
-        self.ui.action_FichierNumpy.triggered.connect(self.pythonNumpy)
+        self.ui.action_FichierNumpy.triggered.connect(self.export_numpy)
         self.ui.actionQtiplot.triggered.connect(self.qtiplot)
         self.ui.actionScidavis.triggered.connect(self.scidavis)
         self.ui.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
@@ -1053,40 +1054,47 @@ class StartQt5(QMainWindow):
             elif choix_export == 2:
                 self.pythonSource1()
             elif choix_export == 3:
-                self.pythonNumpy()
+                self.export_numpy()
             elif choix_export == 4:
                 self.qtiplot()
             elif choix_export == 5:
                 self.scidavis()
             self.ui.exportCombo.setCurrentIndex(0)
         return
-
-    def pythonNumpy(self): 
-        reponse = QMessageBox.warning(
-                    None,
-                    _translate("pymecavideo", "Export en numpy Array", None),
-                    _translate("pymecavideo", """\
-    Cet export enregistre les valeurs des abscises et ordonnées sous forme d'un fichier contenant les tableaux Numpy.
-    """, None),QMessageBox.Ok, QMessageBox.Ok)
-        fichier, hints = QFileDialog.getSaveFileName(
-                self,
-                _translate("pymecavideo", "Sauvegarde fichier numpy", None),
-                os.path.join(str(DOCUMENT_PATH[0]), "pymecavideo.npy"),
-                _translate("pymecavideo", "Fichiers Python (*.npy)",None))
-        import numpy as np
-        t = np.array(np.zeros(len(self.points)))
-        x = np.array(np.zeros(len(self.points)))
-        y = np.array(np.zeros(len(self.points)))
-        for i in range(self.nb_de_points):
-                for k in self.points.keys():
-                    data = self.points[k]
-                    for vect in data[1:]:
-                        vect=self.pointEnMetre(vect)
-                        x[k] = vect.x()
-                        y[k] = vect.y()
-                        t[k] = (self.premiere_image+k)*self.deltaT
         
-        np.save(fichier, (t,x,y))
+    def export_numpy(self):
+        """
+        Exporte les données dans un fichier Numpy
+        """
+        self.dbg.p(1, "rentre dans 'python numpy'")
+        if self.nb_de_points==1 : 
+            pts = self.points
+            t = [pts[i][0] for i in pts.keys()]
+            x = [self.pointEnMetre(pts[i][1])[0] for i in pts.keys()]
+            y = [self.pointEnMetre(pts[i][1])[1] for i in pts.keys()]
+            print(os.path.splitext(self.filename)[0])
+            baseName = os.path.splitext(os.path.basename(self.filename))[0]
+            defaultName = os.path.join(os.path.expanduser('~'), baseName)
+            print(defaultName)
+            fileName, _ = QFileDialog.getSaveFileName(self,"Exporter vers un fichier Numpy",defaultName,"Fichier Numpy (*.npy)")
+            if fileName :
+                try :
+                    np.save(fileName, (t,x,y))
+                    message = QMessageBox.information(
+                        None,
+                        _translate("pymecavideo", "Fichier Numpy sauvegardé", None),
+                        _translate("pymecavideo", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x,y = np.load("{}.npy")""".format(baseName), None),QMessageBox.Ok, QMessageBox.Ok)
+                except :
+                    pass
+        else : 
+            reponse = QMessageBox.warning(
+                    None,
+                    _translate("pymecavideo", "Impossible de créer le fichier source", None),
+                    _translate("pymecavideo", """\
+                    L'export python n'est possible que pour 1 seul point cliqué.
+                    """, None),QMessageBox.Ok, QMessageBox.Ok)
+    
+    
         
     def oooCalc(self):
         """
