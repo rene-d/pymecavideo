@@ -1072,10 +1072,8 @@ class StartQt5(QMainWindow):
             t = [pts[i][0] for i in pts.keys()]
             x = [self.pointEnMetre(pts[i][1])[0] for i in pts.keys()]
             y = [self.pointEnMetre(pts[i][1])[1] for i in pts.keys()]
-            print(os.path.splitext(self.filename)[0])
             baseName = os.path.splitext(os.path.basename(self.filename))[0]
             defaultName = os.path.join(os.path.expanduser('~'), baseName)
-            print(defaultName)
             fileName, _ = QFileDialog.getSaveFileName(self,"Exporter vers un fichier Numpy",defaultName,"Fichier Numpy (*.npy)")
             if fileName :
                 try :
@@ -1083,7 +1081,7 @@ class StartQt5(QMainWindow):
                     message = QMessageBox.information(
                         None,
                         _translate("pymecavideo", "Fichier Numpy sauvegardé", None),
-                        _translate("pymecavideo", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x,y = np.load("{}.npy")""".format(baseName), None),QMessageBox.Ok, QMessageBox.Ok)
+_translate("pymecavideo", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x,y = np.load("{}")""".format(os.path.basename(fileName)+'.npy'), None),QMessageBox.Ok, QMessageBox.Ok)
                 except :
                     pass
         else : 
