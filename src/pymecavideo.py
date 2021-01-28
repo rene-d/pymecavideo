@@ -1227,7 +1227,7 @@ for k in range(0, len(vx)-1):
                     None,
                     _translate("pymecavideo", "Fichier Python créé", None),
                     _translate("pymecavideo", """\
-    Le fichier {filename} a été créé dans un espace temporaire.
+    Le fichier {filename} a été créé.
     Pymecavideo essaiera de l'ouvrir dans un éditeur approprié.
     """.format(
             filename=fichier
