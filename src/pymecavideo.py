@@ -1074,14 +1074,19 @@ class StartQt5(QMainWindow):
             y = [self.pointEnMetre(pts[i][1])[1] for i in pts.keys()]
             baseName = os.path.splitext(os.path.basename(self.filename))[0]
             defaultName = os.path.join(os.path.expanduser('~'), baseName)
-            fileName, _ = QFileDialog.getSaveFileName(self,"Exporter vers un fichier Numpy",defaultName,"Fichier Numpy (*.npy)")
+            #fileName, _ = QFileDialog.getSaveFileName(self,"Exporter vers un fichier Numpy",defaultName,"Fichier Numpy (*.npy)")
+            fileName, hints = QFileDialog.getSaveFileName(
+                self,
+                _translate("pymecavideo", "Exporter vers un fichier Numpy", None),
+                os.path.join(str(DOCUMENT_PATH[0]), baseName+".npy"),
+                _translate("pymecavideo", "Fichiers Numpy (*.npy)",None))
             if fileName :
                 try :
                     np.save(fileName, (t,x,y))
                     message = QMessageBox.information(
                         None,
                         _translate("pymecavideo", "Fichier Numpy sauvegardé", None),
-_translate("pymecavideo", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x,y = np.load("{}")""".format(os.path.basename(fileName)+'.npy'), None),QMessageBox.Ok, QMessageBox.Ok)
+_translate("pymecavideo", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x,y = np.load("{}")""".format(os.path.basename(fileName)), None),QMessageBox.Ok, QMessageBox.Ok)
                 except :
                     pass
         else : 
@@ -1146,11 +1151,11 @@ _translate("pymecavideo", """Pour ouvrir ce fichier depuis Python, taper :\n\nim
         if affiche_accel : 
             calcule_accel = True
             calcule_vitesse = True
-        
+        baseName = os.path.splitext(os.path.basename(self.filename))[0]
         fichier, hints = QFileDialog.getSaveFileName(
                 self,
                 _translate("pymecavideo", "Sauvegarde fichier python", None),
-                os.path.join(str(DOCUMENT_PATH[0]), "pymecavideo.py"),
+                os.path.join(str(DOCUMENT_PATH[0]), baseName+".py"),
                 _translate("pymecavideo", "Fichiers Python (*.py)",None))
         try : 
             f = open(fichier, "w")
