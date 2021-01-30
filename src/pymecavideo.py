@@ -652,7 +652,8 @@ class StartQt5(QMainWindow):
         self.ui.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe)
         self.ui.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
         self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
-        self.pythonsourceOK.connect(self.pythonSource2)        
+        self.pythonsourceOK.connect(self.pythonSource2)    
+        self.ui.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
         
         
 
@@ -2138,16 +2139,25 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """dessine les graphes avec pyqtgraph au moment où les combobox sont choisies"""
         self.dbg.p(1, "rentre dans 'dessine_graphe'")
         X, Y = [], []
+        styles = {0:{'pen': None, 'symbol': '+'}, 1:{'pen': (0,0,0), 'symbol': '+'}, 2:{'pen': (0,0,0), 'symbol': None}} # Dictionnaire contenant les différents styles de graphes
+        style = self.ui.comboBox_style.currentIndex() # Index du comboxBox styles, inspirés de Libreoffice
+        pen, symbol = styles[style]['pen'], styles[style]['symbol'] # Définition des paramètres 'pen' et 'symbol' pour pyqtgraph
+
+        
         grandeurX = self.ui.comboBox_X.currentText().replace('Vx', 'xprime').replace('Vy', 'yprime')
         grandeurY = self.ui.comboBox_Y.currentText().replace('Vx', 'xprime').replace('Vy', 'yprime')
         if grandeurX=='t':
             X = [i*self.deltaT for i in range(len(self.points))]
-        elif grandeurX!="Choisir ...": 
-            X = self.dictionnaire_grandeurs[grandeurX]
+        elif grandeurX!="Choisir ...":
+            try : 
+                X = self.dictionnaire_grandeurs[grandeurX]
+            except : pass
         if grandeurY=='t':
             Y = [i*self.deltaT for i in range(len(self.points))]
         elif grandeurY!="Choisir ...":
-            Y = self.dictionnaire_grandeurs[grandeurY]
+            try : 
+                Y = self.dictionnaire_grandeurs[grandeurY]
+            except : pass
         if X!=[] and Y != [] : 
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', 'k')
@@ -2186,7 +2196,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 
                 self.verticalLayout_onglet4.addWidget(self.graphWidget)
                 
-                self.graphWidget.plot(X, Y)
+                self.graphWidget.plot(X, Y, pen=pen, symbol=symbol)
+
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
             else : 
@@ -2199,7 +2210,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
                 X,Y = self.nettoyage_points(X,Y) #enlève si besoin les points non calculés
                 self.graphWidget.clear()
-                self.graphWidget.plot(X, Y)
+                self.graphWidget.plot(X, Y, pen=pen, symbol=symbol)
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
                 
