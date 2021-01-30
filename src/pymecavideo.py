@@ -1168,6 +1168,7 @@ _translate("pymecavideo", """Pour ouvrir ce fichier depuis Python, taper :\n\nim
         try : 
             f = open(fichier, "w")
             date = time.strftime("%d/%m/%y %H:%M")
+            f.write(f"#!/usr/bin/env python\n")
             f.write(f"## Données exportées de Pymecavidéo\n## {date}\n")
             f.write("\nimport numpy as np\nimport matplotlib.pyplot as plt\n")
             f.write(f"\n# Intervalle de temps auto-détecté\ndt={self.deltaT}\n")
@@ -1249,12 +1250,12 @@ for k in range(0, len(vx)-1):
                 # éditeur approprié
                 
                 if sys.platform.startswith('linux'):
-                    ret_code = subprocess.call(['xdg-open', fichier])
+                    os.system("xdg-open "+fichier)
                 elif sys.platform.startswith('darwin'):
                     ret_code = subprocess.call(['open', fichier])
 
                 elif sys.platform.startswith('win'):
-                    ret_code = subprocess.call(['start', fichier], shell=True)
+                    os.startfile(fichier_ods)
         
         except FileNotFoundError : 
             pass
