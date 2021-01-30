@@ -21,7 +21,7 @@
 from math import sqrt, atan2, degrees
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QRect, QPoint, QPointF
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage,QPicture,QPainter,QColor, QFont, QPainterPath
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage,QPicture,QPainter,QColor, QFont, QPainterPath, QPen
 from PyQt5.QtWidgets import QLabel,QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
@@ -243,7 +243,25 @@ class Label_Trajectoire(QLabel):
         self.painter.translate(-self.origine_mvt.x(), -self.origine_mvt.y())
         self.painter.end()
         ############################################################
-
+        #Peindre l'échelle si chronophotographie
+        if self.app.chrono and self.app.echelle_faite:
+            self.painter = QPainter()
+            self.painter.begin(self)
+            self.painter.setFont(QFont("Times", 16, QFont.Bold))
+            self.painter.setRenderHint(QPainter.Antialiasing)
+            pen = QPen(Qt.darkBlue)
+            pen.setWidth(5)
+            self.painter.setPen(pen)
+            self.painter.drawLine(self.app.label_echelle_trace.p1.x(), self.app.label_echelle_trace.p1.y(), self.app.label_echelle_trace.p2.x(), self.app.label_echelle_trace.p2.y())
+            
+            echelle = str(self.app.label_video.echelle_image.longueur_reelle_etalon)
+            #echelle_finale =""
+            #for s in echelle : 
+                #echelle_finale +=s+'\n'
+            echelle +='(m)'
+            self.painter.drawText(self.app.label_echelle_trace.p1.x()-30,int((self.app.label_echelle_trace.p1.y()+self.app.label_echelle_trace.p2.y())/2),echelle)
+            self.painter.end()
+    
         ############################################################
         #paint speed vectors if asked
 

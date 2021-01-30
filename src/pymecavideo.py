@@ -685,6 +685,7 @@ class StartQt5(QMainWindow):
         self.redimensionneFenetre()
         self.update()
         
+        
     def fixeLesDimensions(self):
         pass
         #self.setMinimumWidth(self.width())
