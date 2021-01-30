@@ -1103,7 +1103,13 @@ _translate("pymecavideo", """Pour ouvrir ce fichier depuis Python, taper :\n\nim
         import oooexport
 
         calc = oooexport.Calc()
-        calc.importPymeca(self)
+        fichier_ods = calc.importPymeca(self)
+        if sys.platform == "win32":
+            os.startfile(fichier_ods)
+        else:
+            #CalcThread(fichier_ods).start()
+            os.system("xdg-open "+fichier_ods)
+        return
 
 
     def recupinfos(self, liste):

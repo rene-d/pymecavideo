@@ -142,28 +142,24 @@ class Calc:
         ## écrit dans le fichier de sortie
         self.doc.save(self.outfile)
         self.outfile.close()
-        if sys.platform == "win32":
-            os.startfile(self.outfile.name)
-        else:
-            CalcThread(self.outfile.name).start()
-        return
+        return self.outfile.name
 
 
-if __name__ == "__main__":
-    calc = Calc()
-    calc.titres([u"date",
-                 u"heure",
-                 u"durée", 
-                 u"salle",
-                 u"conférenciers",
-                 u"titre",
-                 u"lien"])
-    ## accroche la feuille au document tableur
-    calc.doc.spreadsheet.addElement(calc.table)
-    ## écrit dans le fichier de sortie
-    calc.doc.save(calc.outfile)
-    calc.outfile.close()
-    thread=CalcThread(calc.outfile.name)
-    thread.start()
+#if __name__ == "__main__":
+    #calc = Calc()
+    #calc.titres([u"date",
+                 #u"heure",
+                 #u"durée", 
+                 #u"salle",
+                 #u"conférenciers",
+                 #u"titre",
+                 #u"lien"])
+    ### accroche la feuille au document tableur
+    #calc.doc.spreadsheet.addElement(calc.table)
+    ### écrit dans le fichier de sortie
+    #calc.doc.save(calc.outfile)
+    #calc.outfile.close()
+    #thread=CalcThread(calc.outfile.name)
+    #thread.start()
 
     
