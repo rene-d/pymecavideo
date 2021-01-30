@@ -1101,14 +1101,20 @@ _translate("pymecavideo", """Pour ouvrir ce fichier depuis Python, taper :\n\nim
         """
         self.dbg.p(1, "rentre dans 'oooCalc'")
         import oooexport
-
-        calc = oooexport.Calc()
-        fichier_ods = calc.importPymeca(self)
-        if sys.platform == "win32":
-            os.startfile(fichier_ods)
-        else:
-            #CalcThread(fichier_ods).start()
-            os.system("xdg-open "+fichier_ods)
+        from mockup_export import SaveThenOpenFileDialog
+        defaultName = os.path.join(os.path.expanduser('~'), 'test.ods')
+        fd = SaveThenOpenFileDialog(None, 'Exporter...', defaultName, 'Feuille de calcul OpenDocument (*.ods)', proposeOuverture=True)
+        if fd.exec_() == QDialog.Accepted:
+            print(fd.selectedFiles()[0])
+            fichier_ods = fd.selectedFiles()[0]
+            print(fd.checkbox.isChecked())
+            calc = oooexport.Calc(fd.selectedFiles()[0])
+            calc.importPymeca(self)
+            if fd.checkbox.isChecked(): 
+                if sys.platform == "win32":
+                    os.startfile(fichier_ods)
+                else:
+                    os.system("xdg-open "+fichier_ods)
         return
 
 

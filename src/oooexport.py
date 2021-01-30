@@ -62,13 +62,13 @@ class CalcThread(threading.Thread):
         return
 
 
-class Calc:
+class Calc():
     """
     Objet capable d'écrire des données textes et numériques dans
     un fichier au fomat ODS
     """
 
-    def __init__(self):
+    def __init__(self, fichier_ods):
         """
         Crée un fichier temporaire pour y faire l'export et
         un document
@@ -78,6 +78,7 @@ class Calc:
             suffix='.ods',
             prefix='pymeca-',
             delete=False)
+        self.outfile = open(fichier_ods, 'wb')
         self.doc=OpenDocumentSpreadsheet()
         self.table = Table(name="Pymecavideo {0}".format(time.strftime("%Y-%m-%d %Hh%Mm%Ss")))
         return
