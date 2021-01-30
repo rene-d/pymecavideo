@@ -1069,17 +1069,12 @@ class StartQt5(QMainWindow):
         self.dbg.p(1, "rentre dans 'python numpy'")
         if self.nb_de_points==1 : 
             pts = self.points
-            t = [pts[i][0] for i in pts.keys()]
-            x = [self.pointEnMetre(pts[i][1])[0] for i in pts.keys()]
-            y = [self.pointEnMetre(pts[i][1])[1] for i in pts.keys()]
+            t = [float(pts[i][0]) for i in pts.keys()]
+            x = [float(self.pointEnMetre(pts[i][1])[0]) for i in pts.keys()]
+            y = [float(self.pointEnMetre(pts[i][1])[1]) for i in pts.keys()]
             baseName = os.path.splitext(os.path.basename(self.filename))[0]
             defaultName = os.path.join(os.path.expanduser('~'), baseName)
-            #fileName, _ = QFileDialog.getSaveFileName(self,"Exporter vers un fichier Numpy",defaultName,"Fichier Numpy (*.npy)")
-            fileName, hints = QFileDialog.getSaveFileName(
-                self,
-                _translate("pymecavideo", "Exporter vers un fichier Numpy", None),
-                os.path.join(str(DOCUMENT_PATH[0]), baseName+".npy"),
-                _translate("pymecavideo", "Fichiers Numpy (*.npy)",None))
+            fileName, _ = QFileDialog.getSaveFileName(self,"Exporter vers un fichier Numpy",defaultName,"Fichier Numpy (*.npy)")
             if fileName :
                 try :
                     np.save(fileName, (t,x,y))
