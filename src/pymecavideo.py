@@ -785,7 +785,8 @@ class StartQt5(QMainWindow):
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
             timer=QTimer.singleShot(5, self.detecteUnPoint)
-
+        else : 
+            self.stopCalculs.emit()
                       
     def storeMotif(self):
         self.dbg.p(1, "rentre dans 'storeMotif'")
