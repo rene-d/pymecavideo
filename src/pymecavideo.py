@@ -538,6 +538,16 @@ class StartQt5(QMainWindow):
         self.ui.pushButton_stopCalculs.setEnabled(0)
         self.ui.pushButton_stopCalculs.hide()
         
+        ##désactive grpahe si existant
+        try :           
+            plotItem = self.graphWidget.getPlotItem()
+            plotItem.clear()
+            plotItem.setTitle('')
+            plotItem.hideAxis('bottom')
+            plotItem.hideAxis('left')
+        except AttributeError:
+            pass #pas eu de graphes dessiné
+        
         ### Réactiver checkBox_avancees après réinitialisation ###
         self.ui.pushButton_origine.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
@@ -874,7 +884,7 @@ class StartQt5(QMainWindow):
             else:
                 while not self.exitDecode:
                     stdout_file = open(self.stdout_file, 'w+')
-                    stdout = stdout_file.readlines()  ##a gloabliser poru windows
+                    stdout = stdout_filepointsProbables.readlines()  ##a gloabliser poru windows
                     if not self.exitDecode:
                         try:
                             pct = stdout[-1].split()[3].replace('%', '').replace(')', '').replace('(', '')
@@ -2216,7 +2226,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
             else : 
-                self.graphWidget.setTitle = titre
+                #self.graphWidget.setTitle = titre
                 #self.graphWidget.setRange(xRange=(min(X), max(X)), yRange = (min(Y), max(Y)))
                 plotItem = self.graphWidget.getPlotItem()
                 plotItem.setTitle(titre)
