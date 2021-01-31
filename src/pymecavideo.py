@@ -2367,10 +2367,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             plotWidget = self.dictionnairePlotWidget.get(titre)
             if not plotWidget.isVisible():
                 plotWidget = pg.plot(title=titre)
+                self.dictionnairePlotWidget[titre] = plotWidget
 
         else : 
             plotWidget = pg.plot(title=titre, parent=self)
             self.dictionnairePlotWidget[titre] = plotWidget #permet de ne pas recréer la fenêtre
+        print(self.dictionnairePlotWidget)
         plotWidget.setLabel('bottom', labelAbscisse)
         plotWidget.setLabel('left', labelOrdonnee)
         plotWidget.plot(abscisse, ordonnee)
