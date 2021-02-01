@@ -89,7 +89,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <property name="sizePolicy">
@@ -870,21 +870,22 @@ les vecteurs vitesses</string>
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pushButtonChrono">
-                 <property name="text">
-                  <string>Chrono
-photographie</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pushButtonEnregistreChrono">
-                 <property name="enabled">
-                  <bool>true</bool>
-                 </property>
-                 <property name="text">
-                  <string>Enregistrer</string>
-                 </property>
+                <widget class="QComboBox" name="comboBoxChrono">
+                 <item>
+                  <property name="text">
+                   <string>enregistrer...</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Une chronophotographie</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Un chronogramme</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item>

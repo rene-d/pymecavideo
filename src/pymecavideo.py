@@ -433,7 +433,6 @@ class StartQt5(QMainWindow):
             self.label_video = Label_Video(parent=self.ui.label, app=self)
             self.label_video.show()
 
-        self.ui.pushButtonEnregistreChrono.setVisible(0)
         self.ui.tabWidget.setCurrentIndex(0)  # montre l'onglet video
 
         self.ui.pushButton_stopCalculs.setEnabled(0)
@@ -550,6 +549,16 @@ class StartQt5(QMainWindow):
         self.ui.pushButton_stopCalculs.setEnabled(0)
         self.ui.pushButton_stopCalculs.hide()
         
+        ##désactive grpahe si existant
+        try :           
+            plotItem = self.graphWidget.getPlotItem()
+            plotItem.clear()
+            plotItem.setTitle('')
+            plotItem.hideAxis('bottom')
+            plotItem.hideAxis('left')
+        except AttributeError:
+            pass #pas eu de graphes dessiné
+        
         ### Réactiver checkBox_avancees après réinitialisation ###
         self.ui.pushButton_origine.setEnabled(1)
         self.ui.checkBox_abscisses.setEnabled(1)
@@ -627,7 +636,7 @@ class StartQt5(QMainWindow):
         self.ui.radioButtonNearMouse.clicked.connect(self.enableSpeed)
         self.ui.button_video.clicked.connect(self.video)
         self.ui.pushButton_select_all_table.clicked.connect(self.presse_papier)
-        self.ui.pushButtonChrono.clicked.connect(self.chronoPhoto)
+        self.ui.comboBoxChrono.currentIndexChanged.connect(self.chronoPhoto)
         self.ui.pushButton_reinit.clicked.connect(self.reinitialise_capture)
         self.ui.pushButton_defait.clicked.connect(self.efface_point_precedent)
         self.ui.pushButton_refait.clicked.connect(self.refait_point_suivant)
@@ -648,7 +657,6 @@ class StartQt5(QMainWindow):
         self.redimensionneSignal.connect(self.redimensionneFenetre)
 
 
-        self.ui.pushButtonEnregistreChrono.clicked.connect(self.enregistreChrono)
         self.stopCalculs.connect(self.stopComputing)
         self.ui.pushButton_stopCalculs.clicked.connect(self.stopCalculs)
         self.updateProgressBar.connect(self.updatePB)
@@ -679,25 +687,30 @@ class StartQt5(QMainWindow):
                         caption = _translate("pymecavideo", "Enregistrer la chronophotographie", None),
                         directory =  dir_, filter =  _translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
         self.pixmapChrono.save(fichier[0])
+        self.ui.comboBoxChrono.setCurrentIndex(0)
 
     def chronoPhoto(self):
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         ##ajoute la première image utilisée pour le pointage sur le fond du label
-        self.chrono = not self.chrono
-        if self.chrono :
-            ok,img = self.cvReader.getImage(self.premiere_image, self.rotation)
-            self.imageChrono = toQImage(img).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) 
-            self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
-            self.ui.pushButtonEnregistreChrono.setVisible(1)
-            self.ui.pushButtonChrono.setStyleSheet("background-color: red");
+        liste_types_photos = ['chronophotographie', 'chronophotogramme']
+        
+        if self.ui.comboBoxChrono.currentIndex()!=0 : 
+            photo_chrono = liste_types_photos[self.ui.comboBoxChrono.currentIndex()-1]
+            self.dbg.p(2, "dans 'chronoPhoto, on a choisi le type %s'"%(photo_chrono))
+            self.chrono=True
+            if photo_chrono=='chronophotographie' : # on extrait le première image que l'on rajoute au label
+                ok,img = self.cvReader.getImage(self.premiere_image, self.rotation)
+                self.imageChrono = toQImage(img).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) 
+                self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
+            else : 
+                self.label_trajectoire.setPixmap(QPixmap())
+            self.enregistreChrono()
         else:
-            self.ui.pushButtonEnregistreChrono.setVisible(0)
-            self.ui.pushButtonChrono.setStyleSheet("background-color: #f6f6f6");
             self.label_trajectoire.setPixmap(QPixmap())
+            self.chrono=False
         self.redimensionneFenetre()
         self.update()
-        
-        
+
     def fixeLesDimensions(self):
         pass
         #self.setMinimumWidth(self.width())
@@ -797,7 +810,8 @@ class StartQt5(QMainWindow):
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
             timer=QTimer.singleShot(5, self.detecteUnPoint)
-
+        else : 
+            self.stopCalculs.emit()
                       
     def storeMotif(self):
         self.dbg.p(1, "rentre dans 'storeMotif'")
@@ -885,7 +899,7 @@ class StartQt5(QMainWindow):
             else:
                 while not self.exitDecode:
                     stdout_file = open(self.stdout_file, 'w+')
-                    stdout = stdout_file.readlines()  ##a gloabliser poru windows
+                    stdout = stdout_filepointsProbables.readlines()  ##a gloabliser poru windows
                     if not self.exitDecode:
                         try:
                             pct = stdout[-1].split()[3].replace('%', '').replace(')', '').replace('(', '')
@@ -2222,7 +2236,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
             else : 
-                self.graphWidget.setTitle = titre
+                #self.graphWidget.setTitle = titre
                 #self.graphWidget.setRange(xRange=(min(X), max(X)), yRange = (min(Y), max(Y)))
                 plotItem = self.graphWidget.getPlotItem()
                 plotItem.setTitle(titre)
@@ -2274,8 +2288,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if len(ref) == 0: return
         if ref != "camera":
             self.ui.button_video.setEnabled(1)
-            self.ui.pushButtonChrono.setEnabled(0)
-            self.ui.pushButtonEnregistreChrono.setVisible(0)
             self.chrono = False
             bc = self.mediane_trajectoires(int(ref) - 1)
             origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
@@ -2284,8 +2296,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
             self.label_trajectoire.referentiel = ref
         else:  # if camera, all tranlsations are disabled
-            self.ui.pushButtonChrono.setEnabled(1)
-
             self.label_trajectoire.referentiel = 0
             #try :
             self.label_trajectoire.origine = vecteur(0,0)
@@ -2363,10 +2373,12 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             plotWidget = self.dictionnairePlotWidget.get(titre)
             if not plotWidget.isVisible():
                 plotWidget = pg.plot(title=titre)
+                self.dictionnairePlotWidget[titre] = plotWidget
 
         else : 
             plotWidget = pg.plot(title=titre, parent=self)
             self.dictionnairePlotWidget[titre] = plotWidget #permet de ne pas recréer la fenêtre
+        print(self.dictionnairePlotWidget)
         plotWidget.setLabel('bottom', labelAbscisse)
         plotWidget.setLabel('left', labelOrdonnee)
         plotWidget.plot(abscisse, ordonnee)
