@@ -29,11 +29,11 @@ import subprocess
 import shutil
 import numpy as np
 import cv2
-from PyQt5.QtCore import QObject,QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
+from PyQt5.QtCore import QObject,QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QCoreApplication, QMetaObject
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
-
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QSizePolicy, QFrame, QGridLayout,QSlider, QDialogButtonBox, QDialog
 from vecteur import vecteur
-
+from itertools import cycle
 
 class Cadreur(QObject):
     """
@@ -138,37 +138,39 @@ class Cadreur(QObject):
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
 
-        cv2.namedWindow(self.titre)
+        #cv2.namedWindow(self.titre)
 
-        ralentiLabel = str(self.app.tr("Choisir le ralenti"))
+        #ralentiLabel = str(self.app.tr("Choisir le ralenti"))
 
-        cv2.createTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
-        ech, w, h = self.echelleTaille()
-        self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
-        while not fini:
-            for i in self.app.points.keys():
-                try :
-                    p = self.app.points[i][self.numpoint]
-                    hautgauche = (p + self.decal - self.rayons) * ech
-                    taille = self.sz * ech
-                    self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
-                    status, img =  self.capture.read()
-                    img = self.rotateImage(img, self.app.rotation)
-                    w, h = int(taille.x()), int(taille.y())
-                    x, y = int(hautgauche.x()), int(hautgauche.y())
+        #cv2.createTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
+        #ech, w, h = self.echelleTaille()
+        #self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
+        #while not fini:
+            #for i in self.app.points.keys():
+                #try :
+                    #p = self.app.points[i][self.numpoint]
+                    #hautgauche = (p + self.decal - self.rayons) * ech
+                    #taille = self.sz * ech
+                    #self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
+                    #status, img =  self.capture.read()
+                    #img = self.rotateImage(img, self.app.rotation)
+                    #w, h = int(taille.x()), int(taille.y())
+                    #x, y = int(hautgauche.x()), int(hautgauche.y())
 
-                    crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
-                    # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
-                    cv2.imshow(self.titre, crop_img)
-                    k = cv2.waitKey(int(self.delay * self.ralenti))
-                    if k == 0x10001b or k == 27 or k==20:
-                        fini = True
-                        cv2.destroyAllWindows()
-                        break
-                except : pass #si pas le bon nombre de points dans la dernière image
+                    #crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
+                    ## NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
+                    #cv2.imshow(self.titre, crop_img)
+                    #k = cv2.waitKey(int(self.delay * self.ralenti))
+                    #if k == 0x10001b or k == 27 or k==20:
+                        #fini = True
+                        #cv2.destroyAllWindows()
+                        #break
+                #except : pass #si pas le bon nombre de points dans la dernière image
 
-        cv2.destroyAllWindows()
-        fini = True
+        #cv2.destroyAllWindows()
+        #fini = True
+        self.dialog = RalentiWidget(parentObject = self)
+        self.dialog.exec_()
 
     def rotateImage(self, img, angle):
         if angle==90 : 
@@ -179,7 +181,98 @@ class Cadreur(QObject):
             return cv2.rotate(img, cv2.ROTATE_180) 
         else : return img #angle=0
 
+class RalentiWidget(QDialog):
+    
+    """Affiche le film recadré"""
+    
+    def __init__(self, parentObject):
+        super().__init__()
+        self.cadreur = parentObject
+        self.ralenti = 1
+        self.images = cycle(self.cadreur.app.points.keys())
+        self.delay = self.cadreur.delay
+        self.ech, self.w, self.h = self.cadreur.echelleTaille()
+        self.verticalLayout = QVBoxLayout(self)
+        self.label_2 = QLabel(self)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy)
+        self.label_2.setFrameShape(QFrame.Box)
+        self.label_2.setAlignment(Qt.AlignCenter)
+        self.label_2.setText("")
+        self.verticalLayout.addWidget(self.label_2)
+        self.gridLayout = QGridLayout()
+        self.label = QLabel(self)
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setMinimumSize(QSize(100, 0))
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+        self.horizontalSlider = QSlider(self)
+        self.horizontalSlider.setMinimum(1)
+        self.horizontalSlider.setMaximum(16)
+        self.horizontalSlider.setPageStep(4)
+        self.horizontalSlider.setOrientation(Qt.Horizontal)
+        self.gridLayout.addWidget(self.horizontalSlider, 0, 1, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout)
+        self.buttonBox = QDialogButtonBox(self)
+        self.buttonBox.setOrientation(Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.Close)
+        self.buttonBox.setCenterButtons(True)
+        self.verticalLayout.addWidget(self.buttonBox)
+        QMetaObject.connectSlotsByName(self)
+        self._translate = QCoreApplication.translate
+        self.retranslateUi()
+        self.timer=QTimer()
+        self.timer.setInterval(int(self.delay * self.ralenti))
+        self.timer.timeout.connect(self.affiche_image)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        self.horizontalSlider.valueChanged.connect(self.change_ralenti)
+        self.label_2.resize(self.w, self.h)
+        self.timer.start()
 
+    def retranslateUi(self):
+        self.setWindowTitle(self._translate("MontreFilm", "Voir la vidéo"))
+        self.label.setText(self._translate("MontreFilm", "Ralenti : 1/1"))
+        
+    def change_ralenti(self, ralenti):
+        self.ralenti = ralenti
+        self.label.setText(self._translate("MontreFilm", "Ralenti : 1/{}".format(ralenti)))
+        self.timer.setInterval(int(self.delay * self.ralenti))
+        
+    def toQimage(self, img):
+        """Conversion image opencv en QPixmap"""
+        rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        h, w, ch = rgb.shape
+        bytes_per_line = ch * w
+        convert_to_Qt_format = QImage(rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
+        p = convert_to_Qt_format.scaled(self.w, self.h, Qt.KeepAspectRatio)
+        return QPixmap.fromImage(p)
+    
+    def affiche_image(self):
+        image_suivante = next(self.images)
+        try :
+            p = self.cadreur.app.points[image_suivante][self.cadreur.numpoint]
+            hautgauche = (p + self.cadreur.decal - self.cadreur.rayons) * self.ech
+            taille = self.cadreur.sz * self.ech
+            self.cadreur.capture.set(cv2.CAP_PROP_POS_FRAMES, image_suivante + self.cadreur.app.premiere_image)
+            status, img =  self.cadreur.capture.read()
+            img = self.cadreur.rotateImage(img, self.cadreur.app.rotation)
+            w, h = int(taille.x()), int(taille.y())
+            x, y = int(hautgauche.x()), int(hautgauche.y())
+
+            crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
+            # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
+            self.label_2.setPixmap(self.toQimage(crop_img))
+        except :
+            pass
+
+        
 class openCvReader:
     """
     Un lecteur de vidéos qui permet d'extraire les images une par une

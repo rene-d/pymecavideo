@@ -37,7 +37,7 @@
    <string>PyMecaVideo, analyse mécanique des vidéos</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="icon.qrc">
+   <iconset>
     <normaloff>:/pymecavideo.png</normaloff>:/pymecavideo.png</iconset>
   </property>
   <property name="tabShape">
@@ -510,24 +510,44 @@ vers le bas</string>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_11">
-                <item>
-                 <widget class="QPushButton" name="pushButton_rot_gauche">
-                  <property name="text">
-                   <string>tourner de 90°
-vers la gauche</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_rot_droite">
-                  <property name="text">
-                   <string>tourner de 90°
-vers la droite</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QPushButton" name="pushButton_rot_gauche">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="toolTip">
+                 <string>Tourner l'image de 90° vers la gauche</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/icons/rotate-ccw.svg</normaloff>:/icons/rotate-ccw.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>24</width>
+                  <height>24</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_rot_droite">
+                <property name="focusPolicy">
+                 <enum>Qt::NoFocus</enum>
+                </property>
+                <property name="toolTip">
+                 <string>Tourner l'image de 90° vers la droite</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/icons/rotate-cw.svg</normaloff>:/icons/rotate-cw.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>24</width>
+                  <height>24</height>
+                 </size>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="pushButton_stopCalculs">
@@ -943,6 +963,19 @@ les vecteurs vitesses</string>
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item>
@@ -1062,9 +1095,21 @@ les vecteurs vitesses</string>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="text">
-              <string>Copier les mesures 
-dans le presse papier</string>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>Copier les mesures dans le presse-papier</string>
+             </property>
+             <property name="icon">
+              <iconset resource="icon.qrc">
+               <normaloff>:/icons/clipboard.svg</normaloff>:/icons/clipboard.svg</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -1074,7 +1119,7 @@ dans le presse papier</string>
            <item>
             <widget class="QPushButton" name="pushButton_nvl_echelle">
              <property name="text">
-              <string>changer d'échelle ?</string>
+              <string>Changer d'échelle</string>
              </property>
             </widget>
            </item>
