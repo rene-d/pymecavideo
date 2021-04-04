@@ -169,7 +169,7 @@ class Label_Trajectoire(QLabel):
             #######dessine l'échelle
 
             try :
-                longueur = sqrt((self.label_video.app.p1.x()-self.label_video.app.p2.x())**2+ (self.label_video.app.p1.y()-self.label_video.app.p2.y())**2)
+                longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x())**2+ (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
                 self.painter.drawLine(100,60,100,80)
                 self.painter.drawLine(100,70, longueur+100,70)
                 self.painter.drawLine(longueur+100,60,longueur+100,80)
@@ -177,7 +177,7 @@ class Label_Trajectoire(QLabel):
             except AttributeError:
                 pass #échelle non faite
             except NameError : 
-                longueur = sqrt((self.label_video.app.p1.x()-self.label_video.app.p2.x())**2+ (self.label_video.app.p1.y()-self.label_video.app.p2.y())**2)
+                longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x())**2+ (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
                 self.painter.drawLine(100,60,100,80)
                 self.painter.drawLine(100,70, longueur+100,70)
                 self.painter.drawLine(longueur+100,60,longueur+100,80)

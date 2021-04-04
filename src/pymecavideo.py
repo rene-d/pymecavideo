@@ -711,7 +711,7 @@ class StartQt5(QMainWindow):
             self.ui.label_trajectoire.chrono=True
             if photo_chrono=='chronophotographie' : # on extrait le première image que l'on rajoute au label
                 ok,img = self.cvReader.getImage(self.premiere_image, self.rotation)
-                self.imageChrono = toQImage(img).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) 
+                self.imageChrono = toQImage(img).scaled(self.label_video.width(), self.label_video.height(), Qt.KeepAspectRatio) 
                 self.ui.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
             else : 
                 self.ui.label_trajectoire.setPixmap(QPixmap())
