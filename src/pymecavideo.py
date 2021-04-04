@@ -361,7 +361,7 @@ class StartQt5(QMainWindow):
         self.pileDeDetections = []
 
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
-        self.chrono = False
+        self.ui.label_trajectoire.chrono = False
         self.a_une_image = False
 
         self.resizing = False
@@ -386,8 +386,8 @@ class StartQt5(QMainWindow):
         try:
             self.label_trajectoire.clear()
         except AttributeError:
-            self.label_trajectoire = Label_Trajectoire(self.ui.label_3, self)
-            self.label_trajectoire.show()
+            #self.label_trajectoire = Label_Trajectoire(self.ui.label_3, self)
+            self.ui.label_trajectoire.show()
 
         self.update()
         self.ui.horizontalSlider.setEnabled(0)
@@ -448,7 +448,11 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_Em.setChecked(0)
         self.ui.checkBox_Epp.setChecked(0)
         
+        
         self.ui.textEdit_consignes_python.hide()
+        
+        self.ui.label_trajectoire.label_video = self.label_video
+        
         
 
     #def desactiveExport(self, text):
@@ -508,7 +512,7 @@ class StartQt5(QMainWindow):
         self.dbg.p(1, "rentre dans 'reinitialise_capture'")
         self.montre_vitesses = False
         try : 
-            self.label_trajectoire.update() #premier lancement sans fichier
+            self.ui.label_trajectoire.update() #premier lancement sans fichier
         except AttributeError:
             pass
         
@@ -605,6 +609,7 @@ class StartQt5(QMainWindow):
     stopCalculs = pyqtSignal()
     updateProgressBar = pyqtSignal()
     pythonsourceOK = pyqtSignal(list)
+    #chrono_changed = pyqtSignal()
     
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -681,11 +686,12 @@ class StartQt5(QMainWindow):
         self.ui.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
         
         
+        
 
     def enregistreChrono(self):
         # self.label_trajectoire.render()
-        self.pixmapChrono = QPixmap(self.label_trajectoire.size())
-        self.label_trajectoire.render(self.pixmapChrono)
+        self.pixmapChrono = QPixmap(self.ui.label_trajectoire.size())
+        self.ui.label_trajectoire.render(self.pixmapChrono)
         dir_ = str(self._dir("home")[0])
                 
         fichier = QFileDialog.getSaveFileName(self, 
@@ -702,17 +708,17 @@ class StartQt5(QMainWindow):
         if self.ui.comboBoxChrono.currentIndex()!=0 : 
             photo_chrono = liste_types_photos[self.ui.comboBoxChrono.currentIndex()-1]
             self.dbg.p(2, "dans 'chronoPhoto, on a choisi le type %s'"%(photo_chrono))
-            self.chrono=True
+            self.ui.label_trajectoire.chrono=True
             if photo_chrono=='chronophotographie' : # on extrait le première image que l'on rajoute au label
                 ok,img = self.cvReader.getImage(self.premiere_image, self.rotation)
                 self.imageChrono = toQImage(img).scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) 
-                self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
+                self.ui.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
             else : 
-                self.label_trajectoire.setPixmap(QPixmap())
+                self.ui.label_trajectoire.setPixmap(QPixmap())
             self.enregistreChrono()
         else:
-            self.label_trajectoire.setPixmap(QPixmap())
-            self.chrono=False
+            self.ui.label_trajectoire.setPixmap(QPixmap())
+            self.ui.label_trajectoire.chrono=False
         self.redimensionneFenetre()
         self.update()
 
@@ -751,7 +757,7 @@ class StartQt5(QMainWindow):
 
             self.ui.radioButtonNearMouse.show()
             self.ui.radioButtonSpeedEveryWhere.show()
-            self.label_trajectoire.reDraw()
+            self.ui.label_trajectoire.reDraw()
 
 
         else:
@@ -759,7 +765,7 @@ class StartQt5(QMainWindow):
                    
             self.ui.radioButtonNearMouse.hide()
             self.ui.radioButtonSpeedEveryWhere.hide()
-            self.label_trajectoire.reDraw()
+            self.ui.label_trajectoire.reDraw()
 
     def suiviDuMotif(self):
         self.dbg.p(1, "rentre dans 'suiviDuMotif'")
@@ -993,8 +999,8 @@ class StartQt5(QMainWindow):
         # repaint axes and define origine
         if origine : 
             self.label_video.origine = origine
-        self.label_trajectoire.origine_mvt = self.label_video.origine
-        self.label_trajectoire.update()
+        self.ui.label_trajectoire.origine_mvt = self.label_video.origine
+        self.ui.label_trajectoire.update()
 
         #self.origineAvant = self.origine
 
@@ -1447,17 +1453,16 @@ class StartQt5(QMainWindow):
         
         
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.label_video.echelle_image.longueur_reelle_etalon))
-        if self.label_video.echelle_image.mParPx() == 1 :
-            self.echelle_faite = False
-        else :
-            self.echelle_faite = True
+        #if self.label_video.echelle_image.mParPx() == 1 :
+            #self.echelle_faite = False
+        #else :
+            #self.echelle_faite = True
             
         self.label_video.echelle_image.p1, self.label_video.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]) \
             , vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
         self.dbg.p(3, "rentre dans 'loads' %s" % ([self.label_video.echelle_image.p1, self.label_video.echelle_image.p2]))
         self.deltaT = float(self.deltaT.split()[-1])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.deltaT))
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.echelle_faite))
         self.nb_de_points = int(self.nb_de_points.split()[-2])
         self.dbg.p(3, "rentre dans 'loads' %s" % (self.nb_de_points))
 
@@ -1546,7 +1551,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.ui.centralwidget.setGeometry(0,15,self.largeur+self.decalw,self.hauteur+self.decalh)
         #TODO self.ui.label.setFixedSize(self.largeur, self.hauteur)
         self.label_video.setFixedSize(self.largeur, self.hauteur)
-        self.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
+        self.ui.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
 
     def determineRatio(self):
         self.dbg.p(1, "rentre dans 'determineRatio'")
@@ -1599,7 +1604,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
     
             self.dbg.p(2, "MAJ de label_video")
             self.label_video.maj()
-            self.label_trajectoire.maj()
+            self.ui.label_trajectoire.maj()
             self.affiche_image()
 
         self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget") 
@@ -1769,7 +1774,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.fixeLesDimensions()
 
         #si aucune échelle n'a été définie, on place l'étalon à 1 px pou 1 m.
-        if not self.echelle_faite:
+        if  self.label_video.echelle_image.mParPx() == 1 :
             self.label_video.echelle_image.longueur_reelle_etalon = 1
             self.label_video.echelle_image.p1 = vecteur(0,0)
             self.label_video.echelle_image.p1 = vecteur(0,1)
@@ -2279,7 +2284,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
         if newValue == "absolu":
             ref = "camera"
-            self.label_trajectoire.origine_mvt = self.label_video.origine
+            self.ui.label_trajectoire.origine_mvt = self.label_video.origine
         else:
             ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
 
@@ -2293,17 +2298,17 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if len(ref) == 0: return
         if ref != "camera":
             self.ui.button_video.setEnabled(1)
-            self.chrono = False
+            self.ui.label_trajectoire.chrono = False
             bc = self.mediane_trajectoires(int(ref) - 1)
             origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
-            self.label_trajectoire.origine = origine
-            self.label_trajectoire.origine_mvt = origine
+            self.ui.label_trajectoire.origine = origine
+            self.ui.label_trajectoire.origine_mvt = origine
 
-            self.label_trajectoire.referentiel = ref
+            self.ui.label_trajectoire.referentiel = ref
         else:  # if camera, all tranlsations are disabled
-            self.label_trajectoire.referentiel = 0
+            self.ui.label_trajectoire.referentiel = 0
             #try :
-            self.label_trajectoire.origine = vecteur(0,0)
+            self.ui.label_trajectoire.origine = vecteur(0,0)
             #except : pass
         # rempli le menu des courbes à tracer
         self.ui.comboBox_mode_tracer.clear()
@@ -2317,7 +2322,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
     #except ZeroDivisionError:
                 #self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
-        self.label_trajectoire.reDraw()
+        self.ui.label_trajectoire.reDraw()
         
 
     def tracer_courbe(self, itemChoisi):
