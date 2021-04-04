@@ -31,7 +31,7 @@ class Label_Origine(QLabel):
         QLabel.__init__(self, parent)
         self.parent = parent
         self.app = app
-        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.setGeometry(QRect(0, 0, self.parent.width(), self.parent.height()))
         self.setAutoFillBackground(False)
 
         self.setCursor(Qt.CrossCursor)

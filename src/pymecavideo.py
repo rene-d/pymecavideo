@@ -91,7 +91,7 @@ from globdef import HOME_PATH,VIDEO_PATH, CONF_PATH, \
 from detect import filter_picture
 
 import functools
-
+from aspectlayout import AspectLayout
 
 def time_it(func):
     """Timestamp decorator for dedicated functions"""
@@ -172,9 +172,9 @@ class StartQt5(QMainWindow):
         QWidget.__init__(self, parent)
         self.hauteur = 1
         self.largeur = 0
-        self.ratio = 1.5
-        self.decalh = 120
-        self.decalw = 197
+        self.ratio = 4/3
+        self.decalh = 0
+        self.decalw = 0
         self.rotation=0 #permet de retourner une vidéo mal prise
         self.pointsProbables=[None] # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         self.methode_thread = 3 # définit la methode de calcul à utiliser pour la détection auto. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
@@ -193,6 +193,8 @@ class StartQt5(QMainWindow):
 
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
+        self.aspectlayout = AspectLayout(self.ratio)
+        self.ui.containerWidget1.setLayout(self.aspectlayout)
 
         self.dbg = Dbg(0)
         for o in opts:
@@ -430,7 +432,10 @@ class StartQt5(QMainWindow):
             self.label_video.clear()
         except AttributeError:
             self.dbg.p(3, "In : init_interface, cree Label_Video")
-            self.label_video = Label_Video(parent=self.ui.label, app=self)
+            #self.label_video = Label_Video(parent=self.ui.label, app=self)
+            #self.label_video.show()
+            self.label_video = Label_Video(parent=self.ui.containerWidget1, app=self)
+            self.aspectlayout.addWidget(self.label_video)
             self.label_video.show()
 
         self.ui.tabWidget.setCurrentIndex(0)  # montre l'onglet video
@@ -513,7 +518,7 @@ class StartQt5(QMainWindow):
             plotwidget.close()
             del plotwidget
             
-        self.ui.label.update()
+        #TODO self.ui.label.update()
         try : 
             self.label_video.update()
             self.label_video.setCursor(Qt.ArrowCursor)
@@ -924,7 +929,7 @@ class StartQt5(QMainWindow):
             self,
             u"NOUVELLE ORIGINE",
             u"Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
-        label = Label_Origine(parent=self.ui.label, app=self)
+        label = Label_Origine(parent=self.label_video, app=self)
         label.show()
     
     def tourne_droite(self):
@@ -1539,7 +1544,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.dbg.p(1, "rentre dans 'metsAjourLesDimensions'")
         self.resize(self.largeur+self.decalw,self.hauteur+self.decalh)
         self.ui.centralwidget.setGeometry(0,15,self.largeur+self.decalw,self.hauteur+self.decalh)
-        self.ui.label.setFixedSize(self.largeur, self.hauteur)
+        #TODO self.ui.label.setFixedSize(self.largeur, self.hauteur)
         self.label_video.setFixedSize(self.largeur, self.hauteur)
         self.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
 
@@ -1568,26 +1573,26 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             self.ratio = 1/self.ratio
                     
         if not self.lance_capture :  #on recalcule la largeur et la hauteur de l'image si on n'est pas entrain de pointer
-            self.hauteurAvant = self.heightForWidth_label_video(self.largeurAvant)
-            if (self.width()-self.decalw)/(self.height()-self.decalh) > self.ratio : #allongement horizontal, la hauteur doit être recalculée)
-                    self.hauteur = self.height()-self.decalh
-                    self.largeur = self.widthForHeight_label_video(self.hauteur)
-            else: 
-                self.largeur = self.width()-self.decalw
-                self.hauteur = self.heightForWidth_label_video(self.largeur)
-            self.setMinimumSize(QSize(1000,760))
-            
+            #self.hauteurAvant = self.heightForWidth_label_video(self.largeurAvant)
+            #if (self.width()-self.decalw)/(self.height()-self.decalh) > self.ratio : #allongement horizontal, la hauteur doit être recalculée)
+                    #self.hauteur = self.height()-self.decalh
+                    #self.largeur = self.widthForHeight_label_video(self.hauteur)
+            #else: 
+                #self.largeur = self.width()-self.decalw
+                #self.hauteur = self.heightForWidth_label_video(self.largeur)
+            ##self.setMinimumSize(QSize(1000,760))
+            pass
         else: 
-            self.setMinimumSize(QSize(self.largeur+self.decalw,self.hauteur+self.decalh)) #si la capture est lancéeon ne peut aller en dessous du label_video
+            #self.setMinimumSize(QSize(self.largeur+self.decalw,self.hauteur+self.decalh)) #si la capture est lancéeon ne peut aller en dessous du label_video
         
-        self.dbg.p(2, "on fixe les hauteurs du label")
-        self.ui.label.setFixedHeight(self.hauteur)
-        self.ui.label.setFixedWidth(self.largeur)
+            self.dbg.p(2, "on fixe les hauteurs du label")
+            self.ui.containerWidget1.setFixedHeight(self.ui.containerWidget1.height())
+            self.ui.containerWidget1.setFixedWidth(self.ui.containerWidget1.width())
         
         if hasattr(self, 'label_video'):
             self.dbg.p(2, "on fixe les hauteurs de label_video")            
             
-            self.label_video.setFixedSize(QSize(self.largeur, self.hauteur))
+            #self.label_video.setFixedSize(QSize(self.largeur, self.hauteur))
             
             self.dbg.p(2, "label_vidéo situé en %s %s"%(self.label_video.pos().x(),self.label_video.pos().y() ))
             self.dbg.p(3, "label_vidéo largeur :  %s hauteur : %s"%(self.label_video.width(),self.label_video.height()))
@@ -1598,8 +1603,8 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             self.affiche_image()
 
         self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget") 
-        self.ui.centralwidget.setFixedSize(self.size()-QSize(1,1))
-        self.ui.tabWidget.setFixedSize(self.size()-QSize(1,1))
+        #self.ui.centralwidget.setFixedSize(self.size()-QSize(1,1))
+        #self.ui.tabWidget.setFixedSize(self.size()-QSize(1,1))
         
     def widthForHeight_label_video(self, h):
         #calcule self.largeur et self.hauteur si la hauteur est prédominante
@@ -2664,8 +2669,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans 'AffichejusteImage'" )
         if self.a_une_image :         
-            self.imageAffichee = self.imageExtraite.scaled(self.largeur, self.hauteur, Qt.KeepAspectRatio) #4-6 ms
-            
+            self.imageAffichee = self.imageExtraite.scaled(self.label_video.width(), self.label_video.height()) #4-6 ms
+            print(self.imageExtraite.width(), self.imageExtraite.height())
+            print(self.label_video.width(), self.label_video.height())
+            print(self.imageAffichee.width(), self.imageAffichee.height())
             self.label_video.setMouseTracking(True)
             self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
             self.label_video.met_a_jour_crop()

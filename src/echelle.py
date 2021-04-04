@@ -85,7 +85,9 @@ class Label_Echelle(QLabel):
         QLabel.__init__(self, parent)
         self.parent = parent
         self.app = app
-        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.setGeometry(QRect(0, 0, self.parent.width(), self.parent.height()))
+        self.largeur = self.parent.width()
+        self.hauteur = self.parent.height()
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
@@ -126,7 +128,7 @@ class Label_Echelle(QLabel):
 
     def mouseMoveEvent(self, event):
         self.zoom_croix.show()
-        if (event.x()>0 and event.x()<self.app.largeur) and (event.y()>0 and event.y()<self.app.hauteur):
+        if (event.x()>0 and event.x()<self.largeur) and (event.y()>0 and event.y()<self.hauteur):
             self.pos_echelle = vecteur(event.x(), event.y())
         self.fait_crop(self.pos_echelle)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
@@ -176,7 +178,7 @@ class Label_Echelle_Trace(QLabel):
     def __init__(self, parent, p1, p2):
         QLabel.__init__(self, parent)
         self.parent = parent
-        self.setGeometry(QRect(0, 0, self.parent.app.largeur, self.parent.app.hauteur))
+        self.setGeometry(QRect(0, 0, self.parent.width(), self.parent.height()))
         self.setAutoFillBackground(False)
         self.p1 = p1
         self.p2 = p2
@@ -188,7 +190,7 @@ class Label_Echelle_Trace(QLabel):
     def mouseReleaseEvent(self, event):
         event.ignore()
     def maj(self):
-        self.setGeometry(QRect(0, 0, self.app.label_video.width(), self.app.label_video.height()))
+        self.setGeometry(QRect(0, 0, self.parent.width(), self.parent.height()))
 
 
     def paintEvent(self, event):

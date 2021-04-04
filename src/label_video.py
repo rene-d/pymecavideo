@@ -34,8 +34,8 @@ class Label_Video(QLabel):
         QLabel.__init__(self, parent)
         self.parent = parent
         self.app = app
-        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
-        self.setMinimumSize(QSize(640,480))
+        #self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
+        #self.setMinimumSize(QSize(640,480))
         self.liste_points = []
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
@@ -119,8 +119,10 @@ class Label_Video(QLabel):
         self.app.dbg.p(1, "rentre dans 'label_video.maj'")
         if tourne : 
             self.tourne=True
-        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
-        self.resizeEvent(QResizeEvent(self.size(), QSize()))
+            
+        print("largeur %s, hauteur :%s"%(self.width(), self.height()))
+        #self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
+        #self.resizeEvent(QResizeEvent(self.size(), QSize()))
 
     def met_a_jour_crop(self, pos_zoom = vecteur(50,50)):
         self.fait_crop(pos_zoom)

@@ -1,8 +1,5 @@
 <RCC>
   <qresource>
-    <file>icons/clipboard.svg</file>
-    <file>icons/pymecavideo.png</file>
-    <file>icons/rotate-ccw.svg</file>
-    <file>icons/rotate-cw.svg</file>
+    <file>pymecavideo.png</file>
   </qresource>
 </RCC>
