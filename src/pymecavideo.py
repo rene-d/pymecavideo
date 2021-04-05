@@ -1011,8 +1011,7 @@ class StartQt5(QMainWindow):
             #pass 
         
         self.label_video.update()
-        
-        #self.stopRedimensionnement.emit()
+
 
         # construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
         if self.points_ecran != {}:
@@ -1340,11 +1339,20 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.tourne=tourne #n'est utilisée que ici et dans label_video
             
         if tourne : #on vient de cliquer sur tourner. rien n'est changé.
-            self.label_video.origine = self.label_video.origine.rotate(self.increment, self.largeur, self.hauteur)
-            self.label_video.echelle_image.p1 = self.label_video.echelle_image.p1.rotate(self.increment, self.largeur, self.hauteur)
-            self.label_video.echelle_image.p2 = self.label_video.echelle_image.p2.rotate(self.increment, self.largeur, self.hauteur)
-            self.largeur, self.hauteur = self.hauteur, self.largeur
+            largeur = self.label_video.width()
+            hauteur = self.label_video.height()
+            self.label_video.origine = self.label_video.origine.rotate(self.increment, largeur, hauteur)
+            self.label_video.echelle_image.p1 = self.label_video.echelle_image.p1.rotate(self.increment, largeur, hauteur)
+            self.label_video.echelle_image.p2 = self.label_video.echelle_image.p2.rotate(self.increment, largeur, hauteur)
+            self.label_video.setGeometry(0,0,hauteur, largeur)
             self.ratio = 1/self.ratio
+            self.aspectlayout.aspect = self.ratio
+            self.tourne=False
+            self.resize(self.size())
+            
+            
+        print(self.label_video.origine)
+        print(self.label_video.size())
                     
         if not self.lance_capture :  #on recalcule la largeur et la hauteur de l'image si on n'est pas entrain de pointer
             #self.hauteurAvant = self.heightForWidth_label_video(self.largeurAvant)
@@ -1379,6 +1387,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget") 
         #self.ui.centralwidget.setFixedSize(self.size()-QSize(1,1))
         #self.ui.tabWidget.setFixedSize(self.size()-QSize(1,1))
+
         
     def widthForHeight_label_video(self, h):
         #calcule self.largeur et self.hauteur si la hauteur est prédominante
