@@ -74,8 +74,8 @@ class Cadreur(QObject):
         @return un triplet échelle, largeur, hauteur (de l'image dans le widget de de pymecavideo)
         """
         m = self.app.imageExtraite.size()
-        echx = 1.0 * m.width() / self.app.largeur
-        echy = 1.0 * m.height() / self.app.hauteur
+        echx = 1.0 * m.width() / self.app.label_video.width()
+        echy = 1.0 * m.height() / self.app.label_video.height()
         ech = max(echx, echy)
         return ech, int(m.width() / ech), int(m.height() / ech)
 

@@ -530,7 +530,16 @@ class StartQt5(QMainWindow):
             plotwidget.parentWidget().close()
             plotwidget.close()
             del plotwidget
-            
+        
+        self.rotation=0
+        self.defixeLesDimensions()
+        ##remet le ratio à l'initialise
+        ratio = self.determineRatio()
+        self.aspectlayout1.aspect = ratio
+        self.aspectlayout2.aspect = ratio
+        
+        
+        
         #TODO self.ui.label.update()
         try : 
             self.label_video.update()
@@ -605,7 +614,10 @@ class StartQt5(QMainWindow):
         
         if self.ui.tableWidget:
             self.ui.tableWidget.clear()
-        self.redimensionneFenetre()
+            
+        #HACK : oblige le redimensionnement
+        self.resize(self.size()+QSize(1,0))
+        #self.redimensionneFenetre()
 
     ############ les signaux spéciaux #####################
     clic_sur_video = pyqtSignal()
@@ -985,26 +997,12 @@ class StartQt5(QMainWindow):
         #gestion de l'origine et de l'échelle : 
         
         ###DEBUG
-        self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, self.largeur%s, self.hauteur%s"%(self.label_video.origine, self.largeur, self.hauteur))
+        self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, self.largeur%s, self.hauteur%s"%(self.label_video.origine, self.label_video.width(), self.label_video.height()))
         try :
             self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.echelle_image.p1 %s, self.echelle_image.p2 %s"%(self.label_video.echelle_image.p1, self.label_video.echelle_image.p2))
         except AttributeError : 
             pass
-        ###
-
         
-        
-        #rotation vecteur echelle
-        #self.label_video.echelle_image.p1 = self.echelle_image.p1.rotate(self.increment, self.largeur, self.hauteur)
-        #self.label_video.echelle_image.p2 = self.echelle_image.p2.rotate(self.increment, self.largeur, self.hauteur) 
-        
-        
-        #self.largeur, self.hauteur = self.hauteur, self.largeur 
-        
-        ###DEBUG
-        self.dbg.p(3, "Dans 'tourne_image' après avoir tourné, self.origine %s, self.largeur%s, self.hauteur%s"%(self.label_video.origine, self.largeur, self.hauteur))
-
-        ###
         self.redimensionneSignal.emit(1)
 
 
@@ -1149,7 +1147,7 @@ class StartQt5(QMainWindow):
         Initialise le lecteur de flux vidéo pour OpenCV
         et recode la vidéo si nécessaire.
         """
-        self.dbg.p(1, "rentre dans 'init_cvReader'")
+        self.dbg.p(1, "rentre dans 'init_cvReader', ouverture de %s"%(self.filename))
 
         self.cvReader = openCvReader(self.filename)
 
@@ -1200,42 +1198,42 @@ class StartQt5(QMainWindow):
                 dico_donnee[cle.strip()]=valeur.strip()
         
         self.filename = dico_donnee["video"]
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.filename))
+        self.dbg.p(3, "rentre dans 'loads fichier : ' %s" % (self.filename))
         try : 
             self.sens_X = int(dico_donnee['sens axe des X'])
         except KeyError: 
             self.sens_X = 1
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.sens_X))
+        self.dbg.p(3, "rentre dans 'loads' : sens_x' %s" % (self.sens_X))
         try : 
             self.sens_Y = int(dico_donnee['sens axe des Y'])
         except KeyError : 
             self.sens_Y = 1
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.sens_Y))
+        self.dbg.p(3, "rentre dans 'loads' sens_y %s" % (self.sens_Y))
         try : 
-            self.largeur = int(dico_donnee['largeur video'])
+            largeur = int(dico_donnee['largeur video'])
         except KeyError:
-            self.largeur = 640
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.largeur))
+            largeur = 640
+        self.dbg.p(3, "rentre dans 'loads' largeur :  %s" % (largeur))
         try : 
-            self.hauteur = int(dico_donnee['hauteur video'])
+            hauteur = int(dico_donnee['hauteur video'])
         except KeyError : 
-            self.largeur = 480
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.hauteur))
+            largeur = 480
+        self.dbg.p(3, "rentre dans 'loads' hauteur %s" % (hauteur))
         try : 
             self.rotation = int(dico_donnee['rotation'])
         except KeyError: 
             self.rotation=0
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.rotation))      
+        self.dbg.p(3, "rentre dans 'loads' rotation %s" % (self.rotation))      
         try : 
             self.label_video.origine = vecteur(dico_donnee['origine de pointage'].split()[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])        
         except KeyError:
-            self.label_video.origine = vecteur(self.largeur//2, self.hauteur//2)
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.label_video.origine))
+            self.label_video.origine = vecteur(largeur//2, hauteur//2)
+        self.dbg.p(3, "rentre dans 'loads' origine %s" % (self.label_video.origine))
         self.premiere_image = int(dico_donnee['index de depart'])
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.premiere_image))
+        self.dbg.p(3, "rentre dans 'loads' première image %s" % (self.premiere_image))
         
         
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.label_video.echelle_image.longueur_reelle_etalon))
+        self.dbg.p(3, "rentre dans 'loads' longueur_reelle_etalon %s" % (self.label_video.echelle_image.longueur_reelle_etalon))
         #if self.label_video.echelle_image.mParPx() == 1 :
             #self.echelle_faite = False
         #else :
@@ -1243,13 +1241,20 @@ class StartQt5(QMainWindow):
             
         self.label_video.echelle_image.p1, self.label_video.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]) \
             , vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
-        self.dbg.p(3, "rentre dans 'loads' %s" % ([self.label_video.echelle_image.p1, self.label_video.echelle_image.p2]))
+        self.dbg.p(3, "rentre dans 'loads' points de l'échelle %s" % ([self.label_video.echelle_image.p1, self.label_video.echelle_image.p2]))
         self.deltaT = float(self.deltaT.split()[-1])
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.deltaT))
+        self.dbg.p(3, "rentre dans 'loads' delta_t %s" % (self.deltaT))
         self.nb_de_points = int(self.nb_de_points.split()[-2])
-        self.dbg.p(3, "rentre dans 'loads' %s" % (self.nb_de_points))
+        self.dbg.p(3, "rentre dans 'loads' nb de points %s" % (self.nb_de_points))
+        self.dbg.p(3, "rentre dans 'loads, dico données' %s" % (dico_donnee))
 
+        print("loads", largeur, hauteur)
+        self.label_video.resize(QSize(largeur,hauteur))
+        self.aspectlayout1.aspect = largeur/hauteur
+        self.aspectlayout2.aspect = largeur/hauteur
+        
         self.init_cvReader()
+        #self.resize(self.size()+QSize(1,0))
 
     def rouvre(self, fichier):
         """Open a mecavideo file"""
@@ -1260,13 +1265,13 @@ class StartQt5(QMainWindow):
         i = 0
         self.points = {} #dictionnaire des données, simple. Les clefs sont les index de l'image. les données les
         self.listePoints = listePointee()
-        dd = ""
+        dictionnaire_données_str = ""
         for l in lignes:
             if l[0] == "#":
-                dd += l
+                dictionnaire_données_str += l
         self.label_video.echelle_image = echelle()  # on réinitialise l'échelle
         try : 
-            self.loads(dd)  # on récupère les données importantes
+            self.loads(dictionnaire_données_str)  # on récupère les données importantes
             self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
             self.init_interface()
             self.change_axe_ou_origine()
@@ -1325,16 +1330,6 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
                                                      None),
                                           QMessageBox.Ok, QMessageBox.Ok)
             self.a_une_image=False
-        
-            
-            
-    def metsAjourLesDimensions(self):
-        self.dbg.p(1, "rentre dans 'metsAjourLesDimensions'")
-        self.resize(self.largeur+self.decalw,self.hauteur+self.decalh)
-        self.ui.centralwidget.setGeometry(0,15,self.largeur+self.decalw,self.hauteur+self.decalh)
-        #TODO self.ui.label.setFixedSize(self.largeur, self.hauteur)
-        self.label_video.setFixedSize(self.largeur, self.hauteur)
-        self.label_trajectoire.setFixedSize(self.largeur, self.hauteur)
 
     def determineRatio(self):
         self.dbg.p(1, "rentre dans 'determineRatio'")
@@ -1375,7 +1370,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             #else: 
                 #self.largeur = self.width()-self.decalw
                 #self.hauteur = self.heightForWidth_label_video(self.largeur)
-            self.setMinimumSize(QSize(1000,760))
+            #self.setMinimumSize(QSize(1000,760))
             pass
         else: 
             
@@ -1455,7 +1450,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 #intervalle de temps : %f
 #suivi de %s point(s)
 #%s
-#""" % (self.filename, self.sens_X, self.sens_Y, self.largeur, self.hauteur,self.rotation, self.label_video.origine, self.premiere_image \
+#""" % (self.filename, self.sens_X, self.sens_Y, self.label_video.width(), self.label_video.height(),self.rotation, self.label_video.origine, self.premiere_image \
                              , self.label_video.echelle_image.longueur_reelle_etalon, self.label_video.echelle_image.longueur_pixel_etalon(),
         self.label_video.echelle_image.p1, self.label_video.echelle_image.p2, self.deltaT, self.nb_de_points, msg)
         return result
