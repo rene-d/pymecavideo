@@ -158,6 +158,11 @@ class Label_Trajectoire(QLabel):
             self.painter.setFont(font)
             self.painter.setRenderHint(QPainter.TextAntialiasing)
             self.painter.setRenderHint(QPainter.Antialiasing)
+            
+            if self.chrono==1 : #rends plus lisible si le fond est foncé
+                self.painter.setPen(Qt.white)
+                self.painter.setBrush(Qt.lightGray)
+                self.painter.drawRect(self.width()-210,30,120, 30)
             self.painter.setPen(Qt.blue)
             try : 
                 self.painter.drawText(self.width()-200,50, unicode("{0}t = {1:.3f} s").format(unichr(916), self.label_video.app.deltaT))
