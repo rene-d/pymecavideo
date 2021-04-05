@@ -1348,7 +1348,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             self.ratio = 1/self.ratio
             self.aspectlayout.aspect = self.ratio
             self.tourne=False
-            self.resize(self.size())
+            #self.resize(self.size())
             
             
         print(self.label_video.origine)
