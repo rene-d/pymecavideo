@@ -710,6 +710,11 @@ class StartQt5(QMainWindow):
         self.ui.comboBoxChrono.setCurrentIndex(0)
 
     def chronoPhoto(self):
+        """lance la sauvegarde du label_trajectoire.
+        Si chronophotographie, on ajoute l'image et la trace de l'échelle comme pointée.
+        Si chronophotogramme, on ne met pas l'image et la trace est en haut.
+        """
+        
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         ##ajoute la première image utilisée pour le pointage sur le fond du label
         liste_types_photos = ['chronophotographie', 'chronophotogramme']
@@ -717,12 +722,14 @@ class StartQt5(QMainWindow):
         if self.ui.comboBoxChrono.currentIndex()!=0 : 
             photo_chrono = liste_types_photos[self.ui.comboBoxChrono.currentIndex()-1]
             self.dbg.p(2, "dans 'chronoPhoto, on a choisi le type %s'"%(photo_chrono))
-            self.label_trajectoire.chrono=True
+            
             if photo_chrono=='chronophotographie' : # on extrait le première image que l'on rajoute au label
+                self.label_trajectoire.chrono=1 #1 pour chronophotographie
                 ok,img = self.cvReader.getImage(self.premiere_image, self.rotation)
                 self.imageChrono = toQImage(img).scaled(self.label_video.width(), self.label_video.height(), Qt.KeepAspectRatio) 
                 self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
             else : 
+                self.label_trajectoire.chrono=2 #2 pour chronophotogramme
                 self.label_trajectoire.setPixmap(QPixmap())
             self.enregistreChrono()
         else:

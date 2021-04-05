@@ -147,7 +147,7 @@ class Label_Trajectoire(QLabel):
 
 
         ###peint les informations pour le mode chronophotographie
-        if self.chrono :#ceci est géré dans pymecavideo, chercher : self.ui.label_trajectoire.chrono
+        if self.chrono :#ceci est géré dans pymecavideo.py, chercher : self.label_trajectoire.chrono
 
 
             self.painter = QPainter()
@@ -164,22 +164,42 @@ class Label_Trajectoire(QLabel):
             except NameError : 
                 self.painter.drawText(self.width()-200,50, "{0}t = {1:.3f} s".format(chr(916),self.label_video.app.deltaT))
             #######dessine l'échelle
-
-            try :
-                longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x())**2+ (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
-                self.painter.drawLine(100,60,100,80)
-                self.painter.drawLine(100,70, longueur+100,70)
-                self.painter.drawLine(longueur+100,60,longueur+100,80)
-                self.painter.drawText((longueur)/2,120, unicode("d = {0:.2f} m").format(self.label_video.echelle_image.longueur_reelle_etalon))
-            except AttributeError:
-                pass #échelle non faite
-            except NameError : 
-                longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x())**2+ (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
-                self.painter.drawLine(100,60,100,80)
-                self.painter.drawLine(100,70, longueur+100,70)
-                self.painter.drawLine(longueur+100,60,longueur+100,80)
-                self.painter.drawText((longueur)/2,120, "d = {0:.2f} m".format(self.label_video.echelle_image.longueur_reelle_etalon))
+            if self.chrono==2 : #chronophotogramme
+                try :
+                    longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x())**2+ (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
+                    self.painter.drawLine(100,60,100,80)
+                    self.painter.drawLine(100,70, longueur+100,70)
+                    self.painter.drawLine(longueur+100,60,longueur+100,80)
+                    self.painter.drawText((longueur)/2,120, unicode("d = {0:.2f} m").format(self.label_video.echelle_image.longueur_reelle_etalon))
+                except AttributeError:
+                    pass #échelle non faite
+                except NameError : 
+                    longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x())**2+ (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
+                    self.painter.drawLine(100,60,100,80)
+                    self.painter.drawLine(100,70, longueur+100,70)
+                    self.painter.drawLine(longueur+100,60,longueur+100,80)
+                    self.painter.drawText((longueur)/2,120, "d = {0:.2f} m".format(self.label_video.echelle_image.longueur_reelle_etalon))
             self.painter.end()
+            
+            ############################################################
+            #Peindre l'échelle si chronophotographie
+            if self.chrono==1 : #chronophotographie
+                self.painter = QPainter()
+                self.painter.begin(self)
+                self.painter.setFont(QFont("Times", 16, QFont.Bold))
+                self.painter.setRenderHint(QPainter.Antialiasing)
+                pen = QPen(Qt.darkBlue)
+                pen.setWidth(5)
+                self.painter.setPen(pen)
+                self.painter.drawLine(self.label_video.app.label_echelle_trace.p1.x(), self.label_video.app.label_echelle_trace.p1.y(), self.label_video.app.label_echelle_trace.p2.x(), self.label_video.app.label_echelle_trace.p2.y())
+                
+                echelle = str(self.label_video.echelle_image.longueur_reelle_etalon)
+
+                echelle +=' (m)'
+                self.painter.drawText(self.label_video.app.label_echelle_trace.p1.x()-30,int((self.label_video.app.label_echelle_trace.p1.y()+self.label_video.app.label_echelle_trace.p2.y())/2),echelle)
+                self.painter.end()
+    
+        ############################################################
 
 
 
@@ -240,27 +260,7 @@ class Label_Trajectoire(QLabel):
         self.painter.rotate(self.label_video.app.sens_X * self.label_video.app.sens_Y * (90))
         self.painter.translate(-self.origine_mvt.x(), -self.origine_mvt.y())
         self.painter.end()
-        ############################################################
-        #Peindre l'échelle si chronophotographie
-        if self.chrono and self.label_video.echelle_image.mParPx() != 1 :
-            self.painter = QPainter()
-            self.painter.begin(self)
-            self.painter.setFont(QFont("Times", 16, QFont.Bold))
-            self.painter.setRenderHint(QPainter.Antialiasing)
-            pen = QPen(Qt.darkBlue)
-            pen.setWidth(5)
-            self.painter.setPen(pen)
-            self.painter.drawLine(self.label_video.app.label_echelle_trace.p1.x(), self.label_video.app.label_echelle_trace.p1.y(), self.label_video.app.label_echelle_trace.p2.x(), self.label_video.app.label_echelle_trace.p2.y())
-            
-            echelle = str(self.label_video.echelle_image.longueur_reelle_etalon)
-            #echelle_finale =""
-            #for s in echelle : 
-                #echelle_finale +=s+'\n'
-            echelle +='(m)'
-            self.painter.drawText(self.label_video.app.label_echelle_trace.p1.x()-30,int((self.label_video.app.label_echelle_trace.p1.y()+self.label_video.app.label_echelle_trace.p2.y())/2),echelle)
-            self.painter.end()
-    
-        ############################################################
+        
         #paint speed vectors if asked
 
         if self.speedToDraw != []:
