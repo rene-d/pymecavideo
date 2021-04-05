@@ -48,6 +48,7 @@ class Label_Trajectoire(QLabel):
     def reDraw(self):
         """call when somthing change as repere, origine ..."""
         self.giveCoordonatesToPaint()
+        #self.maj()
         self.repaint()
 
     def maj(self):
