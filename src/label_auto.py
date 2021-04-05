@@ -33,7 +33,7 @@ class Label_Auto(QLabel):
         QLabel.__init__(self, parent)
         self.parent = parent
         self.app = app
-        self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
+        self.setGeometry(QRect(0, 0, self.app.label_video.width(), self.app.label_video.height()))
         self.setAutoFillBackground(False)
 
         ### prend un beau gros curseur rouge inmanquable
