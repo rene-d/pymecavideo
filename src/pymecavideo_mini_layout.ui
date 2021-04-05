@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>760</height>
+    <height>764</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -73,8 +73,8 @@
    <property name="autoFillBackground">
     <bool>false</bool>
    </property>
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
+   <layout class="QVBoxLayout" name="verticalLayout_8">
+    <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -578,8 +578,8 @@ vers la droite</string>
        <attribute name="title">
         <string>Trajectoires</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_12">
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_9">
           <item>
            <widget class="QGroupBox" name="groupBox_4">
@@ -762,7 +762,7 @@ les vecteurs vitesses</string>
            </widget>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0">
+           <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_8">
               <item>
@@ -801,10 +801,10 @@ les vecteurs vitesses</string>
              </layout>
             </item>
             <item>
-             <widget class="Label_Trajectoire" name="label_trajectoire">
+             <widget class="QWidget" name="containerWidget2" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                <horstretch>1</horstretch>
                 <verstretch>1</verstretch>
                </sizepolicy>
               </property>
@@ -813,79 +813,6 @@ les vecteurs vitesses</string>
                 <width>640</width>
                 <height>480</height>
                </size>
-              </property>
-              <property name="palette">
-               <palette>
-                <active>
-                 <colorrole role="Base">
-                  <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>255</red>
-                    <green>255</green>
-                    <blue>255</blue>
-                   </color>
-                  </brush>
-                 </colorrole>
-                 <colorrole role="Window">
-                  <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>194</red>
-                    <green>197</green>
-                    <blue>196</blue>
-                   </color>
-                  </brush>
-                 </colorrole>
-                </active>
-                <inactive>
-                 <colorrole role="Base">
-                  <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>255</red>
-                    <green>255</green>
-                    <blue>255</blue>
-                   </color>
-                  </brush>
-                 </colorrole>
-                 <colorrole role="Window">
-                  <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>194</red>
-                    <green>197</green>
-                    <blue>196</blue>
-                   </color>
-                  </brush>
-                 </colorrole>
-                </inactive>
-                <disabled>
-                 <colorrole role="Base">
-                  <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>194</red>
-                    <green>197</green>
-                    <blue>196</blue>
-                   </color>
-                  </brush>
-                 </colorrole>
-                 <colorrole role="Window">
-                  <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>194</red>
-                    <green>197</green>
-                    <blue>196</blue>
-                   </color>
-                  </brush>
-                 </colorrole>
-                </disabled>
-               </palette>
-              </property>
-              <property name="cursor">
-               <cursorShape>ArrowCursor</cursorShape>
-              </property>
-              <property name="autoFillBackground">
-               <bool>true</bool>
-              </property>
-              <property name="text">
-               <string/>
               </property>
              </widget>
             </item>
@@ -1425,11 +1352,6 @@ p, li { white-space: pre-wrap; }
    <class>standardDragTable</class>
    <extends>QTableWidget</extends>
    <header>standarddragtable.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Label_Trajectoire</class>
-   <extends>QLabel</extends>
-   <header>label_trajectoire.h</header>
   </customwidget>
  </customwidgets>
  <resources>
