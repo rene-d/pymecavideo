@@ -32,16 +32,12 @@ class Label_Trajectoire(QLabel):
         QLabel.__init__(self, parent)
 
         self.chrono=False
-        #print("truc",self.parentWidget().objectName())
-        ##self.setGeometry(QRect(0, 0, self.label_video.width(), self.label_video.height()))
+
         self.setCursor(Qt.ArrowCursor)
         self.setAutoFillBackground(True)
         #self.setMouseTracking(1)
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray", "green", "red", "blue", "cyan", "magenta",
                          "yellow", "gray", "green"]
-        #self.origine = vecteur(0,0)
-        #self.referentiel = 0
-        #self.origine_mvt = vecteur(self.label_video.width()/2,self.label_video.height/2)
         self.setMouseTracking(True)
         self.speedToDraw = []
         self.speedtest = []
@@ -194,11 +190,9 @@ class Label_Trajectoire(QLabel):
 
         listePoints = []
         listeParImage = []
-        print('rr', self.label_video.app.listePoints)
         
         for point in self.label_video.app.listePoints:
         #    #TODO :si quelqu'un veut implémenter un slicing de l'objet listePointee...
-        #    #print(self.label_video.app.listePoints[i*self.label_video.app.nb_de_points:(i+1)*self.label_video.app.nb_de_points])
             listeParImage.append(point[2])
             if len(listeParImage)%self.label_video.app.nb_de_points==0:
                 listePoints.append(listeParImage)
