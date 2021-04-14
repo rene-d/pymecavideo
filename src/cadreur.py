@@ -99,7 +99,7 @@ class Cadreur(QObject):
         #agauche = [pp[self.numpoint].x() for pp in self.app.points.values()]  #ne gère pas les excemtion si il manqu eun point
         #dessus = [pp[self.numpoint].y() for pp in self.app.points.values()]
         
-        agauche=[]
+        agauche = []
         dessus = []
         for pp in self.app.points.values() :
             try : 
@@ -174,11 +174,11 @@ class Cadreur(QObject):
         self.dialog.exec_()
 
     def rotateImage(self, img, angle):
-        if angle==90 : 
+        if angle == 90 : 
             return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) 
-        elif angle==-90 : 
+        elif angle == -90 : 
             return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE) 
-        elif angle==180 : 
+        elif angle == 180 : 
             return cv2.rotate(img, cv2.ROTATE_180) 
         else :
             return img #angle=0
@@ -229,7 +229,7 @@ class RalentiWidget(QDialog):
         QMetaObject.connectSlotsByName(self)
         self._translate = QCoreApplication.translate
         self.retranslateUi()
-        self.timer=QTimer()
+        self.timer = QTimer()
         self.timer.setInterval(int(self.delay * self.ralenti))
         self.timer.timeout.connect(self.affiche_image)
         self.buttonBox.accepted.connect(self.accept)
@@ -331,11 +331,11 @@ class openCvReader:
         return True, self.rotateImage(img2, angle)
 
     def rotateImage(self, img, angle):
-        if angle==90 : 
+        if angle == 90 : 
             return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) 
-        elif angle==-90 : 
+        elif angle == -90 : 
             return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE) 
-        elif angle==180 : 
+        elif angle == 180 : 
             return cv2.rotate(img, cv2.ROTATE_180) 
         else :
             return img #angle==0

@@ -45,7 +45,7 @@ licence['fr'] = u"""
 import sys, os, os.path, subprocess
 # if sys.platform == "win32" or sys.argv[0].endswith(".exe"):
 # import Error
-thisDir=os.path.dirname(os.path.abspath(__file__))
+thisDir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, thisDir)
 
 from vecteur import vecteur
@@ -118,7 +118,7 @@ class MonThreadDeCalcul2(QThread):
         self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
         self.motif = motif
         self.image = image
-        self.tmpdir=tmpdir
+        self.tmpdir = tmpdir
         self.stopped = False
 
     def run(self):
@@ -143,7 +143,7 @@ class MonThreadDeCalcul(QThread):
         self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
         self.motif = motif
         self.image = image
-        self.tmpdir=tmpdir
+        self.tmpdir = tmpdir
         self.stopped = False
 
     def run(self):
@@ -175,8 +175,8 @@ class StartQt5(QMainWindow):
         self.ratio = 4/3
         self.decalh = 0
         self.decalw = 0
-        self.rotation=0 #permet de retourner une vidéo mal prise
-        self.pointsProbables=[None] # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
+        self.rotation = 0 #permet de retourner une vidéo mal prise
+        self.pointsProbables = [None] # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         self.methode_thread = 3 # définit la methode de calcul à utiliser pour la détection auto. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
         
         #### Mode plein écran
@@ -338,7 +338,7 @@ class StartQt5(QMainWindow):
         
     def init_interface(self, refait=0):
         self.ui.tabWidget.setEnabled(1)
-        if len(self.points) ==0 : 
+        if len(self.points) == 0 : 
             self.ui.tabWidget.setTabEnabled(3, False)
             self.ui.tabWidget.setTabEnabled(2, False)
             self.ui.tabWidget.setTabEnabled(1, False)
@@ -462,7 +462,7 @@ class StartQt5(QMainWindow):
             plotwidget.close()
             del plotwidget
         
-        self.rotation=0
+        self.rotation = 0
         self.defixeLesDimensions()
         ##remet le ratio à l'initialisation
         ratio = self.determineRatio()
@@ -632,21 +632,21 @@ class StartQt5(QMainWindow):
         ##ajoute la première image utilisée pour le pointage sur le fond du label
         liste_types_photos = ['chronophotographie', 'chronophotogramme']
 
-        if self.ui.comboBoxChrono.currentIndex()!=0 : 
+        if self.ui.comboBoxChrono.currentIndex() != 0 : 
             photo_chrono = liste_types_photos[self.ui.comboBoxChrono.currentIndex()-1]
             self.dbg.p(2, "dans 'chronoPhoto, on a choisi le type %s'"%(photo_chrono))
-            if photo_chrono=='chronophotographie' : # on extrait le première image que l'on rajoute au label
-                self.label_trajectoire.chrono=1 #1 pour chronophotographie
+            if photo_chrono == 'chronophotographie' : # on extrait le première image que l'on rajoute au label
+                self.label_trajectoire.chrono = 1 #1 pour chronophotographie
                 ok,img = self.cvReader.getImage(self.premiere_image, self.rotation)
                 self.imageChrono = toQImage(img).scaled(self.label_video.width(), self.label_video.height(), Qt.KeepAspectRatio) 
                 self.label_trajectoire.setPixmap(QPixmap.fromImage(self.imageChrono))
             else : 
-                self.label_trajectoire.chrono=2 #2 pour chronophotogramme
+                self.label_trajectoire.chrono = 2 #2 pour chronophotogramme
                 self.label_trajectoire.setPixmap(QPixmap())
             self.enregistreChrono()
         else:
             self.label_trajectoire.setPixmap(QPixmap())
-            self.label_trajectoire.chrono=0
+            self.label_trajectoire.chrono = 0
         self.redimensionneFenetre()
         self.update()
 
@@ -709,7 +709,7 @@ class StartQt5(QMainWindow):
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
             self.dbg.p(3, "self.pileDeDetections : %s"%self.pileDeDetections)
-            timer=QTimer.singleShot(50, self.detecteUnPoint)
+            timer = QTimer.singleShot(50, self.detecteUnPoint)
 
     #@time_it
     def detecteUnPoint(self):
@@ -721,23 +721,23 @@ class StartQt5(QMainWindow):
         """
         self.dbg.p(1, "rentre dans 'detecteUnPoint'")
         if self.pileDeDetections:
-            if len(self.pileDeDetections)%self.nb_de_points!=0:
-                self.indexMotif+=1
+            if len(self.pileDeDetections)%self.nb_de_points != 0:
+                self.indexMotif += 1
             else :
-                self.indexMotif=0
-            index_de_l_image=self.pileDeDetections.pop(0)
-            texteDuBouton = "STOP CALCULS (%d)" %index_de_l_image
+                self.indexMotif = 0
+            index_de_l_image = self.pileDeDetections.pop(0)
+            texteDuBouton = "STOP CALCULS (%d)" % index_de_l_image
             self.ui.pushButton_stopCalculs.setText(texteDuBouton)
             #TODO : principal point noir du calcul.
             self.dbg.p(2, "On lance la detection avec : self.motif %s, self.indexMotif %s"%(self.motif, self.indexMotif))
             point = filter_picture(self.motif, self.indexMotif, self.imageAffichee, self.pointsProbables)
-            self.pointsProbables[0]=point
+            self.pointsProbables[0] = point
             self.label_video.storePoint(vecteur(point[0], point[1]))
             
             # programme le suivi du point suivant après un délai de 5 ms,
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
-            timer=QTimer.singleShot(5, self.detecteUnPoint)
+            timer = QTimer.singleShot(5, self.detecteUnPoint)
         else : 
             self.stopCalculs.emit()
 
@@ -757,11 +757,11 @@ class StartQt5(QMainWindow):
             if self.methode_thread == 1 : 
                 self.monThread = MonThreadDeCalcul(self, self.motif[self.indexMotif], self.imageAffichee)
                 self.monThread.start()
-            elif self.methode_thread==2 : ##1 thread par image
+            elif self.methode_thread == 2 : ##1 thread par image
                 for i in range((self.image_max-self.premiere_image)*self.nb_de_points) :
                     self.liste_thread = [MonThreadDeCalcul2(self, self.image, self.motif[self.indexMotif], self.imageAffichee)]
-            elif self.methode_thread==3 :  #pour l'instant celle qui foncitonne le mieux
-                timer=QTimer.singleShot(5, self.detecteUnPoint)
+            elif self.methode_thread == 3 :  #pour l'instant celle qui foncitonne le mieux
+                timer = QTimer.singleShot(5, self.detecteUnPoint)
 
     def picture_detect(self):
         """
@@ -788,10 +788,10 @@ class StartQt5(QMainWindow):
 
     def stopComputing(self):
         self.dbg.p(1, "rentre dans 'stopComputing'")
-        self.pileDeDetections=[] # vide la liste des points à détecter encore
+        self.pileDeDetections = [] # vide la liste des points à détecter encore
         try : 
             if self.monThread :                 
-                self.monThread.stopped=True
+                self.monThread.stopped = True
         except AttributeError : 
             pass
         self.label_video.setEnabled(1)
@@ -853,17 +853,17 @@ class StartQt5(QMainWindow):
 
     def tourne_image(self, sens=None):
         self.dbg.p(1, "rentre dans 'tourne_image'")
-        if sens=="droite" :
+        if sens == "droite" :
             self.increment = 90
-        elif sens=="gauche" : 
+        elif sens == "gauche" : 
             self.increment = -90
         else : 
-            self.increment=0
-        self.rotation+=self.increment
-        if self.rotation>180 : 
-            self.rotation=self.rotation-360 #arrive pour 270° par exemple
-        elif self.rotation<=-180 :
-            self.rotation=self.rotation+360
+            self.increment = 0
+        self.rotation += self.increment
+        if self.rotation > 180 : 
+            self.rotation = self.rotation-360 #arrive pour 270° par exemple
+        elif self.rotation <= -180 :
+            self.rotation = self.rotation+360
         self.dbg.p(2, "Dans 'tourne_image' self rotation vaut" + str(self.rotation))
         
         #gestion de l'origine et de l'échelle : 
@@ -1037,9 +1037,9 @@ class StartQt5(QMainWindow):
         donnees_fichier = s.splitlines()[1:-1]
         dico_donnee = {}
         for donnee in donnees_fichier :
-            if len(donnee.split('='))==2:
+            if len(donnee.split('=')) == 2:
                 cle, valeur = donnee.split('=')
-                dico_donnee[cle.strip()]=valeur.strip()
+                dico_donnee[cle.strip()] = valeur.strip()
         self.filename = dico_donnee["video"]
         self.dbg.p(3, "rentre dans 'loads fichier : ' %s" % (self.filename))
         try : 
@@ -1065,7 +1065,7 @@ class StartQt5(QMainWindow):
         try : 
             self.rotation = int(dico_donnee['rotation'])
         except KeyError: 
-            self.rotation=0
+            self.rotation = 0
         self.dbg.p(3, "rentre dans 'loads' rotation %s" % (self.rotation))      
         try : 
             self.label_video.origine = vecteur(dico_donnee['origine de pointage'].split()[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])        
@@ -1150,7 +1150,7 @@ class StartQt5(QMainWindow):
 Le fichier choisi n'est pas compatible avec pymecavideo""",
                                                      None),
                                           QMessageBox.Ok, QMessageBox.Ok)
-            self.a_une_image=False
+            self.a_une_image = False
 
     def determineRatio(self):
         self.dbg.p(1, "rentre dans 'determineRatio'")
@@ -1164,7 +1164,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         return ratioFilm
 
     def redimensionneFenetre(self, tourne=False, old=None):
-        self.tourne=tourne #n'est utilisée que ici et dans label_video
+        self.tourne = tourne #n'est utilisée que ici et dans label_video
         if tourne : #on vient de cliquer sur tourner. rien n'est changé.
             largeur = self.label_video.width()
             hauteur = self.label_video.height()
@@ -1175,7 +1175,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             self.ratio = 1/self.ratio
             self.aspectlayout1.aspect = self.ratio
             self.aspectlayout2.aspect = self.ratio
-            self.tourne=False
+            self.tourne = False
             #HACK : oblige le redimensionnement
             self.resize(self.size()+QSize(1,0))
 
@@ -1396,16 +1396,16 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.ui.tableWidget.setHorizontalHeaderItem(1 + (2+colonnes_sup) * i, QTableWidgetItem(x))
             self.ui.tableWidget.setHorizontalHeaderItem(2 + (2+colonnes_sup) * i, QTableWidgetItem(y))
             for j in range(colonnes_sup):
-                cptr =0
+                cptr = 0
                 if self.ui.checkBox_Ec.isChecked():
                     self.ui.tableWidget.setHorizontalHeaderItem(3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Ec%d (J)" % (1 + i)))
-                    cptr+=1
+                    cptr += 1
                 if self.ui.checkBox_Epp.isChecked():
                     self.ui.tableWidget.setHorizontalHeaderItem(3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Epp%d (J)" % (1 + i)))
-                    cptr+=1
+                    cptr += 1
                 if self.ui.checkBox_Em.isChecked():
                     self.ui.tableWidget.setHorizontalHeaderItem(3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Em%d (J)" % (1 + i)))
-                    cptr+=1
+                    cptr += 1
 
     def barycentre_trajectoires(self, referentiel):
         """
@@ -1454,8 +1454,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         #efface la dernière entrée dans le tableau
         self.ui.tableWidget.removeRow(int((len(self.listePoints)-1)/self.nb_de_points))
         self.listePoints.decPtr()
-        self.dbg.p(2, "self.listePoints" + str(self.listePoints) + "self.points" +str( self.points))
-        if len(self.listePoints)%self.nb_de_points!=0:
+        self.dbg.p(2, "self.listePoints" + str(self.listePoints) + "self.points" + str( self.points))
+        if len(self.listePoints)%self.nb_de_points != 0:
             try : 
                 self.points[len(self.listePoints)/self.nb_de_points].pop()
             except KeyError:
@@ -1466,13 +1466,13 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             except KeyError : 
                 self.dbg.p(1, "Erreur de clé : "+str(len(self.listePoints)/self.nb_de_points))
         ##dernière image à afficher
-        if self.nb_de_points!=1:
-            if len(self.listePoints)-1>=0 :
-                if len(self.listePoints)%self.nb_de_points==self.nb_de_points-1:
+        if self.nb_de_points != 1:
+            if len(self.listePoints)-1 >= 0 :
+                if len(self.listePoints)%self.nb_de_points == self.nb_de_points-1:
                     self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]
         else :
-            if len(self.listePoints)-1>=0 :
-                if len(self.listePoints)%self.nb_de_points==self.nb_de_points-1:
+            if len(self.listePoints)-1 >= 0 :
+                if len(self.listePoints)%self.nb_de_points == self.nb_de_points-1:
                     self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]+1
         self.affiche_image()
         self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
@@ -1483,7 +1483,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1, "rentre dans 'refait_point_suivant'")
         self.listePoints.incPtr()
         #on stocke si la ligne est complète
-        if len(self.listePoints)%self.nb_de_points==0:
+        if len(self.listePoints)%self.nb_de_points == 0:
             self.stock_coordonnees_image(ligne=int((len(self.listePoints)-1)/self.nb_de_points))
             self.index_de_l_image = self.listePoints[len(self.listePoints)-1][0]+1
         self.affiche_image()
@@ -1502,15 +1502,15 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         traite les signaux émis par le changement d'onglet, ou
         par le changement de référentiel dans l'onglet des trajectoires."""
         self.dbg.p(1, "rentre dans 'choix_onglets'")
-        if self.ui.tabWidget.currentIndex()==1 :
+        if self.ui.tabWidget.currentIndex() == 1 :
             self.statusBar().hide()
             self.tracer_trajectoires("absolu")
-        elif self.ui.tabWidget.currentIndex()==0:
+        elif self.ui.tabWidget.currentIndex() == 0:
             self.statusBar().show()
-        elif self.ui.tabWidget.currentIndex()==2:
+        elif self.ui.tabWidget.currentIndex() == 2:
             self.statusBar().hide()
             self.affiche_tableau()
-        elif self.ui.tabWidget.currentIndex()==3:
+        elif self.ui.tabWidget.currentIndex() == 3:
             self.affiche_grapheur()
             self.MAJ_combox_box_grapheur()
             self.statusBar().hide()
@@ -1527,7 +1527,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         #erreurs_python1 = """<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
         #erreurs_python2 = """</p>"""
         #footer = """</body></html>"""
-        erreur_indices=""
+        erreur_indices = ""
         erreurs_python = []
         ##################
         
@@ -1541,14 +1541,14 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.dictionnaire_grandeurs["Ec"+str(i+1)] = []
             self.dictionnaire_grandeurs["Epp"+str(i+1)] = []
             self.dictionnaire_grandeurs["Em"+str(i+1)] = []
-        deltaT=self.deltaT
+        deltaT = self.deltaT
         for ligne in self.points.keys():
-            i=0
+            i = 0
             for point in self.points[ligne][1:] :  
                 pm = self.pointEnMetre(point) 
                 self.dictionnaire_grandeurs["X"+str(i+1)].append(pm.x())
                 self.dictionnaire_grandeurs["Y"+str(i+1)].append(pm.y())
-                i+=1
+                i += 1
         for i in range(self.nb_de_points):
             for n in range(len(self.points.keys())):
                 grandeurX = "self.dictionnaire_grandeurs['X"+str(i+1)+"']"
@@ -1565,7 +1565,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 expression_Vy = '(Y[n+1]-Y[n-1])/(2*deltaT)'
                 expression_V = 'math.sqrt(Vx[n]**2+Vy[n]**2)'
                 expression_Ec = '0.5*m*V[n]**2'
-                expression_Epp = 'm*g*Y[n]' if self.sens_Y==1 else '-m*g*Y[n]' 
+                expression_Epp = 'm*g*Y[n]' if self.sens_Y == 1 else '-m*g*Y[n]' 
                 expression_Em = 'Epp[n]+Ec[n]'
                 
                 expression_Vx = expression_Vx.replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
@@ -1595,8 +1595,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 expression_Ec,err4 = self.traite_indices(expression_Ec,i,n, 'Ec')
                 expression_Epp,err5 = self.traite_indices(expression_Epp,i,n, 'Epp')
                 expression_Em,err6 = self.traite_indices(expression_Em,i,n, 'Em')
-                erreur_indices+=err1+err2+err3+err4+err5+err6
-                if expression_Vx!='' : 
+                erreur_indices += err1+err2+err3+err4+err5+err6
+                if expression_Vx != '' : 
                     try : 
                         self.dictionnaire_grandeurs["xprime"+str(i+1)].append( eval(expression_Vx))
                     except IndexError : 
@@ -1606,7 +1606,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée ! <br> """%(str(expression_Vx.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_+=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
-                if expression_Vy!='' : 
+                if expression_Vy != '' : 
                     try :
                         self.dictionnaire_grandeurs["yprime"+str(i+1)].append( eval(expression_Vy))
                     except IndexError : 
@@ -1616,7 +1616,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """%(str(expression_Vy.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_+=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
-                if expression_V!='' : 
+                if expression_V != '' : 
                     try : 
                         self.dictionnaire_grandeurs["V"+str(i+1)].append( eval(expression_V))
                     except IndexError : 
@@ -1626,7 +1626,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br>"""%(str(expression_V.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
-                if expression_Ec!='' : 
+                if expression_Ec != '' : 
                     try :
                         self.dictionnaire_grandeurs["Ec"+str(i+1)].append( eval(expression_Ec))
                     except IndexError : 
@@ -1636,7 +1636,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !<br> """%(str(expression_Ec.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_+=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
-                if expression_Epp!='' : 
+                if expression_Epp != '' : 
                     try : 
                         self.dictionnaire_grandeurs["Epp"+str(i+1)].append( eval(expression_Epp))
                     except IndexError : 
@@ -1646,7 +1646,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """%(str(expression_Epp.replace("self.dictionnaire_grandeurs['","").replace("']",'').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
-                if expression_Em!='' : 
+                if expression_Em != '' : 
                     try : 
                         self.dictionnaire_grandeurs["Em"+str(i+1)].append( eval(expression_Em))
                     except IndexError : 
@@ -1660,14 +1660,14 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.dbg.p(1,"erreurs python : %s"%erreurs_python)
         #text_textedit = entete + '<p>' + erreur_indices + '</p>'
         text_textedit = ""
-        if len(erreurs_python)>0 : 
+        if len(erreurs_python) > 0 : 
             for item in erreurs_python:
                 if not item in text_textedit : 
-                    text_textedit+=erreurs_python1
-                    text_textedit+=item
-                    text_textedit+=erreurs_python2
+                    text_textedit += erreurs_python1
+                    text_textedit += item
+                    text_textedit += erreurs_python2
         else : 
-            text_textedit+="Pour les points où c'était possible, les expressions python rentrées ont été calculées avec succès !"
+            text_textedit += "Pour les points où c'était possible, les expressions python rentrées ont été calculées avec succès !"
 
     def MAJ_combox_box_grapheur(self):
         self.ui.comboBox_X.clear()
@@ -1677,7 +1677,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         self.ui.comboBox_X.addItem('t')
         self.ui.comboBox_Y.addItem('t')
         for grandeur in self.dictionnaire_grandeurs.keys():
-            if self.dictionnaire_grandeurs[grandeur] !=[] :
+            if self.dictionnaire_grandeurs[grandeur] != [] :
                 numero = ''.join([grandeur[-2] if grandeur[-2].isdigit() else "",grandeur[-1]] )
                 self.ui.comboBox_X.addItem(grandeur if not 'xprime' in grandeur and not 'yprime' in grandeur else 'Vx'+numero if 'xprime' in grandeur else 'Vy'+numero)
                 self.ui.comboBox_Y.addItem(grandeur if not 'xprime' in grandeur and not 'yprime' in grandeur else 'Vx'+numero if 'xprime' in grandeur else 'Vy'+numero)
@@ -1686,19 +1686,19 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """cette fonction traite les indices négatifs afin que python, justement... ne les traite pas"""
         self.dbg.p(1, "rentre dans 'traite_indices'")
         #vérification de la présence d'une expression entre []
-        erreur=""
+        erreur = ""
         expr = ""
-        start=False
+        start = False
         liste_expressions_entre_crochets = []
         for c in expression : 
             if start : 
-                expr+=c
-            if c=='[':
-                start=True
-            elif c==']':
-                start=False
+                expr += c
+            if c == '[':
+                start = True
+            elif c == ']':
+                start = False
                 liste_expressions_entre_crochets.append(expr[:-1])
-                expr=""
+                expr = ""
         for expr_a_tester in liste_expressions_entre_crochets :
             if 'n' in expr_a_tester : 
                 if eval(expr_a_tester) < 0 : 
@@ -1715,21 +1715,21 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         pen, symbol = styles[style]['pen'], styles[style]['symbol'] # Définition des paramètres 'pen' et 'symbol' pour pyqtgraph
         grandeurX = self.ui.comboBox_X.currentText().replace('Vx', 'xprime').replace('Vy', 'yprime')
         grandeurY = self.ui.comboBox_Y.currentText().replace('Vx', 'xprime').replace('Vy', 'yprime')
-        if grandeurX=='t':
+        if grandeurX == 't':
             X = [i*self.deltaT for i in range(len(self.points))]
-        elif grandeurX!="Choisir ...":
+        elif grandeurX != "Choisir ...":
             try : 
                 X = self.dictionnaire_grandeurs[grandeurX]
             except :
                 pass
-        if grandeurY=='t':
+        if grandeurY == 't':
             Y = [i*self.deltaT for i in range(len(self.points))]
-        elif grandeurY!="Choisir ...":
+        elif grandeurY != "Choisir ...":
             try : 
                 Y = self.dictionnaire_grandeurs[grandeurY]
             except :
                 pass
-        if X!=[] and Y != [] : 
+        if X != [] and Y != [] : 
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', 'k')
             titre = "%s en fonction de %s"%(self.ui.comboBox_Y.currentText(), self.ui.comboBox_X.currentText())
@@ -1780,7 +1780,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """permet de tenir compte des expressions "négatives" quand on va chercher des indices : python évlaue corerctement X[-1] alors qu'on ne le veut pas. Un passage dans self.traite_indices à mis certaines valeurs non calculées à False. Il suffit de les enlever dans X et Y"""
         X_f, Y_f = [], []
         for i in range (len(X_)):
-            if X_[i]!=False and Y_[i]!=False : 
+            if X_[i] != False and Y_[i] != False : 
                 Y_f.append(Y_[i])
                 X_f.append(X_[i])
         return X_f, Y_f
@@ -1929,9 +1929,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.lance_capture = False
             self.mets_a_jour_label_infos(_translate("pymecavideo", "Vous avez atteint la fin de la vidéo", None))
             self.index_de_l_image = self.image_max
-        self.nb_clics+=1
-        if self.nb_clics==self.nb_de_points : 
-            self.nb_clics=0
+        self.nb_clics += 1
+        if self.nb_clics == self.nb_de_points : 
+            self.nb_clics = 0
             self.index_de_l_image += 1
             self.affiche_image()
 
@@ -1954,7 +1954,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         Contrôle la possibilité de refaire un clic
         @param value booléen
         """
-        self.dbg.p(1, "rentre dans 'enableRefaire, %s'" %(value))
+        self.dbg.p(1, "rentre dans 'enableRefaire, %s'" % (value))
         self.ui.pushButton_refait.setEnabled(value)
         self.ui.actionRefaire.setEnabled(value)
 
@@ -1988,10 +1988,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         est remplacé par self.index_de_l_image.
         """
         if index:
-            i=index
+            i = index
         else:
-            i=self.index_de_l_image
-        nieme=len(self.listePoints)%self.nb_de_points
+            i = self.index_de_l_image
+        nieme = len(self.listePoints)%self.nb_de_points
         self.listePoints.append([i,nieme,point])
         return
     
@@ -2002,7 +2002,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
         """
         self.dbg.p(1, "rentre dans 'stock_coordonnees_image'")
-        if index_image==False:
+        if index_image == False:
             # l'index est sur la dernière image traitée
             index_image = self.listePoints[-1][0]
         t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
@@ -2010,7 +2010,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         #construction de l'ensemble des points pour l'image actuelle
         listePointsCliquesParImage = []
         for point in self.listePoints:
-            if point[0]==index_image :
+            if point[0] == index_image :
                 listePointsCliquesParImage.append(point[2])
         self.points[ligne] = [t] + listePointsCliquesParImage
 
@@ -2042,7 +2042,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
 
         #masse de l'objet
         if self.ui.checkBox_Ec.isChecked() : 
-            if self.masse_objet==0 : 
+            if self.masse_objet == 0 : 
                 masse_objet_raw = QInputDialog.getText(None,
                                                     _translate("pymecavideo", "Masse de l'objet", None),
                                                     _translate("pymecavideo",
@@ -2065,7 +2065,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         for ligne in self.points.keys():
             # rentre le temps dans la première colonne
             self.ui.tableWidget.setItem(ligne, 0, QTableWidgetItem(self.points[ligne][0]))
-            i=0
+            i = 0
             for point in self.points[ligne][1:] :  
                 try:
                         pm = self.pointEnMetre(point)
@@ -2076,9 +2076,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 i += 2+colonnes_sup
 
         #calculs des énergies
-        ancienPoint=None
+        ancienPoint = None
         for ligne in self.points.keys():
-            i=0
+            i = 0
             for point in self.points[ligne][1:] :  
                 try:
                         pm = self.pointEnMetre(point)
@@ -2089,18 +2089,18 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 ancienPoint = pm                
                 try : 
                     for j in range(colonnes_sup):
-                        cptr =0
+                        cptr = 0
                         if self.ui.checkBox_Ec.isChecked():
                             Ec = 0.5*self.masse_objet*v*v
                             self.ui.tableWidget.setItem(ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Ec)))
-                            cptr+=1
+                            cptr += 1
                         if self.ui.checkBox_Epp.isChecked():
                             Epp = self.masse_objet*9.81*pm.y() #TODO faire varier g
                             self.ui.tableWidget.setItem(ligne,3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Epp)))  
-                            cptr+=1
+                            cptr += 1
                         if self.ui.checkBox_Em.isChecked():
                             self.ui.tableWidget.setItem(ligne,3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Ec+Epp)))
-                            cptr+=1
+                            cptr += 1
                 except UnboundLocalError: #pour premier point, la vitesse n'est pas définie
                     pass
                 i += 1
@@ -2115,7 +2115,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             if self.ui.spinBox_image.value() < self.index_de_l_image:
                 #self.ui.spinBox_image.setValue(self.index_de_l_image)
                 #si le point est sur une image, on efface le point
-                if self.ui.spinBox_image.value()==self.listePoints[len(self.listePoints)-1][0]:
+                if self.ui.spinBox_image.value() == self.listePoints[len(self.listePoints)-1][0]:
                     for i in range(self.nb_de_points):
                         self.efface_point_precedent()
         self.index_de_l_image = self.ui.spinBox_image.value()
@@ -2435,7 +2435,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
     def verifie_IPS(self):
         self.dbg.p(1, "rentre dans 'verifie_IPS'")
         #si ce qui est rentré n'est pas un entier
-        if not self.ui.lineEdit_IPS.text().isdigit() and len(self.ui.lineEdit_IPS.text())>0:
+        if not self.ui.lineEdit_IPS.text().isdigit() and len(self.ui.lineEdit_IPS.text()) > 0:
             retour = QMessageBox.warning(
                 self,
                 _translate(u"pymecavideo", "Le nombre d'images par seconde doit être un entier", None),
@@ -2457,7 +2457,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.deltaT = float(1.0 / framerate)
                 if math.isnan(self.deltaT):
                     print ("ERREUR à la lecture de la vidéo, vitesse des trames indéfinie, on suppose 40 trames par seconde")
-                    self.deltaT=1.0/40
+                    self.deltaT = 1.0/40
                 #mets à jour le label contenant les IPS
                 IPS = round(1/self.deltaT)
                 self.ui.lineEdit_IPS.setText(str(IPS))
@@ -2544,12 +2544,12 @@ class plotThread(threading.Thread):
         @param dataLines une chaîne de plusieurs lignes (format x y)
         """
         threading.Thread.__init__(self)
-        self.cmd=cmd
-        self.xy=dataLines
+        self.cmd = cmd
+        self.xy = dataLines
         return
 
     def run(self):
-        p=subprocess.Popen(str(self.cmd), shell=True, stdin=subprocess.PIPE)
+        p = subprocess.Popen(str(self.cmd), shell=True, stdin=subprocess.PIPE)
         p.communicate(self.xy.encode("utf-8"))
         return
 

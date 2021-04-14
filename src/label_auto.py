@@ -78,8 +78,8 @@ class Label_Auto(QLabel):
         sur les images successives.
         @result une QImage représentant le motif.
         """
-        x_depart = self.x_1 if self.x_1<self.x_2 else self.x_2
-        y_depart = self.y_1 if self.y_1<self.y_2 else self.y_2
+        x_depart = self.x_1 if self.x_1 < self.x_2 else self.x_2
+        y_depart = self.y_1 if self.y_1 < self.y_2 else self.y_2
         longueur = abs(self.x_2 - self.x_1)
         hauteur = abs(self.y_2 - self.y_1)
         

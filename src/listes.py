@@ -61,7 +61,7 @@ class listePointee:
         return
 
     def __bool__(self):
-        return len(self.data)>0 and self.ptr >= 0
+        return len(self.data) > 0 and self.ptr >= 0
 
     def __iter__(self):
         return listePointeeIterateur(self)
@@ -69,7 +69,7 @@ class listePointee:
     def __getitem__(self, i):
         if i >= 0 and i <= self.ptr:
             return self.data[i]
-        elif i < 0 and 1+self.ptr+i >=0:
+        elif i < 0 and 1+self.ptr+i >= 0:
             return self.data[1+self.ptr+i]
         else:
             raise IndexError
@@ -109,7 +109,7 @@ class listePointeeIterateur:
         self.lp = lp
 
     def __iter__(self):
-        self.i=0
+        self.i = 0
         return self
 
     def __next__(self):
@@ -173,7 +173,7 @@ def test():
     print ("\n>>> len(l1) = %s" % len(l1))
 
     print ("test de l'iterateur")
-    i=iter(l1)
+    i = iter(l1)
     while True:
         try:
             print(next(i))

@@ -64,7 +64,7 @@ def filter_picture(parts, num, image, points=None):
         if points:
             point = points[num]
     except IndexError : 
-        point=None
+        point = None
     
     if "QImage" in str(type(part)):
         part = QImage2CVImage(part)
@@ -100,13 +100,13 @@ def gaussMatrix(forme, sommet, hauteur, largeur, inverse=False):
     @param largeur la distance par rapport au sommet, à mi-hauteur
     @param inverse doit être vrai si on veur inverser la gaussienne
     """
-    x=np.arange(0,forme[1], 1)
-    y=np.arange(0,forme[0], 1)
-    y=y[:,np.newaxis]
-    result=np.exp(-4 * np.log(2) * ((x-sommet[0])**2 + (y-sommet[1])**2) / largeur**2)
+    x = np.arange(0,forme[1], 1)
+    y = np.arange(0,forme[0], 1)
+    y = y[:,np.newaxis]
+    result = np.exp(-4 * np.log(2) * ((x-sommet[0])**2 + (y-sommet[1])**2) / largeur**2)
     if inverse:
-        maxv=hauteur*np.ones_like(result)
-        result=maxv-result
+        maxv = hauteur*np.ones_like(result)
+        result = maxv-result
     return result
 
 #@time_it
@@ -130,8 +130,8 @@ def detect_part(part, image, point=None):
     #proches du dernier point détecté.
     ##########################################################    
     if point:
-        flou=2
-        vraisemblable=gaussMatrix(result.shape,point,np.amax(result),flou*(part.shape[0]+part.shape[1]), inverse=True)
+        flou = 2
+        vraisemblable = gaussMatrix(result.shape,point,np.amax(result),flou*(part.shape[0]+part.shape[1]), inverse=True)
         result = result+vraisemblable
 
     ########## ceci minimise les chances de trouver loin ###########

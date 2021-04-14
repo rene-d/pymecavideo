@@ -27,7 +27,7 @@ class centralwidgetratio(QWidget):
         self.setGeometry(0,15,800,600)
 
     def heightForWidth(self, w):
-        if self.width() <875 or self.height() < 615:
+        if self.width() < 875 or self.height() < 615:
             return 615
         else :
             try :

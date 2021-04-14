@@ -31,7 +31,7 @@ class Label_Trajectoire(QLabel):
     def __init__(self, parent):
         QLabel.__init__(self, parent)
 
-        self.chrono=False
+        self.chrono = False
 
         self.setCursor(Qt.ArrowCursor)
         self.setAutoFillBackground(True)
@@ -159,7 +159,7 @@ class Label_Trajectoire(QLabel):
             self.painter.setRenderHint(QPainter.TextAntialiasing)
             self.painter.setRenderHint(QPainter.Antialiasing)
             
-            if self.chrono==1 : #rends plus lisible si le fond est foncé
+            if self.chrono == 1 : #rends plus lisible si le fond est foncé
                 self.painter.setPen(Qt.white)
                 self.painter.setBrush(Qt.lightGray)
                 self.painter.drawRect(self.width()-210,30,120, 30)
@@ -169,9 +169,9 @@ class Label_Trajectoire(QLabel):
             except NameError : 
                 self.painter.drawText(self.width()-200,50, "{0}t = {1:.3f} s".format(chr(916),self.label_video.app.deltaT))
             #######dessine l'échelle
-            if self.chrono==2 : #chronophotogramme
+            if self.chrono == 2 : #chronophotogramme
                 try :
-                    longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x())**2+ (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
+                    longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x())**2 + (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
                     self.painter.drawLine(100,60,100,80)
                     self.painter.drawLine(100,70, longueur+100,70)
                     self.painter.drawLine(longueur+100,60,longueur+100,80)
@@ -179,7 +179,7 @@ class Label_Trajectoire(QLabel):
                 except AttributeError:
                     pass #échelle non faite
                 except NameError : 
-                    longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x())**2+ (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
+                    longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x())**2 + (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
                     self.painter.drawLine(100,60,100,80)
                     self.painter.drawLine(100,70, longueur+100,70)
                     self.painter.drawLine(longueur+100,60,longueur+100,80)
@@ -188,7 +188,7 @@ class Label_Trajectoire(QLabel):
             
             ############################################################
             #Peindre l'échelle si chronophotographie
-            if self.chrono==1 : #chronophotographie
+            if self.chrono == 1 : #chronophotographie
                 self.painter = QPainter()
                 self.painter.begin(self)
                 self.painter.setFont(QFont("Times", 16, QFont.Bold))
@@ -200,7 +200,7 @@ class Label_Trajectoire(QLabel):
                 
                 echelle = str(self.label_video.echelle_image.longueur_reelle_etalon)
 
-                echelle +=' (m)'
+                echelle += ' (m)'
                 self.painter.drawText(self.label_video.app.label_echelle_trace.p1.x()-30,int((self.label_video.app.label_echelle_trace.p1.y()+self.label_video.app.label_echelle_trace.p2.y())/2),echelle)
                 self.painter.end()
     
@@ -220,9 +220,9 @@ class Label_Trajectoire(QLabel):
         for point in self.label_video.app.listePoints:
         #    #TODO :si quelqu'un veut implémenter un slicing de l'objet listePointee...
             listeParImage.append(point[2])
-            if len(listeParImage)%self.label_video.app.nb_de_points==0:
+            if len(listeParImage)%self.label_video.app.nb_de_points == 0:
                 listePoints.append(listeParImage)
-                listeParImage=[]
+                listeParImage = []
 
         for points in listePoints:
             color = 0

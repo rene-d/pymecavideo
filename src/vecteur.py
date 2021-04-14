@@ -116,16 +116,16 @@ class vecteur:
         
     def rotate(self, angle, largeur, hauteur):
         x1, y1 = self.x(), self.y()
-        if angle==90 :
+        if angle == 90 :
             
             return vecteur(hauteur-y1, x1)
-        elif angle==-90 : 
+        elif angle == -90 : 
             return vecteur(y1, largeur-x1)
-        elif angle==0 : 
+        elif angle == 0 : 
             return vecteur(x1, y1)
-        elif angle==0 : 
+        elif angle == 0 : 
             return vecteur(x1, y1)
-        elif angle==180: 
+        elif angle == 180: 
             return vecteur(-x1, -y1)
     
     def signif(self,x, digit):

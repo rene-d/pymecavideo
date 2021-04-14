@@ -273,7 +273,7 @@ class Calc():
         self.TableRow = TableRow
         self.TableCell = TableCell
         self.outfile = open(fichier_ods, 'wb')
-        self.doc=OpenDocumentSpreadsheet()
+        self.doc = OpenDocumentSpreadsheet()
         self.table = Table(name="Pymecavideo {0}".format(time.strftime("%Y-%m-%d %Hh%Mm%Ss")))
         self.importPymeca(app)
 
@@ -311,7 +311,7 @@ class Calc():
         @param app pointeur vers l'application
         """
         ## fait une ligne de titres
-        titles=["t (s)"]
+        titles = ["t (s)"]
         for i in range(app.nb_de_points):
             x = "X%d (m)" % (1 + i)
             y = "Y%d (m)" % (1 + i)
@@ -319,10 +319,10 @@ class Calc():
             titles.append(y)
         self.titres(titles)
         ## fait les lignes de données
-        t=0
+        t = 0
         dt = app.deltaT
         for k in app.points.keys():
-            val=[t]
+            val = [t]
             t += dt
             data = app.points[k]
             for vect in data[1:]:
@@ -371,7 +371,7 @@ class PythonSource:
             for k in app.points.keys():
                 data = app.points[k]
                 for vect in data[1:]:
-                    vect=app.pointEnMetre(vect)
+                    vect = app.pointEnMetre(vect)
                     ligne_x += f"{vect.x()}, "
                     ligne_y += f"{vect.y()}, "
             ligne_x += "])\n"

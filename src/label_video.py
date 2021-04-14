@@ -61,7 +61,7 @@ class Label_Video(QLabel):
         if self.premier_resize : #Au premier resize, la taille est changée mais pas l'origine.
             self.premier_resize = False
             self.reinit_origine()
-        if e.oldSize()!=QSize(-1, -1):
+        if e.oldSize() != QSize(-1, -1):
             if not self.app.tourne: 
                 ratiow = self.width()/e.oldSize().width()
                 ratioh = self.height()/e.oldSize().height() 
@@ -118,7 +118,7 @@ class Label_Video(QLabel):
     def maj(self, tourne=False):
         self.app.dbg.p(1, "rentre dans 'label_video.maj'")
         if tourne : 
-            self.tourne=True
+            self.tourne = True
             
         print("largeur %s, hauteur :%s"%(self.width(), self.height()))
         #self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
@@ -173,7 +173,7 @@ class Label_Video(QLabel):
             cptr_point = 0
             for points in self.app.listePoints:  #all points clicked are stored here, but updated every "number of point to click" frames
                 color = cptr_point%self.app.nb_de_points
-                cptr_point+=1
+                cptr_point += 1
                 point = points[2]
                 if type(point) != type(""):
                     self.painter.setPen(QColor(self.couleurs[color]))
