@@ -2777,7 +2777,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
     
     def verifie_IPS(self):
         self.dbg.p(1, "rentre dans 'verifie_IPS'")
-        print('ok')
         #si ce qui est rentré n'est pas un entier
         if not self.ui.lineEdit_IPS.text().isdigit() and len(self.ui.lineEdit_IPS.text())>0:
             retour = QMessageBox.warning(
@@ -2791,7 +2790,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
 
     def calcul_deltaT(self, ips_from_line_edit=False):
         self.dbg.p(1, "rentre dans 'calcul_deltaT'")
-
         if not ips_from_line_edit : 
             framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
             self.dbg.p(3,
