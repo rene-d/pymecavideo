@@ -1943,11 +1943,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.ui.comboBox_referentiel.update()
         else:
             ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
-            self.label_trajectoire.origine_mvt = vecteur(0, 0)
-        if newValue == "absolu":
-            ref = "camera"
-        else:
-            ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+            self.label_trajectoire.origine_mvt = self.label_video.origine
         if len(ref) == 0:
             return
         if ref != "camera":
