@@ -1242,7 +1242,7 @@ class StartQt5(QMainWindow):
         self.dbg.p(3, "rentre dans 'loads' nb de points %s" % (self.nb_de_points))
         self.dbg.p(3, "rentre dans 'loads, dico données' %s" % (dico_donnee))
 
-        print("loads", largeur, hauteur)
+        self.calcul_deltaT(rouvre=True)
         self.label_video.resize(QSize(largeur,hauteur))
         self.aspectlayout1.aspect = largeur/hauteur
         self.aspectlayout2.aspect = largeur/hauteur
@@ -1269,7 +1269,7 @@ class StartQt5(QMainWindow):
                 dictionnaire_données_str += l
         self.label_video.echelle_image = echelle()  # on réinitialise l'échelle
         try : 
-            dico_donnee = self.loads(dictionnaire_données_str)  # on récupère les données importantes
+            dico_donnees = self.loads(dictionnaire_données_str)  # on récupère les données importantes
             self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
             self.init_interface()
             self.change_axe_ou_origine()
@@ -2081,7 +2081,6 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.ui.comboBox_referentiel.setCurrentIndex(self.ui.comboBox_referentiel.count()-1)
             self.ui.comboBox_referentiel.update()
             
-            print('ok')
         else:
             ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
             self.label_trajectoire.origine_mvt = vecteur(0,0)
@@ -2787,26 +2786,29 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         else : 
             self.calcul_deltaT(ips_from_line_edit=True)
         
-
-    def calcul_deltaT(self, ips_from_line_edit=False):
+    def calcul_deltaT(self, ips_from_line_edit=False, rouvre=False):
         self.dbg.p(1, "rentre dans 'calcul_deltaT'")
-        if not ips_from_line_edit : 
-            framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-            self.dbg.p(3,
-                    "In :  'calcul_deltaT', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
-            self.deltaT = float(1.0 / framerate)
-            if math.isnan(self.deltaT):
-                print ("ERREUR à la lecture de la vidéo, vitesse des trames indéfinie, on suppose 40 trames par seconde")
-                self.deltaT=1.0/40
-            #mets à jour le label contenant les IPS
+        if rouvre : #se produit quand on lit un deltaT depuis un fichier mecavideo
             IPS = round(1/self.deltaT)
             self.ui.lineEdit_IPS.setText(str(IPS))
-            print("la vidéo a été détectée à %s Images Par Seconde"%IPS)
         else : 
-            IPS  = int(self.ui.lineEdit_IPS.text())
-            self.deltaT = float(1.0 / IPS)
-            self.dbg.p(3,
-                   "In :  'calcul_deltaT', self.deltaT a été recalculé d'après une rentrée manuelle = %s" % (self.deltaT))
+            if not ips_from_line_edit : 
+                framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+                self.dbg.p(3,
+                        "In :  'calcul_deltaT', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
+                self.deltaT = float(1.0 / framerate)
+                if math.isnan(self.deltaT):
+                    print ("ERREUR à la lecture de la vidéo, vitesse des trames indéfinie, on suppose 40 trames par seconde")
+                    self.deltaT=1.0/40
+                #mets à jour le label contenant les IPS
+                IPS = round(1/self.deltaT)
+                self.ui.lineEdit_IPS.setText(str(IPS))
+                print("la vidéo a été détectée à %s Images Par Seconde"%IPS)
+            else : 
+                IPS  = int(self.ui.lineEdit_IPS.text())
+                self.deltaT = float(1.0 / IPS)
+                self.dbg.p(3,
+                    "In :  'calcul_deltaT', self.deltaT a été recalculé d'après une rentrée manuelle = %s" % (self.deltaT))
 
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
