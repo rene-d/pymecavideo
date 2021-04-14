@@ -703,6 +703,7 @@ class StartQt5(QMainWindow):
         self.ui.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe)
         self.ui.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
         self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
+        self.ui.lineEdit_IPS.textChanged.connect(self.verifie_IPS)
         #self.pythonsourceOK.connect(self.pythonSource2)    
         self.ui.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
 
@@ -2773,19 +2774,41 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.tab_traj.setEnabled(0)
         self.ui.spinBox_image.setEnabled(1)
         self.affiche_image()
+    
+    def verifie_IPS(self):
+        self.dbg.p(1, "rentre dans 'verifie_IPS'")
+        print('ok')
+        #si ce qui est rentré n'est pas un entier
+        if not self.ui.lineEdit_IPS.text().isdigit() and len(self.ui.lineEdit_IPS.text())>0:
+            retour = QMessageBox.warning(
+                self,
+                _translate(u"pymecavideo", "Le nombre d'images par seconde doit être un entier", None),
+                _translate(u"pymecavideo", "merci de recommencer", None),
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+        else : 
+            self.calcul_deltaT(ips_from_line_edit=True)
+        
 
-    def calcul_deltaT(self):
-        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-        self.dbg.p(3,
-                   "In :  'calcul_deltaT', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
-        self.deltaT = float(1.0 / framerate)
-        if math.isnan(self.deltaT):
-            print ("ERREUR à la lecture de la vidéo, vitesse des trames indéfinie, on suppose 40 trames par seconde")
-            self.deltaT=1.0/40
-        #mets à jour le label contenant les IPS
-        IPS = round(1/self.deltaT)
-        self.ui.lineEdit_IPS.setText(str(IPS))
-        print(IPS)
+    def calcul_deltaT(self, ips_from_line_edit=False):
+        self.dbg.p(1, "rentre dans 'calcul_deltaT'")
+
+        if not ips_from_line_edit : 
+            framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+            self.dbg.p(3,
+                    "In :  'calcul_deltaT', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
+            self.deltaT = float(1.0 / framerate)
+            if math.isnan(self.deltaT):
+                print ("ERREUR à la lecture de la vidéo, vitesse des trames indéfinie, on suppose 40 trames par seconde")
+                self.deltaT=1.0/40
+            #mets à jour le label contenant les IPS
+            IPS = round(1/self.deltaT)
+            self.ui.lineEdit_IPS.setText(str(IPS))
+            print("la vidéo a été détectée à %s Images Par Seconde"%IPS)
+        else : 
+            IPS  = int(self.ui.lineEdit_IPS.text())
+            self.deltaT = float(1.0 / IPS)
+            self.dbg.p(3,
+                   "In :  'calcul_deltaT', self.deltaT a été recalculé d'après une rentrée manuelle = %s" % (self.deltaT))
 
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
