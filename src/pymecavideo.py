@@ -2080,13 +2080,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             #mets à jour le comboBox referentiel : 
             self.ui.comboBox_referentiel.setCurrentIndex(self.ui.comboBox_referentiel.count()-1)
             self.ui.comboBox_referentiel.update()
-            
         else:
             ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
             self.label_trajectoire.origine_mvt = vecteur(0,0)
-
         
-        origine = vecteur(0, 0)
         if newValue == "absolu":
             ref = "camera"
         else:
@@ -2097,10 +2094,9 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.ui.button_video.setEnabled(1)
             self.label_trajectoire.chrono = False
             bc = self.mediane_trajectoires(int(ref) - 1)
-            origine = vecteur(self.largeur / 2, self.hauteur / 2) - bc
+            origine = vecteur(self.label_video.width() // 2, self.label_video.height() // 2) - bc
             self.label_trajectoire.origine = origine
             self.label_trajectoire.origine_mvt = origine
-
             self.label_trajectoire.referentiel = ref
         else:  # if camera, all tranlsations are disabled
             self.label_trajectoire.referentiel = 0
