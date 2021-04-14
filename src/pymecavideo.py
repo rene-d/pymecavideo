@@ -994,7 +994,7 @@ class StartQt5(QMainWindow):
         #gestion de l'origine et de l'échelle : 
         
         ###DEBUG
-        self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, self.largeur%s, self.hauteur%s"%(self.label_video.origine, self.label_video.width(), self.label_video.height()))
+        self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, largeur label_video%s, hauteur label_video%s"%(self.label_video.origine, self.label_video.width(), self.label_video.height()))
         try :
             self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.echelle_image.p1 %s, self.echelle_image.p2 %s"%(self.label_video.echelle_image.p1, self.label_video.echelle_image.p2))
         except AttributeError : 
@@ -2112,7 +2112,7 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             combo.addItem(u"y%d(t)" % (i + 1))
             combo.addItem(u"v%d(t)" % (i + 1))
 
-        self.dbg.p(3, "origine %s, ref %s" % (str(origine), str(ref)))
+        self.dbg.p(3, "origine %s, ref %s" % (str(self.label_trajectoire.origine), str(ref)))
     #except ZeroDivisionError:
                 #self.dbg.p(1, "ERROR : ZeroDivisionError in Self.tracer_trajectoires")
         self.label_trajectoire.reDraw()
@@ -2445,10 +2445,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 
                 self.imageExtraite = toQImage(self.image_opencv)
                 self.dbg.p(2, "Image extraite : largeur : %s, hauteur %s: "%(self.imageExtraite.width(), self.imageExtraite.height()))
-                if self.largeur==0 : 
-                    self.largeur = self.imageExtraite.width()
-                    self.hauteur = self.imageExtraite.height()
-                    #self.largeurAvant = self.largeur
+                #if self.largeur==0 : 
+                    #self.largeur = self.imageExtraite.width()
+                    #self.hauteur = self.imageExtraite.height()
+                    ##self.largeurAvant = self.largeur
                     #self.hauteurAvant = self.hauteur
                             
                 if hasattr(self, "label_video"):
