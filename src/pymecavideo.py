@@ -705,12 +705,8 @@ class StartQt5(QMainWindow):
         self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
         #self.pythonsourceOK.connect(self.pythonSource2)    
         self.ui.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
-        
-        
-        
 
     def enregistreChrono(self):
-        # self.label_trajectoire.render()
         self.pixmapChrono = QPixmap(self.label_trajectoire.size())
         self.label_trajectoire.render(self.pixmapChrono)
         dir_ = str(self._dir("home")[0])
@@ -746,7 +742,7 @@ class StartQt5(QMainWindow):
             self.enregistreChrono()
         else:
             self.label_trajectoire.setPixmap(QPixmap())
-            self.label_trajectoire.chrono=False
+            self.label_trajectoire.chrono=0
         self.redimensionneFenetre()
         self.update()
 
@@ -1177,6 +1173,7 @@ class StartQt5(QMainWindow):
 
 
     def loads(self, s):
+        """lis la chaine de caractère issue du fichier mecavideo et en extrait les données utiles"""
         self.dbg.p(1, "rentre dans 'loads'")
         s = s[1:-2].replace("\n#", "\n")
         echelle, point, self.deltaT, self.nb_de_points = s.splitlines()[1:-1][-4:]
@@ -1255,6 +1252,7 @@ class StartQt5(QMainWindow):
         
         self.init_cvReader()
         #self.resize(self.size()+QSize(1,0))
+        #TODO rajouter le code pour gérer les FPS "perso".
 
     def rouvre(self, fichier):
         """Open a mecavideo file"""
@@ -2069,12 +2067,19 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         """
         self.dbg.p(1, "rentre dans 'tracer_trajectoires'")
 
-
+        
+        
         if newValue == "absolu":
             ref = "camera"
             self.label_trajectoire.origine_mvt = self.label_video.origine
+            #mets à jour le comboBox referentiel : 
+            self.ui.comboBox_referentiel.setCurrentIndex(self.ui.comboBox_referentiel.count()-1)
+            self.ui.comboBox_referentiel.update()
+            
+            print('ok')
         else:
             ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+            self.label_trajectoire.origine_mvt = vecteur(0,0)
 
         
         origine = vecteur(0, 0)
