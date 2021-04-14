@@ -29,11 +29,12 @@ import subprocess
 import shutil
 import numpy as np
 import cv2
-from PyQt5.QtCore import QObject,QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QCoreApplication, QMetaObject
+from PyQt5.QtCore import QObject, QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QCoreApplication, QMetaObject
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
-from PyQt5.QtWidgets import QVBoxLayout, QLabel, QSizePolicy, QFrame, QGridLayout,QSlider, QDialogButtonBox, QDialog
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QSizePolicy, QFrame, QGridLayout, QSlider, QDialogButtonBox, QDialog
 from vecteur import vecteur
 from itertools import cycle
+
 
 class Cadreur(QObject):
     """
@@ -56,16 +57,18 @@ class Cadreur(QObject):
         self.numpoint = numpoint
         self.app = app
 
-        self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
+        self.capture = cv2.VideoCapture(
+            str(self.app.filename.encode('utf8'), 'utf8'))
         self.fps = self.capture.get(cv2.CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
-        self.app.dbg.p(2, "In : Label_Video, self.numpoint %s" % (self.numpoint))
-        self.app.dbg.p(3, "In : Label_Video, __init__, fps = %s and delay = %s" % (self.fps, self.delay))
+        self.app.dbg.p(2, "In : Label_Video, self.numpoint %s" %
+                       (self.numpoint))
+        self.app.dbg.p(3, "In : Label_Video, __init__, fps = %s and delay = %s" % (
+            self.fps, self.delay))
 
         self.ralenti = 3
         self.fini = False
         self.maxcadre()
-
 
     def echelleTaille(self):
         """
@@ -74,11 +77,10 @@ class Cadreur(QObject):
         @return un triplet échelle, largeur, hauteur (de l'image dans le widget de de pymecavideo)
         """
         m = self.app.imageExtraite.size()
-        echx = 1.0 * m.width() / self.app.largeur
-        echy = 1.0 * m.height() / self.app.hauteur
+        echx = 1.0 * m.width() / self.app.label_video.width()
+        echy = 1.0 * m.height() / self.app.label_video.height()
         ech = max(echx, echy)
         return ech, int(m.width() / ech), int(m.height() / ech)
-
 
     def controleRalenti(self, position):
         """
@@ -95,18 +97,18 @@ class Cadreur(QObject):
         """
         ech, w, h = self.echelleTaille()
 
-
-        #agauche = [pp[self.numpoint].x() for pp in self.app.points.values()]  #ne gère pas les excemtion si il manqu eun point
+        # agauche = [pp[self.numpoint].x() for pp in self.app.points.values()]  #ne gère pas les excemtion si il manqu eun point
         #dessus = [pp[self.numpoint].y() for pp in self.app.points.values()]
-        
-        agauche=[]
+
+        agauche = []
         dessus = []
-        for pp in self.app.points.values() :
-            try : 
+        for pp in self.app.points.values():
+            try:
                 agauche.append(pp[self.numpoint].x())
                 dessus.append(pp[self.numpoint].y())
-            except : pass #si il manque des points dans la dernière image)
-        
+            except:
+                pass  # si il manque des points dans la dernière image)
+
         adroite = [w - x - 1 for x in agauche]
         dessous = [h - y - 1 for y in dessus]
 
@@ -114,8 +116,8 @@ class Cadreur(QObject):
         adroite = min(adroite)
         dessus = min(dessus)
         dessous = min(dessous)
-        self.tl = vecteur(agauche, dessus)  #topleft
-        self.sz = vecteur(adroite + agauche, dessous + dessus)  #size
+        self.tl = vecteur(agauche, dessus)  # topleft
+        self.sz = vecteur(adroite + agauche, dessous + dessus)  # size
 
         self.decal = vecteur((adroite - agauche) / 2, (dessous - dessus) / 2)
         self.rayons = vecteur((agauche + adroite) / 2, (dessus + dessous) / 2)
@@ -129,62 +131,64 @@ class Cadreur(QObject):
         if cv2.GrabFrame(self.capture):
             return cv2.RetrieveFrame(self.capture)
         else:
-            print ("erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile)
+            print(
+                "erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile)
             sys.exit(1)
-
 
     def montrefilm(self, fini=False):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
 
-        #cv2.namedWindow(self.titre)
+        # cv2.namedWindow(self.titre)
 
         #ralentiLabel = str(self.app.tr("Choisir le ralenti"))
 
         #cv2.createTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
         #ech, w, h = self.echelleTaille()
         #self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
-        #while not fini:
-            #for i in self.app.points.keys():
-                #try :
-                    #p = self.app.points[i][self.numpoint]
-                    #hautgauche = (p + self.decal - self.rayons) * ech
-                    #taille = self.sz * ech
-                    #self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
-                    #status, img =  self.capture.read()
-                    #img = self.rotateImage(img, self.app.rotation)
-                    #w, h = int(taille.x()), int(taille.y())
-                    #x, y = int(hautgauche.x()), int(hautgauche.y())
+        # while not fini:
+        # for i in self.app.points.keys():
+        # try :
+        #p = self.app.points[i][self.numpoint]
+        #hautgauche = (p + self.decal - self.rayons) * ech
+        #taille = self.sz * ech
+        #self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
+        #status, img =  self.capture.read()
+        #img = self.rotateImage(img, self.app.rotation)
+        #w, h = int(taille.x()), int(taille.y())
+        #x, y = int(hautgauche.x()), int(hautgauche.y())
 
-                    #crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
-                    ## NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
-                    #cv2.imshow(self.titre, crop_img)
-                    #k = cv2.waitKey(int(self.delay * self.ralenti))
-                    #if k == 0x10001b or k == 27 or k==20:
-                        #fini = True
-                        #cv2.destroyAllWindows()
-                        #break
-                #except : pass #si pas le bon nombre de points dans la dernière image
-
-        #cv2.destroyAllWindows()
+        # crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
+        # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
+        #cv2.imshow(self.titre, crop_img)
+        #k = cv2.waitKey(int(self.delay * self.ralenti))
+        # if k == 0x10001b or k == 27 or k==20:
         #fini = True
-        self.dialog = RalentiWidget(parentObject = self)
+        # cv2.destroyAllWindows()
+        # break
+        # except : pass #si pas le bon nombre de points dans la dernière image
+
+        # cv2.destroyAllWindows()
+        #fini = True
+        self.dialog = RalentiWidget(parentObject=self)
         self.dialog.exec_()
 
     def rotateImage(self, img, angle):
-        if angle==90 : 
-            return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) 
-        elif angle==-90 : 
-            return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE) 
-        elif angle==180 : 
-            return cv2.rotate(img, cv2.ROTATE_180) 
-        else : return img #angle=0
+        if angle == 90:
+            return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+        elif angle == -90:
+            return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        elif angle == 180:
+            return cv2.rotate(img, cv2.ROTATE_180)
+        else:
+            return img  # angle=0
+
 
 class RalentiWidget(QDialog):
-    
+
     """Affiche le film recadré"""
-    
+
     def __init__(self, parentObject):
         super().__init__()
         self.cadreur = parentObject
@@ -197,7 +201,8 @@ class RalentiWidget(QDialog):
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label_2.sizePolicy().hasHeightForWidth())
         self.label_2.setSizePolicy(sizePolicy)
         self.label_2.setFrameShape(QFrame.Box)
         self.label_2.setAlignment(Qt.AlignCenter)
@@ -208,7 +213,8 @@ class RalentiWidget(QDialog):
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
         self.label.setMinimumSize(QSize(100, 0))
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
@@ -227,7 +233,7 @@ class RalentiWidget(QDialog):
         QMetaObject.connectSlotsByName(self)
         self._translate = QCoreApplication.translate
         self.retranslateUi()
-        self.timer=QTimer()
+        self.timer = QTimer()
         self.timer.setInterval(int(self.delay * self.ralenti))
         self.timer.timeout.connect(self.affiche_image)
         self.buttonBox.accepted.connect(self.accept)
@@ -239,40 +245,45 @@ class RalentiWidget(QDialog):
     def retranslateUi(self):
         self.setWindowTitle(self._translate("MontreFilm", "Voir la vidéo"))
         self.label.setText(self._translate("MontreFilm", "Ralenti : 1/1"))
-        
+
     def change_ralenti(self, ralenti):
         self.ralenti = ralenti
-        self.label.setText(self._translate("MontreFilm", "Ralenti : 1/{}".format(ralenti)))
+        self.label.setText(self._translate(
+            "MontreFilm", "Ralenti : 1/{}".format(ralenti)))
         self.timer.setInterval(int(self.delay * self.ralenti))
-        
+
     def toQimage(self, img):
         """Conversion image opencv en QPixmap"""
         rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         h, w, ch = rgb.shape
         bytes_per_line = ch * w
-        convert_to_Qt_format = QImage(rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
+        convert_to_Qt_format = QImage(
+            rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
         p = convert_to_Qt_format.scaled(self.w, self.h, Qt.KeepAspectRatio)
         return QPixmap.fromImage(p)
-    
+
     def affiche_image(self):
         image_suivante = next(self.images)
-        try :
+        try:
             p = self.cadreur.app.points[image_suivante][self.cadreur.numpoint]
-            hautgauche = (p + self.cadreur.decal - self.cadreur.rayons) * self.ech
+            hautgauche = (p + self.cadreur.decal -
+                          self.cadreur.rayons) * self.ech
             taille = self.cadreur.sz * self.ech
-            self.cadreur.capture.set(cv2.CAP_PROP_POS_FRAMES, image_suivante + self.cadreur.app.premiere_image)
-            status, img =  self.cadreur.capture.read()
+            self.cadreur.capture.set(
+                cv2.CAP_PROP_POS_FRAMES, image_suivante + self.cadreur.app.premiere_image)
+            status, img = self.cadreur.capture.read()
             img = self.cadreur.rotateImage(img, self.cadreur.app.rotation)
             w, h = int(taille.x()), int(taille.y())
             x, y = int(hautgauche.x()), int(hautgauche.y())
 
-            crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
+            # Crop from x, y, w, h -> 100, 200, 300, 400
+            crop_img = img[y:y+h, x:x+w]
             # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
             self.label_2.setPixmap(self.toQimage(crop_img))
-        except :
+        except:
             pass
 
-        
+
 class openCvReader:
     """
     Un lecteur de vidéos qui permet d'extraire les images une par une
@@ -288,9 +299,8 @@ class openCvReader:
         self.filename = filename
         self.autoTest()
         self.index_precedent = 0
-        if self.ok :
+        if self.ok:
             self.capture = cv2.VideoCapture(self.filename)
-
 
     def autoTest(self):
         #        if sys.platform == 'win32':
@@ -313,30 +323,32 @@ class openCvReader:
         if self.capture:
             if index != self.index_precedent+1:
                 self.capture.set(cv2.CAP_PROP_POS_FRAMES, index-1)
-            try :
-                status, img =  self.capture.read()
+            try:
+                status, img = self.capture.read()
                 self.index_precedent = index
             except cv2.error:
                 print("Erreur, image non décodée")
-                return False,None
+                return False, None
             except Exception as err:
                 print("Erreur :", err)
-                return False,None
-            img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #convertit dans le bon format de couleurs
+                return False, None
+            # convertit dans le bon format de couleurs
+            img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         else:
             return False, None
 
         return True, self.rotateImage(img2, angle)
 
     def rotateImage(self, img, angle):
-        if angle==90 : 
-            return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE) 
-        elif angle==-90 : 
-            return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE) 
-        elif angle==180 : 
-            return cv2.rotate(img, cv2.ROTATE_180) 
-        else : return img #angle==0
-   
+        if angle == 90:
+            return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+        elif angle == -90:
+            return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        elif angle == 180:
+            return cv2.rotate(img, cv2.ROTATE_180)
+        else:
+            return img  # angle==0
+
     def recupere_avi_infos(self, angle=0):
         """
         Détermine les fps, le nombre de frames, la largeur, la hauteur d'un fichier vidéo
@@ -345,14 +357,14 @@ class openCvReader:
         try:
             fps = self.capture.get(cv2.CAP_PROP_FPS)
             fcount = self.capture.get(cv2.CAP_PROP_FRAME_COUNT)
-            
+
             largeur = self.capture.get(cv2.CAP_PROP_FRAME_WIDTH)
             hauteur = self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
-            if abs(angle) == 90 : #on a retourné la vidéo
+            if abs(angle) == 90:  # on a retourné la vidéo
                 largeur, hauteur = hauteur, largeur
         except:
-            print ("could not retrieve informations from the video file.")
-            print ("assuming fps = 25, frame count = 10.")
+            print("could not retrieve informations from the video file.")
+            print("assuming fps = 25, frame count = 10.")
             return 25, 10, 320, 200
 #        return fps, fcount
         return fps, fcount, int(largeur), int(hauteur)
@@ -368,6 +380,6 @@ if __name__ == '__main__':
         vidfile = '/usr/share/python-mecavideo/video/g1.avi'
     cvReader = openCvReader(vidfile)
     if cvReader:
-        print ("Ouverture du fichier %s réussie" % vidfile)
+        print("Ouverture du fichier %s réussie" % vidfile)
     else:
-        print ("Ouverture manquée pour le fichier %s" % vidfile)
+        print("Ouverture manquée pour le fichier %s" % vidfile)

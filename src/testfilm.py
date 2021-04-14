@@ -3,7 +3,8 @@
 
 import sys
 import threading
-import os, os.path
+import os
+import os.path
 
 import cv2
 
@@ -26,7 +27,6 @@ class film:
         t.start()
         t.join(5.0)  # attente de 5 secondes au plus
 
-
     def autoTest(self):
         self.ok = False
 
@@ -38,11 +38,10 @@ class film:
             assert 1.0 * self.filesize / self.framecount > 60.0, "fichier aberrant en taille"
             self.ok = True
         except AssertionError:
-            print ("assertion"+str(self.fps)+str(self.framecount))
+            print("assertion"+str(self.fps)+str(self.framecount))
             pass
         except ZeroDivisionError:
-            print ("szero"+str(self.fps)+str(self.framecount))
-
+            print("szero"+str(self.fps)+str(self.framecount))
 
     def __int__(self):
         return int(self.ok)
@@ -58,4 +57,3 @@ if __name__ == '__main__':
             sys.exit(0)
         else:
             sys.exit(1)
-

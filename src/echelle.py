@@ -22,8 +22,8 @@
 from math import sqrt
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage,QPainter, QCursor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel,QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
@@ -52,14 +52,14 @@ class echelle(QObject):
         """renvoie le nombre de mètre par pixel"""
         if not self.isUndef():
             return self.longueur_reelle_etalon / self.longueur_pixel_etalon()
-        else :
+        else:
             return 1
 
     def pxParM(self):
         """renvoie le nombre de pixel par mètre"""
         if not self.isUndef():
             return self.longueur_pixel_etalon() / self.longueur_reelle_etalon
-        else :
+        else:
             return 1
 
     def applique_echelle(self, pos_echelle):
@@ -85,13 +85,15 @@ class Label_Echelle(QLabel):
         QLabel.__init__(self, parent)
         self.parent = parent
         self.app = app
-        self.setGeometry(QRect(0, 0, self.parent.width(), self.parent.height()))
+        self.setGeometry(
+            QRect(0, 0, self.parent.width(), self.parent.height()))
         self.largeur = self.parent.width()
         self.hauteur = self.parent.height()
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
-        self.cible_icon = os.path.join(self.app._dir("icones"), "curseur_cible.svg")
+        self.cible_icon = os.path.join(
+            self.app._dir("icones"), "curseur_cible.svg")
         pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
@@ -101,7 +103,8 @@ class Label_Echelle(QLabel):
         self.setMouseTracking(True)
         self.pressed = False
         try:
-            self.app.origine_trace.lower()  # origine definition is optionnal but hide scale if defined first
+            # origine definition is optionnal but hide scale if defined first
+            self.app.origine_trace.lower()
         except AttributeError:
             pass
         try:
@@ -123,12 +126,13 @@ class Label_Echelle(QLabel):
 
         painter.setPen(Qt.red)
         if self.p1.x() > 0:
-            painter.drawLine(self.p1.x(), self.p1.y(), self.p2.x(), self.p2.y())
+            painter.drawLine(self.p1.x(), self.p1.y(),
+                             self.p2.x(), self.p2.y())
         painter.end()
 
     def mouseMoveEvent(self, event):
         self.zoom_croix.show()
-        if (event.x()>0 and event.x()<self.largeur) and (event.y()>0 and event.y()<self.hauteur):
+        if (event.x() > 0 and event.x() < self.largeur) and (event.y() > 0 and event.y() < self.hauteur):
             self.pos_echelle = vecteur(event.x(), event.y())
         self.fait_crop(self.pos_echelle)
         self.app.ui.label_zoom.setPixmap(self.cropX2)
@@ -140,33 +144,36 @@ class Label_Echelle(QLabel):
     def fait_crop(self, p):
         rect = QRect(p.x() - 25, p.y() - 25, 50, 50)
         crop = self.app.imageAffichee.copy(rect)
-        self.cropX2 = QPixmap.fromImage(crop.scaled(100, 100, Qt.KeepAspectRatio))
+        self.cropX2 = QPixmap.fromImage(
+            crop.scaled(100, 100, Qt.KeepAspectRatio))
 
     def mouseReleaseEvent(self, event):
         if event.button() == 1 and self.p1.x() >= 0:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
         self.zoom_croix.hide()
         self.app.ui.label_zoom.setPixmap(QPixmap())
-        #self.app.ui.label_zoom.repaint()
+        # self.app.ui.label_zoom.repaint()
         del self.zoom_croix
         self.parent.index_du_point = 0
 
         self.app.label_video.echelle_image.p1 = self.p1.copy()
         self.app.label_video.echelle_image.p2 = self.p2.copy()
-        
+
         #self.app.p1 = self.p1.copy()
         #self.app.p2 = self.p2.copy()
         epxParM = self.app.label_video.echelle_image.pxParM()
         self.app.affiche_echelle()
         # self.app.affiche_nb_points(True)
-        self.app.mets_a_jour_label_infos(self.app.tr(u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
+        self.app.mets_a_jour_label_infos(self.app.tr(
+            u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
         self.app.mets_en_orange_echelle()
 
-        #self.app.affiche_lance_capture(False)
+        # self.app.affiche_lance_capture(False)
         self.app.feedbackEchelle(self.p1, self.p2)
         self.app.change_axe_ou_origine()
-        if len(self.app.listePoints) > 0:  #si on appelle l'échelle après avoir déjà pointé
-            self.app.mets_a_jour_label_infos(self.app.tr("Vous pouvez continuer votre acquisition"))
+        if len(self.app.listePoints) > 0:  # si on appelle l'échelle après avoir déjà pointé
+            self.app.mets_a_jour_label_infos(self.app.tr(
+                "Vous pouvez continuer votre acquisition"))
             self.app.affiche_nb_points(False)
             self.app.refait_echelle()
 
@@ -178,7 +185,8 @@ class Label_Echelle_Trace(QLabel):
     def __init__(self, parent, p1, p2):
         QLabel.__init__(self, parent)
         self.parent = parent
-        self.setGeometry(QRect(0, 0, self.parent.width(), self.parent.height()))
+        self.setGeometry(
+            QRect(0, 0, self.parent.width(), self.parent.height()))
         self.setAutoFillBackground(False)
         self.p1 = p1
         self.p2 = p2
@@ -189,17 +197,18 @@ class Label_Echelle_Trace(QLabel):
 
     def mouseReleaseEvent(self, event):
         event.ignore()
-    def maj(self):
-        self.setGeometry(QRect(0, 0, self.parent.width(), self.parent.height()))
 
+    def maj(self):
+        self.setGeometry(
+            QRect(0, 0, self.parent.width(), self.parent.height()))
 
     def paintEvent(self, event):
         painter = QPainter()
         painter.begin(self)
-        try : 
+        try:
             painter.setPen(Qt.green)
-            painter.drawLine(self.p1.x(), self.p1.y(), self.p2.x(), self.p2.y())
+            painter.drawLine(self.p1.x(), self.p1.y(),
+                             self.p2.x(), self.p2.y())
         except AttributeError:
-            pass #arrive au premier lancement sans vidéos
+            pass  # arrive au premier lancement sans vidéos
         painter.end()
-

@@ -22,7 +22,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os.path, gzip, re
+import os.path
+import gzip
+import re
+
 
 class version:
     def __init__(self, majeur, mineur, nuance=""):
@@ -44,16 +47,15 @@ Version = version(7, 0, 'alpha1')
 ###############################################################
 # incrémentation automatique pour une distribution debian
 ###############################################################
-packageName= "python3-mecavideo"
-changelog=os.path.join("/usr/share/doc", packageName, "changelog.Debian.gz")
+packageName = "python3-mecavideo"
+changelog = os.path.join("/usr/share/doc", packageName, "changelog.Debian.gz")
 if os.path.exists(changelog):
     with gzip.open(changelog) as chlog:
-        firstline=chlog.readline().strip().decode("utf-8")
-        m=re.match(r"^pymecavideo \((.*)\).*$", firstline)
+        firstline = chlog.readline().strip().decode("utf-8")
+        m = re.match(r"^pymecavideo \((.*)\).*$", firstline)
         if m:
-            Version=m.group(1)
+            Version = m.group(1)
 
 
 if __name__ == "__main__":
-    print (Version)
-    
+    print(Version)

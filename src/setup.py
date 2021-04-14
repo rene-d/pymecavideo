@@ -13,9 +13,9 @@ setup(name='pymecavideo',
       packages=['pymecavideo'],
       package_dir={'pymecavideo': 'src'},
       package_data={
-      'pymecavideo/data/': ['../data/icones/*', '../data/video/*.avi', '../data/lang/*.ts', '../data/lang/*.qm']}
-      #, 'data/help/*']},
+          'pymecavideo/data/': ['../data/icones/*', '../data/video/*.avi', '../data/lang/*.ts', '../data/lang/*.qm']}
+      # , 'data/help/*']},
       #data_files=[('share/pymecavideo', ['test.html'])]
-)
+      )
 
-#setup(console=['src/pymecavideo.py'])
+# setup(console=['src/pymecavideo.py'])

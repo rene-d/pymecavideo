@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-1 -*-
 
+from glob import glob
 from distutils.core import setup
 import os
 
@@ -16,7 +17,6 @@ import shutil
 shutil.rmtree("build", ignore_errors=True)
 shutil.rmtree("dist", ignore_errors=True)
 
-from glob import glob
 
 data_files = [("Microsoft.VC90.CRT", glob(r'msvcr90.dll')),
               ("Microsoft.VC90.CRT", glob(r'Microsoft.VC90.CRT.manifest')),
@@ -31,7 +31,7 @@ data_files = [("Microsoft.VC90.CRT", glob(r'msvcr90.dll')),
                                              'plugins',
                                              'imageformats',
                                              'qjpeg4.dll')])
-]
+              ]
 data_files += matplotlib.get_py2exe_datafiles()
 
 options = {"py2exe": {"compressed": 2,
@@ -42,9 +42,9 @@ options = {"py2exe": {"compressed": 2,
 
                       'packages': ['win32api'],  # 'pytz',
 
-                      "includes": ["sip",  #"matplotlib.backends",
+                      "includes": ["sip",  # "matplotlib.backends",
                                    "matplotlib.backends.backend_qt4agg"
-                      ],  #, "PyQt5.QtCore", "PyQt4.QtGui"],
+                                   ],  # , "PyQt5.QtCore", "PyQt4.QtGui"],
 
                       'excludes': ['bsddb', 'curses', 'pywin.debugger',
                                    'pywin.debugger.dbgcon', 'pywin.dialogs',
@@ -53,7 +53,7 @@ options = {"py2exe": {"compressed": 2,
                                    "matplotlib.backends.backend_wxagg",
                                    "matplotlib.backends.backend_wx",
                                    '_gtkagg', '_tkagg',
-                                   '_wxagg', '_wx',  #'_gtkagg', #,
+                                   '_wxagg', '_wx',  # '_gtkagg', #,
                                    '_agg2', '_cairo',
                                    '_cocoaagg', '_fltkagg', '_gtk', '_gtkcairo'
                                                                     'numpy', 'pylab', "wx"],
@@ -62,9 +62,9 @@ options = {"py2exe": {"compressed": 2,
                                        "UxTheme.dll", "mswsock.dll", "POWRPROF.dll",
                                        "AVIFIL32.dll", 'AVICAP32.dll', 'MSACM32.dll', 'OLEPRO32.DLL',
                                        'tk85.dll', 'tcl85.dll', "wx*.*"
-                      ],
+                                       ],
 
-}}
+                      }}
 
 # Adapter le chemin au PC !
 icon = "D:\\Developpement\\pymecavideo_6.1\\data\\icones\\pymecavideo.ico"
@@ -86,9 +86,9 @@ setup(name='pyMecaVideo',
       #                }]
       windows=[{"script": "pymecavideo.py",
                 "icon_resources": [(1, icon)],
-                #"other_resources": [(24,1,manifest)]
-               }]
-)
+                # "other_resources": [(24,1,manifest)]
+                }]
+      )
 
 manifest = """
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>

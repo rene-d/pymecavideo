@@ -21,7 +21,8 @@
 """
 
 import os.path
-import tempfile, time
+import tempfile
+import time
 
 import cv2
 import numpy as np
@@ -36,17 +37,18 @@ def time_it(func):
     """Timestamp decorator for dedicated functions"""
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        start = time.time()                 
+        start = time.time()
         result = func(*args, **kwargs)
         elapsed = time.time() - start
         mlsec = repr(elapsed).split('.')[1][:3]
-        readable = time.strftime("%H:%M:%S.{}".format(mlsec), time.gmtime(elapsed))
+        readable = time.strftime(
+            "%H:%M:%S.{}".format(mlsec), time.gmtime(elapsed))
         print('Function "{}": {} sec'.format(func.__name__, readable))
         return result
     return wrapper
 
 
-#@time_it
+# @time_it
 def filter_picture(parts, num, image, points=None):
     """
     Trouve la position d'une image partielle dans une image donnée
@@ -58,14 +60,14 @@ def filter_picture(parts, num, image, points=None):
     @return les coordonnées d'un point, résultant du suivi automatique du
     motif partiel dans l'image.
     """
-    part  = parts [num]
-    
-    try : 
+    part = parts[num]
+
+    try:
         if points:
             point = points[num]
-    except IndexError : 
-        point=None
-    
+    except IndexError:
+        point = None
+
     if "QImage" in str(type(part)):
         part = QImage2CVImage(part)
 
@@ -74,20 +76,22 @@ def filter_picture(parts, num, image, points=None):
         part = cv2.imread(part, 1)
         point = detect_part(part, image, point)
         return (point[0]+part.shape[1]/2, point[1]+part.shape[0]/2)
-    
+
     elif "iplimage" in str(type(part)) and "iplimage" in str(type(image)):
         point = detect_part(part, image, point)
         return (point[0]+part.shape[1]/2, point[1]+part.shape[0]/2)
-    
+
     elif "QImage" in str(type(image)):
-        image = QImage2CVImage(image) 
-        point = detect_part(part, image, point) #TODO 130ms
+        image = QImage2CVImage(image)
+        point = detect_part(part, image, point)  # TODO 130ms
         return (point[0]+part.shape[1]/2, point[1]+part.shape[0]/2)
 
     else:
         return "Type Error"
-    
-#@time_it
+
+# @time_it
+
+
 def gaussMatrix(forme, sommet, hauteur, largeur, inverse=False):
     """
     renvoie une matrice de valeurs qui forment un pic gaussien autour
@@ -100,16 +104,19 @@ def gaussMatrix(forme, sommet, hauteur, largeur, inverse=False):
     @param largeur la distance par rapport au sommet, à mi-hauteur
     @param inverse doit être vrai si on veur inverser la gaussienne
     """
-    x=np.arange(0,forme[1], 1)
-    y=np.arange(0,forme[0], 1)
-    y=y[:,np.newaxis]
-    result=np.exp(-4 * np.log(2) * ((x-sommet[0])**2 + (y-sommet[1])**2) / largeur**2)
+    x = np.arange(0, forme[1], 1)
+    y = np.arange(0, forme[0], 1)
+    y = y[:, np.newaxis]
+    result = np.exp(-4 * np.log(2) *
+                    ((x-sommet[0])**2 + (y-sommet[1])**2) / largeur**2)
     if inverse:
-        maxv=hauteur*np.ones_like(result)
-        result=maxv-result
+        maxv = hauteur*np.ones_like(result)
+        result = maxv-result
     return result
 
-#@time_it
+# @time_it
+
+
 def detect_part(part, image, point=None):
     """
     Détecte une image partielle dans une image complète
@@ -120,35 +127,37 @@ def detect_part(part, image, point=None):
     @return l'emplacement où se trouve le motif recherché
     """
     import numpy as np
-    ##méthode 1 : 
-    result = cv2.matchTemplate(image, part, cv2.TM_SQDIFF) #  cv2.TM_CCOEFF  Pour AMELIORER la vitesse, une possiblité est de réduire "image"
-    
+    # méthode 1 :
+    # cv2.TM_CCOEFF  Pour AMELIORER la vitesse, une possiblité est de réduire "image"
+    result = cv2.matchTemplate(image, part, cv2.TM_SQDIFF)
+
     ##########################################################
-    #À ce point, result est une carte des coïncidences possibles
-    #entre le motif "part" et l'image complète "image"
-    #iI faudrait donner un peu plus de vraisemblance aux coïncidences
-    #proches du dernier point détecté.
-    ##########################################################    
+    # À ce point, result est une carte des coïncidences possibles
+    # entre le motif "part" et l'image complète "image"
+    # iI faudrait donner un peu plus de vraisemblance aux coïncidences
+    # proches du dernier point détecté.
+    ##########################################################
     if point:
-        flou=2
-        vraisemblable=gaussMatrix(result.shape,point,np.amax(result),flou*(part.shape[0]+part.shape[1]), inverse=True)
+        flou = 2
+        vraisemblable = gaussMatrix(result.shape, point, np.amax(
+            result), flou*(part.shape[0]+part.shape[1]), inverse=True)
         result = result+vraisemblable
 
     ########## ceci minimise les chances de trouver loin ###########
     m, M, minloc, maxloc = cv2.minMaxLoc(result)
     return minloc
-    
- 
-#@time_it
-#def QImage2CVImage_(img, dossierTemp):
-    #""" Convertit une QImage en une image CV
-    #"""
+
+
+# @time_it
+# def QImage2CVImage_(img, dossierTemp):
+    # """ Convertit une QImage en une image CV
+    # """
     #fichImg = os.path.join(dossierTemp + "image.png")
-    #img.save(fichImg) #100ms
+    # img.save(fichImg) #100ms
     #img_cv = cv2.imread(fichImg, 1)
-    #os.remove(fichImg)
-    #return img_cv
-    
+    # os.remove(fichImg)
+    # return img_cv
+
 
 def QImage2CVImage(incomingImage):
     '''  Converts a QImage into an opencv MAT format  '''
@@ -160,8 +169,5 @@ def QImage2CVImage(incomingImage):
 
     ptr = incomingImage.bits()
     ptr.setsize(incomingImage.byteCount())
-    arr = np.array(ptr).reshape(height, width, 4)  #  Copies the data
+    arr = np.array(ptr).reshape(height, width, 4)  # Copies the data
     return arr
-
-
-

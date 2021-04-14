@@ -64,11 +64,11 @@ def safe_rmtree(f):
 
 
 def report(s):
-    print ('============>', s)
+    print('============>', s)
 
 
 def make_exe(options):
-    report('%s mode' % ('DEBUG' if options.debug else 'RELEASE' ))
+    report('%s mode' % ('DEBUG' if options.debug else 'RELEASE'))
     safe_rmtree('exe/dist/PYMECAVIDEO/data')
     if not options.debug:
         safe_rmtree('exe/dist/PYMECAVIDEO/')
@@ -95,7 +95,8 @@ def make_exe(options):
         file('exe/dist/PYMECAVIDEO/PYMECAVIDEO-debug.bat', 'w').write('''
 PYMECAVIDEO.exe --debug
 ''')
-        shutil.copy('config-bluebird.ini', 'exe/dist/PYMECAVIDEO/PYMECAVIDEO-config.ini')
+        shutil.copy('config-bluebird.ini',
+                    'exe/dist/PYMECAVIDEO/PYMECAVIDEO-config.ini')
     report('Exe ready in exe/dist/PYMECAVIDEO')
 
 
@@ -172,17 +173,20 @@ def test_src(options):
 
 
 def upload_inst(options):
-    target_link = upload_file(options, ( DIR_RELEASE_DEV + INSTALLER_NAME + '.exe', INSTALLER_NAME + '.exe'  ))
+    target_link = upload_file(
+        options, (DIR_RELEASE_DEV + INSTALLER_NAME + '.exe', INSTALLER_NAME + '.exe'))
     replace_release_line(LINE_WIN_EXE, target_link)
 
 
 def upload_zip(options):
-    target_link = upload_file(options, ( DIR_RELEASE_DEV + PYMECAVIDEO_VER_ZIP, PYMECAVIDEO_VER_ZIP ))
+    target_link = upload_file(
+        options, (DIR_RELEASE_DEV + PYMECAVIDEO_VER_ZIP, PYMECAVIDEO_VER_ZIP))
     replace_release_line(LINE_WIN_ZIP, target_link)
 
 
 def upload_src(options):
-    target_link = upload_file(options, ( DIR_RELEASE_DEV + SOURCEDIR_ZIP, SOURCEDIR_ZIP ))
+    target_link = upload_file(
+        options, (DIR_RELEASE_DEV + SOURCEDIR_ZIP, SOURCEDIR_ZIP))
 
 
 URL_FH = 'http://labs.freehackers.org/'
@@ -265,7 +269,8 @@ def upload_file(options, fileInfo):
     return target_link
 
 
-funcList = [make_exe, make_zip_exe, test_zip, make_inst, make_zip_src, test_src, upload_inst, upload_zip, upload_src]
+funcList = [make_exe, make_zip_exe, test_zip, make_inst,
+            make_zip_src, test_src, upload_inst, upload_zip, upload_src]
 funcListName = [f.__name__ for f in funcList]
 
 
@@ -283,18 +288,19 @@ def main():
     options, args = parser.parse_args()
 
     if len(args) == 0:
-        print ('Mandatory Argument: ')
-        print ('\n'.join(funcListName))
+        print('Mandatory Argument: ')
+        print('\n'.join(funcListName))
         sys.exit(1)
     else:
         for funcName in args:
             if not funcName in funcListName:
-                print ('Unsupported argument: %s' % funcName)
-                print ('Possible choices: ' + ' '.join(funcListName))
+                print('Unsupported argument: %s' % funcName)
+                print('Possible choices: ' + ' '.join(funcListName))
                 sys.exit(1)
 
     if options.dev:
-        hgVersionInfo = Popen(['hg', 'log', '-l1'], stdout=PIPE).communicate()[0]
+        hgVersionInfo = Popen(['hg', 'log', '-l1'],
+                              stdout=PIPE).communicate()[0]
         hgRevInfo = hgVersionInfo.split()[1]
         hgRev, hgHash = hgRevInfo.split(':')
         VersionInfo.shortVersion = 'r' + hgRev
@@ -308,9 +314,8 @@ def main():
                 f(options)
                 break
         else:
-            print ('Unrecognised command:', funcName)
+            print('Unrecognised command:', funcName)
 
 
 if __name__ == '__main__':
     main()
-

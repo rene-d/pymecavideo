@@ -22,12 +22,13 @@ SOFTWARE.
 from PyQt5.QtWidgets import QLayout
 from PyQt5.QtCore import Qt, QSize
 
+
 class AspectLayout(QLayout):
     def __init__(self, aspect):
         self.aspect = aspect
         self.item = None
         super().__init__()
-        self.setContentsMargins(0,0,0,0)
+        self.setContentsMargins(0, 0, 0, 0)
 
     def addItem(self, item):
         assert self.item is None, "AspectLayout can contain only 1 widget"
@@ -61,17 +62,17 @@ class AspectLayout(QLayout):
                 x = margins[1]
                 w = availW
                 h = w/self.aspect
-                if self.item.alignment() &  Qt.AlignTop:
+                if self.item.alignment() & Qt.AlignTop:
                     y = margins[0]
-                elif self.item.alignment() &  Qt.AlignBottom:
+                elif self.item.alignment() & Qt.AlignBottom:
                     y = rect.height() - margins[2] - h
                 else:
                     y = margins[0] + (availH-h) / 2
             else:
                 y = margins[0]
-                if self.item.alignment() &  Qt.AlignLeft:
+                if self.item.alignment() & Qt.AlignLeft:
                     x = margins[1]
-                elif self.item.alignment() &  Qt.AlignRight:
+                elif self.item.alignment() & Qt.AlignRight:
                     x = rect.width() - margins[3] - w
                 else:
                     x = margins[1] + (availW-w) / 2
@@ -83,7 +84,7 @@ class AspectLayout(QLayout):
     def sizeHint(self):
         margins = self.getContentsMargins()
         if self.item is None:
-            return QSize(margins[0]+margins[2],margins[1]+margins[3])
+            return QSize(margins[0]+margins[2], margins[1]+margins[3])
         s = self.item.sizeHint()
         w, h = s.width(), s.height()
         return QSize(margins[0]+margins[2] + w, margins[1]+margins[3] + h)
@@ -91,13 +92,13 @@ class AspectLayout(QLayout):
     def minimumSize(self):
         margins = self.getContentsMargins()
         if self.item is None:
-            return QSize(margins[0]+margins[2],margins[1]+margins[3])
+            return QSize(margins[0]+margins[2], margins[1]+margins[3])
         s = self.item.minimumSize()
         w, h = s.width(), s.height()
         return QSize(margins[0]+margins[2] + w, margins[1]+margins[3] + h)
 
     def expandingDirections(self):
-       return Qt.Horizontal | Qt.Vertical
+        return Qt.Horizontal | Qt.Vertical
 
     def hasHeightForWidth(self):
         return False

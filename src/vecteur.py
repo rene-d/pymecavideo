@@ -22,14 +22,15 @@
 vecteur.py implements some operations for 2D vectors, using tuples
 """
 
+
+
+
 import math
-
-
 class vecteur:
     def __init__(self, x=0, y=0):
-        self.precision = 4 #nb de  chiffres significatifs
-        self.value = (self.signif(float(x),self.precision), self.signif(float(y),self.precision))
-        
+        self.precision = 4  # nb de  chiffres significatifs
+        self.value = (self.signif(float(x), self.precision),
+                      self.signif(float(y), self.precision))
 
     def copy(self):
         return vecteur(self.x(), self.y())
@@ -41,16 +42,20 @@ class vecteur:
         return self.value[1]
 
     def __getitem__(self, i):
-        #print "Utilisation de vecteur.__getitem__ déconseillée"
+        # print "Utilisation de vecteur.__getitem__ déconseillée"
         return self.value[i]
 
     def setValue(self, x=None, y=None):
-        if x == None: x = self.value[0]
-        if y == None: y = self.value[1]
-        self.value = (self.signif(float(x),self.precision), self.signif(float(y),self.precision))
+        if x == None:
+            x = self.value[0]
+        if y == None:
+            y = self.value[1]
+        self.value = (self.signif(float(x), self.precision),
+                      self.signif(float(y), self.precision))
 
     def rounded(self):
-        self.value = (math.floor(self.value[0] + 0.5), math.floor(self.value[1] + 0.5))
+        self.value = (math.floor(
+            self.value[0] + 0.5), math.floor(self.value[1] + 0.5))
 
     def __add__(self, v):
         x = self.x() + v.x()
@@ -70,7 +75,7 @@ class vecteur:
             # produit du vecteur par un nombre
             x = float(v) * self.x()
             y = float(v) * self.y()
-            return vecteur(self.signif(x,self.precision), self.signif(y,self.precision))
+            return vecteur(self.signif(x, self.precision), self.signif(y, self.precision))
 
     def __str__(self):
         return "(%5f, %5f)" % (self.x(), self.y())
@@ -111,25 +116,25 @@ class vecteur:
             else:
                 y = self.y()
             return vecteur(x, y)
-        
+
     def rotate(self, angle, largeur, hauteur):
         x1, y1 = self.x(), self.y()
-        if angle==90 :
-            
+        if angle == 90:
+
             return vecteur(hauteur-y1, x1)
-        elif angle==-90 : 
+        elif angle == -90:
             return vecteur(y1, largeur-x1)
-        elif angle==0 : 
+        elif angle == 0:
             return vecteur(x1, y1)
-        elif angle==0 : 
+        elif angle == 0:
             return vecteur(x1, y1)
-        elif angle==180: 
+        elif angle == 180:
             return vecteur(-x1, -y1)
-    
-    def signif(self,x, digit):
+
+    def signif(self, x, digit):
         if x == 0:
             return 0
         return round(x, digit - int(math.floor(math.log10(abs(x)))) - 1)
-        
-    def homothetie(self,ratio):
+
+    def homothetie(self, ratio):
         return vecteur(self.x()*ratio, self.y()*ratio)

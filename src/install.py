@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-##installation script-
+# installation script-
 
 
 import subprocess
@@ -11,7 +11,8 @@ cmd2.poll()
 cmd2.wait()
 os.chdir("..")
 if os.getuid() == 0:
-    cmd2 = subprocess.Popen(["python", "setup.py", "install"], stdout=subprocess.PIPE)
+    cmd2 = subprocess.Popen(
+        ["python", "setup.py", "install"], stdout=subprocess.PIPE)
     cmd2.poll()
     cmd2.wait()
     output = cmd2.stdout.readlines()
@@ -24,16 +25,18 @@ if os.getuid() == 0:
                     for j in chemin_l:
                         if "site-packages" in j:
                             install_dir = j
-                            print ("pymecavideo installé à", install_dir)
+                            print("pymecavideo installé à", install_dir)
     if install_dir:
-        print ("OK")
-        cmd3 = subprocess.Popen(["cp", "-Rp", "data", os.path.join(install_dir, "pymecavideo")], stdout=subprocess.PIPE)
+        print("OK")
+        cmd3 = subprocess.Popen(
+            ["cp", "-Rp", "data", os.path.join(install_dir, "pymecavideo")], stdout=subprocess.PIPE)
         cmd3.poll()
         cmd3.wait()
-        print (cmd3.stdout.readlines())
-        cmd4 = subprocess.Popen(["chmod", "755", os.path.join(install_dir, "pymecavideo/data")], stdout=subprocess.PIPE)
+        print(cmd3.stdout.readlines())
+        cmd4 = subprocess.Popen(["chmod", "755", os.path.join(
+            install_dir, "pymecavideo/data")], stdout=subprocess.PIPE)
         cmd4.poll()
         cmd4.wait()
-        print (cmd4.stdout.readlines())
+        print(cmd4.stdout.readlines())
 else:
-    print ("ERREUR, veuillez lancer ce script avec des droits supérieurs (sudo ou logguez vous en root")
+    print("ERREUR, veuillez lancer ce script avec des droits supérieurs (sudo ou logguez vous en root")

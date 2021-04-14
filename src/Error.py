@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
+import globdef
+import traceback
+import sys
 licence = {}
 licence['en'] = """
     pymecavideo version %s:
@@ -41,19 +44,14 @@ licence['fr'] = u"""
     <http://www.gnu.org/licenses/>.
 """
 
-import sys
-import traceback
-
-import globdef
-
 
 def _exceptionhook(typ, value, traceb):
     """ On catch une exception """
     frame = traceb.tb_frame
-    print ("\n", file=sys.stderr)
+    print("\n", file=sys.stderr)
     traceback.print_tb(traceb)
-    print ("\nType : ", typ, "\n", file=sys.stderr)
-    print ("ValueError : ", value, file=sys.stderr)
+    print("\nType : ", typ, "\n", file=sys.stderr)
+    print("ValueError : ", value, file=sys.stderr)
     sys.exit()
 
 
@@ -83,7 +81,7 @@ class RedirectErr:
             atexit.register(SendBugReport)
             # puis on ouvre le fichier qui contient les erreurs
             self.file_error = open(globdef.ERROR_FILE, 'w')
-            print (globdef.ERROR_FILE)
+            print(globdef.ERROR_FILE)
             self.error_occured = True
         if self.file_error is not None:
             self.file_error.write(text)
@@ -100,7 +98,8 @@ def SendBugReport():
     #
     # On ouvre le fichier qui contient les erreurs
     #
-    import webbrowser, datetime
+    import webbrowser
+    import datetime
     from PyQt5.QtGui import QMessageBox
 
     def rien(x):
@@ -110,7 +109,8 @@ def SendBugReport():
         a = _(u"test")
     except:
         _ = rien
-    message = _(u"pymecavideo a rencontré une erreur et doit être fermé.\nVoulez-vous envoyer un rapport de bug ?")
+    message = _(
+        u"pymecavideo a rencontré une erreur et doit être fermé.\nVoulez-vous envoyer un rapport de bug ?")
 
     dlg = QMessageBox.warning(None, _(u"Erreur"),
                               message,
@@ -157,10 +157,10 @@ def SendBugReport():
         #        # Sinon on ouvre son client de messagerie normal
         #        #
         #        except:
-        webbrowser.open("""mailto:%s?subject=%s&body=%s""" % (e_mail, subject, body))
+        webbrowser.open("""mailto:%s?subject=%s&body=%s""" %
+                        (e_mail, subject, body))
 
 
 if __name__ == '__main__':
     sys.stderr = RedirectErr(sys.stderr)
-    print (r)
-    
+    print(r)

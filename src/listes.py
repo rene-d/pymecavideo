@@ -61,7 +61,7 @@ class listePointee:
         return
 
     def __bool__(self):
-        return len(self.data)>0 and self.ptr >= 0
+        return len(self.data) > 0 and self.ptr >= 0
 
     def __iter__(self):
         return listePointeeIterateur(self)
@@ -69,7 +69,7 @@ class listePointee:
     def __getitem__(self, i):
         if i >= 0 and i <= self.ptr:
             return self.data[i]
-        elif i < 0 and 1+self.ptr+i >=0:
+        elif i < 0 and 1+self.ptr+i >= 0:
             return self.data[1+self.ptr+i]
         else:
             raise IndexError
@@ -109,7 +109,7 @@ class listePointeeIterateur:
         self.lp = lp
 
     def __iter__(self):
-        self.i=0
+        self.i = 0
         return self
 
     def __next__(self):
@@ -121,14 +121,14 @@ class listePointeeIterateur:
 
 
 def test():
-    print ("quelques tests de liste pointée")
+    print("quelques tests de liste pointée")
     l1 = listePointee()
     l1.append(1)
     l1.append(['a', 'b'])
     l1.append(2)
     l1.append(3)
     l1.decPtr()
-    print ("""
+    print("""
     l1=listePointee()
     l1.append(1)
     l1.append(['a','b'])
@@ -136,44 +136,44 @@ def test():
     l1.append(3)
     l1.decPtr()
 """)
-    print (">>> l1 = %s" % l1)
-    print (">>> l1[0] = %s" % l1[0])
+    print(">>> l1 = %s" % l1)
+    print(">>> l1[0] = %s" % l1[0])
 
-    print ("""
+    print("""
     for e in l1:
         print e
 """)
     for e in l1:
-        print (e)
+        print(e)
 
-    print ("\n>>> len(l1) = %s" % len(l1))
+    print("\n>>> len(l1) = %s" % len(l1))
 
     l1.incPtr()
 
-    print ("""
+    print("""
         l1.incPtr()
 """)
     for e in l1:
-        print (e)
+        print(e)
 
-    print ("\n>>> len(l1) = %s" % len(l1))
+    print("\n>>> len(l1) = %s" % len(l1))
 
     l1.decPtr()
     l1.decPtr()
     l1.append('x')
 
-    print ("""
+    print("""
     l1.decPtr()
     l1.decPtr()
     l1.append('x')
 """)
     for e in l1:
-        print (e)
+        print(e)
 
-    print ("\n>>> len(l1) = %s" % len(l1))
+    print("\n>>> len(l1) = %s" % len(l1))
 
-    print ("test de l'iterateur")
-    i=iter(l1)
+    print("test de l'iterateur")
+    i = iter(l1)
     while True:
         try:
             print(next(i))
@@ -181,8 +181,8 @@ def test():
             break
     print("itération à l'envers")
     for i in range(-1, -1-len(l1), -1):
-        print ("index:", i, "=>", l1[i])
+        print("index:", i, "=>", l1[i])
 
-    
+
 if __name__ == "__main__":
     test()
