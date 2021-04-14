@@ -22,17 +22,17 @@ export.py permet d'exporter les données de pymecavideo dans différents formats
 """
 
 
-import sys, os, time
-from PyQt5.QtCore import Qt, QCoreApplication, QSize
-from PyQt5.QtWidgets import QFileDialog, QCheckBox, QDialog, QMessageBox, QDialogButtonBox, QVBoxLayout, QGroupBox, QHBoxLayout, QRadioButton, QSpacerItem, QSizePolicy, QGridLayout
-from globdef import DOCUMENT_PATH
 from dbg import Dbg
-
+from globdef import DOCUMENT_PATH
+from PyQt5.QtWidgets import QFileDialog, QCheckBox, QDialog, QMessageBox, QDialogButtonBox, QVBoxLayout, QGroupBox, QHBoxLayout, QRadioButton, QSpacerItem, QSizePolicy, QGridLayout
+from PyQt5.QtCore import Qt, QCoreApplication, QSize
+import sys
+import os, time
 DBG = Dbg(0)
 
 _translate = QCoreApplication.translate
 
-#On prévient si l'enregistrement est un succès ?
+# On prévient si l'enregistrement est un succès ?
 INFO_OK = False
 
 # Dictionnaire contenant les différents formats d'exportation
@@ -44,78 +44,77 @@ INFO_OK = False
 # modules (list of str) : liste des modules non standards nécessaires ou None
 # un_point (bool) : nécessite un seul point cliqué ou pas
 EXPORT_FORMATS = {
-    1: {'nom' : _translate("export",'Libre/OpenOffice Calc'), 
-        'filtre' : _translate("export",'Feuille de calcul OpenDocument (*.ods)'),
-        'extension' : 'ods',
-        'class' : 'Calc',
-        'modules' : ['odf'],
-        'propose_ouverture' : True,
-        'un_point' : False},
-    
-    2: {'nom' : _translate("export",'Python (source)'),
-        'filtre' : _translate("export",'Fichier Python (*.py)'),
-        'extension' : 'py',
-        'class' : 'PythonSource',
-        'modules' : None,
-        'propose_ouverture' : True,
-        'un_point' : True},
-    
-    3: {'nom' : _translate("export",'Python (Numpy)'),
-        'filtre' : _translate("export",'Fichier Numpy (*.npy)'),
-        'extension' : 'npy',
-        'class' : 'PythonNumpy',
-        'modules' : ['numpy'],
-        'propose_ouverture' : False,
-        'un_point' : True},
-    
-    4: {'nom' : _translate("export",'Fichier CSV'),
-        'filtre' : _translate("export",'Fichier CSV (*.csv, *.txt)'),
-        'extension' : 'csv',
-        'class' : 'FichierCSV',
-        'modules' : None,
-        'propose_ouverture' : True,
-        'un_point' : False},
-    
-    5: {'nom' : _translate("export",'Pandas Dataframe'),
-        'filtre' : _translate("export",'Dataframe (*.pkl)'),
-        'extension' : 'pkl',
-        'class' : 'DataframePandas',
-        'modules' : ['pandas'],
-        'propose_ouverture' : False,
-        'un_point' : False},
-    
-    6: {'nom' : _translate("export",'Qtiplot/Scidavis'),
-        'filtre' : _translate("export",'Fichier Qtiplot (*.qti)'),
-        'extension' : 'qti',
-        'class' : 'Qtiplot',
-        'modules' : None,
-        'propose_ouverture' : True,
-        'un_point' : False},
-    }
+    1: {'nom': _translate("export", 'Libre/OpenOffice Calc'),
+        'filtre': _translate("export", 'Feuille de calcul OpenDocument (*.ods)'),
+        'extension': 'ods',
+        'class': 'Calc',
+        'modules': ['odf'],
+        'propose_ouverture': True,
+        'un_point': False},
+
+    2: {'nom': _translate("export", 'Python (source)'),
+        'filtre': _translate("export", 'Fichier Python (*.py)'),
+        'extension': 'py',
+        'class': 'PythonSource',
+        'modules': None,
+        'propose_ouverture': True,
+        'un_point': True},
+
+    3: {'nom': _translate("export", 'Python (Numpy)'),
+        'filtre': _translate("export", 'Fichier Numpy (*.npy)'),
+        'extension': 'npy',
+        'class': 'PythonNumpy',
+        'modules': ['numpy'],
+        'propose_ouverture': False,
+        'un_point': True},
+
+    4: {'nom': _translate("export", 'Fichier CSV'),
+        'filtre': _translate("export", 'Fichier CSV (*.csv, *.txt)'),
+        'extension': 'csv',
+        'class': 'FichierCSV',
+        'modules': None,
+        'propose_ouverture': True,
+        'un_point': False},
+
+    5: {'nom': _translate("export", 'Pandas Dataframe'),
+        'filtre': _translate("export", 'Dataframe (*.pkl)'),
+        'extension': 'pkl',
+        'class': 'DataframePandas',
+        'modules': ['pandas'],
+        'propose_ouverture': False,
+        'un_point': False},
+
+    6: {'nom': _translate("export", 'Qtiplot/Scidavis'),
+        'filtre': _translate("export", 'Fichier Qtiplot (*.qti)'),
+        'extension': 'qti',
+        'class': 'Qtiplot',
+        'modules': None,
+        'propose_ouverture': True,
+        'un_point': False},
+}
 
 # Dictionnaire contenant les textes des QMessageBox information, warning...
 EXPORT_MESSAGES = {
-    0: {'titre' : _translate("export", "Erreur lors de l'exportation"),
-        'texte' : _translate("export", "Echec de l'enregistrement du fichier:<b>\n{0}</b>")},
-    
-    1: {'titre' : _translate("export", "Impossible de créer le fichier"),
-        'texte' : _translate("export", "L'export n'est possible que pour 1 seul point cliqué.")},
-    
-    2: {'titre' : _translate("export", "Exportation terminée"),
-        'texte' : _translate("export", "Fichier:\n<b>{0}</b>\nenregistré avec succès.")},
-    
-    3: {'titre' : _translate("export", "Impossible de créer le fichier"),
-        'texte' : _translate("export", "Le module <b>{0}</b> n'est pas installé.")},
-    }
+    0: {'titre': _translate("export", "Erreur lors de l'exportation"),
+        'texte': _translate("export", "Echec de l'enregistrement du fichier:<b>\n{0}</b>")},
+
+    1: {'titre': _translate("export", "Impossible de créer le fichier"),
+        'texte': _translate("export", "L'export n'est possible que pour 1 seul point cliqué.")},
+
+    2: {'titre': _translate("export", "Exportation terminée"),
+        'texte': _translate("export", "Fichier:\n<b>{0}</b>\nenregistré avec succès.")},
+
+    3: {'titre': _translate("export", "Impossible de créer le fichier"),
+        'texte': _translate("export", "Le module <b>{0}</b> n'est pas installé.")},
+}
 
 
-
-#CLASSES D'EXPORT DANS LES DIFFERENTS FORMATS
-#En début de fichier pour qu'elles apparaissent dans globals()
-#=============================================================
+# CLASSES D'EXPORT DANS LES DIFFERENTS FORMATS
+# En début de fichier pour qu'elles apparaissent dans globals()
+# =============================================================
 
 class DataframePandas:
-    
+
     def __init__(self, app, filepath):
         """
         Crée un fichier Pandas et importe les données de pymecavideo
@@ -125,27 +124,31 @@ class DataframePandas:
         table = app.ui.tableWidget
         df = self.write_qtable_to_df(table)
         df.to_pickle(filepath)
-        QMessageBox.information(None, _translate("export_pandas", "Fichier Pandas sauvegardé"), _translate("export_pandas", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport pandas as pd\ndf = pd.read_pickle("{}")""".format(os.path.basename(filepath))),QMessageBox.Ok, QMessageBox.Ok)
-        
+        QMessageBox.information(None, _translate("export_pandas", "Fichier Pandas sauvegardé"), _translate(
+            "export_pandas", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport pandas as pd\ndf = pd.read_pickle("{}")""".format(os.path.basename(filepath))), QMessageBox.Ok, QMessageBox.Ok)
+
     def write_qtable_to_df(self, table):
         """
         https://stackoverflow.com/questions/37680981/how-can-i-retrieve-data-from-a-qtablewidget-to-dataframe
         """
         col_count = table.columnCount()
         row_count = table.rowCount()
-        headers = [str(table.horizontalHeaderItem(i).text()) for i in range(col_count)]
+        headers = [str(table.horizontalHeaderItem(i).text())
+                   for i in range(col_count)]
         df_list = []
         for row in range(row_count):
             df_list2 = []
             for col in range(col_count):
-                table_item = table.item(row,col)
-                df_list2.append('' if table_item is None else float(table_item.text()))
+                table_item = table.item(row, col)
+                df_list2.append(
+                    '' if table_item is None else float(table_item.text()))
             df_list.append(df_list2)
         df = self.DataFrame(df_list, columns=headers)
         return df
 
+
 class FichierCSV:
-    
+
     def __init__(self, app, filepath):
         """
         Crée un fichier CSV et importe les données de pymecavideo
@@ -159,22 +162,24 @@ class FichierCSV:
             tw = app.ui.tableWidget
             with open(filepath, 'w', newline='') as csvfile:
                 csvwriter = csv.writer(csvfile, delimiter=_field,
-                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                if _header :
-                    header = [tw.horizontalHeaderItem(col).text() for col in range(tw.columnCount())]
+                                       quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                if _header:
+                    header = [tw.horizontalHeaderItem(
+                        col).text() for col in range(tw.columnCount())]
                     csvwriter.writerow(header)
                 for row in range(tw.rowCount()):
                     rowdata = []
                     for col in range(tw.columnCount()):
-                        item = tw.item(row,col)
+                        item = tw.item(row, col)
                         if item is not None:
                             txt = item.text()
                             if _decimal == ',':
-                                txt = txt.replace('.',',')
+                                txt = txt.replace('.', ',')
                             rowdata.append(txt)
                         else:
                             rowdata.append('')
                     csvwriter.writerow(rowdata)
+
 
 class Qtiplot:
     """
@@ -249,10 +254,11 @@ $data
                 dic['data'] += '\t%f\t%f' % (vect.x(), vect.y())
             dic['data'] += '\n'
             ligne += 1
-        dic['data'] = dic['data'][:-1]  # suppression du dernier retour à la ligne
+        # suppression du dernier retour à la ligne
+        dic['data'] = dic['data'][:-1]
         self.table = self.tableTemplate.substitute(dic)
         self.qtifile = self.qtiFileTemplate.substitute({'table': self.table})
-        with open(filepath, 'w') as f :
+        with open(filepath, 'w') as f:
             f.write(self.qtifile)
 
 
@@ -274,10 +280,11 @@ class Calc():
         self.TableCell = TableCell
         self.outfile = open(fichier_ods, 'wb')
         self.doc = OpenDocumentSpreadsheet()
-        self.table = Table(name="Pymecavideo {0}".format(time.strftime("%Y-%m-%d %Hh%Mm%Ss")))
+        self.table = Table(name="Pymecavideo {0}".format(
+            time.strftime("%Y-%m-%d %Hh%Mm%Ss")))
         self.importPymeca(app)
 
-    def titres (self, lesTitres=[]):
+    def titres(self, lesTitres=[]):
         """
         Ajoute une ligne de titres
         @param les Titres une liste de chaînes
@@ -310,7 +317,7 @@ class Calc():
         importe les données de pymecavideo
         @param app pointeur vers l'application
         """
-        ## fait une ligne de titres
+        # fait une ligne de titres
         titles = ["t (s)"]
         for i in range(app.nb_de_points):
             x = "X%d (m)" % (1 + i)
@@ -318,7 +325,7 @@ class Calc():
             titles.append(x)
             titles.append(y)
         self.titres(titles)
-        ## fait les lignes de données
+        # fait les lignes de données
         t = 0
         dt = app.deltaT
         for k in app.points.keys():
@@ -330,11 +337,12 @@ class Calc():
                 val.append(vect.x())
                 val.append(vect.y())
             self.ligneValeurs(val)
-        ## accroche la feuille au document tableur
+        # accroche la feuille au document tableur
         self.doc.spreadsheet.addElement(self.table)
-        ## écrit dans le fichier de sortie
+        # écrit dans le fichier de sortie
         self.doc.save(self.outfile)
         self.outfile.close()
+
 
 class PythonSource:
     """
@@ -342,20 +350,21 @@ class PythonSource:
     """
 
     def __init__(self, app, filepath):
-        ##traitement du scénario des vitesses/accélrations :
-        ##si seule la vitesse est cochée, on calcule et affiche les vitesses
-        ##si les deux sont cochées, on calcule et affiche les vitesses et accélérations
-        ##si seule l'accélération est cochée, les vitesses sont calculées mais non affichées
+        # traitement du scénario des vitesses/accélrations :
+        # si seule la vitesse est cochée, on calcule et affiche les vitesses
+        # si les deux sont cochées, on calcule et affiche les vitesses et accélérations
+        # si seule l'accélération est cochée, les vitesses sont calculées mais non affichées
         #self.dbg.p(1, "rentre dans 'python source2'")
         d = PythonExportDialog(app)
         if d.exec_() == QDialog.Accepted:
-            calcule_vitesse, affiche_vitesse, calcule_accel, affiche_accel = d.checkBox_v.isChecked(), d.checkBox_v2.isChecked(), d.checkBox_accel.isChecked(), d.checkBox_accel2.isChecked()
-        if affiche_vitesse :
+            calcule_vitesse, affiche_vitesse, calcule_accel, affiche_accel = d.checkBox_v.isChecked(
+            ), d.checkBox_v2.isChecked(), d.checkBox_accel.isChecked(), d.checkBox_accel2.isChecked()
+        if affiche_vitesse:
             calcule_vitesse = True
         if calcule_accel or affiche_accel:
             "on veut les accelerations, il faut les vitesse"
             calcule_vitesse = True
-        if affiche_accel :
+        if affiche_accel:
             calcule_accel = True
             calcule_vitesse = True
         f = open(filepath, "w")
@@ -406,7 +415,7 @@ plt.ylabel("y (en m)")
 ## présentation du diagramme interactif
 plt.grid()
 plt.show()
-"""%("""
+""" % ("""
 vx = np.array(np.zeros(len(x1)-1))
 vy = np.array(np.zeros(len(x1)-1))
 for k in range(0,len(x1)-1):
@@ -414,10 +423,10 @@ for k in range(0,len(x1)-1):
     vy[k] = (y1[k+1]-y1[k])/dt""" if calcule_vitesse else """#####à compléter pour calculer les vitesses####
     ##############
     ##############""",
-    """
+                """
     plt.title("Vecteurs vitesse")
-    plt.quiver(x1[k-1], y1[k-1], vx[k], vy[k], scale=20, scale_units="xy")""" if affiche_vitesse else "" ,
-    """
+    plt.quiver(x1[k-1], y1[k-1], vx[k], vy[k], scale=20, scale_units="xy")""" if affiche_vitesse else "",
+                """
 ax = np.array(np.zeros(len(vx)-1))
 ay = np.array(np.zeros(len(vx)-1))
 for k in range(0, len(vx)-1):
@@ -425,7 +434,7 @@ for k in range(0, len(vx)-1):
     ay[k] = (vy[k+1]-vy[k])/dt""" if calcule_accel else """#####à compléter pour calculer les vitesses####
     ##############
     ##############""",
-    """
+                """
     plt.title("Vecteurs accélérations")
     plt.quiver(x1[k-1], y1[k-1], ax[k], ay[k],color='red', scale=60, scale_units="xy")""" if affiche_accel else ""))
             f.close()
@@ -435,7 +444,7 @@ class CsvExportDialog(QDialog):
     """
     Fenêtre de dialogue permettant de choisir séparateurs de champ et décimal dans le fichier CSV
     """
-    
+
     def __init__(self, *args, **kwargs):
         super(CsvExportDialog, self).__init__(*args, **kwargs)
         self.setObjectName("CsvExportDialog")
@@ -457,7 +466,8 @@ class CsvExportDialog(QDialog):
         self.rbDecComma.setMinimumSize(QSize(130, 0))
         self.rbDecComma.setObjectName("rbDecComma")
         self.horizontalLayout.addWidget(self.rbDecComma)
-        spacerItem = QSpacerItem(127, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        spacerItem = QSpacerItem(
+            127, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.verticalLayout.addWidget(self.gbDec)
         self.gbCha = QGroupBox(self)
@@ -486,7 +496,8 @@ class CsvExportDialog(QDialog):
         self.verticalLayout.addWidget(self.checkBox)
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(
+            QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
         self.retranslateUi()
@@ -499,39 +510,46 @@ class CsvExportDialog(QDialog):
         self.rbFieldTab.toggled.connect(self.change_field)
 
     def change_field(self):
-        if self.rbFieldComma.isChecked() :
+        if self.rbFieldComma.isChecked():
             self.field = ","
-        elif self.rbFieldSemicolon.isChecked() :
+        elif self.rbFieldSemicolon.isChecked():
             self.field = ";"
-        elif self.rbFieldTab.isChecked() :
+        elif self.rbFieldTab.isChecked():
             self.field = "\t"
-            
+
     def change_dec(self):
-        if self.rbFieldComma.isChecked() :
+        if self.rbFieldComma.isChecked():
             self.decimal = ","
-        elif self.rbDecDot.isChecked() :
+        elif self.rbDecDot.isChecked():
             self.decimal = "."
-        
+
     def check_if_dot(self):
         if self.rbDecComma.isChecked():
             if self.rbFieldComma.isChecked():
                 self.rbFieldSemicolon.setChecked(True)
             self.rbFieldComma.setEnabled(False)
-        else :
+        else:
             self.rbFieldComma.setEnabled(True)
         self.change_field()
 
     def retranslateUi(self):
         _translate = QCoreApplication.translate
         self.setWindowTitle(_translate("CsvExportDialog", "Dialog"))
-        self.gbDec.setTitle(_translate("CsvExportDialog", "Séparateur décimal :"))
+        self.gbDec.setTitle(_translate(
+            "CsvExportDialog", "Séparateur décimal :"))
         self.rbDecDot.setText(_translate("CsvExportDialog", "Point ( . )"))
         self.rbDecComma.setText(_translate("CsvExportDialog", "Virgule ( , )"))
-        self.gbCha.setTitle(_translate("CsvExportDialog", "Séparateur de champ :"))
-        self.rbFieldComma.setText(_translate("CsvExportDialog", "Virgule ( , )"))
-        self.rbFieldSemicolon.setText(_translate("CsvExportDialog", "Point-virgule ( ; )"))
-        self.rbFieldTab.setText(_translate("CsvExportDialog", "Tabulation ( \\t )"))
-        self.checkBox.setText(_translate("CsvExportDialog", "Ajouter les grandeurs comme en-tête"))
+        self.gbCha.setTitle(_translate(
+            "CsvExportDialog", "Séparateur de champ :"))
+        self.rbFieldComma.setText(_translate(
+            "CsvExportDialog", "Virgule ( , )"))
+        self.rbFieldSemicolon.setText(_translate(
+            "CsvExportDialog", "Point-virgule ( ; )"))
+        self.rbFieldTab.setText(_translate(
+            "CsvExportDialog", "Tabulation ( \\t )"))
+        self.checkBox.setText(_translate(
+            "CsvExportDialog", "Ajouter les grandeurs comme en-tête"))
+
 
 class PythonExportDialog(QDialog):
     """
@@ -549,7 +567,8 @@ class PythonExportDialog(QDialog):
         self.verticalLayout.setObjectName("verticalLayout")
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(
+            QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.layout = QVBoxLayout()
@@ -572,30 +591,38 @@ class PythonExportDialog(QDialog):
 
     def retranslateUi(self):
         self.setWindowTitle(_translate("choix_exports", "Choix export python"))
-        self.checkBox_v.setText(_translate("choix_exports", "insérer les lignes pour le calcul des vitesses"))
-        self.checkBox_accel.setText(_translate("choix_exports", "insérer les lignes pour le calcul des accélérations"))
-        self.checkBox_v2.setText(_translate("choix_exports", "insérer les lignes pour l'affichage des vecteurs vitesses"))
-        self.checkBox_accel2.setText(_translate("choix_exports", "insérer les lignes pour l'affichage des vecteurs des accélérations"))
+        self.checkBox_v.setText(_translate(
+            "choix_exports", "insérer les lignes pour le calcul des vitesses"))
+        self.checkBox_accel.setText(_translate(
+            "choix_exports", "insérer les lignes pour le calcul des accélérations"))
+        self.checkBox_v2.setText(_translate(
+            "choix_exports", "insérer les lignes pour l'affichage des vecteurs vitesses"))
+        self.checkBox_accel2.setText(_translate(
+            "choix_exports", "insérer les lignes pour l'affichage des vecteurs des accélérations"))
 
-class PythonNumpy :
+
+class PythonNumpy:
     """
     Exporte les données dans un fichier Numpy
     """
+
     def __init__(self, app, filepath):
         import numpy as np
         pts = app.points
         t = [float(pts[i][0]) for i in pts.keys()]
         x = [float(app.pointEnMetre(pts[i][1])[0]) for i in pts.keys()]
         y = [float(app.pointEnMetre(pts[i][1])[1]) for i in pts.keys()]
-        np.save(filepath, (t,x,y))
-        QMessageBox.information(None, _translate("export_numpy", "Fichier Numpy sauvegardé"), _translate("export_numpy", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x,y = np.load("{}")""".format(os.path.basename(filepath))),QMessageBox.Ok, QMessageBox.Ok)
+        np.save(filepath, (t, x, y))
+        QMessageBox.information(None, _translate("export_numpy", "Fichier Numpy sauvegardé"), _translate(
+            "export_numpy", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x,y = np.load("{}")""".format(os.path.basename(filepath))), QMessageBox.Ok, QMessageBox.Ok)
 
 
 class SaveThenOpenFileDialog(QFileDialog):
     """
     Enregistre un fichier et propose de l'ouvrir ensuite
     """
-    def __init__(self, *args, extension = None, proposeOuverture=True):
+
+    def __init__(self, *args, extension=None, proposeOuverture=True):
         super().__init__(*args)
         DBG.p(1, "rentre dans 'SaveThenOpenFileDialog'")
         self.setOption(QFileDialog.DontUseNativeDialog)
@@ -606,12 +633,14 @@ class SaveThenOpenFileDialog(QFileDialog):
         self.checkbox.setStyleSheet("color: rgb(255, 0, 0);")
         self.checkbox.setText("Ouvrir le fichier après enregistrement")
         self.layout().addWidget(self.checkbox)
-        if not proposeOuverture :
+        if not proposeOuverture:
             self.checkbox.setVisible(False)
 
-#CLASSE PRINCIPALE
-#en fin de fichier pour récupérer les globals()
-#==============================================
+# CLASSE PRINCIPALE
+# en fin de fichier pour récupérer les globals()
+# ==============================================
+
+
 class Export:
 
     def __init__(self, app, choix_export):
@@ -624,39 +653,45 @@ class Export:
         self.class_str = EXPORT_FORMATS[choix_export]['class']
         un_point = EXPORT_FORMATS[choix_export]['un_point']
         modules = EXPORT_FORMATS[choix_export]['modules']
-        #On vérifie si les modules additionnels sont présents
-        if modules :
-            for mod in modules :
-                try : 
+        # On vérifie si les modules additionnels sont présents
+        if modules:
+            for mod in modules:
+                try:
                     m = __import__(mod)
-                except ImportError :
+                except ImportError:
                     msg = EXPORT_MESSAGES[3]
-                    QMessageBox.critical(None, msg['titre'], msg['texte'].format(mod),QMessageBox.Ok, QMessageBox.Ok)
+                    QMessageBox.critical(None, msg['titre'], msg['texte'].format(
+                        mod), QMessageBox.Ok, QMessageBox.Ok)
                     return
         # On vérifie si le nombre de points est adapté
-        if un_point and app.nb_de_points > 1 :
+        if un_point and app.nb_de_points > 1:
             msg = EXPORT_MESSAGES[1]
-            QMessageBox.warning(None, msg['titre'], msg['texte'],QMessageBox.Ok, QMessageBox.Ok)
+            QMessageBox.warning(
+                None, msg['titre'], msg['texte'], QMessageBox.Ok, QMessageBox.Ok)
             return
-        self.demande_nom_fichier(base_name, filtre, extension, propose_ouverture)
+        self.demande_nom_fichier(
+            base_name, filtre, extension, propose_ouverture)
 
     def demande_nom_fichier(self, filename, filtre, extension, propose_ouverture):
         defaultName = os.path.join(DOCUMENT_PATH[0], filename)
-        fd = SaveThenOpenFileDialog(None, 'Exporter...', defaultName, filtre, extension=extension, proposeOuverture=propose_ouverture)
+        fd = SaveThenOpenFileDialog(None, 'Exporter...', defaultName,
+                                    filtre, extension=extension, proposeOuverture=propose_ouverture)
         ouvre = False
         if fd.exec_() == QDialog.Accepted:
             filepath = fd.selectedFiles()[0]
             ouvre = fd.checkbox.isChecked()
-            #self.enregistre_fichier(filepath)
-            try :
+            # self.enregistre_fichier(filepath)
+            try:
                 self.enregistre_fichier(filepath)
-                if INFO_OK :
+                if INFO_OK:
                     msg = EXPORT_MESSAGES[2]
-                    QMessageBox.information(None, msg['titre'], msg['texte'].format(filepath),QMessageBox.Ok, QMessageBox.Ok)
-            except :
+                    QMessageBox.information(None, msg['titre'], msg['texte'].format(
+                        filepath), QMessageBox.Ok, QMessageBox.Ok)
+            except:
                 msg = EXPORT_MESSAGES[0]
-                QMessageBox.critical(None, msg['titre'], msg['texte'].format(filepath),QMessageBox.Ok, QMessageBox.Ok)
-        if ouvre :
+                QMessageBox.critical(None, msg['titre'], msg['texte'].format(
+                    filepath), QMessageBox.Ok, QMessageBox.Ok)
+        if ouvre:
             self.ouvre_fichier(filepath)
 
     def enregistre_fichier(self, filepath):

@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from PyQt5.QtWidgets import QProgressDialog, QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
+from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
+from subprocess import Popen, PIPE, STDOUT
+import time
+import subprocess
+import sys
 licence = {}
 licence['en'] = """
     pymecavideo version %s:
@@ -42,14 +49,6 @@ licence['fr'] = u"""
 #
 # Le module de gestion des erreurs n'est chargé que si on execute le fichier .exe ou si on est sous Linux
 #
-import sys
-import subprocess
-import time
-from subprocess import Popen, PIPE, STDOUT
-
-from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
-from PyQt5.QtWidgets import QProgressDialog, QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 
 class MyReaderThread(QThread):
@@ -66,24 +65,26 @@ class MyReaderThread(QThread):
 
     def run(self):
 
-
         while not self.exit:
             try:
                 stdout_file = open(self.stdout_file, 'r')
                 self.stdout = stdout_file.readlines()
                 if self.stdout[-1].split()[0] == 'Video':
                     self.exit = True
-                    self.app.dbg.p(4, "In Thread Reader, exit==True, end of encoding")
+                    self.app.dbg.p(
+                        4, "In Thread Reader, exit==True, end of encoding")
 
                 pct__ = self.stdout[-1].split('\r')[-2]
-                self.pct = pct__.split()[3].replace('%', '').replace(')', '').replace('(', '')
+                self.pct = pct__.split()[3].replace(
+                    '%', '').replace(')', '').replace('(', '')
                 self.app.dbg.p(4, "In Thread Reader, pct = %s" % self.pct)
                 if self.pct == '99' or self.pct == '100':
                     # print "EXIT"
                     self.exit = True
 
                 pct__ = self.stdout[-1].split('\r')[-2]
-                self.pct = "".join(pct__.split()).split('(')[-1].split(')')[0][:-1]
+                self.pct = "".join(pct__.split()).split(
+                    '(')[-1].split(')')[0][:-1]
 
                 self.app.dbg.p(4, "In Thread Reader, pct = %s" % self.pct)
                 time.sleep(0.1)
@@ -100,8 +101,7 @@ class MyReaderThread(QThread):
                 #
                 if self.exit == True:  # at the end of encoding
                     pass
-                    #print "indexError"
-
+                    # print "indexError"
 
             except TypeError:
                 self.app.dbg.p(4, "In Thread Reader, typError")
@@ -124,11 +124,10 @@ class MyEncodeThread(QThread):
         self.app.dbg.p(4, "In MyEncodeThread, cmd = %s" % cmd)
         self.dest = dest
 
-
     def run(self):
         # ls = Popen(self.cmd.split(), stdout=PIPE, stderr=STDOUT)
         #stdout, stderr = ls.communicate()
-        #print stdout, stderr
+        # print stdout, stderr
         stdout_file = open(self.app.stdout_file, 'w+')
         if sys.platform == 'win32':
             ls = Popen(self.cmd, stdout=stdout_file, stderr=STDOUT)
@@ -144,7 +143,7 @@ class QMessageBoxEncode(QProgressDialog):
 
         QProgressDialog.__init__(self, app)
         self.setLabelText(
-            u"La vidéo n'est pas compatible avec Pymecavideo.\nPymecavideo l'encode dans un autre format.\n Ceci peut prendre un peu de temps");
+            u"La vidéo n'est pas compatible avec Pymecavideo.\nPymecavideo l'encode dans un autre format.\n Ceci peut prendre un peu de temps")
         self.setCancelButtonText(u"")
         self.setMaximum(100)
         self.setMinimum(0)
@@ -152,9 +151,11 @@ class QMessageBoxEncode(QProgressDialog):
         self.dest = dest
         self.value_ = 0
         if sys.platform == 'win32':
-            cmd = "mencoder %s -nosound -ovc lavc -o %s " % ('"' + self.app.filename + '"', '"' + dest + '"')
+            cmd = "mencoder %s -nosound -ovc lavc -o %s " % (
+                '"' + self.app.filename + '"', '"' + dest + '"')
         else:
-            cmd = "mencoder %s -nosound -ovc lavc -o %s " % (self.app.filename, dest)
+            cmd = "mencoder %s -nosound -ovc lavc -o %s " % (
+                self.app.filename, dest)
         myencodethread = MyEncodeThread(self, app, cmd, self.dest)
         myreadthread = MyReaderThread(self, app, self.app.stdout_file)
         myreadthread.start()
@@ -170,6 +171,3 @@ class QMessageBoxEncode(QProgressDialog):
             time.sleep(0.5)
             self.app.openTheFile(self.dest)
             self.close()
-
-        
-

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import os.path
+import os
+import pickle
 licence = """
     preferences is a a file of the project pymecavideo:
     a program to track moving points in a video frameset
@@ -20,9 +23,6 @@ licence = """
 """
 
 # from Ui_preferences import Ui_Dialog
-import pickle
-import os
-import os.path
 
 
 class Preferences:
@@ -44,7 +44,8 @@ class Preferences:
         """
         Renvoie une chaîne représentant les préférences, lisible par un humain
         """
-        result = self.app.tr("Proximite de la souris {0}").format(self.proximite)
+        result = self.app.tr(
+            "Proximite de la souris {0}").format(self.proximite)
         result += self.app.tr("; derniere video {0}").format(self.lastVideo)
         result += self.app.tr("; videoDir {0}").format(self.videoDir)
         return "%s" % result
@@ -54,7 +55,8 @@ class Preferences:
         Sauvegarde des préférences dans le fichier de configuration.
         """
         f = open(self.conffile, "wb")
-        self.app.dbg.p(6, "sauvegarde des preferences dans  %s" % self.conffile)
+        self.app.dbg.p(6, "sauvegarde des preferences dans  %s" %
+                       self.conffile)
         self.app.dbg.p(6, "%s" % self)
         pickle.dump((self.proximite, self.lastVideo, self.videoDir), f)
         f.close()
@@ -67,7 +69,6 @@ class Preferences:
                 f.close()
             except:
                 self.app.dbg.p(2, "erreur en lisant %s" % self.conffile)
-                self.app.dbg.p(2, "effacement du répertoire temporaire de pymecavideo")
+                self.app.dbg.p(
+                    2, "effacement du répertoire temporaire de pymecavideo")
                 pass
-        
-        

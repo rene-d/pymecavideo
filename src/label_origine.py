@@ -19,8 +19,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect, QPoint, QPointF
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage,QPainter, QCursor, QPen, QColor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel,QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QPen, QColor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
@@ -31,7 +31,8 @@ class Label_Origine(QLabel):
         QLabel.__init__(self, parent)
         self.parent = parent
         self.app = app
-        self.setGeometry(QRect(0, 0, self.parent.width(), self.parent.height()))
+        self.setGeometry(
+            QRect(0, 0, self.parent.width(), self.parent.height()))
         self.setAutoFillBackground(False)
 
         self.setCursor(Qt.CrossCursor)
@@ -49,18 +50,18 @@ class Label_Origine(QLabel):
     def fait_crop(self, p):
         rect = QRect(p.x() - 25, p.y() - 25, 50, 50)
         crop = self.app.imageAffichee.copy(rect)
-        self.cropX2 = QPixmap.fromImage(crop.scaled(100, 100, Qt.KeepAspectRatio))
-
+        self.cropX2 = QPixmap.fromImage(
+            crop.scaled(100, 100, Qt.KeepAspectRatio))
 
     def mouseReleaseEvent(self, event):
         self.app.label_video.origine = vecteur(event.x() + 1, event.y() + 1)
         self.zoom_croix.hide()
-        try :
+        try:
             self.app.ui.label_zoom.setPixmap(QPixmap(None))
         except TypeError:
             self.app.ui.label_zoom.setPixmap(QPixmap())
         del self.zoom_croix
-        
-        #self.app.change_axe_origine.emit()
+
+        # self.app.change_axe_origine.emit()
         self.app.change_axe_ou_origine()
         self.close()

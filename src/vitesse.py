@@ -47,7 +47,7 @@ class Vitesse(QLabel):
         self.setGeometry(QRect(0, 0, 640, 480))
 
     def paintEvent(self, event):
-        if self.v != 0:  #si la vitesse est nuelle, ne l'affiche pas
+        if self.v != 0:  # si la vitesse est nuelle, ne l'affiche pas
             self.painter = QPainter()
             self.painter.begin(self)
             self.painter.setPen(QColor(self.color))
@@ -59,6 +59,3 @@ class Vitesse(QLabel):
             self.painter.rotate(self.angle * 180 / pi)
             self.painter.drawPolyline(p1, p2, p3, p4, p2)
             self.painter.end()
-        
-
-

@@ -80,7 +80,7 @@ class Points:
         @return un point qui est "null" s'il n'existait pas avant.
         """
         if type(cle) == type(0):
-            trame = cle;
+            trame = cle
             index = 0
         else:
             trame, index = cle
@@ -104,7 +104,7 @@ class Points:
         @return une erreur si on demande un point sans préciser l'objet alors qu'il y a en a plusieurs.
         """
         if type(cle) == type(0):
-            trame = cle;
+            trame = cle
             index = 0
             if index != self.nbObj:
                 raise IndexError("numéro d'objet non précisé")
@@ -140,7 +140,7 @@ class Points:
         @return None si pas de point suivant ou précédent"""
         vect = (0, 0)
         if type(trame) == type(vect):  # on a à faire à un vecteur
-            #cherche le vecteur dans tous les points du dictionnaire
+            # cherche le vecteur dans tous les points du dictionnaire
             liste = []
             vecteur = trame
             for index in range(self.nbObj):
@@ -184,22 +184,20 @@ if __name__ == "__main__":
         p = Point(30, 40, Point.openCv)
         pts[6, 1] = p
         pts[7, 1] = p
-        print ("pts[6,1]", pts[6, 1])
-        print ("pts[7,1]", pts[7, 1])
-        print ("voisins du dernier, le point 7, objet 0", pts.voisins(7, 0))
-        print ("voisins du dernier, le point 7, objet 1", pts.voisins(7, 1))
-        print ("voisins du premier, le point 0", pts.voisins(0, 1))
-        print ("voisins du point 5, objet 0", pts.voisins(5, 0))
-        print ("voisins du point 5, objet 1", pts.voisins(5, 1))
-        print ("appel d'un tuple (3,3), retourne les voisins", pts.voisins((3, 3)))
-        print ("pts[15,1]", pts[15, 1])
-
+        print("pts[6,1]", pts[6, 1])
+        print("pts[7,1]", pts[7, 1])
+        print("voisins du dernier, le point 7, objet 0", pts.voisins(7, 0))
+        print("voisins du dernier, le point 7, objet 1", pts.voisins(7, 1))
+        print("voisins du premier, le point 0", pts.voisins(0, 1))
+        print("voisins du point 5, objet 0", pts.voisins(5, 0))
+        print("voisins du point 5, objet 1", pts.voisins(5, 1))
+        print("appel d'un tuple (3,3), retourne les voisins", pts.voisins((3, 3)))
+        print("pts[15,1]", pts[15, 1])
 
     except IndexError as err:
-        print ("erreur d'index :", err.message)
+        print("erreur d'index :", err.message)
     try:
-        print ("pts[5]", pts[5])
+        print("pts[5]", pts[5])
     except IndexError as err:
-        print ("erreur d'index :", err.message)
-    print (pts)
-        
+        print("erreur d'index :", err.message)
+    print(pts)

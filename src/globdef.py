@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from version import Version
+from PyQt5.QtCore import QStandardPaths
+import subprocess
+import os
+import sys
 licence = {}
 licence['en'] = """
     pymecavideo version %s:
@@ -40,12 +45,6 @@ licence['fr'] = u"""
     <http://www.gnu.org/licenses/>.
 """
 
-import sys
-import os
-import subprocess
-
-from PyQt5.QtCore import QStandardPaths
-from version import Version
 
 #
 # Version de pymecavideo
@@ -59,28 +58,31 @@ def testerDossier(listDir, defaut=""):
             return dir_
     return defaut
 
+
 FILE_ENCODING = sys.getfilesystemencoding()
 DEFAUT_ENCODING = "utf-8"
 
-######################################################################################  
+######################################################################################
+
+
 def toFileEncoding(path):
     try:
         path = path.decode(DEFAUT_ENCODING)
         return path.encode(FILE_ENCODING)
     except:
         return path
-#######################################################################################  
-#HOME_PATH : Dossier des documents
-#APP_PATH : Dossier du lancement de l'application pymecavideo
+#######################################################################################
+# HOME_PATH : Dossier des documents
+# APP_PATH : Dossier du lancement de l'application pymecavideo
 #CONF_PATH : StandardPaths.standardLocations(QStandardPaths.DataLocation)[0] / pymecavideo/ data
-#DATA_PATH : Dossier contenant les datas, selon scenario
+# DATA_PATH : Dossier contenant les datas, selon scenario
 #ICON_PATH : DATA_PATH / icones
 #LANG_PATH : DATA_PATH / lang
 #HELP_PATH : DATA_PATH / lang
 #VIDEO_PATH : DATA_PATH / videos
 
 
-####APP_PATH
+# APP_PATH
 
     #
     # Les deuxlignes suivantes permettent de lancer le script pymecavideo.py depuis n'importe
@@ -91,51 +93,53 @@ PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(PATH)
 APP_PATH = PATH
 
-####DATA_PATH
+# DATA_PATH
 if sys.platform == 'win32':
     DATA_PATH = os.path.join(APP_PATH, "data")
 else:
     DATA_PATH = testerDossier((os.path.join("..", "data"),
                                '/usr/share/python3-mecavideo/', '/usr/share/pymecavideo/'))
-    
-###CONF_PATH
-CONF_PATH = os.path.join(QStandardPaths.standardLocations(QStandardPaths.DataLocation)[0], "pymecavideo")
 
-###HOME_PATH
+# CONF_PATH
+CONF_PATH = os.path.join(QStandardPaths.standardLocations(
+    QStandardPaths.DataLocation)[0], "pymecavideo")
+
+# HOME_PATH
 HOME_PATH = QStandardPaths.standardLocations(QStandardPaths.HomeLocation)
 
-###DOCUMENTS_PATH
-DOCUMENT_PATH = QStandardPaths.standardLocations(QStandardPaths.DocumentsLocation)
+# DOCUMENTS_PATH
+DOCUMENT_PATH = QStandardPaths.standardLocations(
+    QStandardPaths.DocumentsLocation)
 
-####DOSSIERS 
+# DOSSIERS
 #
 # dossier des icones
 #
 ICON_PATH = testerDossier(
-        (os.path.join(DATA_PATH, "icones"),os.path.join("..", "data", "icones"),
-         '/usr/share/python3-mecavideo/icones',
-         '/usr/share/pymecavideo/icones',
-         '/usr/share/icons')
-    )
+    (os.path.join(DATA_PATH, "icones"), os.path.join("..", "data", "icones"),
+     '/usr/share/python3-mecavideo/icones',
+     '/usr/share/pymecavideo/icones',
+     '/usr/share/icons')
+)
 
 #
 # Dossier des langues
 #
-LANG_PATH = testerDossier((os.path.join(DATA_PATH, "lang"),os.path.join("..", "data", "lang"),
-                               '/usr/share/pyshared/pymecavideo/lang', '/usr/share/python3-mecavideo/lang',
-                               '/usr/share/pymecavideo/lang'))
+LANG_PATH = testerDossier((os.path.join(DATA_PATH, "lang"), os.path.join("..", "data", "lang"),
+                           '/usr/share/pyshared/pymecavideo/lang', '/usr/share/python3-mecavideo/lang',
+                           '/usr/share/pymecavideo/lang'))
 #
 # Dossier des vidéos
 #
-VIDEO_PATH = testerDossier((os.path.join(DATA_PATH, "video"),os.path.join("..", "data", "video"),
-                               '/usr/share/pyshared/pymecavideo/video', '/usr/share/python3-mecavideo/video',
-                               '/usr/share/pymecavideo/video'))
+VIDEO_PATH = testerDossier((os.path.join(DATA_PATH, "video"), os.path.join("..", "data", "video"),
+                            '/usr/share/pyshared/pymecavideo/video', '/usr/share/python3-mecavideo/video',
+                            '/usr/share/pymecavideo/video'))
 
 #
 # Dossier de l'aide
 #
-HELP_PATH = testerDossier((os.path.join(DATA_PATH, "help"),os.path.join("..", "data", "help"), "/usr/share/doc/python-mecavideo/html",
-                               "/usr/share/doc/HTML/fr/pymecavideo"))
+HELP_PATH = testerDossier((os.path.join(DATA_PATH, "help"), os.path.join("..", "data", "help"), "/usr/share/doc/python-mecavideo/html",
+                           "/usr/share/doc/HTML/fr/pymecavideo"))
 
 
 ERROR_FILE = os.path.join(CONF_PATH, 'pymecavideo.exe' + '.log')
@@ -159,4 +163,3 @@ def GetChildStdErr():
         return childstderr, win32process.CREATE_NO_WINDOW
     else:
         return None, 0
-

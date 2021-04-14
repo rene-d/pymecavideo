@@ -27,11 +27,11 @@ import os
 def traceur2d(x, y, xlabel="", ylabel="", titre="", style=None):
     """
     lancement de gnuplot puis d'un visionneur de postscript.
-    
+
     Bug connu : si le visionneur met plus de 1 seconde pour démarrer,
     le fichier à ouvrir est déjà effacé. En général la deuxième fois
     le bug disparaît.
-    
+
     @param x liste d'abscisses de points
     @param y liste d'ordonnées de points
     @param xlabel label de l'axe des abscisses
@@ -51,9 +51,9 @@ def traceur2d(x, y, xlabel="", ylabel="", titre="", style=None):
             ymin, ymax = (ymax, ymin)
     if style == "zero":  # on doit s'assurer que la fenêtre contient (0,0)
         autozoom = False
-        xmin = x[0];
-        xmax = xmin;
-        ymin = y[0];
+        xmin = x[0]
+        xmax = xmin
+        ymin = y[0]
         ymax = ymin
         for xtemp in x[1:] + [0]:
             if xtemp < xmin:
@@ -70,15 +70,17 @@ def traceur2d(x, y, xlabel="", ylabel="", titre="", style=None):
     else:
         # cas où un point est vraiment immobile, on élargit la fenêtre
         if xmax == xmin:
-            xmin = xmin - 0.1; xmax = xmax + 0.1
+            xmin = xmin - 0.1
+            xmax = xmax + 0.1
         if ymax == ymin:
-            ymin = ymin - 0.1; ymax = ymax + 0.1
+            ymin = ymin - 0.1
+            ymax = ymax + 0.1
         # on élargit la fenêtre de 10 % ensuite
-        xspan = xmax - xmin;
+        xspan = xmax - xmin
         yspan = ymax - ymin
-        xmin -= 0.05 * xspan;
+        xmin -= 0.05 * xspan
         xmax += 0.05 * xspan
-        ymin -= 0.05 * yspan;
+        ymin -= 0.05 * yspan
         ymax += 0.05 * yspan
         # on peut enfin fixer les paramètres définitifs de la fenêtre
         xyranges = """set xrange [%s:%s]
@@ -111,10 +113,10 @@ plot "%s/data" title "%s" with linespoints ls 5
     # donc on attend une seconde pour être sûr que les fichiers
     # temporaires sont encore là quand l'application de lecture
     # postscript est réellement lancée ! d'où la sleep 5. ce temps est grand pour les ordinateurs un peu lents.
-    #il serait préférable d'avoir un test sur l'ouverture effective du lecteur pour effacer les fichiers temporaires.
+    # il serait préférable d'avoir un test sur l'ouverture effective du lecteur pour effacer les fichiers temporaires.
     os.system("xdg-open %s/plot.ps; sleep 5" % (tmpdir))
     # ensuite on fait le ménage dans les fichiers temporaires.
-    #if (os.path.exists(gptFileName)):
+    # if (os.path.exists(gptFileName)):
     #os.system("rm -rf %s" %(tmpdir))
 
     def __call__(x, y, xlabel="", ylabel="", titre=""):
@@ -124,4 +126,3 @@ plot "%s/data" title "%s" with linespoints ls 5
         __call__
         """
         return traceur2d(x, y, xlabel, ylabel, titre)
-    

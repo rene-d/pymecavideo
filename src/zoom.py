@@ -21,8 +21,8 @@
 """
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect, QPoint, QPointF
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage,QPainter, QCursor, QPen, QColor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel,QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QPen, QColor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 
 class Zoom_Croix(QWidget):
@@ -44,6 +44,7 @@ class Zoom_Croix(QWidget):
         painter.drawLine(0, 50, 45, 50)
         painter.drawLine(55, 50, 100, 50)
 
-        painter.setPen(QPen(QColor(255,64,255),1)) # fixe la couleur du crayon et la largeur pour le dessin - forme compactée
-                # cf QPen(QBrush brush, float width, Qt.PenStyle style = Qt.SolidLine, Qt.PenCapStyle cap = Qt.SquareCap, Qt.PenJoinStyle join = Qt.BevelJoin)
-        painter.drawEllipse(QPointF(50,50),5,5)
+        # fixe la couleur du crayon et la largeur pour le dessin - forme compactée
+        painter.setPen(QPen(QColor(255, 64, 255), 1))
+        # cf QPen(QBrush brush, float width, Qt.PenStyle style = Qt.SolidLine, Qt.PenCapStyle cap = Qt.SquareCap, Qt.PenJoinStyle join = Qt.BevelJoin)
+        painter.drawEllipse(QPointF(50, 50), 5, 5)

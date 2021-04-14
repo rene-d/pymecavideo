@@ -22,7 +22,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os.path, gzip, re
+import os.path
+import gzip
+import re
+
 
 class version:
     def __init__(self, majeur, mineur, nuance=""):
@@ -55,5 +58,4 @@ if os.path.exists(changelog):
 
 
 if __name__ == "__main__":
-    print (Version)
-    
+    print(Version)
