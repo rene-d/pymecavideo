@@ -1231,11 +1231,7 @@ class StartQt5(QMainWindow):
         
         
         self.dbg.p(3, "rentre dans 'loads' longueur_reelle_etalon %s" % (self.label_video.echelle_image.longueur_reelle_etalon))
-        #if self.label_video.echelle_image.mParPx() == 1 :
-            #self.echelle_faite = False
-        #else :
-            #self.echelle_faite = True
-            
+
         self.label_video.echelle_image.p1, self.label_video.echelle_image.p2 = vecteur(point.split()[-4][1:-1], point.split()[-3][:-1]) \
             , vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
         self.dbg.p(3, "rentre dans 'loads' points de l'échelle %s" % ([self.label_video.echelle_image.p1, self.label_video.echelle_image.p2]))
@@ -1250,9 +1246,12 @@ class StartQt5(QMainWindow):
         self.aspectlayout1.aspect = largeur/hauteur
         self.aspectlayout2.aspect = largeur/hauteur
         
+        
+        
+        
         self.init_cvReader()
-        #self.resize(self.size()+QSize(1,0))
-        #TODO rajouter le code pour gérer les FPS "perso".
+        return dico_donnee
+        
 
     def rouvre(self, fichier):
         """Open a mecavideo file"""
@@ -1269,7 +1268,7 @@ class StartQt5(QMainWindow):
                 dictionnaire_données_str += l
         self.label_video.echelle_image = echelle()  # on réinitialise l'échelle
         try : 
-            self.loads(dictionnaire_données_str)  # on récupère les données importantes
+            dico_donnee = self.loads(dictionnaire_données_str)  # on récupère les données importantes
             self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
             self.init_interface()
             self.change_axe_ou_origine()
@@ -1277,6 +1276,9 @@ class StartQt5(QMainWindow):
             # puis on trace le segment entre les points cliqués pour l'échelle
             self.feedbackEchelle(self.label_video.echelle_image.p1, self.label_video.echelle_image.p2)# on réinitialise l'échelle.p1, self.echelle_image.p2)
             framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(self.rotation)
+            
+
+            
             self.rouvert = True
             
 
@@ -1303,6 +1305,8 @@ class StartQt5(QMainWindow):
                         self.points[i].append(pos)
 
                     i += 1
+
+
 
             self.defini_barre_avancement()
 
@@ -2758,10 +2762,11 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.dbg.p(1, "rentre dans 'init_image'")
         self.index_de_l_image = 1
         ok, self.image_opencv = self.extract_image(self.index_de_l_image)
-        self.ration = self.determineRatio()
+        self.ratio = self.determineRatio()
         self.init_interface()
         self.trajectoire = {}
         self.ui.spinBox_image.setMinimum(1)
+        self.calcul_deltaT()
         self.defini_barre_avancement()
         self.label_video.echelle_image = echelle()
         self.affiche_echelle()
@@ -2769,6 +2774,19 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.spinBox_image.setEnabled(1)
         self.affiche_image()
 
+    def calcul_deltaT(self):
+        print('OOKKK')
+        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+        self.dbg.p(3,
+                   "In :  'calcul_deltaT', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
+        self.deltaT = float(1.0 / framerate)
+        if math.isnan(self.deltaT):
+            print ("ERREUR à la lecture de la vidéo, vitesse des trames indéfinie, on suppose 40 trames par seconde")
+            self.deltaT=1.0/40
+        #mets à jour le label contenant les IPS
+        IPS = round(1/self.deltaT)
+        self.ui.lineEdit_IPS.setText(str(IPS))
+        print(IPS)
 
     def defini_barre_avancement(self):
         """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
@@ -2776,10 +2794,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         self.dbg.p(3,
                    "In :  'defini_barre_avancement', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
-        self.deltaT = float(1.0 / framerate)
-        if math.isnan(self.deltaT):
-            print ("ERREUR à la lecture de la vidéo, vitesse des trames indéfinie, on suppose 40 trames par seconde")
-            self.deltaT=1.0/40
+        
         self.ui.horizontalSlider.setMinimum(1)
 
         self.ui.horizontalSlider.setMaximum(int(self.image_max))
