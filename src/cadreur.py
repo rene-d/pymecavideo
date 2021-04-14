@@ -105,7 +105,8 @@ class Cadreur(QObject):
             try : 
                 agauche.append(pp[self.numpoint].x())
                 dessus.append(pp[self.numpoint].y())
-            except : pass #si il manque des points dans la dernière image)
+            except :
+                pass #si il manque des points dans la dernière image)
         
         adroite = [w - x - 1 for x in agauche]
         dessous = [h - y - 1 for y in dessus]
@@ -179,7 +180,8 @@ class Cadreur(QObject):
             return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE) 
         elif angle==180 : 
             return cv2.rotate(img, cv2.ROTATE_180) 
-        else : return img #angle=0
+        else :
+            return img #angle=0
 
 class RalentiWidget(QDialog):
     
@@ -335,7 +337,8 @@ class openCvReader:
             return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE) 
         elif angle==180 : 
             return cv2.rotate(img, cv2.ROTATE_180) 
-        else : return img #angle==0
+        else :
+            return img #angle==0
    
     def recupere_avi_infos(self, angle=0):
         """

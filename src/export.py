@@ -218,7 +218,8 @@ $data
         dic = {}
         dic['date'] = time.strftime("%d/%m/%y %H:%M")
         n = len(app.points.keys())
-        if n < 30: n = 30
+        if n < 30:
+            n = 30
         dic['ligs'] = str(n)
         dic['cols'] = str(1 + 2 * app.nb_de_points)
         dic['headers'] = '\tt-s[X]'

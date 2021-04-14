@@ -45,8 +45,10 @@ def traceur2d(x, y, xlabel="", ylabel="", titre="", style=None):
     if type(style) == type([]):  # les dimensions de la fenêtre sont explicites
         autozoom = False
         xmin, ymin, xmax, ymax = style
-        if xmin > xmax: xmin, xmax = (xmax, xmin)
-        if ymin > ymax: ymin, ymax = (ymax, ymin)
+        if xmin > xmax:
+            xmin, xmax = (xmax, xmin)
+        if ymin > ymax:
+            ymin, ymax = (ymax, ymin)
     if style == "zero":  # on doit s'assurer que la fenêtre contient (0,0)
         autozoom = False
         xmin = x[0];
@@ -54,17 +56,23 @@ def traceur2d(x, y, xlabel="", ylabel="", titre="", style=None):
         ymin = y[0];
         ymax = ymin
         for xtemp in x[1:] + [0]:
-            if xtemp < xmin: xmin = xtemp
-            if xtemp > xmax: xmax = xtemp
+            if xtemp < xmin:
+                xmin = xtemp
+            if xtemp > xmax:
+                xmax = xtemp
         for ytemp in y[1:] + [0]:
-            if ytemp < ymin: ymin = ytemp
-            if ytemp > ymax: ymax = ytemp
+            if ytemp < ymin:
+                ymin = ytemp
+            if ytemp > ymax:
+                ymax = ytemp
     if autozoom:
         xyranges = "# automatic zoom"
     else:
         # cas où un point est vraiment immobile, on élargit la fenêtre
-        if xmax == xmin: xmin = xmin - 0.1; xmax = xmax + 0.1
-        if ymax == ymin: ymin = ymin - 0.1; ymax = ymax + 0.1
+        if xmax == xmin:
+            xmin = xmin - 0.1; xmax = xmax + 0.1
+        if ymax == ymin:
+            ymin = ymin - 0.1; ymax = ymax + 0.1
         # on élargit la fenêtre de 10 % ensuite
         xspan = xmax - xmin;
         yspan = ymax - ymin

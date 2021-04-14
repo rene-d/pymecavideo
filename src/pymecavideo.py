@@ -1492,7 +1492,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
     def video(self):
         self.dbg.p(1, "rentre dans 'videos'")
         ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
-        if len(ref) == 0 or ref == "camera": return
+        if len(ref) == 0 or ref == "camera":
+            return
         c = Cadreur(int(ref), self)
         c.montrefilm()
     
@@ -1719,13 +1720,15 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         elif grandeurX!="Choisir ...":
             try : 
                 X = self.dictionnaire_grandeurs[grandeurX]
-            except : pass
+            except :
+                pass
         if grandeurY=='t':
             Y = [i*self.deltaT for i in range(len(self.points))]
         elif grandeurY!="Choisir ...":
             try : 
                 Y = self.dictionnaire_grandeurs[grandeurY]
-            except : pass
+            except :
+                pass
         if X!=[] and Y != [] : 
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', 'k')
@@ -1805,7 +1808,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             ref = "camera"
         else:
             ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
-        if len(ref) == 0: return
+        if len(ref) == 0:
+            return
         if ref != "camera":
             self.ui.button_video.setEnabled(1)
             self.label_trajectoire.chrono = False
@@ -1839,7 +1843,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         if not self.ui.comboBox_mode_tracer.isEnabled():
             return
         self.ui.comboBox_mode_tracer.setCurrentIndex(0)
-        if itemChoisi <= 0: return  # c'est rien du tout.
+        if itemChoisi <= 0:
+            return  # c'est rien du tout.
         numero = (itemChoisi - 1) // 3 ## force le type entier !
         typeDeCourbe = ("x", "y", "v")[(itemChoisi - 1) % 3]
         titre = (_translate("pymecavideo", "Evolution de l'abscisse du point {0}", None).format(numero + 1),
@@ -1858,8 +1863,10 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                 else:
                     ref = int(ref)
                     p = self.pointEnMetre(self.points[i][1 + numero]) - self.pointEnMetre(self.points[i][ref])
-                if typeDeCourbe == "x": ordonnee.append(p.x())
-                if typeDeCourbe == "y": ordonnee.append(p.y())
+                if typeDeCourbe == "x":
+                    ordonnee.append(p.x())
+                if typeDeCourbe == "y":
+                    ordonnee.append(p.y())
                 if typeDeCourbe == "v":
                     if ancienPoint != None:
                         abscisse.append(t)
@@ -2135,7 +2142,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             elif self.index_de_l_image > self.image_max:
                 self.index_de_l_image = self.image_max
                 self.lance_capture = False
-        except : pass #arrive quand on ouvreun fichier pour la prmeière fois, au premier resize.
+        except :
+            pass #arrive quand on ouvreun fichier pour la prmeière fois, au premier resize.
 
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans 'AffichejusteImage'" )
@@ -2209,7 +2217,8 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
                     p = self.pointEnMetre(self.points[i][j+1])
                     self.ui.tableWidget.setItem(i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x())))
                     self.ui.tableWidget.setItem(i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y())))
-                except : pass #si pas le bon nb de points cliqués
+                except :
+                    pass #si pas le bon nb de points cliqués
         #esthétique : enleve la derniere ligne
         self.ui.tableWidget.removeRow(len(self.points))
 

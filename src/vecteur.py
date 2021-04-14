@@ -45,8 +45,10 @@ class vecteur:
         return self.value[i]
 
     def setValue(self, x=None, y=None):
-        if x == None: x = self.value[0]
-        if y == None: y = self.value[1]
+        if x == None:
+            x = self.value[0]
+        if y == None:
+            y = self.value[1]
         self.value = (self.signif(float(x),self.precision), self.signif(float(y),self.precision))
 
     def rounded(self):
