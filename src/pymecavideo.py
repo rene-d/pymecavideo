@@ -2775,7 +2775,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.affiche_image()
 
     def calcul_deltaT(self):
-        print('OOKKK')
         framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         self.dbg.p(3,
                    "In :  'calcul_deltaT', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
