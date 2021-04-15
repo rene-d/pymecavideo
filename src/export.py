@@ -718,6 +718,8 @@ class PythonNotebook :
                     new = new.replace('$x', ligne_x)
                     new = new.replace('$y', ligne_y)
                     f.write(new)
+            QMessageBox.information(None, _translate("export_notebook", "Notebook sauvegardé"), _translate(
+            "export_notebook", "Notebook enregistré avec succès.\nPour personnaliser le notebook, veuillez installer le module Python 3 : nbformat"), QMessageBox.Ok, QMessageBox.Ok)
 
 class SaveThenOpenFileDialog(QFileDialog):
     """
