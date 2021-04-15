@@ -187,7 +187,7 @@ class StartQt5(QMainWindow):
         # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         self.pointsProbables = [None]
         self.methode_thread = 3  # définit la methode de calcul à utiliser pour la détection auto. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
-
+        
         # Mode plein écran
         self.plein_ecran = False
         QShortcut(QKeySequence(Qt.Key_F11), self, self.basculer_plein_ecran)
@@ -244,6 +244,7 @@ class StartQt5(QMainWindow):
         self.ui.menuE_xporter_vers.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
         self.ui.actionExemples.setEnabled(0)
+        self.ui.groupBox_chronophoto.setVisible(False)
 
         # exportCombo
         self.ui.exportCombo.addItem('Exporter vers...')
@@ -331,6 +332,7 @@ class StartQt5(QMainWindow):
         self.nb_clics = 0
         self.premiere_image = 1  # n° de la première image cliquée
         self.index_de_l_image = 1  # image à afficher
+        self.chronoImg = 0
         self.filename = filename
         self.opts = opts
         self.stdout_file = os.path.join(CONF_PATH, "stdout")
@@ -638,23 +640,48 @@ class StartQt5(QMainWindow):
         self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
         self.ui.lineEdit_IPS.textChanged.connect(self.verifie_IPS)
         self.ui.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
+        self.ui.pushButton_save.clicked.connect(self.enregistreChrono)
+        self.ui.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
+        
+    def changeChronoImg(self,img):
+        self.chronoImg = img
+        self.chronoPhoto()
 
     def enregistreChrono(self):
         self.pixmapChrono = QPixmap(self.label_trajectoire.size())
         self.label_trajectoire.render(self.pixmapChrono)
-        dir_ = str(self._dir("home")[0])
+        base_name = os.path.splitext(os.path.basename(self.filename))[0]
+        defaultName = os.path.join(DOCUMENT_PATH[0], base_name)
         fichier = QFileDialog.getSaveFileName(self,
-                                              caption=_translate(
-                                                  "pymecavideo", "Enregistrer la chronophotographie", None),
-                                              directory=dir_, filter=_translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
-        self.pixmapChrono.save(fichier[0])
-        self.ui.comboBoxChrono.setCurrentIndex(0)
+                                              _translate(
+                                                  "pymecavideo", "Enregistrer comme image", None),
+                                              defaultName, _translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
+        try :
+            self.pixmapChrono.save(fichier[0])
+        except :
+            QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("export", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
+                    fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
 
     def chronoPhoto(self):
         """lance la sauvegarde du label_trajectoire.
         Si chronophotographie, on ajoute l'image et la trace de l'échelle comme pointée.
         Si chronophotogramme, on ne met pas l'image et la trace est en haut.
         """
+        # Configure l'UI en fonction du mode
+        if self.ui.comboBoxChrono.currentIndex() == 0 :
+            self.ui.groupBox_chronophoto.setVisible(False)
+            self.ui.topWidget2.setEnabled(True)
+            self.ui.groupBox_speed.setVisible(True)
+        elif self.ui.comboBoxChrono.currentIndex() == 1 :
+            self.ui.groupBox_chronophoto.setVisible(True)
+            self.ui.topWidget2.setEnabled(False)
+            self.ui.groupBox_speed.setVisible(False)
+            self.ui.checkBoxVectorSpeed.setChecked(False)
+        elif self.ui.comboBoxChrono.currentIndex() == 2 :
+            self.ui.groupBox_chronophoto.setVisible(False)
+            self.ui.topWidget2.setEnabled(False)
+            self.ui.groupBox_speed.setVisible(False)
+            self.ui.checkBoxVectorSpeed.setChecked(False)
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         # ajoute la première image utilisée pour le pointage sur le fond du label
         liste_types_photos = ['chronophotographie', 'chronophotogramme']
@@ -667,7 +694,7 @@ class StartQt5(QMainWindow):
             if photo_chrono == 'chronophotographie':  # on extrait le première image que l'on rajoute au label
                 self.label_trajectoire.chrono = 1  # 1 pour chronophotographie
                 ok, img = self.cvReader.getImage(
-                    self.premiere_image, self.rotation)
+                    self.chronoImg, self.rotation)
                 self.imageChrono = toQImage(img).scaled(
                     self.label_video.width(), self.label_video.height(), Qt.KeepAspectRatio)
                 self.label_trajectoire.setPixmap(
@@ -675,7 +702,7 @@ class StartQt5(QMainWindow):
             else:
                 self.label_trajectoire.chrono = 2  # 2 pour chronophotogramme
                 self.label_trajectoire.setPixmap(QPixmap())
-            self.enregistreChrono()
+            #self.enregistreChrono()
         else:
             self.label_trajectoire.setPixmap(QPixmap())
             self.label_trajectoire.chrono = 0
@@ -1195,6 +1222,7 @@ class StartQt5(QMainWindow):
             derniere_image = self.listePoints[len(self.listePoints)-1][0]+1
             self.ui.horizontalSlider.setValue(derniere_image)
             self.ui.spinBox_image.setValue(derniere_image)
+            self.ui.spinBox_chrono.setMaximum(derniere_image)
             self.affiche_nb_points(self.nb_de_points)
             self.enableDefaire(True)
             self.enableRefaire(False)
@@ -2542,6 +2570,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.init_image()
                 self.init_capture()
                 self.ratio = self.determineRatio()
+                self.ui.spinBox_chrono.setMaximum(int(self.image_max))
                 self.label_video.repaint()
                 self.label_video.show()
                 self.change_axe_ou_origine()

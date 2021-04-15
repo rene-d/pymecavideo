@@ -136,21 +136,27 @@ class Label_Trajectoire(QLabel):
     def paintEvent(self, event):
         self.painter = QPainter()
         self.painter.begin(self)
-       # self.painter.save()
-        self.painter.fillRect(
-            QRect(0, 0, self.label_video.width(), self.label_video.height()), QColor("grey"))
         self.painter.setRenderHint(QPainter.Antialiasing)
-
+        # self.painter.save()
+        if self.chrono == 2 :
+            couleur_de_fond = QColor("white")
+        else :
+            couleur_de_fond = QColor("grey")
+        if not self.chrono == 1 :
+            self.painter.fillRect(
+                QRect(0, 0, self.label_video.width(), self.label_video.height()), couleur_de_fond)
+        
         ############################################################
         # paint the origin
-        self.painter.setPen(Qt.green)
-        self.painter.drawLine(self.origine_mvt.x() - 5, self.origine_mvt.y(), self.origine_mvt.x() + 5,
-                              self.origine_mvt.y())
-        self.painter.drawLine(self.origine_mvt.x(), self.origine_mvt.y() - 5, self.origine_mvt.x(),
-                              self.origine_mvt.y() + 5)
-        self.painter.drawText(self.origine_mvt.x(),
-                              self.origine_mvt.y() + 15, "O")
-        self.painter.end()
+        if not self.chrono == 2:
+            self.painter.setPen(Qt.green)
+            self.painter.drawLine(self.origine_mvt.x() - 5, self.origine_mvt.y(), self.origine_mvt.x() + 5,
+                                self.origine_mvt.y())
+            self.painter.drawLine(self.origine_mvt.x(), self.origine_mvt.y() - 5, self.origine_mvt.x(),
+                                self.origine_mvt.y() + 5)
+            self.painter.drawText(self.origine_mvt.x(),
+                                self.origine_mvt.y() + 15, "O")
+            self.painter.end()
 
         # peint les informations pour le mode chronophotographie
         if self.chrono:  # ceci est géré dans pymecavideo.py, chercher : self.label_trajectoire.chrono
@@ -168,7 +174,10 @@ class Label_Trajectoire(QLabel):
                 self.painter.setPen(Qt.white)
                 self.painter.setBrush(Qt.lightGray)
                 self.painter.drawRect(self.width()-210, 30, 120, 30)
-            self.painter.setPen(Qt.blue)
+            if self.chrono == 2 :
+                self.painter.setPen(Qt.black)
+            else :
+                self.painter.setPen(Qt.blue)
             try:
                 self.painter.drawText(self.width(
                 )-200, 50, unicode("{0}t = {1:.3f} s").format(unichr(916), self.label_video.app.deltaT))
@@ -176,14 +185,14 @@ class Label_Trajectoire(QLabel):
                 self.painter.drawText(self.width(
                 )-200, 50, "{0}t = {1:.3f} s".format(chr(916), self.label_video.app.deltaT))
             # dessine l'échelle
-            if self.chrono == 2:  # chronophotogramme
+            if self.chrono == 2:  # chronogramme
                 try:
                     longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x(
                     ))**2 + (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
                     self.painter.drawLine(100, 60, 100, 80)
                     self.painter.drawLine(100, 70, longueur+100, 70)
                     self.painter.drawLine(longueur+100, 60, longueur+100, 80)
-                    self.painter.drawText((longueur)/2, 120, unicode("d = {0:.2f} m").format(
+                    self.painter.drawText((longueur)/2, 120, unicode("d = {0:.2e} m").format(
                         self.label_video.echelle_image.longueur_reelle_etalon))
                 except AttributeError:
                     pass  # échelle non faite
@@ -193,7 +202,7 @@ class Label_Trajectoire(QLabel):
                     self.painter.drawLine(100, 60, 100, 80)
                     self.painter.drawLine(100, 70, longueur+100, 70)
                     self.painter.drawLine(longueur+100, 60, longueur+100, 80)
-                    self.painter.drawText((longueur)/2, 120, "d = {0:.2f} m".format(
+                    self.painter.drawText((longueur)/2, 120, "d = {0:.2e} m".format(
                         self.label_video.echelle_image.longueur_reelle_etalon))
             self.painter.end()
 
@@ -202,20 +211,19 @@ class Label_Trajectoire(QLabel):
             if self.chrono == 1:  # chronophotographie
                 self.painter = QPainter()
                 self.painter.begin(self)
-                self.painter.setFont(QFont("Times", 16, QFont.Bold))
+                self.painter.setFont(QFont("Times", 15, QFont.Bold))
                 self.painter.setRenderHint(QPainter.Antialiasing)
-                pen = QPen(Qt.darkBlue)
-                pen.setWidth(5)
+                pen = QPen(Qt.blue)
+                pen.setWidth(3)
                 self.painter.setPen(pen)
                 self.painter.drawLine(self.label_video.app.label_echelle_trace.p1.x(), self.label_video.app.label_echelle_trace.p1.y(
                 ), self.label_video.app.label_echelle_trace.p2.x(), self.label_video.app.label_echelle_trace.p2.y())
 
-                echelle = str(
-                    self.label_video.echelle_image.longueur_reelle_etalon)
+                echelle = "d = {0:.2e} m".format(
+                        self.label_video.echelle_image.longueur_reelle_etalon)
 
-                echelle += ' (m)'
                 self.painter.drawText(self.label_video.app.label_echelle_trace.p1.x(
-                )-30, int((self.label_video.app.label_echelle_trace.p1.y()+self.label_video.app.label_echelle_trace.p2.y())/2), echelle)
+                ), int((self.label_video.app.label_echelle_trace.p1.y()+self.label_video.app.label_echelle_trace.p2.y())/2)+20, echelle)
                 self.painter.end()
 
         ############################################################
@@ -236,49 +244,60 @@ class Label_Trajectoire(QLabel):
                 listePoints.append(listeParImage)
                 listeParImage = []
 
-        for points in listePoints:
+        for no,points in enumerate(listePoints):
             color = 0
             for point in points:
                 if self.referentiel != 0:
                     ptreferentiel = points[int(self.referentiel)-1]
-
                 else:
                     ptreferentiel = vecteur(0, 0)
+                    
                 if type(point) != type(""):
-                    self.painter.setPen(QColor(self.couleurs[color]))
+                    if self.chrono == 2:
+                        self.painter.setPen(Qt.black)
+                    else :
+                        self.painter.setPen(QColor(self.couleurs[color]))
                     self.painter.setFont(QFont("", 10))
                     self.painter.translate(point.x() + self.origine.x() - ptreferentiel.x(),
                                            point.y() + self.origine.y() - ptreferentiel.y())
 
-                    self.painter.drawLine(-2, 0, 2, 0)
-                    self.painter.drawLine(0, -2, 0, 2)
-                    self.painter.translate(-10, +10)
-                    self.painter.drawText(0, 0, str(color + 1))
+                    if self.chrono == 2:
+                        self.painter.drawLine(-4, 0, 4, 0)
+                        self.painter.drawLine(0, -4, 0, 4)
+                        self.painter.translate(-10, +10)
+                        self.painter.drawText(-5, 5, "M"+str(no))
+                    else :
+                        self.painter.drawLine(-2, 0, 2, 0)
+                        self.painter.drawLine(0, -2, 0, 2)
+                        self.painter.translate(-10, +10)
+                        self.painter.drawText(0, 0, str(color + 1))
+                        
                     self.painter.translate(-point.x() - self.origine.x() + ptreferentiel.x() + 10,
                                            -point.y() - 10 - self.origine.y() + ptreferentiel.y())
                     color += 1
         self.painter.end()
         ############################################################
         # paint repere
-        self.painter = QPainter()
-        self.painter.begin(self)
-        self.painter.setRenderHint(QPainter.Antialiasing)
-        self.painter.setPen(Qt.green)
-        # self.painter.translate(0,0)
-        self.painter.translate(self.origine_mvt.x(), self.origine_mvt.y())
-        p1 = QPoint(self.label_video.app.sens_X * (-40), 0)
-        p2 = QPoint(self.label_video.app.sens_X * (40), 0)
-        p3 = QPoint(self.label_video.app.sens_X * (36), 2)
-        p4 = QPoint(self.label_video.app.sens_X * (36), -2)
-        self.painter.scale(1, 1)
-        self.painter.drawPolyline(p1, p2, p3, p4, p2)
-        self.painter.rotate(self.label_video.app.sens_X *
-                            self.label_video.app.sens_Y * (-90))
-        self.painter.drawPolyline(p1, p2, p3, p4, p2)
-        self.painter.rotate(self.label_video.app.sens_X *
-                            self.label_video.app.sens_Y * (90))
-        self.painter.translate(-self.origine_mvt.x(), -self.origine_mvt.y())
-        self.painter.end()
+        if not self.chrono == 2 :
+            self.painter = QPainter()
+            self.painter.begin(self)
+            self.painter.setRenderHint(QPainter.Antialiasing)
+            self.painter.setPen(Qt.green)
+            # self.painter.translate(0,0)
+            self.painter.translate(self.origine_mvt.x(), self.origine_mvt.y())
+            p1 = QPoint(self.label_video.app.sens_X * (-40), 0)
+            p2 = QPoint(self.label_video.app.sens_X * (40), 0)
+            p3 = QPoint(self.label_video.app.sens_X * (36), 2)
+            p4 = QPoint(self.label_video.app.sens_X * (36), -2)
+            self.painter.scale(1, 1)
+            self.painter.drawPolyline(p1, p2, p3, p4, p2)
+            self.painter.rotate(self.label_video.app.sens_X *
+                                self.label_video.app.sens_Y * (-90))
+            self.painter.drawPolyline(p1, p2, p3, p4, p2)
+            self.painter.rotate(self.label_video.app.sens_X *
+                                self.label_video.app.sens_Y * (90))
+            self.painter.translate(-self.origine_mvt.x(), -self.origine_mvt.y())
+            self.painter.end()
 
         # paint speed vectors if asked
 
