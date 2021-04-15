@@ -67,8 +67,16 @@ EXPORT_FORMATS = {
         'modules': ['numpy'],
         'propose_ouverture': False,
         'un_point': True},
-
-    4: {'nom': _translate("export", 'Fichier CSV'),
+    
+    4: {'nom' : _translate("export",'Jupyter Notebook'),
+        'filtre' : _translate("export",'Notebook (*.ipynb)'),
+        'extension' : 'ipynb',
+        'class' : 'PythonNotebook',
+        'modules' : ['numpy'],
+        'propose_ouverture' : False,
+        'un_point' : True},
+    
+    5: {'nom': _translate("export", 'Fichier CSV'),
         'filtre': _translate("export", 'Fichier CSV (*.csv, *.txt)'),
         'extension': 'csv',
         'class': 'FichierCSV',
@@ -76,7 +84,7 @@ EXPORT_FORMATS = {
         'propose_ouverture': True,
         'un_point': False},
 
-    5: {'nom': _translate("export", 'Pandas Dataframe'),
+    6: {'nom': _translate("export", 'Pandas Dataframe'),
         'filtre': _translate("export", 'Dataframe (*.pkl)'),
         'extension': 'pkl',
         'class': 'DataframePandas',
@@ -84,7 +92,7 @@ EXPORT_FORMATS = {
         'propose_ouverture': False,
         'un_point': False},
 
-    6: {'nom': _translate("export", 'Qtiplot/Scidavis'),
+    7: {'nom': _translate("export", 'Qtiplot/Scidavis'),
         'filtre': _translate("export", 'Fichier Qtiplot (*.qti)'),
         'extension': 'qti',
         'class': 'Qtiplot',
@@ -616,6 +624,23 @@ class PythonNumpy:
         QMessageBox.information(None, _translate("export_numpy", "Fichier Numpy sauvegardé"), _translate(
             "export_numpy", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x,y = np.load("{}")""".format(os.path.basename(filepath))), QMessageBox.Ok, QMessageBox.Ok)
 
+class PythonNotebook :
+    """
+    Exporte les données dans un fichier Notebook Jupyterlab
+    """
+    def __init__(self, app, filepath):
+        pts = app.points
+        ligne_t = "np.array({})".format(list(float(pts[i][0]) for i in pts.keys()))
+        ligne_x = "np.array({})".format(list(app.pointEnMetre(pts[i][1])[0] for i in pts.keys()))
+        ligne_y = "np.array({})".format(list(app.pointEnMetre(pts[i][1])[1] for i in pts.keys()))
+
+        with open(filepath,'w') as f:
+            with open('template.ipynb', 'r') as t :
+                old = t.read()
+                new = old.replace('$t', ligne_t)
+                new = new.replace('$x', ligne_x)
+                new = new.replace('$y', ligne_y)
+                f.write(new)
 
 class SaveThenOpenFileDialog(QFileDialog):
     """
