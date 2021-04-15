@@ -624,6 +624,68 @@ class PythonNumpy:
         QMessageBox.information(None, _translate("export_numpy", "Fichier Numpy sauvegardé"), _translate(
             "export_numpy", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x,y = np.load("{}")""".format(os.path.basename(filepath))), QMessageBox.Ok, QMessageBox.Ok)
 
+class NotebookExportDialog(QDialog):
+    """
+    Fenêtre de dialogue permettant de choisir les grandeurs à exporter 
+    dans le fichier Notebook Jupyterlab
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(NotebookExportDialog, self).__init__(*args, **kwargs)
+        self.resize(390,225)
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.buttonBox = QDialogButtonBox(self)
+        self.buttonBox.setOrientation(Qt.Horizontal)
+        self.buttonBox.setStandardButtons(
+            QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+        self.checkBox_c = QCheckBox(self)
+        self.checkBox_v = QCheckBox(self)        
+        self.checkBox_v2 = QCheckBox(self)
+        self.checkBox_a = QCheckBox(self)
+        self.checkBox_e = QCheckBox(self)
+        for w in (self.checkBox_c, self.checkBox_v, self.checkBox_v2, self.checkBox_a, self.checkBox_e) :
+            w.setTristate(False)
+            w.setChecked(True)
+        self.verticalLayout.addWidget(self.checkBox_c)
+        self.verticalLayout.addWidget(self.checkBox_v)
+        self.verticalLayout.addWidget(self.checkBox_v2)
+        self.verticalLayout.addWidget(self.checkBox_a)
+        self.verticalLayout.addWidget(self.checkBox_e)
+        self.layout.addLayout(self.verticalLayout)
+        self.retranslateUi()
+        self.checkBox_v.stateChanged.connect(self.etat_vitesse)
+        
+    def etat_vitesse(self,etat):
+        if etat == 0 :
+            for w in (self.checkBox_v2, self.checkBox_a, self.checkBox_e):
+                w.setChecked(False)
+                w.setEnabled(False)
+        else : 
+            for w in (self.checkBox_v2, self.checkBox_a, self.checkBox_e):
+                w.setEnabled(True)    
+            
+    def retranslateUi(self):
+        self.setWindowTitle(_translate("choix_exports_notebook", "Choix des représentations graphiques"))
+        self.checkBox_c.setText(_translate(
+            "choix_exports_notebook", "Chronogramme"))
+        self.checkBox_v.setText(_translate(
+            "choix_exports_notebook", "Vecteurs vitesse"))
+        self.checkBox_a.setText(_translate(
+            "choix_exports_notebook", "Vecteurs accélération"))
+        self.checkBox_v2.setText(_translate(
+            "choix_exports_notebook", "Vecteurs variation de vitesse"))
+        self.checkBox_e.setText(_translate(
+            "choix_exports_notebook", "Energies"))
+        
 class PythonNotebook :
     """
     Exporte les données dans un fichier Notebook Jupyterlab
@@ -633,14 +695,29 @@ class PythonNotebook :
         ligne_t = "np.array({})".format(list(float(pts[i][0]) for i in pts.keys()))
         ligne_x = "np.array({})".format(list(app.pointEnMetre(pts[i][1])[0] for i in pts.keys()))
         ligne_y = "np.array({})".format(list(app.pointEnMetre(pts[i][1])[1] for i in pts.keys()))
+        
+        try :
+            import nbformat as nbf
+            nbf_present = True
+            from template_ipynb import genere_notebook
+        except :
+            nbf_present = False
 
-        with open(filepath,'w') as f:
-            with open('template.ipynb', 'r') as t :
-                old = t.read()
-                new = old.replace('$t', ligne_t)
-                new = new.replace('$x', ligne_x)
-                new = new.replace('$y', ligne_y)
-                f.write(new)
+        if nbf_present :
+            d = NotebookExportDialog(app)
+            if d.exec_() == QDialog.Accepted:
+                graphs = (d.checkBox_c.isChecked(), d.checkBox_v.isChecked(
+                ), d.checkBox_v2.isChecked(), d.checkBox_a.isChecked(), d.checkBox_e.isChecked())
+            nb = genere_notebook((ligne_t, ligne_x, ligne_y), graphs = graphs)
+            nbf.write(nb, filepath) 
+        else : 
+            with open(filepath,'w') as f:
+                with open('template.ipynb', 'r') as t :
+                    old = t.read()
+                    new = old.replace('$t', ligne_t)
+                    new = new.replace('$x', ligne_x)
+                    new = new.replace('$y', ligne_y)
+                    f.write(new)
 
 class SaveThenOpenFileDialog(QFileDialog):
     """
