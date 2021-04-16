@@ -259,6 +259,7 @@ class Label_Trajectoire(QLabel):
 
         for no,points in enumerate(listePoints):
             color = 0
+            num_point=0
             for point in points:
                 if self.referentiel != 0:
                     ptreferentiel = points[int(self.referentiel)-1]
@@ -278,7 +279,7 @@ class Label_Trajectoire(QLabel):
                         self.painter.drawLine(-4, 0, 4, 0)
                         self.painter.drawLine(0, -4, 0, 4)
                         self.painter.translate(-10, +10)
-                        self.painter.drawText(-5, 5, "M"+str(no))
+                        self.painter.drawText(-5, 5, "M"+"'"*num_point+str(no))
                     else :
                         self.painter.drawLine(-2, 0, 2, 0)
                         self.painter.drawLine(0, -2, 0, 2)
@@ -288,6 +289,8 @@ class Label_Trajectoire(QLabel):
                     self.painter.translate(-point.x() - self.origine.x() + ptreferentiel.x() + 10,
                                            -point.y() - 10 - self.origine.y() + ptreferentiel.y())
                     color += 1
+                    num_point+=1
+                    
         self.painter.end()
         ############################################################
         # paint repere
