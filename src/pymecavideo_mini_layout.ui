@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>760</height>
+    <height>762</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -38,7 +38,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="icon.qrc">
-    <normaloff>:/pymecavideo.png</normaloff>:/pymecavideo.png</iconset>
+    <normaloff>:/data/icones/pymecavideo.svg</normaloff>:/data/icones/pymecavideo.svg</iconset>
   </property>
   <property name="tabShape">
    <enum>QTabWidget::Rounded</enum>
@@ -89,7 +89,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <property name="sizePolicy">
@@ -109,13 +109,13 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>150</width>
-            <height>140</height>
+            <width>165</width>
+            <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>150</width>
+            <width>165</width>
             <height>16777215</height>
            </size>
           </property>
@@ -128,6 +128,9 @@
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <property name="bottomMargin">
+              <number>6</number>
+             </property>
              <item>
               <spacer name="horizontalSpacer">
                <property name="orientation">
@@ -249,7 +252,7 @@
               <widget class="QLabel" name="label_5">
                <property name="text">
                 <string>Points à 
- étudier :</string>
+étudier :</string>
                </property>
               </widget>
              </item>
@@ -271,83 +274,42 @@
            <item>
             <widget class="QCheckBox" name="checkBox_auto">
              <property name="text">
-              <string>Suivi
-automatique</string>
+              <string>Suivi automatique</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QPushButton" name="Bouton_lance_capture">
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
              <property name="text">
               <string>Démarrer</string>
              </property>
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <item>
-              <widget class="QPushButton" name="pushButton_defait">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>30</horstretch>
-                 <verstretch>30</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>25</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>25</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>rétablit le point suivant</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="pushButton_refait">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>25</horstretch>
-                 <verstretch>25</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>25</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>25</width>
-                 <height>25</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>efface la série précédente</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <widget class="QPushButton" name="pushButton_stopCalculs">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>STOP</string>
+             </property>
+             <property name="icon">
+              <iconset resource="icon.qrc">
+               <normaloff>:/data/icones/process-stop.svg</normaloff>:/data/icones/process-stop.svg</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>18</width>
+               <height>18</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4"/>
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_reinit">
@@ -415,6 +377,9 @@ automatique</string>
                </disabled>
               </palette>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="text">
               <string>Tout réinitialiser</string>
              </property>
@@ -431,6 +396,9 @@ automatique</string>
             <widget class="QPushButton" name="pushButton_origine">
              <property name="enabled">
               <bool>true</bool>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="text">
               <string>Changer d'origine</string>
@@ -556,36 +524,80 @@ vers le bas</string>
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
            <widget class="QWidget" name="topWidget1" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>50</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>100</height>
+              <height>50</height>
              </size>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
               <widget class="QPushButton" name="pushButton_rot_gauche">
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Tourner l'image de 90° vers la gauche</string>
+               </property>
                <property name="text">
-                <string>tourner de 90°
-vers la gauche</string>
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icon.qrc">
+                 <normaloff>:/data/icones/rotate-ccw.svg</normaloff>:/data/icones/rotate-ccw.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_rot_droite">
-               <property name="text">
-                <string>tourner de 90°
-vers la droite</string>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
                </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="pushButton_stopCalculs">
-               <property name="enabled">
-                <bool>false</bool>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Tourner l'image de 90° vers la droite</string>
                </property>
                <property name="text">
-                <string>STOP Calculs     </string>
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icon.qrc">
+                 <normaloff>:/data/icones/rotate-cw.svg</normaloff>:/data/icones/rotate-cw.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
                </property>
               </widget>
              </item>
@@ -625,6 +637,82 @@ vers la droite</string>
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QPushButton" name="pushButton_defait">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>30</horstretch>
+                 <verstretch>30</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Efface le point précédent</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icon.qrc">
+                 <normaloff>:/data/icones/undo.svg</normaloff>:/data/icones/undo.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>22</width>
+                 <height>22</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton_refait">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>25</horstretch>
+                 <verstretch>25</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>35</width>
+                 <height>35</height>
+                </size>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Rétablit le point suivant</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icon.qrc">
+                 <normaloff>:/data/icones/redo.svg</normaloff>:/data/icones/redo.svg</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>22</width>
+                 <height>22</height>
+                </size>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -657,13 +745,13 @@ vers la droite</string>
          <widget class="QGroupBox" name="groupBox_4">
           <property name="minimumSize">
            <size>
-            <width>160</width>
+            <width>165</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>160</width>
+            <width>165</width>
             <height>16777215</height>
            </size>
           </property>
@@ -673,6 +761,9 @@ vers la droite</string>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QComboBox" name="comboBoxChrono">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <item>
               <property name="text">
                <string>Trajectoire</string>
@@ -691,14 +782,14 @@ vers la droite</string>
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_speed">
-             <property name="title">
-              <string/>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
+            <widget class="QWidget" name="widget_speed" native="true">
              <layout class="QGridLayout" name="gridLayout">
+              <property name="leftMargin">
+               <number>6</number>
+              </property>
+              <property name="rightMargin">
+               <number>6</number>
+              </property>
               <item row="2" column="0">
                <widget class="QRadioButton" name="radioButtonNearMouse">
                 <property name="text">
@@ -724,7 +815,7 @@ vers la droite</string>
                 <property name="minimumSize">
                  <size>
                   <width>61</width>
-                  <height>25</height>
+                  <height>30</height>
                  </size>
                 </property>
                 <property name="editable">
@@ -761,38 +852,18 @@ vecteurs vitesses</string>
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_chronophoto">
+            <widget class="QWidget" name="widget_chronophoto" native="true">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                <horstretch>1</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="title">
-              <string/>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
              <layout class="QGridLayout" name="gridLayout_2">
-              <item row="0" column="0" colspan="2">
-               <widget class="Line" name="line_7">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
               <item row="1" column="0" colspan="2">
                <widget class="QLabel" name="label">
                 <property name="text">
                  <string>Chronophotographie</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string>Image n°</string>
                 </property>
                </widget>
               </item>
@@ -803,49 +874,45 @@ vecteurs vitesses</string>
                 </property>
                </widget>
               </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>Image n°</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="2">
+               <widget class="Line" name="line_7">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </item>
            <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>19</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="Line" name="line">
+            <widget class="Line" name="line_2">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_2">
+            <widget class="QPushButton" name="pushButton_save">
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>Enregistrer comme image</string>
+             </property>
              <property name="text">
-              <string>Voir un graphique</string>
+              <string>Enregistrer</string>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="comboBox_mode_tracer">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+             <property name="icon">
+              <iconset resource="icon.qrc">
+               <normaloff>:/data/icones/folder-pictures.svg</normaloff>:/data/icones/folder-pictures.svg</iconset>
              </property>
-             <item>
-              <property name="text">
-               <string>Choisir ...</string>
-              </property>
-             </item>
             </widget>
            </item>
            <item>
@@ -861,20 +928,6 @@ vecteurs vitesses</string>
              </property>
             </spacer>
            </item>
-           <item>
-            <widget class="Line" name="line_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_save">
-             <property name="text">
-              <string>Enregistrer</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -883,10 +936,16 @@ vecteurs vitesses</string>
           <item>
            <widget class="QWidget" name="topWidget2" native="true">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>50</height>
+             </size>
             </property>
             <property name="maximumSize">
              <size>
@@ -925,6 +984,9 @@ vecteurs vitesses</string>
                  <height>35</height>
                 </size>
                </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
               </widget>
              </item>
              <item>
@@ -937,12 +999,19 @@ vecteurs vitesses</string>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>16777215</width>
+                 <width>120</width>
                  <height>35</height>
                 </size>
                </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
                <property name="text">
                 <string>Voir la vidéo</string>
+               </property>
+               <property name="icon">
+                <iconset resource="icon.qrc">
+                 <normaloff>:/data/icones/video.svg</normaloff>:/data/icones/video.svg</iconset>
                </property>
               </widget>
              </item>
@@ -988,7 +1057,7 @@ vecteurs vitesses</string>
           <property name="checkable">
            <bool>false</bool>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
            <item>
             <widget class="QPushButton" name="pushButton_select_all_table">
              <property name="sizePolicy">
@@ -997,90 +1066,181 @@ vecteurs vitesses</string>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="maximumSize">
+              <size>
+               <width>35</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Copier les mesures dans le presse papier</string>
+             </property>
              <property name="text">
-              <string>Copier les mesures 
-dans le presse papier</string>
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="icon.qrc">
+               <normaloff>:/data/icones/klipper.svg</normaloff>:/data/icones/klipper.svg</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="exportCombo"/>
+            <widget class="QComboBox" name="exportCombo">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>158</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>35</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line_8">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_nvl_echelle">
-             <property name="text">
-              <string>changer d'échelle ?</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBox_Ec">
-             <property name="text">
-              <string>Ajouter
-l'énergie cinétique
-(échelle obligatoire)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBox_Epp">
-             <property name="text">
-              <string>Ajouter
-l'énergie potentielle
-de pesanteur</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_9">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
-             </property>
              <property name="maximumSize">
               <size>
-               <width>40</width>
-               <height>16777215</height>
+               <width>35</width>
+               <height>35</height>
               </size>
              </property>
-             <property name="text">
-              <string>g=
-(N/kg)</string>
+             <property name="toolTip">
+              <string>Changer d'échelle</string>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="icon.qrc">
+               <normaloff>:/data/icones/scale.svg</normaloff>:/data/icones/scale.svg</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit">
-             <property name="minimumSize">
-              <size>
-               <width>40</width>
-               <height>0</height>
-              </size>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <property name="verticalSpacing">
+              <number>0</number>
              </property>
-             <property name="maximumSize">
-              <size>
-               <width>40</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>9.8</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBox_Em">
-             <property name="text">
-              <string>Ajouter
-l'énergie
-mécanique</string>
-             </property>
-            </widget>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Ajouter les énergies :</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Intensité de la pesanteur :</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="checkBox_Ec">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Cinétique (échelle obligatoire)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QCheckBox" name="checkBox_Epp">
+               <property name="text">
+                <string>Potentielle de pesanteur</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QCheckBox" name="checkBox_Em">
+               <property name="text">
+                <string>Mécanique</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="label_9">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>g (N/kg)</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="lineEdit">
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>9.8</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </item>
            <item>
             <spacer name="horizontalSpacer_2">
@@ -1113,212 +1273,195 @@ mécanique</string>
        <attribute name="title">
         <string>Grapheur</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QTextEdit" name="textEdit_consignes_python">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>120</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>120</height>
-             </size>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-            <property name="html">
-             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Ubuntu';&quot;&gt;Ce grapheur permet de tracer les grandeurs mécaniques habituelles : &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Ubuntu';&quot;&gt;-&amp;gt; temps&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Ubuntu';&quot;&gt;-&amp;gt; position&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Ubuntu';&quot;&gt;-&amp;gt; vitesse (en x et y)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Ubuntu';&quot;&gt;-&amp;gt; Énergies (pour l'énergie potentielle de pesanteur, on considère que Epp=0  à z=0)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Ubuntu';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_11">
-            <item>
-             <widget class="QLabel" name="label_11">
-              <property name="text">
-               <string>masse (kg)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="lineEdit_m">
-              <property name="maximumSize">
-               <size>
-                <width>100</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>1.0</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_20">
-              <property name="text">
-               <string>g (N/kg)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="lineEdit_g">
-              <property name="maximumSize">
-               <size>
-                <width>100</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>9.8</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_14">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="Line" name="line_3">
-            <property name="lineWidth">
-             <number>3</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <widget class="QLabel" name="label_10">
-              <property name="text">
-               <string>On trace </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="comboBox_Y"/>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_19">
-              <property name="text">
-               <string>en fonction de </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="comboBox_X"/>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_22">
-              <property name="text">
-               <string>avec le style </string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="comboBox_style">
-              <item>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="title">
+           <string>Données et grandeurs à représenter</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <item>
+              <widget class="QLabel" name="label_11">
                <property name="text">
-                <string>Points seuls</string>
+                <string>Masse (kg)</string>
                </property>
-              </item>
-              <item>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEdit_m">
+               <property name="maximumSize">
+                <size>
+                 <width>60</width>
+                 <height>16777215</height>
+                </size>
+               </property>
                <property name="text">
-                <string>Points et lignes</string>
+                <string>1.0</string>
                </property>
-              </item>
-              <item>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_20">
                <property name="text">
-                <string>Lignes seules</string>
+                <string>Intensité de la pesanteur g (N/kg)</string>
                </property>
-              </item>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_10">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QLabel" name="widget_graph">
-            <property name="minimumSize">
-             <size>
-              <width>600</width>
-              <height>450</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color:#CCC</string>
-            </property>
-            <property name="text">
-             <string>Pas de graphiques</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEdit_g">
+               <property name="maximumSize">
+                <size>
+                 <width>60</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>9.8</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_14">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="Line" name="line_3">
+             <property name="lineWidth">
+              <number>3</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Tracer :</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_Y"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>en fonction de </string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_X"/>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_22">
+               <property name="text">
+                <string>avec le style </string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_style">
+               <item>
+                <property name="text">
+                 <string>Points seuls</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/data/icones/dots.svg</normaloff>:/data/icones/dots.svg</iconset>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Points et lignes</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/data/icones/dots+lines.svg</normaloff>:/data/icones/dots+lines.svg</iconset>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Lignes seules</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/data/icones/lines.svg</normaloff>:/data/icones/lines.svg</iconset>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_10">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="widget_graph">
+          <property name="minimumSize">
+           <size>
+            <width>600</width>
+            <height>450</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color:#CCC</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -1342,6 +1485,10 @@ p, li { white-space: pre-wrap; }
     <widget class="QMenu" name="menuE_xporter_vers">
      <property name="title">
       <string>E&amp;xporter vers ...</string>
+     </property>
+     <property name="icon">
+      <iconset resource="icon.qrc">
+       <normaloff>:/data/icones/document-export.svg</normaloff>:/data/icones/document-export.svg</iconset>
      </property>
     </widget>
     <addaction name="actionOuvrir_un_fichier"/>
@@ -1380,8 +1527,12 @@ p, li { white-space: pre-wrap; }
    </property>
   </widget>
   <action name="actionOuvrir_un_fichier">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/data/icones/video.svg</normaloff>:/data/icones/video.svg</iconset>
+   </property>
    <property name="text">
-    <string>&amp;Ouvrir une vidéo (Ctrl-O)</string>
+    <string>&amp;Ouvrir une vidéo</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+O</string>
@@ -1398,40 +1549,64 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionQuitter">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/data/icones/application-exit.svg</normaloff>:/data/icones/application-exit.svg</iconset>
+   </property>
    <property name="text">
-    <string>&amp;Quitter (Ctrl-Q)</string>
+    <string>&amp;Quitter</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+Q</string>
    </property>
   </action>
   <action name="actionSaveData">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/data/icones/pymecavideo.svg</normaloff>:/data/icones/pymecavideo.svg</iconset>
+   </property>
    <property name="text">
-    <string>&amp;Enregistrer les données (Ctrl-S)</string>
+    <string>&amp;Enregistrer les données</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+S</string>
    </property>
   </action>
   <action name="action_propos">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/data/icones/help-about.svg</normaloff>:/data/icones/help-about.svg</iconset>
+   </property>
    <property name="text">
     <string>À &amp;propos</string>
    </property>
   </action>
   <action name="actionAide">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/data/icones/system-help.svg</normaloff>:/data/icones/system-help.svg</iconset>
+   </property>
    <property name="text">
-    <string>&amp;Aide (F1)</string>
+    <string>&amp;Aide</string>
    </property>
    <property name="shortcut">
     <string notr="true">F1</string>
    </property>
   </action>
   <action name="actionExemples">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/data/icones/folder-black.svg</normaloff>:/data/icones/folder-black.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Exemples ...</string>
    </property>
   </action>
   <action name="actionRouvrirMecavideo">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/data/icones/pymecavideo.svg</normaloff>:/data/icones/pymecavideo.svg</iconset>
+   </property>
    <property name="text">
     <string>Ouvrir un projet &amp;mecavidéo</string>
    </property>
@@ -1442,24 +1617,42 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionCopier_dans_le_presse_papier">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/data/icones/klipper.svg</normaloff>:/data/icones/klipper.svg</iconset>
+   </property>
    <property name="text">
-    <string>&amp;Copier dans le presse-papier (Ctrl-C)</string>
+    <string>&amp;Copier dans le presse-papier</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+C</string>
    </property>
   </action>
   <action name="actionDefaire">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/data/icones/undo.svg</normaloff>:/data/icones/undo.svg</iconset>
+   </property>
    <property name="text">
-    <string>&amp;Défaire (Ctrl-Z)</string>
+    <string>&amp;Défaire</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+Z</string>
    </property>
   </action>
   <action name="actionRefaire">
+   <property name="icon">
+    <iconset resource="icon.qrc">
+     <normaloff>:/data/icones/redo.svg</normaloff>:/data/icones/redo.svg</iconset>
+   </property>
    <property name="text">
-    <string>&amp;Refaire (Ctrl-Y)</string>
+    <string>&amp;Refaire</string>
+   </property>
+   <property name="iconText">
+    <string>Refaire</string>
+   </property>
+   <property name="toolTip">
+    <string>Refaire</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+Y</string>

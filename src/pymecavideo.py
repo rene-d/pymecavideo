@@ -229,11 +229,11 @@ class StartQt5(QMainWindow):
 
         # intialise les répertoires
         self._dir()
-        defait_icon = os.path.join(self._dir("icones"), "undo.png")
+        #defait_icon = os.path.join(self._dir("icones"), "undo.png")
 
-        self.ui.pushButton_defait.setIcon(QIcon(defait_icon))
-        refait_icon = os.path.join(self._dir("icones"), "redo.png")
-        self.ui.pushButton_refait.setIcon(QIcon(refait_icon))
+        #self.ui.pushButton_defait.setIcon(QIcon(defait_icon))
+        #refait_icon = os.path.join(self._dir("icones"), "redo.png")
+        #self.ui.pushButton_refait.setIcon(QIcon(refait_icon))
 
         # variables à initialiser
         # disable UI at beginning
@@ -244,7 +244,7 @@ class StartQt5(QMainWindow):
         self.ui.menuE_xporter_vers.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
         self.ui.actionExemples.setEnabled(0)
-        self.ui.groupBox_chronophoto.setVisible(False)
+        self.ui.widget_chronophoto.setEnabled(False)
 
         # exportCombo
         self.ui.exportCombo.addItem('Exporter vers...')
@@ -425,7 +425,6 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_Ec.setChecked(0)
         self.ui.checkBox_Em.setChecked(0)
         self.ui.checkBox_Epp.setChecked(0)
-        self.ui.textEdit_consignes_python.hide()
         self.label_trajectoire.label_video = self.label_video
 
     def affiche_lance_capture(self, active=False):
@@ -601,8 +600,8 @@ class StartQt5(QMainWindow):
         self.clic_sur_video.connect(self.clic_sur_label_video)
         self.ui.comboBox_referentiel.currentIndexChanged.connect(
             self.tracer_trajectoires)
-        self.ui.comboBox_mode_tracer.currentIndexChanged.connect(
-            self.tracer_courbe)
+        #self.ui.comboBox_mode_tracer.currentIndexChanged.connect(
+            #self.tracer_courbe)
         self.ui.tabWidget.currentChanged.connect(self.choix_onglets)
         self.ui.checkBoxScale.currentIndexChanged.connect(self.enableSpeed)
         self.ui.checkBoxVectorSpeed.stateChanged.connect(self.enableSpeed)
@@ -669,18 +668,18 @@ class StartQt5(QMainWindow):
         """
         # Configure l'UI en fonction du mode
         if self.ui.comboBoxChrono.currentIndex() == 0 :
-            self.ui.groupBox_chronophoto.setVisible(False)
+            self.ui.widget_chronophoto.setEnabled(False)
             self.ui.topWidget2.setEnabled(True)
-            self.ui.groupBox_speed.setVisible(True)
+            self.ui.widget_speed.setEnabled(True)
         elif self.ui.comboBoxChrono.currentIndex() == 1 :
-            self.ui.groupBox_chronophoto.setVisible(True)
+            self.ui.widget_chronophoto.setEnabled(True)
             self.ui.topWidget2.setEnabled(False)
-            self.ui.groupBox_speed.setVisible(False)
+            self.ui.widget_speed.setEnabled(False)
             self.ui.checkBoxVectorSpeed.setChecked(False)
         elif self.ui.comboBoxChrono.currentIndex() == 2 :
-            self.ui.groupBox_chronophoto.setVisible(False)
+            self.ui.widget_chronophoto.setEnabled(False)
             self.ui.topWidget2.setEnabled(False)
-            self.ui.groupBox_speed.setVisible(False)
+            self.ui.widget_speed.setEnabled(False)
             self.ui.checkBoxVectorSpeed.setChecked(False)
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         # ajoute la première image utilisée pour le pointage sur le fond du label
@@ -756,7 +755,7 @@ class StartQt5(QMainWindow):
             self.label_auto.close()
             del self.label_auto
             self.indexMotif = 0
-            self.ui.pushButton_stopCalculs.setText("STOP CALCULS")
+            self.ui.pushButton_stopCalculs.setText("STOP")
             self.ui.pushButton_stopCalculs.setEnabled(1)
             self.ui.pushButton_stopCalculs.show()
             self.label_video.setEnabled(0)
@@ -785,7 +784,7 @@ class StartQt5(QMainWindow):
             else:
                 self.indexMotif = 0
             index_de_l_image = self.pileDeDetections.pop(0)
-            texteDuBouton = "STOP CALCULS (%d)" % index_de_l_image
+            texteDuBouton = "STOP (%d)" % index_de_l_image
             self.ui.pushButton_stopCalculs.setText(texteDuBouton)
             # TODO : principal point noir du calcul.
             self.dbg.p(2, "On lance la detection avec : self.motif %s, self.indexMotif %s" % (
@@ -809,7 +808,7 @@ class StartQt5(QMainWindow):
             self.label_auto.hide()
             self.label_auto.close()
             self.indexMotif = 0
-            self.ui.pushButton_stopCalculs.setText("STOP CALCULS")
+            self.ui.pushButton_stopCalculs.setText("STOP")
             self.ui.pushButton_stopCalculs.setEnabled(1)
             self.ui.pushButton_stopCalculs.show()
             self.label_video.setEnabled(0)
@@ -1451,8 +1450,8 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
                 _translate("pymecavideo", "Pointage Automatique", None))
             reponse = QMessageBox.warning(None, "Capture Automatique",
                                           _translate("pymecavideo", """\
-Veuillez sélectionner un cadre autour de(s) l'objet(s) que vous voulez suivre.
-Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
+Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
+Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",
                                                      None),
                                           QMessageBox.Ok, QMessageBox.Ok)
             try:
@@ -1616,17 +1615,17 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
         par le changement de référentiel dans l'onglet des trajectoires."""
         self.dbg.p(1, "rentre dans 'choix_onglets'")
         if self.ui.tabWidget.currentIndex() == 1:
-            self.statusBar().hide()
+            self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
             self.tracer_trajectoires("absolu")
-        elif self.ui.tabWidget.currentIndex() == 0:
-            self.statusBar().show()
+        #elif self.ui.tabWidget.currentIndex() == 0:
+            #self.statusBar().show()
         elif self.ui.tabWidget.currentIndex() == 2:
-            self.statusBar().hide()
+            self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
             self.affiche_tableau()
         elif self.ui.tabWidget.currentIndex() == 3:
             self.affiche_grapheur()
             self.MAJ_combox_box_grapheur()
-            self.statusBar().hide()
+            self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
 
     def affiche_grapheur(self, MAJ=True):
         self.dbg.p(1, "rentre dans 'affiche_grapheur'")
@@ -1987,89 +1986,89 @@ Vous pouvez arrêter à tous moments la capture en appuyant sur le bouton""",
             self.label_trajectoire.referentiel = 0
             self.label_trajectoire.origine = vecteur(0, 0)
         # rempli le menu des courbes à tracer
-        self.ui.comboBox_mode_tracer.clear()
-        self.ui.comboBox_mode_tracer.insertItem(
-            -1, _translate("pymecavideo", "Choisir ...", None))
-        for i in range(self.nb_de_points):
-            combo = self.ui.comboBox_mode_tracer
-            combo.addItem(u"x%d(t)" % (i + 1))
-            combo.addItem(u"y%d(t)" % (i + 1))
-            combo.addItem(u"v%d(t)" % (i + 1))
+        #self.ui.comboBox_mode_tracer.clear()
+        #self.ui.comboBox_mode_tracer.insertItem(
+            #-1, _translate("pymecavideo", "Choisir ...", None))
+        #for i in range(self.nb_de_points):
+            #combo = self.ui.comboBox_mode_tracer
+            #combo.addItem(u"x%d(t)" % (i + 1))
+            #combo.addItem(u"y%d(t)" % (i + 1))
+            #combo.addItem(u"v%d(t)" % (i + 1))
         self.dbg.p(3, "origine %s, ref %s" %
                    (str(self.label_trajectoire.origine), str(ref)))
         self.label_trajectoire.reDraw()
 
-    def tracer_courbe(self, itemChoisi):
-        """
-        trace une courbe
-        @param itemChoisi est un numéro d'item dans la liste des
-        courbes qu'on peut tracer ; c'est trop lié à l'implémentation :
-        à rendre plus propre si possible !!!!
-        """
-        self.dbg.p(1, "rentre dans 'tracer_courbe'")
-        if not self.ui.comboBox_mode_tracer.isEnabled():
-            return
-        self.ui.comboBox_mode_tracer.setCurrentIndex(0)
-        if itemChoisi <= 0:
-            return  # c'est rien du tout.
-        numero = (itemChoisi - 1) // 3  # force le type entier !
-        typeDeCourbe = ("x", "y", "v")[(itemChoisi - 1) % 3]
-        titre = (_translate("pymecavideo", "Evolution de l'abscisse du point {0}", None).format(numero + 1),
-                 _translate("pymecavideo", "Evolution de l'ordonnée du point {0}", None).format(
-                     numero + 1),
-                 _translate("pymecavideo", "Evolution de la vitesse du point {0}", None).format(numero + 1))[
-            (itemChoisi - 1) % 3]
-        abscisse = []
-        ordonnee = []
-        t = 0
-        ancienPoint = None
-        ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
-        for i in self.points.keys():
-            try:
-                if ref == "camera":
-                    p = self.pointEnMetre(self.points[i][1 + numero])
-                else:
-                    ref = int(ref)
-                    p = self.pointEnMetre(
-                        self.points[i][1 + numero]) - self.pointEnMetre(self.points[i][ref])
-                if typeDeCourbe == "x":
-                    ordonnee.append(p.x())
-                if typeDeCourbe == "y":
-                    ordonnee.append(p.y())
-                if typeDeCourbe == "v":
-                    if ancienPoint != None:
-                        abscisse.append(t)
-                        v = (p - ancienPoint).norme() / self.deltaT
-                        ordonnee.append(v)
-                else:
-                    abscisse.append(t)
-                t += self.deltaT
-                ancienPoint = p
-            except:
-                pass  # si pas le bon nb de points cliqués.
-        # les abscisses et les ordonnées sont prêtes
-        labelAbscisse = "t (s)"
-        if typeDeCourbe != "v":
-            labelOrdonnee = typeDeCourbe + " (m)"
-        else:
-            labelOrdonnee = typeDeCourbe + " (m/s)"
-        pg.setConfigOption('background', 'w')
-        pg.setConfigOption('foreground', 'k')
-        if self.dictionnairePlotWidget.get(titre):
-            plotWidget = self.dictionnairePlotWidget.get(titre)
-            if not plotWidget.isVisible():
-                plotWidget = pg.plot(title=titre)
-                self.dictionnairePlotWidget[titre] = plotWidget
-        else:
-            plotWidget = pg.plot(title=titre, parent=self)
-            # permet de ne pas recréer la fenêtre
-            self.dictionnairePlotWidget[titre] = plotWidget
-        plotWidget.setLabel('bottom', labelAbscisse)
-        plotWidget.setLabel('left', labelOrdonnee)
-        plotWidget.plot(abscisse, ordonnee)
-        plotWidget.setVisible(1)
-        plotWidget.show()
-        return
+    #def tracer_courbe(self, itemChoisi):
+        #"""
+        #trace une courbe
+        #@param itemChoisi est un numéro d'item dans la liste des
+        #courbes qu'on peut tracer ; c'est trop lié à l'implémentation :
+        #à rendre plus propre si possible !!!!
+        #"""
+        #self.dbg.p(1, "rentre dans 'tracer_courbe'")
+        #if not self.ui.comboBox_mode_tracer.isEnabled():
+            #return
+        #self.ui.comboBox_mode_tracer.setCurrentIndex(0)
+        #if itemChoisi <= 0:
+            #return  # c'est rien du tout.
+        #numero = (itemChoisi - 1) // 3  # force le type entier !
+        #typeDeCourbe = ("x", "y", "v")[(itemChoisi - 1) % 3]
+        #titre = (_translate("pymecavideo", "Evolution de l'abscisse du point {0}", None).format(numero + 1),
+                 #_translate("pymecavideo", "Evolution de l'ordonnée du point {0}", None).format(
+                     #numero + 1),
+                 #_translate("pymecavideo", "Evolution de la vitesse du point {0}", None).format(numero + 1))[
+            #(itemChoisi - 1) % 3]
+        #abscisse = []
+        #ordonnee = []
+        #t = 0
+        #ancienPoint = None
+        #ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+        #for i in self.points.keys():
+            #try:
+                #if ref == "camera":
+                    #p = self.pointEnMetre(self.points[i][1 + numero])
+                #else:
+                    #ref = int(ref)
+                    #p = self.pointEnMetre(
+                        #self.points[i][1 + numero]) - self.pointEnMetre(self.points[i][ref])
+                #if typeDeCourbe == "x":
+                    #ordonnee.append(p.x())
+                #if typeDeCourbe == "y":
+                    #ordonnee.append(p.y())
+                #if typeDeCourbe == "v":
+                    #if ancienPoint != None:
+                        #abscisse.append(t)
+                        #v = (p - ancienPoint).norme() / self.deltaT
+                        #ordonnee.append(v)
+                #else:
+                    #abscisse.append(t)
+                #t += self.deltaT
+                #ancienPoint = p
+            #except:
+                #pass  # si pas le bon nb de points cliqués.
+        ## les abscisses et les ordonnées sont prêtes
+        #labelAbscisse = "t (s)"
+        #if typeDeCourbe != "v":
+            #labelOrdonnee = typeDeCourbe + " (m)"
+        #else:
+            #labelOrdonnee = typeDeCourbe + " (m/s)"
+        #pg.setConfigOption('background', 'w')
+        #pg.setConfigOption('foreground', 'k')
+        #if self.dictionnairePlotWidget.get(titre):
+            #plotWidget = self.dictionnairePlotWidget.get(titre)
+            #if not plotWidget.isVisible():
+                #plotWidget = pg.plot(title=titre)
+                #self.dictionnairePlotWidget[titre] = plotWidget
+        #else:
+            #plotWidget = pg.plot(title=titre, parent=self)
+            ## permet de ne pas recréer la fenêtre
+            #self.dictionnairePlotWidget[titre] = plotWidget
+        #plotWidget.setLabel('bottom', labelAbscisse)
+        #plotWidget.setLabel('left', labelOrdonnee)
+        #plotWidget.plot(abscisse, ordonnee)
+        #plotWidget.setVisible(1)
+        #plotWidget.show()
+        #return
 
     def affiche_point_attendu(self, n):
         """
