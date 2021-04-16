@@ -1403,7 +1403,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
         self.ui.horizontalSlider.setEnabled(0)
-        self.ui.spinBox_image.setEnabled(1)
+        self.ui.spinBox_image.setEnabled(0)
         self.ui.tabWidget.setEnabled(1)
         self.ui.tabWidget.setTabEnabled(3, True)
         self.ui.tabWidget.setTabEnabled(2, True)
@@ -2297,11 +2297,16 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
         if self.lance_capture:
             if self.ui.spinBox_image.value() < self.index_de_l_image:
-                # self.ui.spinBox_image.setValue(self.index_de_l_image)
                 # si le point est sur une image, on efface le point
                 if self.ui.spinBox_image.value() == self.listePoints[len(self.listePoints)-1][0]:
                     for i in range(self.nb_de_points):
                         self.efface_point_precedent()
+            if self.ui.spinBox_image.value() > self.index_de_l_image:
+                # on refait le point
+                if self.ui.spinBox_image.value() <= self.listePoints[len(self.listePoints)-1][0]:
+                    for i in range(self.nb_de_points):
+                        #self.efface_point_precedent()
+                        self.refait_point_suivant()
         self.index_de_l_image = self.ui.spinBox_image.value()
         try:
             self.affiche_image()
