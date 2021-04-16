@@ -29,13 +29,13 @@ t = {0}
 x = {1}
 y = {2}""".format(pts[0], pts[1], pts[2])
 
-    chrono0 = """### Chronogramme"""
+    chrono0 = """### Chronogramme des positions"""
 
     chrono1 = """\
 plt.plot(x, y, style, markersize = markersize)
 plt.ylabel('Hauteur (m)')
 plt.xlabel('Distance (m)')
-plt.title("Chronogramme")
+plt.title("Chronogramme des positions")
 plt.show()"""
 
     vitesse0 = """### Vecteurs vitesse"""

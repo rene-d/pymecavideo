@@ -1,5 +1,24 @@
 <RCC>
   <qresource>
+    <file>../data/icones/folder-pictures.svg</file>
+    <file>../data/icones/scale.svg</file>
+    <file>../data/icones/system-help.svg</file>
+    <file>../data/icones/folder-black.svg</file>
+    <file>../data/icones/help-about.svg</file>
+    <file>../data/icones/document-export.svg</file>
+    <file>../data/icones/application-exit.svg</file>
+    <file>../data/icones/video.svg</file>
+    <file>../data/icones/pymecavideo.svg</file>
+    <file>../data/icones/rotate-ccw.svg</file>
+    <file>../data/icones/process-stop.svg</file>
+    <file>../data/icones/rotate-cw.svg</file>
+    <file>../data/icones/film.svg</file>
+    <file>../data/icones/klipper.svg</file>
+    <file>../data/icones/undo.svg</file>
+    <file>../data/icones/redo.svg</file>
+    <file>../data/icones/dots.svg</file>
+    <file>../data/icones/lines.svg</file>
+    <file>../data/icones/dots+lines.svg</file>
     <file>pymecavideo.png</file>
   </qresource>
 </RCC>

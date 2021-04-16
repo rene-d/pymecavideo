@@ -72,7 +72,7 @@ EXPORT_FORMATS = {
         'filtre' : _translate("export",'Notebook (*.ipynb)'),
         'extension' : 'ipynb',
         'class' : 'PythonNotebook',
-        'modules' : ['numpy'],
+        'modules' : ['nbformat'],
         'propose_ouverture' : False,
         'un_point' : True},
     
@@ -676,7 +676,7 @@ class NotebookExportDialog(QDialog):
     def retranslateUi(self):
         self.setWindowTitle(_translate("choix_exports_notebook", "Choix des représentations graphiques"))
         self.checkBox_c.setText(_translate(
-            "choix_exports_notebook", "Chronogramme"))
+            "choix_exports_notebook", "Chronogramme des positions"))
         self.checkBox_v.setText(_translate(
             "choix_exports_notebook", "Vecteurs vitesse"))
         self.checkBox_a.setText(_translate(
@@ -691,35 +691,43 @@ class PythonNotebook :
     Exporte les données dans un fichier Notebook Jupyterlab
     """
     def __init__(self, app, filepath):
+        import nbformat as nbf
+        from template_ipynb import genere_notebook
         pts = app.points
         ligne_t = "np.array({})".format(list(float(pts[i][0]) for i in pts.keys()))
         ligne_x = "np.array({})".format(list(app.pointEnMetre(pts[i][1])[0] for i in pts.keys()))
         ligne_y = "np.array({})".format(list(app.pointEnMetre(pts[i][1])[1] for i in pts.keys()))
+        d = NotebookExportDialog(app)
+        if d.exec_() == QDialog.Accepted:
+            graphs = (d.checkBox_c.isChecked(), d.checkBox_v.isChecked(
+            ), d.checkBox_v2.isChecked(), d.checkBox_a.isChecked(), d.checkBox_e.isChecked())
+        nb = genere_notebook((ligne_t, ligne_x, ligne_y), graphs = graphs)
+        nbf.write(nb, filepath) 
         
-        try :
-            import nbformat as nbf
-            nbf_present = True
-            from template_ipynb import genere_notebook
-        except :
-            nbf_present = False
+        #try :
+            #import nbformat as nbf
+            #nbf_present = True
+            #from template_ipynb import genere_notebook
+        #except :
+            #nbf_present = False
 
-        if nbf_present :
-            d = NotebookExportDialog(app)
-            if d.exec_() == QDialog.Accepted:
-                graphs = (d.checkBox_c.isChecked(), d.checkBox_v.isChecked(
-                ), d.checkBox_v2.isChecked(), d.checkBox_a.isChecked(), d.checkBox_e.isChecked())
-            nb = genere_notebook((ligne_t, ligne_x, ligne_y), graphs = graphs)
-            nbf.write(nb, filepath) 
-        else : 
-            with open(filepath,'w') as f:
-                with open('template.ipynb', 'r') as t :
-                    old = t.read()
-                    new = old.replace('$t', ligne_t)
-                    new = new.replace('$x', ligne_x)
-                    new = new.replace('$y', ligne_y)
-                    f.write(new)
-            QMessageBox.information(None, _translate("export_notebook", "Notebook sauvegardé"), _translate(
-            "export_notebook", "Notebook enregistré avec succès.\nPour personnaliser le notebook, veuillez installer le module Python 3 : nbformat"), QMessageBox.Ok, QMessageBox.Ok)
+        #if nbf_present :
+            #d = NotebookExportDialog(app)
+            #if d.exec_() == QDialog.Accepted:
+                #graphs = (d.checkBox_c.isChecked(), d.checkBox_v.isChecked(
+                #), d.checkBox_v2.isChecked(), d.checkBox_a.isChecked(), d.checkBox_e.isChecked())
+            #nb = genere_notebook((ligne_t, ligne_x, ligne_y), graphs = graphs)
+            #nbf.write(nb, filepath) 
+        #else : 
+            #with open(filepath,'w') as f:
+                #with open('template.ipynb', 'r') as t :
+                    #old = t.read()
+                    #new = old.replace('$t', ligne_t)
+                    #new = new.replace('$x', ligne_x)
+                    #new = new.replace('$y', ligne_y)
+                    #f.write(new)
+            #QMessageBox.information(None, _translate("export_notebook", "Notebook sauvegardé"), _translate(
+            #"export_notebook", "Notebook enregistré avec succès.\nPour personnaliser le notebook, veuillez installer le module Python 3 : nbformat"), QMessageBox.Ok, QMessageBox.Ok)
 
 class SaveThenOpenFileDialog(QFileDialog):
     """
