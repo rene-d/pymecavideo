@@ -1226,6 +1226,7 @@ class StartQt5(QMainWindow):
             self.enableDefaire(True)
             self.enableRefaire(False)
             self.affiche_image()  # on affiche l'image
+            self.mets_en_orange_echelle()
             self.ui.tableWidget.show()
             self.recalculLesCoordonnees()
             self.debut_capture()
