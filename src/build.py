@@ -6,7 +6,7 @@ from distutils.core import setup
 import os
 
 import PyQt5
-import matplotlib
+#import matplotlib
 
 import py2exe
 
@@ -43,7 +43,7 @@ options = {"py2exe": {"compressed": 2,
                       'packages': ['win32api'],  # 'pytz',
 
                       "includes": ["sip",  # "matplotlib.backends",
-                                   "matplotlib.backends.backend_qt4agg"
+                                   #"matplotlib.backends.backend_qt4agg"
                                    ],  # , "PyQt5.QtCore", "PyQt4.QtGui"],
 
                       'excludes': ['bsddb', 'curses', 'pywin.debugger',
