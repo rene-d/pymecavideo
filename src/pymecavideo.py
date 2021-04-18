@@ -2122,18 +2122,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             # l'index est sur la dernière image traitée
             index_image = self.listePoints[-1][0]
         else : 
-            print('uuuiuiu')
             index_image = self.index_de_l_image-self.premiere_image
         t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
 
         # construction de l'ensemble des points pour l'image actuelle
         listePointsCliquesParImage = []
-        print(self.listePoints)
         for point in self.listePoints:
             if point[0] == index_image:
-                print('OKKKKK', point)
                 listePointsCliquesParImage.append(point[2])
-        print('listePointsCliquesParImage', listePointsCliquesParImage)
         self.points[ligne] = [t] + listePointsCliquesParImage
 
         # Pour chaque point dans liste_points, insère les valeur dans la ligne
@@ -2252,13 +2248,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
     def refait_point_depuis_tableau(self, qpbn ):
         self.refait_point=True
         numero_image = qpbn.toolTip().split(' ')[-1]
-        print('OKKKKKKKK', numero_image)
         self.index_de_l_image_actuelle = self.index_de_l_image
         self.index_de_l_image = int(numero_image)
         
         self.ui.tabWidget.setCurrentIndex(0)
         self.clic_sur_label_video_ajuste_ui(0)
-        print('avant', self.points)
         
     def fin_refait_point_depuis_tableau(self): 
         self.refait_point = False
@@ -2268,7 +2262,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         
         self.index_de_l_image = self.index_de_l_image_actuelle
         self.index_de_l_image_actuelle = None
-        print('après', self.points)
         self.ui.tabWidget.setCurrentIndex(2)
         
         
