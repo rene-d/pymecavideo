@@ -36,6 +36,7 @@ plt.plot(x, y, style, markersize = markersize)
 plt.ylabel('Hauteur (m)')
 plt.xlabel('Distance (m)')
 plt.title("Chronogramme des positions")
+plt.gca().set_aspect('equal', adjustable='datalim')
 plt.show()"""
 
     vitesse0 = """### Vecteurs vitesse"""
@@ -52,6 +53,7 @@ plt.title("Vecteurs vitesse")
 plt.xlabel('Distance (m)')
 plt.grid(True)
 plt.quiver(x[1:-1], y[1:-1], vx, vy, scale_units = 'xy', angles = 'xy', width = 0.003)
+plt.gca().set_aspect('equal', adjustable='datalim')
 plt.show()"""
 
     variation0 = """### Vecteurs variation de vitesse"""
@@ -65,6 +67,7 @@ plt.xlabel('Distance (m)')
 plt.title("Vecteurs variation de vitesse")
 plt.grid(True)
 plt.quiver(x[2:-2], y[2:-2], Δvx, Δvy, scale_units = 'xy', angles = 'xy', width = 0.003)
+plt.gca().set_aspect('equal', adjustable='datalim')
 plt.show()"""
 
     acceleration0 = """### Vecteurs accélération"""
@@ -81,6 +84,7 @@ plt.xlabel('Distance (m)')
 plt.title("Vecteurs accélération")
 plt.grid(True)
 plt.quiver(x[2:-2], y[2:-2], ax, ay, scale_units = 'xy', angles = 'xy', width = 0.003)
+plt.gca().set_aspect('equal', adjustable='datalim')
 plt.show()"""
 
     energie0 = """### Energies"""

@@ -99,7 +99,7 @@
         </sizepolicy>
        </property>
        <attribute name="title">
-        <string>Acquisition des données</string>
+        <string>Pointage</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
@@ -957,7 +957,7 @@ vecteurs vitesses</string>
              <item>
               <widget class="QLabel" name="label_8">
                <property name="text">
-                <string>Définir un autre référentiel : </string>
+                <string>Changement de référentiel : </string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
