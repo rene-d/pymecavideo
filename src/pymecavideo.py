@@ -2005,78 +2005,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                    (str(self.label_trajectoire.origine), str(ref)))
         self.label_trajectoire.reDraw()
 
-    #def tracer_courbe(self, itemChoisi):
-        #"""
-        #trace une courbe
-        #@param itemChoisi est un numéro d'item dans la liste des
-        #courbes qu'on peut tracer ; c'est trop lié à l'implémentation :
-        #à rendre plus propre si possible !!!!
-        #"""
-        #self.dbg.p(1, "rentre dans 'tracer_courbe'")
-        #if not self.ui.comboBox_mode_tracer.isEnabled():
-            #return
-        #self.ui.comboBox_mode_tracer.setCurrentIndex(0)
-        #if itemChoisi <= 0:
-            #return  # c'est rien du tout.
-        #numero = (itemChoisi - 1) // 3  # force le type entier !
-        #typeDeCourbe = ("x", "y", "v")[(itemChoisi - 1) % 3]
-        #titre = (_translate("pymecavideo", "Evolution de l'abscisse du point {0}", None).format(numero + 1),
-                 #_translate("pymecavideo", "Evolution de l'ordonnée du point {0}", None).format(
-                     #numero + 1),
-                 #_translate("pymecavideo", "Evolution de la vitesse du point {0}", None).format(numero + 1))[
-            #(itemChoisi - 1) % 3]
-        #abscisse = []
-        #ordonnee = []
-        #t = 0
-        #ancienPoint = None
-        #ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
-        #for i in self.points.keys():
-            #try:
-                #if ref == "camera":
-                    #p = self.pointEnMetre(self.points[i][1 + numero])
-                #else:
-                    #ref = int(ref)
-                    #p = self.pointEnMetre(
-                        #self.points[i][1 + numero]) - self.pointEnMetre(self.points[i][ref])
-                #if typeDeCourbe == "x":
-                    #ordonnee.append(p.x())
-                #if typeDeCourbe == "y":
-                    #ordonnee.append(p.y())
-                #if typeDeCourbe == "v":
-                    #if ancienPoint != None:
-                        #abscisse.append(t)
-                        #v = (p - ancienPoint).norme() / self.deltaT
-                        #ordonnee.append(v)
-                #else:
-                    #abscisse.append(t)
-                #t += self.deltaT
-                #ancienPoint = p
-            #except:
-                #pass  # si pas le bon nb de points cliqués.
-        ## les abscisses et les ordonnées sont prêtes
-        #labelAbscisse = "t (s)"
-        #if typeDeCourbe != "v":
-            #labelOrdonnee = typeDeCourbe + " (m)"
-        #else:
-            #labelOrdonnee = typeDeCourbe + " (m/s)"
-        #pg.setConfigOption('background', 'w')
-        #pg.setConfigOption('foreground', 'k')
-        #if self.dictionnairePlotWidget.get(titre):
-            #plotWidget = self.dictionnairePlotWidget.get(titre)
-            #if not plotWidget.isVisible():
-                #plotWidget = pg.plot(title=titre)
-                #self.dictionnairePlotWidget[titre] = plotWidget
-        #else:
-            #plotWidget = pg.plot(title=titre, parent=self)
-            ## permet de ne pas recréer la fenêtre
-            #self.dictionnairePlotWidget[titre] = plotWidget
-        #plotWidget.setLabel('bottom', labelAbscisse)
-        #plotWidget.setLabel('left', labelOrdonnee)
-        #plotWidget.plot(abscisse, ordonnee)
-        #plotWidget.setVisible(1)
-        #plotWidget.show()
-        #return
-
     def affiche_point_attendu(self, n):
         """
         Renseigne sur le numéro du point attendu
@@ -2087,7 +2015,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.mets_a_jour_label_infos(
             _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(n+1))
 
-    def clic_sur_label_video(self, liste_points=None, interactif=True, one_shot=None):
+    def clic_sur_label_video(self, liste_points=None, interactif=True):
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
         self.lance_capture = True
         # on fait des marques pour les points déjà visités
@@ -2098,15 +2026,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.affiche_point_attendu(self.point_attendu)
         if self.index_de_l_image <= self.image_max:  # si on n'atteint pas encore la fin de la vidéo
             self.lance_capture = True
-            if one_shot is None : 
-                self.stock_coordonnees_image(
-                    ligne=int((len(self.listePoints)-1)/self.nb_de_points))
-                if interactif:
-                    self.modifie = True
-            else : 
-                print(one_shot, self.premiere_image)
-                self.stock_coordonnees_image(
-                    ligne=int((one_shot-self.premiere_image)/self.nb_de_points))
+        
+            self.stock_coordonnees_image(
+                ligne=int((len(self.listePoints)-1)/self.nb_de_points))
+            if interactif:
+                self.modifie = True
             self.clic_sur_label_video_ajuste_ui(self.point_attendu)
         if self.index_de_l_image > self.image_max:
             self.lance_capture = False
@@ -2180,12 +2104,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             i = self.index_de_l_image
         nieme  = self.nb_clics
         if self.refait_point : #arrive si on refait qu'un seul point à partir du tableau de l'onglet 3.
-            self.listePoints[self.index_de_l_image-self.premiere_image] = [i, nieme, point]
-            pass
+            self.listePoints[(self.index_de_l_image-self.premiere_image)*self.nb_de_points+nieme] = [i, nieme, point]
+            
         else : 
             self.listePoints.append([i, nieme, point])
         self.dbg.p(3, "dans 'enregistre_dans_listePoints', self.listePoints vaut %s"%self.listePoints)
-        print("premiere image : ", self.premiere_image)
         return
 
     def stock_coordonnees_image(self, ligne,  interactif=True, index_image=False):
@@ -2198,13 +2121,19 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         if index_image == False:
             # l'index est sur la dernière image traitée
             index_image = self.listePoints[-1][0]
+        else : 
+            print('uuuiuiu')
+            index_image = self.index_de_l_image-self.premiere_image
         t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
 
         # construction de l'ensemble des points pour l'image actuelle
         listePointsCliquesParImage = []
+        print(self.listePoints)
         for point in self.listePoints:
             if point[0] == index_image:
+                print('OKKKKK', point)
                 listePointsCliquesParImage.append(point[2])
+        print('listePointsCliquesParImage', listePointsCliquesParImage)
         self.points[ligne] = [t] + listePointsCliquesParImage
 
         # Pour chaque point dans liste_points, insère les valeur dans la ligne
@@ -2322,18 +2251,25 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def refait_point_depuis_tableau(self, qpbn ):
         self.refait_point=True
-        numero_image = qpbn.text()[-1]
+        numero_image = qpbn.text().split(' ')[-1]
         self.index_de_l_image_actuelle = self.index_de_l_image
         self.index_de_l_image = int(numero_image)
         
         self.ui.tabWidget.setCurrentIndex(0)
         self.clic_sur_label_video_ajuste_ui(0)
+        print('avant', self.points)
         
     def fin_refait_point_depuis_tableau(self): 
         self.refait_point = False
+        
+        #####remplacement de la valeur de self.points pour la ligne correspondante
+        self.stock_coordonnees_image(self.index_de_l_image-self.premiere_image-1, index_image=True)
+        
         self.index_de_l_image = self.index_de_l_image_actuelle
         self.index_de_l_image_actuelle = None
+        print('après', self.points)
         self.ui.tabWidget.setCurrentIndex(2)
+        
         
     def transforme_index_en_temps(self, index):
         self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")

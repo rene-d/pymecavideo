@@ -49,7 +49,10 @@ class standardDragTable(QTableWidget):
         for c in range(self.columnCount()):
             lig_debut += "<td>"
             i = self.horizontalHeaderItem(c)
-            lig_debut += str(i.text())
+            try : 
+                lig_debut += str(i.text())
+            except AttributeError : 
+                pass
             lig_debut += "</td>"
         t += lig_debut + "</tr>"
         for l in range(self.rowCount()):
@@ -73,7 +76,10 @@ class standardDragTable(QTableWidget):
         lig_debut = ""
         for c in range(self.columnCount()):
             i = self.horizontalHeaderItem(c)
-            lig_debut += str(i.text()) + "\t"
+            try : 
+                lig_debut += str(i.text()) + "\t"
+            except AttributeError:
+                pass
         t += lig_debut[:-1] + "\n"
         for l in range(self.rowCount()):
             lig = ""
