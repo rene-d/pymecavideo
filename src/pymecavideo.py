@@ -2255,7 +2255,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.index_de_l_image = int(numero_image)
         
         self.ui.tabWidget.setCurrentIndex(0)
-        self.clic_sur_label_video_ajuste_ui(0)
+        point_actuel = len(self.listePoints)%self.nb_de_points
+        self.clic_sur_label_video_ajuste_ui(point_actuel)
         
     def fin_refait_point_depuis_tableau(self): 
         self.refait_point = False
@@ -2265,6 +2266,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         
         self.index_de_l_image = self.index_de_l_image_actuelle
         self.index_de_l_image_actuelle = None
+        self.clic_sur_label_video_ajuste_ui(0)
         self.ui.tabWidget.setCurrentIndex(2)
         
         
