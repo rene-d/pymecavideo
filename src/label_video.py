@@ -37,7 +37,7 @@ class Label_Video(QLabel):
         self.app = app
         #self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
         # self.setMinimumSize(QSize(640,480))
-        self.liste_points = []
+        #self.liste_points = []
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
         self.cible_icon = os.path.join(
@@ -97,15 +97,17 @@ class Label_Video(QLabel):
         self.origine = vecteur(self.width()//2, self.height()//2)
 
     def storePoint(self, point):
+        print('storePoint', self.app.index_de_l_image, self.app.premiere_image )
         if self.app.lance_capture == True:
             self.app.enregistre_dans_listePoints(point)
-            self.liste_points.append(point)
+            #self.liste_points.append(point)
             self.pos_avant = self.pos_zoom
             self.app.clic_sur_video.emit()
             self.met_a_jour_crop(self.pos_zoom)
             self.update()
 
     def mouseReleaseEvent(self, event):
+        print('CLICLIVC')
         self.storePoint(vecteur(event.x(), event.y()))
         if self.one_shot : 
             self.one_shot = False
