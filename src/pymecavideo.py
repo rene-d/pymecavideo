@@ -6,7 +6,7 @@ import os
 from globdef import HOME_PATH, VIDEO_PATH, CONF_PATH, \
     ICON_PATH, LANG_PATH, \
     DATA_PATH, HELP_PATH, DOCUMENT_PATH
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QVBoxLayout, QTableWidgetSelectionRange, QDialog, QAction
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QVBoxLayout, QTableWidgetSelectionRange, QDialog, QAction, QPushButton
 import getopt
 import locale
 import traceback
@@ -350,6 +350,7 @@ class StartQt5(QMainWindow):
         self.a_une_image = False
         self.resizing = False
         self.stopRedimensionne = False
+        self.refait_point = False
         self.defixeLesDimensions()
 
     def init_interface(self, refait=0):
@@ -1477,8 +1478,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.ui.tableWidget.setRowCount(1)
         colonnes_sup = self.ui.checkBox_Ec.isChecked()+self.ui.checkBox_Epp.isChecked() + \
             self.ui.checkBox_Em.isChecked()
+        #self.ui.tableWidget.setColumnCount(
+            #self.nb_de_points * 2 + 1 + colonnes_sup*self.nb_de_points)
+        
         self.ui.tableWidget.setColumnCount(
-            self.nb_de_points * 2 + 1 + colonnes_sup*self.nb_de_points)
+            self.nb_de_points * 2 + 2 + colonnes_sup*self.nb_de_points) #ajout d'une colonne bouton
+        
         self.ui.tableWidget.setDragEnabled(True)
         # on met des titres aux colonnes.
         self.ui.tableWidget.setHorizontalHeaderItem(
@@ -1510,7 +1515,10 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     self.ui.tableWidget.setHorizontalHeaderItem(
                         3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Em%d (J)" % (1 + i)))
                     cptr += 1
-
+        #dernier pour le bouton
+        self.ui.tableWidget.setHorizontalHeaderItem(
+                        self.nb_de_points * 2 + 1 + colonnes_sup*self.nb_de_points, QTableWidgetItem("Refaire le point"))
+        
     def barycentre_trajectoires(self, referentiel):
         """
         calcule le barycentre de tous les points constituant les trajectoires
@@ -1618,8 +1626,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         if self.ui.tabWidget.currentIndex() == 1:
             self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
             self.tracer_trajectoires("absolu")
-        #elif self.ui.tabWidget.currentIndex() == 0:
-            #self.statusBar().show()
         elif self.ui.tabWidget.currentIndex() == 2:
             self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
             self.affiche_tableau()
@@ -2081,7 +2087,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.mets_a_jour_label_infos(
             _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(n+1))
 
-    def clic_sur_label_video(self, liste_points=None, interactif=True):
+    def clic_sur_label_video(self, liste_points=None, interactif=True, one_shot=None):
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
         self.lance_capture = True
         # on fait des marques pour les points déjà visités
@@ -2092,10 +2098,15 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.affiche_point_attendu(self.point_attendu)
         if self.index_de_l_image <= self.image_max:  # si on n'atteint pas encore la fin de la vidéo
             self.lance_capture = True
-            self.stock_coordonnees_image(
-                ligne=int((len(self.listePoints)-1)/self.nb_de_points))
-            if interactif:
-                self.modifie = True
+            if one_shot is None : 
+                self.stock_coordonnees_image(
+                    ligne=int((len(self.listePoints)-1)/self.nb_de_points))
+                if interactif:
+                    self.modifie = True
+            else : 
+                print(one_shot, self.premiere_image)
+                self.stock_coordonnees_image(
+                    ligne=int((one_shot-self.premiere_image)/self.nb_de_points))
             self.clic_sur_label_video_ajuste_ui(self.point_attendu)
         if self.index_de_l_image > self.image_max:
             self.lance_capture = False
@@ -2107,7 +2118,10 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.nb_clics = 0
             self.index_de_l_image += 1
             self.affiche_image()
-
+        
+            if self.refait_point : #quandon refait 1 seul point faux.
+                self.fin_refait_point_depuis_tableau()
+        
     def enableDefaire(self, value):
         """
         Contrôle la possibilité de défaire un clic
@@ -2203,6 +2217,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def affiche_tableau(self):
         # active ou désactive les checkbox énergies (n'ont un intérêt que si les échelles sont faites)
+        self.liste_qpushbutton = []
         if self.echelle_faite:
             self.ui.checkBox_Ec.setEnabled(1)
             self.ui.checkBox_Epp.setEnabled(1)
@@ -2288,7 +2303,32 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 except UnboundLocalError:  # pour premier point, la vitesse n'est pas définie
                     pass
                 i += 1
+        ###essai d'ajout d'un bouton pour refaire le point.
+        
+            qpushbutton = QPushButton()
+            qpushbutton.setText("refaire le pointage\n de l'image %s"%(ligne+1))
+            #qpushbutton.clicked.connect(lambda : self.refait_point_depuis_tableau(ligne))
+            qpushbutton.clicked.connect( lambda checked, b=qpushbutton: self.refait_point_depuis_tableau( b ))
 
+            self.liste_qpushbutton.append(qpushbutton) #nécessaire sinon le ramsse miette vire tout
+            self.ui.tableWidget.setCellWidget(
+                                    ligne, self.nb_de_points * 2 + 1 + colonnes_sup*self.nb_de_points, qpushbutton)
+
+    def refait_point_depuis_tableau(self, qpbn ):
+        self.refait_point=True
+        numero_image = qpbn.text()[-1]
+        self.index_de_l_image_actuelle = self.index_de_l_image
+        self.index_de_l_image = int(numero_image)
+        
+        self.ui.tabWidget.setCurrentIndex(0)
+        self.clic_sur_label_video_ajuste_ui(0)
+        
+    def fin_refait_point_depuis_tableau(self): 
+        self.refait_point = False
+        self.index_de_l_image = self.index_de_l_image_actuelle
+        self.index_de_l_image_actuelle = None
+        self.ui.tabWidget.setCurrentIndex(2)
+        
     def transforme_index_en_temps(self, index):
         self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")
         return float(self.deltaT * (index))

@@ -58,6 +58,7 @@ class Label_Video(QLabel):
                          "yellow", "gray", "green"]
         self.tourne = False
         self.premier_resize = True
+        self.one_shot = False
 
     def resizeEvent(self, e):
         if self.premier_resize:  # Au premier resize, la taille est changée mais pas l'origine.
@@ -106,6 +107,8 @@ class Label_Video(QLabel):
 
     def mouseReleaseEvent(self, event):
         self.storePoint(vecteur(event.x(), event.y()))
+        if self.one_shot : 
+            self.one_shot = False
 
     def enterEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
