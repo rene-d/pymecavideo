@@ -82,6 +82,9 @@ class listePointee:
         renvoie le nombre de données après le pointeur
         """
         return len(self.data) - self.ptr - 1
+    
+    def __setitem__(self, k, y):
+        self.data[k] = y
 
     def __str__(self):
         s = "liste pointee : ["

@@ -2168,18 +2168,24 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         numéro de l'image, rang du point (0,1 ou 2 s'il y a trois
         points à saisir par image), et le point lui-même.
 
-        Le calcul du rang du point se déduit de la longueur de
-        self.listePoints.
+        Le calcul du rang du point est lié à self.nb_clics, calculé dans clic_sur_label_video()
         @param point un point à enregistrer
         @param index un numéro d'image. S'il est indéfini (par défaut), il
         est remplacé par self.index_de_l_image.
         """
+        self.dbg.p(1, "rentre dans 'enregistre_dans_listePoints'")
         if index:
             i = index
         else:
             i = self.index_de_l_image
-        nieme = len(self.listePoints) % self.nb_de_points
-        self.listePoints.append([i, nieme, point])
+        nieme  = self.nb_clics
+        if self.refait_point : #arrive si on refait qu'un seul point à partir du tableau de l'onglet 3.
+            self.listePoints[self.index_de_l_image-self.premiere_image] = [i, nieme, point]
+            pass
+        else : 
+            self.listePoints.append([i, nieme, point])
+        self.dbg.p(3, "dans 'enregistre_dans_listePoints', self.listePoints vaut %s"%self.listePoints)
+        print("premiere image : ", self.premiere_image)
         return
 
     def stock_coordonnees_image(self, ligne,  interactif=True, index_image=False):
