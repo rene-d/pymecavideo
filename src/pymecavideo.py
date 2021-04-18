@@ -40,6 +40,7 @@ import pyqtgraph as pg
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
 from vecteur import vecteur
+import icon_rc
 licence = {}
 licence['en'] = """
     pymecavideo version %s:
@@ -2237,7 +2238,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         ###essai d'ajout d'un bouton pour refaire le point.
         
             qpushbutton = QPushButton()
+            qpushbutton.setIcon(QIcon(":/data/icones/curseur_cible.svg"))
             qpushbutton.setToolTip("refaire le pointage\n de l'image %s"%(ligne+1))
+            qpushbutton.setFlat(True)
             #qpushbutton.clicked.connect(lambda : self.refait_point_depuis_tableau(ligne))
             qpushbutton.clicked.connect( lambda checked, b=qpushbutton: self.refait_point_depuis_tableau( b ))
 
