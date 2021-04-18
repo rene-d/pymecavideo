@@ -46,7 +46,7 @@ class standardDragTable(QTableWidget):
     def htmlSelected(self):
         t = "<table>"
         lig_debut = "<tr>"
-        for c in range(self.columnCount()):
+        for c in range(self.columnCount()-1):
             lig_debut += "<td>"
             i = self.horizontalHeaderItem(c)
             try : 
@@ -74,7 +74,7 @@ class standardDragTable(QTableWidget):
     def textSelected(self):
         t = ""
         lig_debut = ""
-        for c in range(self.columnCount()):
+        for c in range(self.columnCount()-1):
             i = self.horizontalHeaderItem(c)
             try : 
                 lig_debut += str(i.text()) + "\t"
