@@ -2241,7 +2241,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         ###essai d'ajout d'un bouton pour refaire le point.
         
             qpushbutton = QPushButton()
-            qpushbutton.setText("refaire le pointage\n de l'image %s"%(ligne+1))
+            qpushbutton.setToolTip("refaire le pointage\n de l'image %s"%(ligne+1))
             #qpushbutton.clicked.connect(lambda : self.refait_point_depuis_tableau(ligne))
             qpushbutton.clicked.connect( lambda checked, b=qpushbutton: self.refait_point_depuis_tableau( b ))
 
@@ -2251,7 +2251,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def refait_point_depuis_tableau(self, qpbn ):
         self.refait_point=True
-        numero_image = qpbn.text().split(' ')[-1]
+        numero_image = qpbn.toolTip().split(' ')[-1]
+        print('OKKKKKKKK', numero_image)
         self.index_de_l_image_actuelle = self.index_de_l_image
         self.index_de_l_image = int(numero_image)
         
