@@ -139,7 +139,9 @@ class DataframePandas:
         """
         https://stackoverflow.com/questions/37680981/how-can-i-retrieve-data-from-a-qtablewidget-to-dataframe
         """
-        col_count = table.columnCount()
+        #col_count = table.columnCount()
+        #modif pour gérer 'refaire le point'
+        col_count = table.columnCount()-1
         row_count = table.rowCount()
         headers = [str(table.horizontalHeaderItem(i).text())
                    for i in range(col_count)]
@@ -151,7 +153,9 @@ class DataframePandas:
                 df_list2.append(
                     '' if table_item is None else float(table_item.text()))
             df_list.append(df_list2)
+        print(df_list)
         df = self.DataFrame(df_list, columns=headers)
+        print(df)
         return df
 
 
@@ -172,12 +176,17 @@ class FichierCSV:
                 csvwriter = csv.writer(csvfile, delimiter=_field,
                                        quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 if _header:
+                    #header = [tw.horizontalHeaderItem(
+                        #col).text() for col in range(tw.columnCount())]
+                    #modif pour gérer 'refaire le point'
                     header = [tw.horizontalHeaderItem(
-                        col).text() for col in range(tw.columnCount())]
+                        col).text() for col in range(tw.columnCount()-1)]
                     csvwriter.writerow(header)
                 for row in range(tw.rowCount()):
                     rowdata = []
-                    for col in range(tw.columnCount()):
+                    #for col in range(tw.columnCount()-1):
+                    #modif pour gérer 'refaire le point'
+                    for col in range(tw.columnCount()-1):
                         item = tw.item(row, col)
                         if item is not None:
                             txt = item.text()

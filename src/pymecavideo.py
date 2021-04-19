@@ -253,7 +253,7 @@ class StartQt5(QMainWindow):
         for key in sorted(EXPORT_FORMATS.keys()):
             self.ui.exportCombo.addItem(EXPORT_FORMATS[key]['nom'])
 
-        # exportQactions
+        #exportQactions
         for key in sorted(EXPORT_FORMATS.keys()):
             action = QAction(EXPORT_FORMATS[key]
                              ['nom'], self.ui.menuE_xporter_vers)
