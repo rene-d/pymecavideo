@@ -21,7 +21,7 @@
 from math import sqrt, atan2, degrees
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QRect, QPoint, QPointF
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPicture, QPainter, QColor, QFont, QPainterPath, QPen
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPicture, QPainter, QColor, QFont, QPainterPath, QPen, QFontMetrics
 from PyQt5.QtWidgets import QLabel, QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
@@ -165,52 +165,53 @@ class Label_Trajectoire(QLabel):
             self.painter.begin(self)
             self.painter.drawPixmap(0, 0, self.pixmap())
             font = QFont()
-            font.setPointSize(15)
+            font_size = 12
+            font.setPointSize(font_size)
             self.painter.setFont(font)
             self.painter.setRenderHint(QPainter.TextAntialiasing)
             self.painter.setRenderHint(QPainter.Antialiasing)
-
-            if self.chrono == 1:  # rends plus lisible si le fond est foncé
-                self.painter.setPen(Qt.white)
-                self.painter.setBrush(Qt.lightGray)
-                self.painter.drawRect(self.width()-210, 30, 120, 30)
+            x1 = 50 # marge en largeur
+            y1 = 50 # marge en hauteur
             if self.chrono == 2 :
                 self.painter.setPen(Qt.black)
             else :
                 self.painter.setPen(Qt.blue)
+            # Ecrit l'intervalle de temps
             try:
-                self.painter.drawText(self.width(
-                )-200, 50, unicode("{0}t = {1:.3f} s").format(unichr(916), self.label_video.app.deltaT))
+                text = unicode("{0}t = {1:.3f} s").format(unichr(916), self.label_video.app.deltaT)
             except NameError:
-                self.painter.drawText(self.width(
-                )-200, 50, "{0}t = {1:.3f} s".format(chr(916), self.label_video.app.deltaT))
+                text = "{0}t = {1:.3f} s".format(chr(916), self.label_video.app.deltaT)
+            font_metrics = QFontMetrics(font)
+            text_width = font_metrics.width(text)
+            text_height = font_size
+            if self.chrono == 1:  # rends plus lisible si le fond est foncé
+                self.painter.setPen(Qt.white)
+                self.painter.setBrush(Qt.lightGray)
+                self.painter.drawRect(self.width()-text_width-x1-5, y1-text_height-5, text_width+10, text_height+10)
+            self.painter.drawText(self.width()-text_width-x1, y1, text)
             # dessine l'échelle
             if self.chrono == 2:  # chronogramme
-                if self.label_video.app.echelle_faite : 
-                    try: #dessine une échelle ne haut, horizontalement
-                        longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x(
-                        ))**2 + (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
-                        self.painter.drawLine(100, 60, 100, 80)
-                        self.painter.drawLine(100, 70, longueur+100, 70)
-                        self.painter.drawLine(longueur+100, 60, longueur+100, 80)
-                        self.painter.drawText((longueur)/2, 120, unicode("d = {0:.2e} m").format(
-                            self.label_video.echelle_image.longueur_reelle_etalon))
-                    except AttributeError:
-                        pass  # échelle non faite
+                if self.label_video.app.echelle_faite : #dessine une échelle en haut, horizontalement
+                    longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x(
+                    ))**2 + (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
+                    self.painter.drawLine(x1, y1-10, x1, y1+10)
+                    self.painter.drawLine(x1, y1, longueur+x1, y1)
+                    self.painter.drawLine(longueur+x1, y1-10, longueur+x1, y1+10)
+                    try :
+                        text = unicode("d = {0:.2e} m").format(
+                            self.label_video.echelle_image.longueur_reelle_etalon)
                     except NameError:
-                        longueur = sqrt((self.label_video.echelle_image.p1.x()-self.label_video.echelle_image.p2.x(
-                        ))**2 + (self.label_video.echelle_image.p1.y()-self.label_video.echelle_image.p2.y())**2)
-                        self.painter.drawLine(100, 60, 100, 80)
-                        self.painter.drawLine(100, 70, longueur+100, 70)
-                        self.painter.drawLine(longueur+100, 60, longueur+100, 80)
-                        self.painter.drawText((longueur)/2, 120, "d = {0:.2e} m".format(
-                            self.label_video.echelle_image.longueur_reelle_etalon))
+                        text = "d = {0:.2e} m".format(
+                            self.label_video.echelle_image.longueur_reelle_etalon)   
+                    font_metrics = QFontMetrics(font)
+                    text_width = font_metrics.width(text)
+                    self.painter.drawText(max(x1+(longueur/2)-(text_width/2), 0), y1+30, text) 
                 else : #échelle non faite
                     try : 
                         self.painter.drawText(50, 50, unicode("échelle non précisée"))
                     except NameError: 
                         self.painter.drawText(50, 50, "échelle non précisée")
-            self.painter.end()
+                self.painter.end()
 
             ############################################################
             # Peindre l'échelle si chronophotographie
