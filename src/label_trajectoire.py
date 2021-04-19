@@ -234,9 +234,9 @@ class Label_Trajectoire(QLabel):
                     ), int((self.label_video.app.label_echelle_trace.p1.y()+self.label_video.app.label_echelle_trace.p2.y())/2)+20, echelle)
                 else : #pas d'échelle 
                     try : 
-                        self.painter.drawText(50, 50, unicode("échelle non précisée"))
+                        self.painter.drawText(x1, y1, unicode("échelle non précisée"))
                     except NameError: 
-                        self.painter.drawText(50, 50, "échelle non précisée")
+                        self.painter.drawText(x1, y1, "échelle non précisée")
                     
                 self.painter.end()
 
