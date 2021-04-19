@@ -1233,7 +1233,7 @@ class StartQt5(QMainWindow):
             self.mets_en_orange_echelle()
             self.ui.tableWidget.show()
             self.recalculLesCoordonnees()
-            self.debut_capture()
+            self.debut_capture(rouvre=True)
         except:
             reponse = QMessageBox.warning(None, "Mauvais type de fichier",
                                           _translate("pymecavideo", """\
@@ -1387,7 +1387,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
                 "*.csv *.txt *.asc *.dat *.mecavideo")
             self.enregistre(fichier)
 
-    def debut_capture(self, departManuel=True):
+    def debut_capture(self, departManuel=True, rouvre=False):
         self.dbg.p(1, "rentre dans 'debut_capture'")
         """
         permet de mettre en place le nombre de point à acquérir
@@ -1413,7 +1413,8 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.ui.tabWidget.setTabEnabled(2, True)
         self.ui.tabWidget.setTabEnabled(1, True)
         self.arretAuto = False
-        self.premiere_image = self.ui.horizontalSlider.value()
+        if not rouvre : #si rouvre, self.premiere_imageest déjà définie
+            self.premiere_image = self.ui.horizontalSlider.value()
         self.affiche_point_attendu(0)
         self.lance_capture = True
         self.fixeLesDimensions()
@@ -2150,8 +2151,10 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.pY[y] = [point]
 
     def affiche_tableau(self):
+        """lancée à cahque affichage du tableau, recalcule les coordonnées à afficher à partir des listes de points."""
+        self.dbg.p(1, "rentre dans 'affiche_tableau'")
+                
         # active ou désactive les checkbox énergies (n'ont un intérêt que si les échelles sont faites)
-        self.liste_qpushbutton = []
         if self.echelle_faite:
             self.ui.checkBox_Ec.setEnabled(1)
             self.ui.checkBox_Epp.setEnabled(1)
@@ -2246,7 +2249,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             #qpushbutton.clicked.connect(lambda : self.refait_point_depuis_tableau(ligne))
             qpushbutton.clicked.connect( lambda checked, b=qpushbutton: self.refait_point_depuis_tableau( b ))
 
-            self.liste_qpushbutton.append(qpushbutton) #nécessaire sinon le ramsse miette vire tout
+            #self.liste_qpushbutton.append(qpushbutton) #nécessaire sinon le ramsse miette vire tout
             self.ui.tableWidget.setCellWidget(
                                     ligne, self.nb_de_points * 2 + 1 + colonnes_sup*self.nb_de_points, qpushbutton)
 
