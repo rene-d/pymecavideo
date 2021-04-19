@@ -139,38 +139,6 @@ class Cadreur(QObject):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
-
-        # cv2.namedWindow(self.titre)
-
-        #ralentiLabel = str(self.app.tr("Choisir le ralenti"))
-
-        #cv2.createTrackbar(ralentiLabel, self.titre, 0, 16, self.controleRalenti)
-        #ech, w, h = self.echelleTaille()
-        #self.capture = cv2.VideoCapture(str(self.app.filename.encode('utf8'), 'utf8'))
-        # while not fini:
-        # for i in self.app.points.keys():
-        # try :
-        #p = self.app.points[i][self.numpoint]
-        #hautgauche = (p + self.decal - self.rayons) * ech
-        #taille = self.sz * ech
-        #self.capture.set(cv2.CAP_PROP_POS_FRAMES, i + self.app.premiere_image)
-        #status, img =  self.capture.read()
-        #img = self.rotateImage(img, self.app.rotation)
-        #w, h = int(taille.x()), int(taille.y())
-        #x, y = int(hautgauche.x()), int(hautgauche.y())
-
-        # crop_img = img[y:y+h, x:x+w] # Crop from x, y, w, h -> 100, 200, 300, 400
-        # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
-        #cv2.imshow(self.titre, crop_img)
-        #k = cv2.waitKey(int(self.delay * self.ralenti))
-        # if k == 0x10001b or k == 27 or k==20:
-        #fini = True
-        # cv2.destroyAllWindows()
-        # break
-        # except : pass #si pas le bon nombre de points dans la dernière image
-
-        # cv2.destroyAllWindows()
-        #fini = True
         self.dialog = RalentiWidget(parentObject=self)
         self.dialog.exec_()
 

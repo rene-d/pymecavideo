@@ -62,6 +62,5 @@ class Label_Origine(QLabel):
             self.app.ui.label_zoom.setPixmap(QPixmap())
         del self.zoom_croix
 
-        # self.app.change_axe_origine.emit()
         self.app.change_axe_ou_origine()
         self.close()

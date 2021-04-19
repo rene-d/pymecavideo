@@ -1483,8 +1483,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.ui.tableWidget.setRowCount(1)
         colonnes_sup = self.ui.checkBox_Ec.isChecked()+self.ui.checkBox_Epp.isChecked() + \
             self.ui.checkBox_Em.isChecked()
-        #self.ui.tableWidget.setColumnCount(
-            #self.nb_de_points * 2 + 1 + colonnes_sup*self.nb_de_points)
         
         self.ui.tableWidget.setColumnCount(
             self.nb_de_points * 2 + 2 + colonnes_sup*self.nb_de_points) #ajout d'une colonne bouton
@@ -1997,15 +1995,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         else:  # if camera, all tranlsations are disabled
             self.label_trajectoire.referentiel = 0
             self.label_trajectoire.origine = vecteur(0, 0)
-        # rempli le menu des courbes à tracer
-        #self.ui.comboBox_mode_tracer.clear()
-        #self.ui.comboBox_mode_tracer.insertItem(
-            #-1, _translate("pymecavideo", "Choisir ...", None))
-        #for i in range(self.nb_de_points):
-            #combo = self.ui.comboBox_mode_tracer
-            #combo.addItem(u"x%d(t)" % (i + 1))
-            #combo.addItem(u"y%d(t)" % (i + 1))
-            #combo.addItem(u"v%d(t)" % (i + 1))
         self.dbg.p(3, "origine %s, ref %s" %
                    (str(self.label_trajectoire.origine), str(ref)))
         self.label_trajectoire.reDraw()
@@ -2031,7 +2020,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.affiche_point_attendu(self.point_attendu)
         if self.index_de_l_image <= self.image_max:  # si on n'atteint pas encore la fin de la vidéo
             self.lance_capture = True
-        
             self.stock_coordonnees_image(
                 ligne=int((len(self.listePoints)-1)/self.nb_de_points))
             if interactif:
@@ -2061,8 +2049,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.ui.actionDefaire.setEnabled(value)
         # permet de remettre l'interface à zéro
         if not value:
-            # self.init_capture()
-            # self.ui.horizontalSlider.setEnabled(True)  #TODO si décommenté, permet de revenir en arrière plus que 1er point et fourni un bug IndexError.
             self.ui.spinBox_image.setEnabled(True)
 
     def enableRefaire(self, value):

@@ -33,10 +33,7 @@ from echelle import echelle
 class Label_Video(QLabel):
     def __init__(self, parent, app):
         QLabel.__init__(self, parent)
-        #self.parent = parent
         self.app = app
-        #self.setGeometry(QRect(0, 0, self.app.largeur, self.app.hauteur))
-        # self.setMinimumSize(QSize(640,480))
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
         self.cible_icon = os.path.join(
@@ -186,7 +183,6 @@ class Label_Video(QLabel):
                     self.painter.drawLine(0, -2, 0, 2)
                     self.painter.translate(-10, +10)
                     self.painter.drawText(0, 0, str(color+1))
-
                     self.painter.translate(-point.x() + 10, -point.y() - 10)
 
             ############################################################
