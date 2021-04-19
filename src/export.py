@@ -153,9 +153,7 @@ class DataframePandas:
                 df_list2.append(
                     '' if table_item is None else float(table_item.text()))
             df_list.append(df_list2)
-        print(df_list)
         df = self.DataFrame(df_list, columns=headers)
-        print(df)
         return df
 
 

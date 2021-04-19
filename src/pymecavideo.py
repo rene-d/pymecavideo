@@ -1015,6 +1015,7 @@ class StartQt5(QMainWindow):
         si la locale est française.
         """
         self.dbg.p(1, "rentre dans 'presse_papier'")
+        self.affiche_tableau()
         trange = QTableWidgetSelectionRange(0, 0,
                                             self.ui.tableWidget.rowCount() - 1,
                                             self.ui.tableWidget.columnCount() - 1)
@@ -1034,6 +1035,7 @@ class StartQt5(QMainWindow):
         if choix_export > 0:
             # Les choix d'export du comboBox commencent à l'index 1. Le dico EXPORT_FORMATS commence à 1 et pas à zéro
             self.ui.exportCombo.setCurrentIndex(0)
+            self.affiche_tableau()
             Export(self, choix_export)
 
     def _dir(lequel=None, install=None):
