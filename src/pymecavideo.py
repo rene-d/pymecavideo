@@ -1388,12 +1388,13 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             self.enregistre(fichier)
 
     def debut_capture(self, departManuel=True, rouvre=False):
-        self.dbg.p(1, "rentre dans 'debut_capture'")
         """
         permet de mettre en place le nombre de point à acquérir
         @param departManuel vrai si on a fixé à la main la première image.
+        @param rouvre  : ne mets pas à jour self.prmeière_image à partir du slider.
 
         """
+        self.dbg.p(1, "rentre dans 'debut_capture'")
         self.label_video.setFocus()
         self.label_video.show()
         self.label_video.activateWindow()
