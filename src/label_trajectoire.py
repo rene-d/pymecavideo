@@ -208,9 +208,9 @@ class Label_Trajectoire(QLabel):
                     self.painter.drawText(max(x1+(longueur/2)-(text_width/2), 0), y1+30, text) 
                 else : #échelle non faite
                     try : 
-                        self.painter.drawText(50, 50, unicode("échelle non précisée"))
+                        self.painter.drawText(x1, y1, unicode("échelle non précisée"))
                     except NameError: 
-                        self.painter.drawText(50, 50, "échelle non précisée")
+                        self.painter.drawText(x1, y1, "échelle non précisée")
                 self.painter.end()
 
             ############################################################
