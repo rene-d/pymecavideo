@@ -1179,6 +1179,15 @@ class StartQt5(QMainWindow):
         self.dbg.p(3, "rentre dans 'loads, dico données' %s" % (dico_donnee))
         self.calcul_deltaT(rouvre=True)
         self.label_video.resize(QSize(largeur, hauteur))
+        ########redimensionne l'application TODO : ATTENTION 
+        geom = self.label_video.geometry()
+        #print(geom.x(),geom.y(),geom.width(),geom.height())
+        #print(self.ui.containerWidget1.geometry())
+        self.ui.containerWidget1.setGeometry(0,0, geom.width(),geom.height())
+        decalage_gauche = 220
+        decalage_haut = 130
+        self.setGeometry(0,0, self.label_video.width()+decalage_gauche, self.label_video.height()+decalage_haut)
+        
         self.aspectlayout1.aspect = largeur/hauteur
         self.aspectlayout2.aspect = largeur/hauteur
         self.init_cvReader()
