@@ -432,6 +432,10 @@ class StartQt5(QMainWindow):
         self.label_trajectoire.label_video = self.label_video
         
         #mets à jour le ratio
+        try : 
+            self.ratio=self.determineRatio()
+        except: 
+            pass #si lancé prématurément, la vidéo n'est pas chargée
         self.aspectlayout1.aspect = self.ratio
         self.aspectlayout2.aspect = self.ratio
 
