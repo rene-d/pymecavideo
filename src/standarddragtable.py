@@ -23,7 +23,7 @@
 import locale
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QMimeData
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QDrag
 from PyQt5.QtWidgets import QTableWidget, QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 
@@ -108,7 +108,7 @@ class standardDragTable(QTableWidget):
         drag = QDrag(self)
         mime = self.mimeSelected()
         drag.setMimeData(mime)
-        drag.start(Qt.CopyAction)
+        #drag.exec_(Qt.CopyAction)
 
     def selection(self):
         clip = QApplication.clipboard()

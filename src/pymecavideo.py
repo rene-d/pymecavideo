@@ -355,6 +355,8 @@ class StartQt5(QMainWindow):
         self.defixeLesDimensions()
 
     def init_interface(self, refait=0):
+        self.dbg.p(1, "rentre dans 'init_interface'")
+
         self.ui.tabWidget.setEnabled(1)
         if len(self.points) == 0:
             self.ui.tabWidget.setTabEnabled(3, False)
@@ -428,6 +430,10 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_Em.setChecked(0)
         self.ui.checkBox_Epp.setChecked(0)
         self.label_trajectoire.label_video = self.label_video
+        
+        #mets à jour le ratio
+        self.aspectlayout1.aspect = self.ratio
+        self.aspectlayout2.aspect = self.ratio
 
     def affiche_lance_capture(self, active=False):
         """
@@ -1096,6 +1102,7 @@ class StartQt5(QMainWindow):
             self.rouvre(fichier)
 
     def mets_en_orange_echelle(self):
+        self.ui.Bouton_Echelle.setEnabled(1)
         self.ui.Bouton_Echelle.setText("refaire l'échelle")
         self.ui.Bouton_Echelle.setStyleSheet("background-color:orange;")
 
@@ -1251,6 +1258,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
                 framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         ratioFilm = float(self.largeurFilm) / self.hauteurFilm
+        self.dbg.p(3, "dans 'determineRatio', le ratio a été calculé à %s"%(ratioFilm))
         return ratioFilm
 
     def redimensionneFenetre(self, tourne=False, old=None):
@@ -2549,8 +2557,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.init_capture()
                 self.ratio = self.determineRatio()
                 self.ui.spinBox_chrono.setMaximum(int(self.image_max))
-                self.label_video.repaint()
-                self.label_video.show()
                 self.change_axe_ou_origine()
                 self.prefs.videoDir = os.path.dirname(self.filename)
                 self.prefs.save()
@@ -2684,7 +2690,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.dbg.p(1, "rentre dans 'traiteOptions'")
         for opt, val in self.opts:
             if opt in ['-f', '--fichier_mecavideo']:
-                if os.path.isfile(val) and os.path.splitext(val)[1] == ".csv":
+                if os.path.isfile(val) and (os.path.splitext(val)[1] == ".csv" or  os.path.splitext(val)[1] == ".mecavideo"):
                     try:
                         self.rouvre(val)
                     except AttributeError:
