@@ -1,0 +1,5 @@
+numpy
+python-opsncv
+pandas
+python-qt5
+nbformat
