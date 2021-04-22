@@ -2105,11 +2105,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
     def enregistre_graphe(self):
         if hasattr (self, 'pg_exporter'):
             base_name = os.path.splitext(os.path.basename(self.filename))[0]
-            defaultName = os.path.join(DOCUMENT_PATH[0], base_name)
+            defaultName = os.path.join(DOCUMENT_PATH[0], base_name+'.png')
             fichier = QFileDialog.getSaveFileName(self,
                                               _translate(
                                                   "pymecavideo", "Enregistrer le graphique", None),
-                                              defaultName, _translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
+                                              defaultName, _translate("pymecavideo", "fichiers images(*.png)", None))
             try :
                 self.pg_exporter.export(fichier[0])
             except :
@@ -2277,8 +2277,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             # l'index est sur la dernière image traitée
             index_image = self.listePoints[-1][0]
         else : 
-            index_image = self.index_de_l_image-self.premiere_image
+            index_image = self.index_de_l_image-1
         t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
+
+        self.dbg.p(2, "dans 'stock_coordonnees_image', index_image = %s"%(index_image))
+
 
         # construction de l'ensemble des points pour l'image actuelle
         listePointsCliquesParImage = []
@@ -2408,13 +2411,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.refait_point=True
         numero_image = qpbn.toolTip().split(' ')[-1]
         self.index_de_l_image_actuelle = self.index_de_l_image
-        self.index_de_l_image = int(numero_image)
+        self.index_de_l_image = int(numero_image)+self.premiere_image-1
         
         self.ui.tabWidget.setCurrentIndex(0)
         point_actuel = len(self.listePoints)%self.nb_de_points
         self.clic_sur_label_video_ajuste_ui(point_actuel)
         
     def fin_refait_point_depuis_tableau(self): 
+        self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")
         self.refait_point = False
         
         #####remplacement de la valeur de self.points pour la ligne correspondante
