@@ -37,6 +37,7 @@ from label_video import Label_Video
 from echelle import Label_Echelle, echelle
 from glob import glob
 import pyqtgraph as pg
+import pyqtgraph.exporters
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
 from PyQt5 import uic
@@ -654,6 +655,7 @@ class StartQt5(QMainWindow):
         self.ui.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
         self.ui.pushButton_save.clicked.connect(self.enregistreChrono)
         self.ui.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
+        self.ui.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
         
     def changeChronoImg(self,img):
         self.chronoImg = img
@@ -671,7 +673,7 @@ class StartQt5(QMainWindow):
         try :
             self.pixmapChrono.save(fichier[0])
         except :
-            QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("export", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
+            QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
                     fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
 
     def chronoPhoto(self):
@@ -1099,10 +1101,11 @@ class StartQt5(QMainWindow):
 
     def rouvre_ui(self):
         self.dbg.p(1, "rentre dans 'rouvre_ui'")
-        dir_ = self._dir("home")[0]
+        
+        dir_ = DOCUMENT_PATH[0]
         fichier, _ = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
                                                  dir_,
-                                                 _translate("pymecavideo", "fichiers pymecavideo(*.mecavideo *.csv)", None))
+                                                 _translate("pymecavideo", "Projet Pymecavideo (*.mecavideo)", None))
         if fichier != "":
             self.rouvre(fichier)
 
@@ -1402,13 +1405,18 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
     def enregistre_ui(self):
         self.dbg.p(1, "rentre dans 'enregistre_ui'")
         if self.points != {}:
-            fichier, hints = QFileDialog.getSaveFileName(
-                self,
-                "FileDialog",
-                "data.mecavideo",
-                "*.csv *.txt *.asc *.dat *.mecavideo")
-            self.enregistre(fichier)
-
+            base_name = os.path.splitext(os.path.basename(self.filename))[0]
+            defaultName = os.path.join(DOCUMENT_PATH[0], base_name)
+            fichier = QFileDialog.getSaveFileName(self,
+                                              _translate(
+                                                  "pymecavideo", "Enregistrer le projet pymecavideo", None),
+                                              defaultName, _translate("pymecavideo", "Projet pymecavideo (*.mecavideo)", None))
+            try :
+                self.enregistre(fichier[0])
+            except :
+                QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
+                        fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
+ 
     def debut_capture(self, departManuel=True, rouvre=False):
         """
         permet de mettre en place le nombre de point à acquérir
@@ -1951,6 +1959,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.ui.widget_graph.setText('')
                 self.graphWidget = pg.PlotWidget(
                     title=titre, parent=self.ui.widget_graph)
+                self.graphWidget.setMenuEnabled(False)
                 self.graphWidget.setLabel('bottom', unite_x)
                 self.graphWidget.setLabel('left', unite_y)
                 X, Y = self.nettoyage_points(X, Y)
@@ -1962,6 +1971,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.graphWidget.plot(X, Y, pen=pen, symbol=symbol)
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
+                self.pg_exporter = pg.exporters.ImageExporter(self.graphWidget.plotItem)
             else:
                 plotItem = self.graphWidget.getPlotItem()
                 plotItem.setTitle(titre)
@@ -1973,6 +1983,20 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.graphWidget.plot(X, Y, pen=pen, symbol=symbol)
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
+                
+    def enregistre_graphe(self):
+        if hasattr (self, 'pg_exporter'):
+            base_name = os.path.splitext(os.path.basename(self.filename))[0]
+            defaultName = os.path.join(DOCUMENT_PATH[0], base_name)
+            fichier = QFileDialog.getSaveFileName(self,
+                                              _translate(
+                                                  "pymecavideo", "Enregistrer le graphique", None),
+                                              defaultName, _translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
+            try :
+                self.pg_exporter.export(fichier[0])
+            except :
+                QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
+                        fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
 
     def nettoyage_points(self, X_, Y_):
         """permet de tenir compte des expressions "négatives" quand on va chercher des indices : python évlaue corerctement X[-1] alors qu'on ne le veut pas. Un passage dans self.traite_indices à mis certaines valeurs non calculées à False. Il suffit de les enlever dans X et Y"""
