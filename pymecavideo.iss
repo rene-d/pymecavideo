@@ -17,7 +17,7 @@
 ;along with pymecavideo; if not, write to the Free Software
 ;Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#define AppVersion "7.1.0.1"
+#define AppVersion "7.2.0.0"
 
 
 [Setup]
