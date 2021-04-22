@@ -354,6 +354,7 @@ class StartQt5(QMainWindow):
         self.resizing = False
         self.stopRedimensionne = False
         self.refait_point = False
+        self.graphe_deja_choisi = None
         self.defixeLesDimensions()
 
     def init_interface(self, refait=0):
@@ -647,8 +648,8 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
         self.ui.checkBox_Epp.stateChanged.connect(self.affiche_tableau)
         self.ui.checkBox_Em.stateChanged.connect(self.affiche_tableau)
-        self.ui.comboBox_X.currentIndexChanged.connect(self.dessine_graphe)
-        self.ui.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe)
+        self.ui.comboBox_X.currentIndexChanged.connect(self.dessine_graphe_avant)
+        self.ui.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe_avant)
         self.ui.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
         self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
         self.ui.lineEdit_IPS.textChanged.connect(self.verifie_IPS)
@@ -1948,32 +1949,36 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             text_textedit += "Pour les points où c'était possible, les expressions python rentrées ont été calculées avec succès !"
 
     def MAJ_combox_box_grapheur(self):
-        self.ui.comboBox_X.clear()
-        self.ui.comboBox_Y.clear()
-        self.ui.comboBox_X.insertItem(-1,
-                                      _translate("pymecavideo", "Choisir ...", None))
-        self.ui.comboBox_Y.insertItem(-1,
-                                      _translate("pymecavideo", "Choisir ...", None))
-        self.ui.comboBox_X.addItem('t')
-        self.ui.comboBox_Y.addItem('t')
-        for grandeur in self.dictionnaire_grandeurs.keys():
-            if self.dictionnaire_grandeurs[grandeur] != []:
-                numero = ''.join(
-                    [grandeur[-2] if grandeur[-2].isdigit() else "", grandeur[-1]])
-                if 'prime' in grandeur : 
-                    if 'x' in grandeur :
-                        grandeur_a_afficher = 'Vx'+numero
-                    elif 'y' in grandeur :
-                        grandeur_a_afficher = 'Vy'+numero
-                    elif 'abs' in grandeur :
-                        grandeur_a_afficher = 'Ax'+numero
-                    elif 'ord' in grandeur :
-                        grandeur_a_afficher = 'Ay'+numero
-                else : 
-                    grandeur_a_afficher = grandeur
-                self.ui.comboBox_X.addItem(grandeur_a_afficher)
-                self.ui.comboBox_Y.addItem(grandeur_a_afficher)
-
+        if self.graphe_deja_choisi is None : #premier choix de graphe
+            self.ui.comboBox_X.clear()
+            self.ui.comboBox_Y.clear()
+            self.ui.comboBox_X.insertItem(-1,
+                                        _translate("pymecavideo", "Choisir ...", None))
+            self.ui.comboBox_Y.insertItem(-1,
+                                        _translate("pymecavideo", "Choisir ...", None))
+            self.ui.comboBox_X.addItem('t')
+            self.ui.comboBox_Y.addItem('t')
+            for grandeur in self.dictionnaire_grandeurs.keys():
+                if self.dictionnaire_grandeurs[grandeur] != []:
+                    numero = ''.join(
+                        [grandeur[-2] if grandeur[-2].isdigit() else "", grandeur[-1]])
+                    if 'prime' in grandeur : 
+                        if 'x' in grandeur :
+                            grandeur_a_afficher = 'Vx'+numero
+                        elif 'y' in grandeur :
+                            grandeur_a_afficher = 'Vy'+numero
+                        elif 'abs' in grandeur :
+                            grandeur_a_afficher = 'Ax'+numero
+                        elif 'ord' in grandeur :
+                            grandeur_a_afficher = 'Ay'+numero
+                    else : 
+                        grandeur_a_afficher = grandeur
+                    self.ui.comboBox_X.addItem(grandeur_a_afficher)
+                    self.ui.comboBox_Y.addItem(grandeur_a_afficher)
+        else : #il y a déjà eu un choix de graphe
+            self.ui.comboBox_X.setItem(self.graphe_deja_choisi[1])
+            self.ui.comboBox_Y.setItem(self.graphe_deja_choisi[0])
+        
     def traite_indices(self, expression, i, n, grandeur):
         """cette fonction traite les indices négatifs afin que python, justement... ne les traite pas"""
         self.dbg.p(1, "rentre dans 'traite_indices'")
@@ -1999,6 +2004,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     return "False", erreur
         return expression, erreur
 
+    def dessine_graphe_avant(self):
+        if self.graphe_deja_choisi is not None : 
+            self.graphe_deja_choisi = None #si changement ds les combobox, on réinitilaise le choix.
+        self.dessine_graphe()
+        
     def dessine_graphe(self):
         """dessine les graphes avec pyqtgraph au moment où les combobox sont choisies"""
         self.dbg.p(1, "rentre dans 'dessine_graphe'")
@@ -2007,11 +2017,19 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             0, 0, 0), 'symbol': None}}  # Dictionnaire contenant les différents styles de graphes
         # Index du comboxBox styles, inspirés de Libreoffice
         style = self.ui.comboBox_style.currentIndex()
+        
+        ###extraction des grandeurs d'abscisses et d'ordonnées 
+        if self.graphe_deja_choisi is not None : 
+            abscisse = self.graphe_deja_choisi[1]
+            ordonnee = self.graphe_deja_choisi[0]
+        else : 
+            abscisse = self.ui.comboBox_X.currentText()
+            ordonnee = self.ui.comboBox_Y.currentText()
         # Définition des paramètres 'pen' et 'symbol' pour pyqtgraph
         pen, symbol = styles[style]['pen'], styles[style]['symbol']
-        grandeurX = self.ui.comboBox_X.currentText().replace(
+        grandeurX = abscisse.replace(
             'Vx', 'xprime').replace('Vy', 'yprime')
-        grandeurY = self.ui.comboBox_Y.currentText().replace(
+        grandeurY = ordonnee.replace(
             'Vx', 'xprime').replace('Vy', 'yprime')
         if grandeurX == 't':
             X = [i*self.deltaT for i in range(len(self.points))]
@@ -2030,26 +2048,29 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         if X != [] and Y != []:
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', 'k')
-            titre = "%s en fonction de %s" % (
-                self.ui.comboBox_Y.currentText(), self.ui.comboBox_X.currentText())
+            titre = "%s en fonction de %s" % (ordonnee, abscisse)
             # gestion des unités
-            if 't' in self.ui.comboBox_X.currentText():
+            if 't' in abscisse:
                 unite_x = "t(s)"
-            elif 'V' in self.ui.comboBox_X.currentText():
-                unite_x = self.ui.comboBox_X.currentText()+'(m/s)'
-            elif 'E' in self.ui.comboBox_X.currentText():
-                unite_x = self.ui.comboBox_X.currentText()+'(J)'
+            elif 'V' in abscisse:
+                unite_x = abscisse+'(m/s)'
+            elif 'E' in abscisse:
+                unite_x = abscisse+'(J)'
+            elif 'A' in abscisse:
+                unite_x = abscisse+'(m/s²)'
             else:
-                unite_x = self.ui.comboBox_X.currentText()+'(m)'
+                unite_x = abscisse+'(m)'
 
-            if 't' in self.ui.comboBox_Y.currentText():
+            if 't' in ordonnee:
                 unite_y = "t(s)"
-            elif 'V' in self.ui.comboBox_Y.currentText():
-                unite_y = self.ui.comboBox_Y.currentText()+'(m/s)'
-            elif 'E' in self.ui.comboBox_Y.currentText():
-                unite_y = self.ui.comboBox_Y.currentText()+'(J)'
+            elif 'V' in ordonnee:
+                unite_y = ordonnee+'(m/s)'
+            elif 'E' in ordonnee:
+                unite_y = ordonnee+'(J)'
+            elif 'A' in ordonnee:
+                unite_y = ordonnee+'(m/s²)'
             else:
-                unite_y = self.ui.comboBox_Y.currentText()+'(m)'
+                unite_y = ordonnee+'(m)'
 
             if not hasattr(self, 'graphWidget'):  # premier tour
                 self.ui.widget_graph.setText('')
@@ -2079,6 +2100,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.graphWidget.plot(X, Y, pen=pen, symbol=symbol)
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
+            self.graphe_deja_choisi = (ordonnee, abscisses)
                 
     def enregistre_graphe(self):
         if hasattr (self, 'pg_exporter'):
