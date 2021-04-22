@@ -1687,6 +1687,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.dictionnaire_grandeurs["Ec"+str(i+1)] = []
             self.dictionnaire_grandeurs["Epp"+str(i+1)] = []
             self.dictionnaire_grandeurs["Em"+str(i+1)] = []
+            self.dictionnaire_grandeurs["A"+str(i+1)] = []
+            # doit s'appeler xprime pour que ça soit orthonal à V pour les replaces.
+            self.dictionnaire_grandeurs["vabsprime"+str(i+1)] = []
+            # doit s'appeler yprime pour que ça soit orthonal à V pour les replaces.
+            self.dictionnaire_grandeurs["vordprime"+str(i+1)] = []
+            
         deltaT = self.deltaT
         for ligne in self.points.keys():
             i = 0
@@ -1704,9 +1710,17 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 grandeurVy = "self.dictionnaire_grandeurs['yprime"+str(
                     i+1)+"']"
                 grandeurV = "self.dictionnaire_grandeurs['V"+str(i+1)+"']"
+                grandeurAx = "self.dictionnaire_grandeurs['vabsprime"+str(
+                    i+1)+"']"
+                grandeurAy = "self.dictionnaire_grandeurs['vordprime"+str(
+                    i+1)+"']"
+                grandeurA = "self.dictionnaire_grandeurs['A"+str(i+1)+"']"
+                
                 grandeurEc = "self.dictionnaire_grandeurs['Ec"+str(i+1)+"']"
                 grandeurEpp = "self.dictionnaire_grandeurs['Epp"+str(i+1)+"']"
                 grandeurEm = "self.dictionnaire_grandeurs['Em"+str(i+1)+"']"
+                
+                
                 m = float(self.ui.lineEdit_m.text().replace(',', '.'))
                 g = float(self.ui.lineEdit_g.text().replace(',', '.'))
                 expression_Vx = '(X[n+1]-X[n-1])/(2*deltaT)'
@@ -1715,24 +1729,36 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 expression_Ec = '0.5*m*V[n]**2'
                 expression_Epp = 'm*g*Y[n]' if self.sens_Y == 1 else '-m*g*Y[n]'
                 expression_Em = 'Epp[n]+Ec[n]'
+                expression_Ax = '(Vx[n+1]-Vx[n-1])/(2*deltaT)'
+                expression_Ay = '(Vy[n+1]-Vy[n-1])/(2*deltaT)'
+                expression_A = 'math.sqrt(Ax[n]**2+Ay[n]**2)'
+                
 
-                expression_Vx = expression_Vx.replace('X', grandeurX).replace('Y', grandeurY).replace('Vx', grandeurVx).replace(
-                    'Vy', grandeurVy).replace('V', grandeurV).replace('Ec', grandeurEc).replace('Epp', grandeurEpp).replace('Em', grandeurEm)
+                expression_Vx = expression_Vx.replace('X', grandeurX)
 
-                expression_Vy = expression_Vy.replace('X', grandeurX).replace('Y', grandeurY).replace('Vx', grandeurVx).replace(
-                    'Vy', grandeurVy).replace('V', grandeurV).replace('Ec', grandeurEc).replace('Epp', grandeurEpp).replace('Em', grandeurEm)
+                expression_Vy = expression_Vy.replace('Y', grandeurY)
 
-                expression_V = expression_V.replace('X', grandeurX).replace('Y', grandeurY).replace('Vx', grandeurVx).replace(
-                    'Vy', grandeurVy).replace('V', grandeurV).replace('Ec', grandeurEc).replace('Epp', grandeurEpp).replace('Em', grandeurEm)
+                expression_V = expression_V.replace('Vx', grandeurVx).replace(
+                    'Vy', grandeurVy)
 
-                expression_Ec = expression_Ec.replace('X', grandeurX).replace('Y', grandeurY).replace('Vx', grandeurVx).replace(
-                    'Vy', grandeurVy).replace('V', grandeurV).replace('Ec', grandeurEc).replace('Epp', grandeurEpp).replace('Em', grandeurEm)
+                expression_Ax = expression_Ax.replace('Vx', grandeurVx)
 
-                expression_Epp = expression_Epp.replace('X', grandeurX).replace('Y', grandeurY).replace('Vx', grandeurVx).replace(
-                    'Vy', grandeurVy).replace('V', grandeurV).replace('Ec', grandeurEc).replace('Epp', grandeurEpp).replace('Em', grandeurEm)
+                expression_Ay = expression_Ay.replace('Vy', grandeurVy)
 
-                expression_Em = expression_Em.replace('X', grandeurX).replace('Y', grandeurY).replace('Vx', grandeurVx).replace(
-                    'Vy', grandeurVy).replace('V', grandeurV).replace('Ec', grandeurEc).replace('Epp', grandeurEpp).replace('Em', grandeurEm)
+                expression_A = expression_A.replace('Ax', grandeurAx).replace(
+                    'Ay', grandeurAy)
+
+
+                expression_Ec = expression_Ec.replace('V', grandeurV)
+
+                expression_Epp = expression_Epp.replace('Y', grandeurY)
+
+                expression_Em = expression_Em.replace('Ec', grandeurEc).replace('Epp', grandeurEpp)
+                
+                ###si un jour besoin : 
+                #expression_Em = expression_Em.replace('X', grandeurX).replace('Y', grandeurY).replace('Vx', grandeurVx).replace(
+                    ##'Vy', grandeurVy).replace('V', grandeurV).replace('Ec', grandeurEc).replace('Epp', grandeurEpp).replace('Em', grandeurEm)
+                
 
                 # CETTE PARTIE PERMET DE RENTRER MANUELLEMENT DES EXPRESSIONS.
                 #expression_Vx = self.ui.lineEdit_vx.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
@@ -1749,13 +1775,22 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     expression_Vy, i, n, 'Vy')
                 expression_V, err3 = self.traite_indices(
                     expression_V, i, n, 'V')
+                
                 expression_Ec, err4 = self.traite_indices(
                     expression_Ec, i, n, 'Ec')
                 expression_Epp, err5 = self.traite_indices(
                     expression_Epp, i, n, 'Epp')
                 expression_Em, err6 = self.traite_indices(
                     expression_Em, i, n, 'Em')
-                erreur_indices += err1+err2+err3+err4+err5+err6
+                
+                expression_Ax, err7 = self.traite_indices(
+                    expression_Ax, i, n, 'Ax')
+                expression_Ay, err8 = self.traite_indices(
+                    expression_Ay, i, n, 'Ay')
+                expression_A, err9 = self.traite_indices(
+                    expression_A, i, n, 'A')
+                
+                erreur_indices += err1+err2+err3+err4+err5+err6+err7+err8+err9
                 if expression_Vx != '':
                     try:
                         self.dictionnaire_grandeurs["xprime" +
@@ -1797,6 +1832,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
+
+
+                        
                 if expression_Ec != '':
                     try:
                         self.dictionnaire_grandeurs["Ec" +
@@ -1824,7 +1862,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Epp.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)
+                        erreurs_python.append(erreurs_python_)                
+                
                 if expression_Em != '':
                     try:
                         self.dictionnaire_grandeurs["Em" +
@@ -1839,6 +1878,54 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
+                        
+                
+        #une fois que les vitesses ont été calculées : 
+        for i in range(self.nb_de_points):
+            for n in range(len(self.points.keys())):
+            
+                if expression_Ax != '':
+                    try:
+                        self.dictionnaire_grandeurs["vabsprime" +
+                                                    str(i+1)].append(eval(expression_Ax))
+                    except IndexError:
+                        erreur_indices += "l'accélération en X du point %s, n'a pas pu être calculée à la position %s<br>" % (
+                            i+1, n)
+                        self.dictionnaire_grandeurs["vabsprime" +
+                                                    str(i+1)].append(False)
+                    except:
+                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée ! <br> """ % (str(expression_Ax.replace(
+                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
+                        # erreurs_python_+=traceback.format_exc()
+                        erreurs_python.append(erreurs_python_)
+                if expression_Ay != '':
+                    try:
+                        self.dictionnaire_grandeurs["vordprime" +
+                                                    str(i+1)].append(eval(expression_Ay))
+                    except IndexError:
+                        erreur_indices += "l'accélération en Y du point %s, n'a pas pu être calculée à la position %s<br>" % (
+                            i+1, n)
+                        self.dictionnaire_grandeurs["vordprime" +
+                                                    str(i+1)].append(False)
+                    except:
+                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Ay.replace(
+                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
+                        # erreurs_python_+=traceback.format_exc()
+                        erreurs_python.append(erreurs_python_)
+                if expression_A != '':
+                    try:
+                        self.dictionnaire_grandeurs["A" +
+                                                    str(i+1)].append(eval(expression_A))
+                    except IndexError:
+                        erreur_indices += "l'accélération du point %s, n'a pas pu être calculée à la position %s<br>" % (
+                            i+1, n)
+                        self.dictionnaire_grandeurs["A"+str(i+1)].append(False)
+                    except:
+                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br>""" % (str(expression_V.replace(
+                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
+                        #erreurs_python_ +=traceback.format_exc()
+                        erreurs_python.append(erreurs_python_)
+                
         self.dbg.p(1, "erreurs a la fin : %s" % erreur_indices)
         self.dbg.p(1, "erreurs python : %s" % erreurs_python)
         #text_textedit = entete + '<p>' + erreur_indices + '</p>'
@@ -1846,9 +1933,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         if len(erreurs_python) > 0:
             for item in erreurs_python:
                 if not item in text_textedit:
-                    text_textedit += erreurs_python1
+                    #text_textedit += erreurs_python1
                     text_textedit += item
-                    text_textedit += erreurs_python2
+                    #text_textedit += erreurs_python2
         else:
             text_textedit += "Pour les points où c'était possible, les expressions python rentrées ont été calculées avec succès !"
 
@@ -1865,10 +1952,19 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             if self.dictionnaire_grandeurs[grandeur] != []:
                 numero = ''.join(
                     [grandeur[-2] if grandeur[-2].isdigit() else "", grandeur[-1]])
-                self.ui.comboBox_X.addItem(
-                    grandeur if not 'xprime' in grandeur and not 'yprime' in grandeur else 'Vx'+numero if 'xprime' in grandeur else 'Vy'+numero)
-                self.ui.comboBox_Y.addItem(
-                    grandeur if not 'xprime' in grandeur and not 'yprime' in grandeur else 'Vx'+numero if 'xprime' in grandeur else 'Vy'+numero)
+                if 'prime' in grandeur : 
+                    if 'x' in grandeur :
+                        grandeur_a_afficher = 'Vx'+numero
+                    elif 'y' in grandeur :
+                        grandeur_a_afficher = 'Vy'+numero
+                    elif 'abs' in grandeur :
+                        grandeur_a_afficher = 'Ax'+numero
+                    elif 'ord' in grandeur :
+                        grandeur_a_afficher = 'Ay'+numero
+                else : 
+                    grandeur_a_afficher = grandeur
+                self.ui.comboBox_X.addItem(grandeur_a_afficher)
+                self.ui.comboBox_Y.addItem(grandeur_a_afficher)
 
     def traite_indices(self, expression, i, n, grandeur):
         """cette fonction traite les indices négatifs afin que python, justement... ne les traite pas"""
