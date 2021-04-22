@@ -1072,6 +1072,9 @@ vecteurs vitesses</string>
                <height>35</height>
               </size>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="toolTip">
               <string>Copier les mesures dans le presse papier</string>
              </property>
@@ -1126,6 +1129,9 @@ vecteurs vitesses</string>
                <width>35</width>
                <height>35</height>
               </size>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="toolTip">
               <string>Changer d'échelle</string>
@@ -1414,6 +1420,30 @@ vecteurs vitesses</string>
               </widget>
              </item>
              <item>
+              <widget class="Line" name="line_9">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton_save_plot">
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Enregistrer comme image</string>
+               </property>
+               <property name="text">
+                <string>Enregistrer</string>
+               </property>
+               <property name="icon">
+                <iconset resource="icon.qrc">
+                 <normaloff>:/data/icones/folder-pictures.svg</normaloff>:/data/icones/folder-pictures.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="horizontalSpacer_10">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -1488,15 +1518,16 @@ vecteurs vitesses</string>
      </property>
      <property name="icon">
       <iconset resource="icon.qrc">
-       <normaloff>:/data/icones/document-export.svg</normaloff>:/data/icones/document-export.svg</iconset>
+       <normaloff>:/data/icones/document-export.svg</normaloff>
+       <normalon>:/data/icones/document-export.svg</normalon>:/data/icones/document-export.svg</iconset>
      </property>
     </widget>
     <addaction name="actionOuvrir_un_fichier"/>
     <addaction name="actionRouvrirMecavideo"/>
     <addaction name="separator"/>
+    <addaction name="actionSaveData"/>
     <addaction name="actionCopier_dans_le_presse_papier"/>
     <addaction name="menuE_xporter_vers"/>
-    <addaction name="actionSaveData"/>
     <addaction name="separator"/>
     <addaction name="actionQuitter"/>
    </widget>
@@ -1566,7 +1597,10 @@ vecteurs vitesses</string>
      <normaloff>:/data/icones/pymecavideo.svg</normaloff>:/data/icones/pymecavideo.svg</iconset>
    </property>
    <property name="text">
-    <string>&amp;Enregistrer les données</string>
+    <string>&amp;Enregistrer le projet mecavideo</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enregistre les données du projet pour pouvoir être réouvert dans PyMecaVideo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="shortcut">
     <string notr="true">Ctrl+S</string>
@@ -1608,7 +1642,7 @@ vecteurs vitesses</string>
      <normaloff>:/data/icones/pymecavideo.svg</normaloff>:/data/icones/pymecavideo.svg</iconset>
    </property>
    <property name="text">
-    <string>Ouvrir un projet &amp;mecavidéo</string>
+    <string>Ouvrir un projet &amp;mecavideo</string>
    </property>
   </action>
   <action name="actionPreferences">
