@@ -28,7 +28,7 @@ from vecteur import vecteur
 from zoom import Zoom_Croix
 import os
 from echelle import echelle
-
+import icon_rc
 
 class Label_Video(QLabel):
     def __init__(self, parent, app):
@@ -36,8 +36,9 @@ class Label_Video(QLabel):
         self.app = app
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
-        self.cible_icon = os.path.join(
-            self.app._dir("icones"), "curseur_cible.svg")
+        #self.cible_icon = os.path.join(
+            #self.app._dir("icones"), "curseur_cible.svg")
+        self.cible_icon = ":/data/icones/curseur_cible.svg"        
         pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
