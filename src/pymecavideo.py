@@ -1975,9 +1975,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         grandeur_a_afficher = grandeur
                     self.ui.comboBox_X.addItem(grandeur_a_afficher)
                     self.ui.comboBox_Y.addItem(grandeur_a_afficher)
-        else : #il y a déjà eu un choix de graphe
-            self.ui.comboBox_X.setItem(self.graphe_deja_choisi[1])
-            self.ui.comboBox_Y.setItem(self.graphe_deja_choisi[0])
+        #else : #il y a déjà eu un choix de graphe
+            #self.ui.comboBox_X.setItem(self.graphe_deja_choisi[1])
+            #self.ui.comboBox_Y.setItem(self.graphe_deja_choisi[0])
         
     def traite_indices(self, expression, i, n, grandeur):
         """cette fonction traite les indices négatifs afin que python, justement... ne les traite pas"""
@@ -2100,7 +2100,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.graphWidget.plot(X, Y, pen=pen, symbol=symbol)
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
-            self.graphe_deja_choisi = (ordonnee, abscisses)
+            self.graphe_deja_choisi = (ordonnee, abscisse)
                 
     def enregistre_graphe(self):
         if hasattr (self, 'pg_exporter'):
