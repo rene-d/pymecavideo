@@ -208,9 +208,9 @@ class Label_Trajectoire(QLabel):
                     self.painter.drawText(max(x1+(longueur/2)-(text_width/2), 0), y1+30, text) 
                 else : #échelle non faite
                     try : 
-                        self.painter.drawText(x1, y1, unicode("échelle non précisée"))
+                        self.painter.drawText(x1, y1+20, unicode("échelle non précisée"))
                     except NameError: 
-                        self.painter.drawText(x1, y1, "échelle non précisée")
+                        self.painter.drawText(x1, y1+20, "échelle non précisée")
                 self.painter.end()
 
             ############################################################
@@ -234,9 +234,9 @@ class Label_Trajectoire(QLabel):
                     ), int((self.label_video.app.label_echelle_trace.p1.y()+self.label_video.app.label_echelle_trace.p2.y())/2)+20, echelle)
                 else : #pas d'échelle 
                     try : 
-                        self.painter.drawText(x1, y1, unicode("échelle non précisée"))
+                        self.painter.drawText(x1, y1+20, unicode("échelle non précisée"))
                     except NameError: 
-                        self.painter.drawText(x1, y1, "échelle non précisée")
+                        self.painter.drawText(x1, y1+20, "échelle non précisée")
                     
                 self.painter.end()
 
@@ -280,7 +280,10 @@ class Label_Trajectoire(QLabel):
                         self.painter.drawLine(-4, 0, 4, 0)
                         self.painter.drawLine(0, -4, 0, 4)
                         self.painter.translate(-10, +10)
-                        self.painter.drawText(-5, 5, "M"+"'"*num_point+str(no))
+                        decal = -25
+                        if point.x()+decal <0 : 
+                            decal = 5 
+                        self.painter.drawText(decal, 5, "M"+"'"*num_point+str(no))
                     else :
                         self.painter.drawLine(-2, 0, 2, 0)
                         self.painter.drawLine(0, -2, 0, 2)
