@@ -1,5 +1,5 @@
 numpy
-python-opsncv
+python-opencv
 pandas
 python-qt5
 nbformat
