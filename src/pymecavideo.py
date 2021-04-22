@@ -39,6 +39,7 @@ from glob import glob
 import pyqtgraph as pg
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
+from PyQt5 import uic
 from vecteur import vecteur
 import icon_rc
 licence = {}
