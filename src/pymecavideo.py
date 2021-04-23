@@ -1935,8 +1935,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         #erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
                 
-        self.dbg.p(1, "erreurs a la fin : %s" % erreur_indices)
-        self.dbg.p(1, "erreurs python : %s" % erreurs_python)
+        self.dbg.p(3, "erreurs a la fin : %s" % erreur_indices)
+        self.dbg.p(3, "erreurs python : %s" % erreurs_python)
         #text_textedit = entete + '<p>' + erreur_indices + '</p>'
         text_textedit = ""
         if len(erreurs_python) > 0:
@@ -1947,6 +1947,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     #text_textedit += erreurs_python2
         else:
             text_textedit += "Pour les points où c'était possible, les expressions python rentrées ont été calculées avec succès !"
+        self.dbg.p(3, "dixtionnaires_grandeurs : %s" % self.dictionnaire_grandeurs)
 
     def MAJ_combox_box_grapheur(self):
         if self.graphe_deja_choisi is None : #premier choix de graphe
@@ -1971,6 +1972,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                             grandeur_a_afficher = 'Ax'+numero
                         elif 'ord' in grandeur :
                             grandeur_a_afficher = 'Ay'+numero
+                    elif 'A' in grandeur or 'V' in grandeur:
+                        grandeur_a_afficher = '|'+grandeur+'|'
+                        
                     else : 
                         grandeur_a_afficher = grandeur
                     self.ui.comboBox_X.addItem(grandeur_a_afficher)
@@ -2020,17 +2024,17 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         
         ###extraction des grandeurs d'abscisses et d'ordonnées 
         if self.graphe_deja_choisi is not None : 
-            abscisse = self.graphe_deja_choisi[1]
-            ordonnee = self.graphe_deja_choisi[0]
+            abscisse = self.graphe_deja_choisi[1].strip('|')
+            ordonnee = self.graphe_deja_choisi[0].strip('|')
         else : 
-            abscisse = self.ui.comboBox_X.currentText()
-            ordonnee = self.ui.comboBox_Y.currentText()
+            abscisse = self.ui.comboBox_X.currentText().strip('|')
+            ordonnee = self.ui.comboBox_Y.currentText().strip('|')
         # Définition des paramètres 'pen' et 'symbol' pour pyqtgraph
         pen, symbol = styles[style]['pen'], styles[style]['symbol']
         grandeurX = abscisse.replace(
-            'Vx', 'xprime').replace('Vy', 'yprime')
+            'Vx', 'xprime').replace('Vy', 'yprime').replace('Ax', 'vabsprime').replace('Ay', 'vordprime')
         grandeurY = ordonnee.replace(
-            'Vx', 'xprime').replace('Vy', 'yprime')
+            'Vx', 'xprime').replace('Vy', 'yprime').replace('Ax', 'vabsprime').replace('Ay', 'vordprime')
         if grandeurX == 't':
             X = [i*self.deltaT for i in range(len(self.points))]
         elif grandeurX != "Choisir ...":
@@ -2394,13 +2398,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 except UnboundLocalError:  # pour premier point, la vitesse n'est pas définie
                     pass
                 i += 1
-        ###essai d'ajout d'un bouton pour refaire le point.
+        ###Ajout d'un bouton pour refaire le point.
         
             qpushbutton = QPushButton()
             qpushbutton.setIcon(QIcon(":/data/icones/curseur_cible.svg"))
             qpushbutton.setToolTip("refaire le pointage\n de l'image %s"%(ligne+1))
             qpushbutton.setFlat(True)
-            #qpushbutton.clicked.connect(lambda : self.refait_point_depuis_tableau(ligne))
             qpushbutton.clicked.connect( lambda checked, b=qpushbutton: self.refait_point_depuis_tableau( b ))
 
             #self.liste_qpushbutton.append(qpushbutton) #nécessaire sinon le ramsse miette vire tout
