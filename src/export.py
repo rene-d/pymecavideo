@@ -813,4 +813,4 @@ class Export:
         elif sys.platform.startswith('darwin'):
             os.system("open "+filepath)
         elif sys.platform.startswith('win'):
-            os.startfile(filepath)
+            os.startfile(os.path.realpath(filepath))
