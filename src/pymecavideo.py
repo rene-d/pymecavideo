@@ -1732,6 +1732,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 
                 m = float(self.ui.lineEdit_m.text().replace(',', '.'))
                 g = float(self.ui.lineEdit_g.text().replace(',', '.'))
+                
+                
                 expression_Vx = '(X[n+1]-X[n-1])/(2*deltaT)'
                 expression_Vy = '(Y[n+1]-Y[n-1])/(2*deltaT)'
                 expression_V = 'math.sqrt(Vx[n]**2+Vy[n]**2)'
@@ -1742,7 +1744,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 expression_Ay = '(Vy[n+1]-Vy[n-1])/(2*deltaT)'
                 expression_A = 'math.sqrt(Ax[n]**2+Ay[n]**2)'
                 
-
                 expression_Vx = expression_Vx.replace('X', grandeurX)
 
                 expression_Vy = expression_Vy.replace('Y', grandeurY)
@@ -1756,7 +1757,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
                 expression_A = expression_A.replace('Ax', grandeurAx).replace(
                     'Ay', grandeurAy)
-
 
                 expression_Ec = expression_Ec.replace('V', grandeurV)
 

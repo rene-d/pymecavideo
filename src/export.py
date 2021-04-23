@@ -431,27 +431,27 @@ plt.ylabel("y (en m)")
 plt.grid()
 plt.show()
 """ % ("""
-vx = np.array(np.zeros(len(x1)-1))
-vy = np.array(np.zeros(len(x1)-1))
-for k in range(0,len(x1)-1):
-    vx[k] = (x1[k+1]-x1[k])/dt
-    vy[k] = (y1[k+1]-y1[k])/dt""" if calcule_vitesse else """#####à compléter pour calculer les vitesses####
+vx = np.array(np.zeros(len(x1)-2))
+vy = np.array(np.zeros(len(x1)-2))
+for k in range(1,len(x1)-1):
+    vx[k] = (x1[k+1]-x1[k-1])/dt
+    vy[k] = (y1[k+1]-y1[k-1])/dt""" if calcule_vitesse else """#####à compléter pour calculer les vitesses####
     ##############
     ##############""",
                 """
     plt.title("Vecteurs vitesse")
-    plt.quiver(x1[k-1], y1[k-1], vx[k], vy[k], scale=20, scale_units="xy")""" if affiche_vitesse else "",
+    plt.quiver(x1[k], y1[k], vx[k-1], vy[k-1], scale=20, scale_units="xy")""" if affiche_vitesse else "",
                 """
-ax = np.array(np.zeros(len(vx)-1))
-ay = np.array(np.zeros(len(vx)-1))
-for k in range(0, len(vx)-1):
-    ax[k] = (vx[k+1]-vx[k])/dt
-    ay[k] = (vy[k+1]-vy[k])/dt""" if calcule_accel else """#####à compléter pour calculer les vitesses####
+ax = np.array(np.zeros(len(vx)-2))
+ay = np.array(np.zeros(len(vx)-2))
+for k in range(1, len(vx)-1):
+    ax[k] = (vx[k+1]-vx[k-1])/dt
+    ay[k] = (vy[k+1]-vy[k-1])/dt""" if calcule_accel else """#####à compléter pour calculer les vitesses####
     ##############
     ##############""",
                 """
     plt.title("Vecteurs accélérations")
-    plt.quiver(x1[k-1], y1[k-1], ax[k], ay[k],color='red', scale=60, scale_units="xy")""" if affiche_accel else ""))
+    plt.quiver(x1[k+1], y1[k+1], ax[k-1], ay[k-1],color='red', scale=60, scale_units="xy")""" if affiche_accel else ""))
             f.close()
 
 
