@@ -25,7 +25,7 @@ export.py permet d'exporter les données de pymecavideo dans différents formats
 from dbg import Dbg
 from globdef import DOCUMENT_PATH
 from PyQt5.QtWidgets import QFileDialog, QCheckBox, QDialog, QMessageBox, QDialogButtonBox, QVBoxLayout, QGroupBox, QHBoxLayout, QRadioButton, QSpacerItem, QSizePolicy, QGridLayout
-from PyQt5.QtCore import Qt, QCoreApplication, QSize
+from PyQt5.QtCore import Qt, QCoreApplication, QSize, QUrl, QStandardPaths
 import sys
 import os, time
 DBG = Dbg(0)
@@ -719,31 +719,7 @@ class PythonNotebook :
             ), d.checkBox_v2.isChecked(), d.checkBox_a.isChecked(), d.checkBox_e.isChecked())
         nb = genere_notebook((ligne_t, ligne_x, ligne_y), graphs = graphs)
         nbf.write(nb, filepath) 
-        
-        #try :
-            #import nbformat as nbf
-            #nbf_present = True
-            #from template_ipynb import genere_notebook
-        #except :
-            #nbf_present = False
 
-        #if nbf_present :
-            #d = NotebookExportDialog(app)
-            #if d.exec_() == QDialog.Accepted:
-                #graphs = (d.checkBox_c.isChecked(), d.checkBox_v.isChecked(
-                #), d.checkBox_v2.isChecked(), d.checkBox_a.isChecked(), d.checkBox_e.isChecked())
-            #nb = genere_notebook((ligne_t, ligne_x, ligne_y), graphs = graphs)
-            #nbf.write(nb, filepath) 
-        #else : 
-            #with open(filepath,'w') as f:
-                #with open('template.ipynb', 'r') as t :
-                    #old = t.read()
-                    #new = old.replace('$t', ligne_t)
-                    #new = new.replace('$x', ligne_x)
-                    #new = new.replace('$y', ligne_y)
-                    #f.write(new)
-            #QMessageBox.information(None, _translate("export_notebook", "Notebook sauvegardé"), _translate(
-            #"export_notebook", "Notebook enregistré avec succès.\nPour personnaliser le notebook, veuillez installer le module Python 3 : nbformat"), QMessageBox.Ok, QMessageBox.Ok)
 
 class SaveThenOpenFileDialog(QFileDialog):
     """
@@ -756,6 +732,11 @@ class SaveThenOpenFileDialog(QFileDialog):
         self.setOption(QFileDialog.DontUseNativeDialog)
         self.setAcceptMode(QFileDialog.AcceptSave)
         self.setWindowFlags(self.windowFlags() & ~Qt.Dialog)
+        urls = [QUrl.fromLocalFile(QStandardPaths.standardLocations(QStandardPaths.DocumentsLocation)[0]),
+                QUrl.fromLocalFile(QStandardPaths.standardLocations(QStandardPaths.HomeLocation)[0]),
+                QUrl.fromLocalFile(QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0])
+                ]
+        self.setSidebarUrls(urls)
         self.setDefaultSuffix(extension)
         self.checkbox = QCheckBox(self)
         self.checkbox.setStyleSheet("color: rgb(255, 0, 0);")
