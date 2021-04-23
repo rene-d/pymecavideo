@@ -1407,7 +1407,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.dbg.p(1, "rentre dans 'enregistre_ui'")
         if self.points != {}:
             base_name = os.path.splitext(os.path.basename(self.filename))[0]
-            defaultName = os.path.join(DOCUMENT_PATH[0], base_name)
+            defaultName = os.path.join(DOCUMENT_PATH[0], base_name+'.mecavideo')
             fichier = QFileDialog.getSaveFileName(self,
                                               _translate(
                                                   "pymecavideo", "Enregistrer le projet pymecavideo", None),
