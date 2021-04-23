@@ -163,7 +163,8 @@ class Label_Trajectoire(QLabel):
 
             self.painter = QPainter()
             self.painter.begin(self)
-            self.painter.drawPixmap(0, 0, self.pixmap())
+            if self.chrono==1:
+                self.painter.drawPixmap(0, 0, self.pixmap())
             font = QFont()
             font_size = 12
             font.setPointSize(font_size)
