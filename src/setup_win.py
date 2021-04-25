@@ -43,7 +43,7 @@ build_exe_options = {'build_exe': 'build',
                                   'pywin.debugger.dbgcon', 'pywin.dialogs', 'tcl',
                                   'Tkconstants', 'pydoc', 'doctest', 'test', 'sqlite3',
                                   "matplotlib",
-                                  "PIL", "scipy", "email"
+                                  "PIL", "scipy"
 
                                   ],
                      "include_files": includefiles,
