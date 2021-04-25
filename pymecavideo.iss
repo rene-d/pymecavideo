@@ -27,7 +27,7 @@ AppVerName=pymecavideo {#AppVersion}
 AppVersion={#AppVersion}
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
 AppCopyright=Copyright (C) 2007-2030 Georges Khaznadar <georgesk.debian.org>
-VersionInfoVersion = 7.1.01
+VersionInfoVersion = 7.2.0.0
 
 ;Répertoire de base contenant les fichiers
 SourceDir=C:\Users\JB\Documents\pymecavideo
