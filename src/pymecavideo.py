@@ -2023,7 +2023,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         # Index du comboxBox styles, inspirés de Libreoffice
         style = self.ui.comboBox_style.currentIndex()
         
-        ###extraction des grandeurs d'abscisses et d'ordonnées 
         if self.graphe_deja_choisi is not None : 
             abscisse = self.graphe_deja_choisi[1].strip('|')
             ordonnee = self.graphe_deja_choisi[0].strip('|')
@@ -2084,7 +2083,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.graphWidget.setMenuEnabled(False)
                 self.graphWidget.setLabel('bottom', unite_x)
                 self.graphWidget.setLabel('left', unite_y)
-                X, Y = self.nettoyage_points(X, Y)
                 self.verticalLayout_onglet4 = QVBoxLayout(self.ui.widget_graph)
                 self.verticalLayout_onglet4.setContentsMargins(0, 0, 0, 0)
                 self.verticalLayout_onglet4.setObjectName(
@@ -2100,7 +2098,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.graphWidget.setLabel('bottom', unite_x)
                 self.graphWidget.setLabel('left', unite_y)
                 # enlève si besoin les points non calculés
-                X, Y = self.nettoyage_points(X, Y)
+                #X, Y = self.nettoyage_points(X, Y)
                 self.graphWidget.clear()
                 self.graphWidget.plot(X, Y, pen=pen, symbol=symbol)
                 self.graphWidget.autoRange()
