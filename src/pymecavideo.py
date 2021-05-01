@@ -1798,7 +1798,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     expression_Ay, i, n, 'Ay')
                 expression_A, err9 = self.traite_indices(
                     expression_A, i, n, 'A')
-                
+                                
                 erreur_indices += err1+err2+err3+err4+err5+err6+err7+err8+err9
                 if expression_Vx != '':
                     try:
@@ -1808,7 +1808,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreur_indices += "la vitesse en X du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["xprime" +
-                                                    str(i+1)].append(False)
+                                                    str(i+1)].append(float('NaN'))
                     except:
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée ! <br> """ % (str(expression_Vx.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
@@ -1822,7 +1822,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreur_indices += "la vitesse en Y du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["yprime" +
-                                                    str(i+1)].append(False)
+                                                    str(i+1)].append(float('NaN'))
                     except:
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Vy.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
@@ -1830,12 +1830,13 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreurs_python.append(erreurs_python_)
                 if expression_V != '':
                     try:
+                        
                         self.dictionnaire_grandeurs["V" +
                                                     str(i+1)].append(eval(expression_V))
                     except IndexError:
                         erreur_indices += "la vitesse du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
-                        self.dictionnaire_grandeurs["V"+str(i+1)].append(False)
+                        self.dictionnaire_grandeurs["V"+str(i+1)].append(float('NaN'))
                     except:
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br>""" % (str(expression_V.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
@@ -1852,7 +1853,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreur_indices += "l'énergie Cinétique du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["Ec" +
-                                                    str(i+1)].append(False)
+                                                    str(i+1)].append(float('NaN'))
                     except:
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !<br> """ % (str(expression_Ec.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
@@ -1866,7 +1867,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreur_indices += "l'énergie cinétique du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["Epp" +
-                                                    str(i+1)].append(False)
+                                                    str(i+1)].append(float('NaN'))
                     except:
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Epp.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
@@ -1881,7 +1882,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreur_indices += "l'énergie mécanique du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["Em" +
-                                                    str(i+1)].append(False)
+                                                    str(i+1)].append(float('NaN'))
                     except SyntaxError:
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Em.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
@@ -1901,7 +1902,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreur_indices += "l'accélération en X du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["vabsprime" +
-                                                    str(i+1)].append(False)
+                                                    str(i+1)].append(float('NaN'))
                     except:
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée ! <br> """ % (str(expression_Ax.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
@@ -1915,7 +1916,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreur_indices += "l'accélération en Y du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["vordprime" +
-                                                    str(i+1)].append(False)
+                                                    str(i+1)].append(float('NaN'))
                     except:
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Ay.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
@@ -1928,7 +1929,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     except IndexError:
                         erreur_indices += "l'accélération du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
-                        self.dictionnaire_grandeurs["A"+str(i+1)].append(False)
+                        self.dictionnaire_grandeurs["A"+str(i+1)].append(float('NaN'))
                     except:
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br>""" % (str(expression_V.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
@@ -2005,7 +2006,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 if eval(expr_a_tester) < 0:
                     erreur += "la variable %s du point %s, n'a pas pu être calculée à la position %s<br>" % (
                         grandeur, i+1, n)
-                    return "False", erreur
+                    return "float('NaN')", erreur
         return expression, erreur
 
     def dessine_graphe_avant(self):
