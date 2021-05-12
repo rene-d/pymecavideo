@@ -577,6 +577,7 @@ class StartQt5(QMainWindow):
 
         # HACK : oblige le redimensionnement
         self.resize(self.size()+QSize(1, 0))
+        #self.resize(self.size()+QSize(-1, 0))
 
     ############ les signaux spéciaux #####################
     clic_sur_video = pyqtSignal()
@@ -1195,6 +1196,8 @@ class StartQt5(QMainWindow):
         
         self.aspectlayout1.aspect = largeur/hauteur
         self.aspectlayout2.aspect = largeur/hauteur
+        
+
         self.init_cvReader()
         return dico_donnee
 
@@ -1258,7 +1261,11 @@ class StartQt5(QMainWindow):
             self.mets_en_orange_echelle()
             self.ui.tableWidget.show()
             self.recalculLesCoordonnees()
+            ##HACK oblige le rdimensionnement pour mettre à jour l'image
+            self.resize(self.size()+QSize(1, 0))
+            self.resize(self.size()+QSize(-1, 0))
             self.debut_capture(rouvre=True)
+            
         except:
             reponse = QMessageBox.warning(None, "Mauvais type de fichier",
                                           _translate("pymecavideo", """\
