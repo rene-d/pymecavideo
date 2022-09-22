@@ -56,30 +56,30 @@ class AspectLayout(QLayout):
         if self.item is not None:
             availW = rect.width() - margins[1] - margins[3]
             availH = rect.height() - margins[0] - margins[2]
-            h = availH
-            w = h * self.aspect
+            h = int(availH)
+            w = int(h * self.aspect)
             if w > availW:
-                x = margins[1]
-                w = availW
-                h = w/self.aspect
+                x = int(margins[1])
+                w = int(availW)
+                h = int(w/self.aspect)
                 if self.item.alignment() & Qt.AlignTop:
-                    y = margins[0]
+                    y = int(margins[0])
                 elif self.item.alignment() & Qt.AlignBottom:
-                    y = rect.height() - margins[2] - h
+                    y = int(rect.height() - margins[2] - h)
                 else:
-                    y = margins[0] + (availH-h) / 2
+                    y = int(margins[0] + (availH-h) / 2)
             else:
-                y = margins[0]
+                y = int(margins[0])
                 if self.item.alignment() & Qt.AlignLeft:
-                    x = margins[1]
+                    x = int(margins[1])
                 elif self.item.alignment() & Qt.AlignRight:
-                    x = rect.width() - margins[3] - w
+                    x = int(rect.width() - margins[3] - w)
                 else:
-                    x = margins[1] + (availW-w) / 2
+                    x = int(margins[1] + (availW-w) / 2)
             self.item.widget().setGeometry(
-                rect.x() + x,
-                rect.y() + y,
-                w, h)
+                int(rect.x() + x),
+                int(rect.y() + y),
+                int(w), int(h))
 
     def sizeHint(self):
         margins = self.getContentsMargins()
