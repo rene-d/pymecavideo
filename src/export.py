@@ -382,7 +382,7 @@ class PythonSource:
         if affiche_accel:
             calcule_accel = True
             calcule_vitesse = True
-        f = open(filepath, "w")
+        f = open(filepath, "w", encoding="UTF-8")
         date = time.strftime("%d/%m/%y %H:%M")
         f.write(f"#!/usr/bin/env python\n")
         f.write(f"## Données exportées de Pymecavidéo\n## {date}\n")
