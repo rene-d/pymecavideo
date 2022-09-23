@@ -81,6 +81,18 @@ class echelle(QObject):
 
 
 class Label_Echelle(QLabel):
+    """
+    Widget qui permet de définir l'échelles
+
+    Paramètres du constructeur :
+    @param parent le widegt parent
+    @param app pointeur vers l'application
+
+    Propiétés
+    @prop self.p1 vecteur
+    @prop self.p2 vecteur
+    ...
+    """
     def __init__(self, parent, app):
         QLabel.__init__(self, parent)
         self.parent = parent
@@ -207,8 +219,8 @@ class Label_Echelle_Trace(QLabel):
         painter.begin(self)
         try:
             painter.setPen(Qt.green)
-            painter.drawLine(self.p1.x(), self.p1.y(),
-                             self.p2.x(), self.p2.y())
+            painter.drawLine(round(self.p1.x), round(self.p1.y),
+                             round(self.p2.x), round(self.p2.y))
         except AttributeError:
             pass  # arrive au premier lancement sans vidéos
         painter.end()
