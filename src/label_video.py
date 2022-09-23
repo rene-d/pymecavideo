@@ -178,12 +178,12 @@ class Label_Video(QLabel):
                 if type(point) != type(""):
                     self.painter.setPen(QColor(self.couleurs[color]))
                     self.painter.setFont(QFont("", 10))
-                    self.painter.translate(point.x(), point.y())
+                    self.painter.translate(point.x, point.y)
                     self.painter.drawLine(-2, 0, 2, 0)
                     self.painter.drawLine(0, -2, 0, 2)
                     self.painter.translate(-10, +10)
                     self.painter.drawText(0, 0, str(color+1))
-                    self.painter.translate(-point.x() + 10, -point.y() - 10)
+                    self.painter.translate(-point.x + 10, -point.y - 10)
 
             ############################################################
             # paint repere
