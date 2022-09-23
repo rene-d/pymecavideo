@@ -97,15 +97,12 @@ class Cadreur(QObject):
         """
         ech, w, h = self.echelleTaille()
 
-        # agauche = [pp[self.numpoint].x() for pp in self.app.points.values()]  #ne gère pas les excemtion si il manqu eun point
-        #dessus = [pp[self.numpoint].y() for pp in self.app.points.values()]
-
         agauche = []
         dessus = []
         for pp in self.app.points.values():
             try:
-                agauche.append(pp[self.numpoint].x())
-                dessus.append(pp[self.numpoint].y())
+                agauche.append(pp[self.numpoint].x)
+                dessus.append(pp[self.numpoint].y)
             except:
                 pass  # si il manque des points dans la dernière image)
 
@@ -241,8 +238,8 @@ class RalentiWidget(QDialog):
                 cv2.CAP_PROP_POS_FRAMES, image_suivante + self.cadreur.app.premiere_image)
             status, img = self.cadreur.capture.read()
             img = self.cadreur.rotateImage(img, self.cadreur.app.rotation)
-            w, h = int(taille.x()), int(taille.y())
-            x, y = int(hautgauche.x()), int(hautgauche.y())
+            w, h = int(taille.x), int(taille.y())
+            x, y = int(hautgauche.x), int(hautgauche.y())
 
             # Crop from x, y, w, h -> 100, 200, 300, 400
             crop_img = img[y:y+h, x:x+w]

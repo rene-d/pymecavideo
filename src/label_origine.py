@@ -48,7 +48,7 @@ class Label_Origine(QLabel):
         self.app.ui.label_zoom.setPixmap(self.cropX2)
 
     def fait_crop(self, p):
-        rect = QRect(p.x() - 25, p.y() - 25, 50, 50)
+        rect = QRect(round(p.x) - 25, round(p.y) - 25, 50, 50)
         crop = self.app.imageAffichee.copy(rect)
         self.cropX2 = QPixmap.fromImage(
             crop.scaled(100, 100, Qt.KeepAspectRatio))

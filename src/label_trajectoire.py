@@ -44,6 +44,9 @@ class Label_Trajectoire(QLabel):
         self.pos_souris = None
         # self.update()
         self.picture = QPicture()
+        self.origine_mvt = vecteur(0,0)
+        self.origine = vecteur(0,0)
+        self.referentiel = 0
 
     def reDraw(self):
         """call when somthing change as repere, origine ..."""
@@ -52,7 +55,6 @@ class Label_Trajectoire(QLabel):
         self.repaint()
 
     def maj(self):
-        #self.setGeometry(QRect(120, 100, self.label_video.width(), self.label_video.height()))
         self.origine_mvt = self.label_video.origine
 
     def giveCoordonatesToPaint(self):
@@ -88,8 +90,8 @@ class Label_Trajectoire(QLabel):
                             near = 20
                             pos = self.pos_souris
                             distance = QPoint(
-                                point.x + self.origine.x - ptreferentiel.x,
-                                point.y + self.origine.y - ptreferentiel.y) - pos
+                                round(point.x + self.origine.x - ptreferentiel.x),
+                                round(point.y + self.origine.y - ptreferentiel.y)) - pos
                             if distance.manhattanLength() < near:
                                 self.label_video.app.dbg.p(
                                     2, "mouse near a point")

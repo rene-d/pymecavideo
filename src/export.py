@@ -266,7 +266,7 @@ $data
             dic['data'] += '%i\t%f' % (ligne, dt * ligne)
             for vect in data[1:]:
                 vect = app.pointEnMetre(vect)
-                dic['data'] += '\t%f\t%f' % (vect.x(), vect.y())
+                dic['data'] += '\t%f\t%f' % (vect.x, vect.y)
             dic['data'] += '\n'
             ligne += 1
         # suppression du dernier retour à la ligne
@@ -349,8 +349,8 @@ class Calc():
             data = app.points[k]
             for vect in data[1:]:
                 vect = app.pointEnMetre(vect)
-                val.append(vect.x())
-                val.append(vect.y())
+                val.append(vect.x)
+                val.append(vect.y)
             self.ligneValeurs(val)
         # accroche la feuille au document tableur
         self.doc.spreadsheet.addElement(self.table)
@@ -396,8 +396,8 @@ class PythonSource:
                 data = app.points[k]
                 for vect in data[1:]:
                     vect = app.pointEnMetre(vect)
-                    ligne_x += f"{vect.x()}, "
-                    ligne_y += f"{vect.y()}, "
+                    ligne_x += f"{vect.x}, "
+                    ligne_y += f"{vect.y}, "
             ligne_x += "])\n"
             ligne_y += "])\n"
             f.write(ligne_x)

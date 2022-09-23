@@ -1031,7 +1031,7 @@ class StartQt5(QMainWindow):
         @param point un point en "coordonnées d\'écran"
         """
         self.dbg.p(1, "rentre dans 'pointEnMetre'")
-        return vecteur(self.sens_X * (float(p.x() - self.label_video.origine.x()) * self.label_video.echelle_image.mParPx()), self.sens_Y * float(self.label_video.origine.y() - p.y()) * self.label_video.echelle_image.mParPx())
+        return vecteur(self.sens_X * (float(p.x - self.label_video.origine.x) * self.label_video.echelle_image.mParPx()), self.sens_Y * float(self.label_video.origine.y - p.y) * self.label_video.echelle_image.mParPx())
 
     def presse_papier(self):
         """Sélectionne la totalité du tableau de coordonnées
@@ -1204,8 +1204,6 @@ class StartQt5(QMainWindow):
         self.label_video.resize(QSize(largeur, hauteur))
         ########redimensionne l'application TODO : ATTENTION 
         geom = self.label_video.geometry()
-        #print(geom.x(),geom.y(),geom.width(),geom.height())
-        #print(self.ui.containerWidget1.geometry())
         self.ui.containerWidget1.setGeometry(0,0, geom.width(),geom.height())
         decalage_gauche = 220
         decalage_haut = 130
@@ -1257,7 +1255,7 @@ class StartQt5(QMainWindow):
                     self.points[i] = [t]
                     for j in range(1, len(d), 2):
                         pos = vecteur(float(d[j].replace(",", ".")) * self.label_video.echelle_image.pxParM()
-                                      + self.label_video.origine.x(), self.label_video.origine.y() - float(
+                                      + self.label_video.origine.x, self.label_video.origine.y - float(
                             d[j + 1].replace(",", ".")) * self.label_video.echelle_image.pxParM())
                         self.enregistre_dans_listePoints(
                             pos, index=int(float(t)*framerate) +
@@ -1333,7 +1331,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         if hasattr(self, 'label_video'):
             self.dbg.p(2, "on fixe les hauteurs de label_video")
             self.dbg.p(2, "label_vidéo situé en %s %s" %
-                       (self.label_video.pos().x(), self.label_video.pos().y()))
+                       (self.label_video.pos().x, self.label_video.pos().y))
             self.dbg.p(3, "label_vidéo largeur :  %s hauteur : %s" %
                        (self.label_video.width(), self.label_video.height()))
             self.dbg.p(2, "MAJ de label_video")
@@ -1420,8 +1418,8 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
                     a = ("\n%.2f\t" % t).replace(".", sep_decimal)
                     for p in donnee[1:]:
                         pm = self.pointEnMetre(p)
-                        a += ("%5f\t" % (pm.x())).replace(".", sep_decimal)
-                        a += ("%5f\t" % (pm.y())).replace(".", sep_decimal)
+                        a += ("%5f\t" % (pm.x)).replace(".", sep_decimal)
+                        a += ("%5f\t" % (pm.y)).replace(".", sep_decimal)
                     file.write(a)
             finally:
                 file.close()
@@ -1738,8 +1736,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             i = 0
             for point in self.points[ligne][1:]:
                 pm = self.pointEnMetre(point)
-                self.dictionnaire_grandeurs["X"+str(i+1)].append(pm.x())
-                self.dictionnaire_grandeurs["Y"+str(i+1)].append(pm.y())
+                self.dictionnaire_grandeurs["X"+str(i+1)].append(pm.x)
+                self.dictionnaire_grandeurs["Y"+str(i+1)].append(pm.y)
                 i += 1
         for i in range(self.nb_de_points):
             for n in range(len(self.points.keys())):
@@ -2414,9 +2412,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     pm = point
                 self.ui.tableWidget.setItem(
-                    ligne, i + 1, QTableWidgetItem(str(pm.x())))
+                    ligne, i + 1, QTableWidgetItem(str(pm.x)))
                 self.ui.tableWidget.setItem(
-                    ligne, i + 2, QTableWidgetItem(str(pm.y())))
+                    ligne, i + 2, QTableWidgetItem(str(pm.y)))
                 i += 2+colonnes_sup
 
         # calculs des énergies
@@ -2620,9 +2618,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 try:
                     p = self.pointEnMetre(self.points[i][j+1])
                     self.ui.tableWidget.setItem(
-                        i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x())))
+                        i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x)))
                     self.ui.tableWidget.setItem(
-                        i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y())))
+                        i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y)))
                 except Exception as err:
                     self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     pass  # si pas le bon nb de points cliqués
