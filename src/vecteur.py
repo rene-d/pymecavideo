@@ -85,9 +85,11 @@ class vecteur:
     def __repr__(self):
         return "vecteur %s" % self
 
+    @property
     def norme(self):
         return math.sqrt(self.x * self.x + self.y * self.y)
 
+    @property
     def anglePolaire(self):
         return math.atan2(self.y, self.x)
 
