@@ -31,7 +31,9 @@ class AspectLayout(QLayout):
         self.setContentsMargins(0, 0, 0, 0)
 
     def addItem(self, item):
-        assert self.item is None, "AspectLayout can contain only 1 widget"
+        if self.item is not None:
+            del (self.item)
+            self.item = None
         self.item = item
 
     def itemAt(self, index):

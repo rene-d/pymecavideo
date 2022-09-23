@@ -39,14 +39,14 @@ class echelle(QObject):
         return "echelle(%s,%s,%s m)" % (self.p1, self.p2, self.longueur_reelle_etalon)
 
     def longueur_pixel_etalon(self):
-        return (self.p1 - self.p2).norme()
+        return (self.p1 - self.p2).norme
 
     def isUndef(self):
         """
         Vrai si l'échelle n'est pas définie, c'est à dire si
         p1 et p2 sont confondus.
         """
-        return (self.p1 - self.p2).norme() == 0
+        return (self.p1 - self.p2).norme == 0
 
     def mParPx(self):
         """renvoie le nombre de mètre par pixel"""

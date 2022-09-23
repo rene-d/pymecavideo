@@ -384,6 +384,7 @@ class StartQt5(QMainWindow):
             self.label_trajectoire.clear()
         self.label_trajectoire = Label_Trajectoire(
             parent=self.ui.containerWidget2)
+        
         self.aspectlayout2.addWidget(self.label_trajectoire)
         self.label_trajectoire.chrono = False
         self.label_trajectoire.show()
@@ -396,11 +397,9 @@ class StartQt5(QMainWindow):
             "pymecavideo", "Définir l'échelle", None))
         self.ui.Bouton_Echelle.setStyleSheet("background-color:None;")
 
-        try:
+        # on essaie d'afficher l'échelle, si possible
+        if hasattr(self, 'label_video'):
             self.affiche_echelle()
-        except Exception as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
@@ -423,11 +422,9 @@ class StartQt5(QMainWindow):
             self.ui.pushButton_rot_gauche.setEnabled(1)
 
         # création du label qui contiendra la vidéo.
-        try:
-            self.dbg.p(3, "In : init_interface, clear Label_Video")
+        if hasattr(self, 'label_video'):
             self.label_video.clear()
-        except AttributeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
+        else:
             self.label_video = Label_Video(
                 parent=self.ui.containerWidget1, app=self)
             self.aspectlayout1.addWidget(self.label_video)
@@ -1000,11 +997,6 @@ class StartQt5(QMainWindow):
                 serie, position = self.couleur_et_numero(int(key))
                 self.rempli_tableau(
                     serie, position, donnees[key], recalcul=True)
-        try:
-            del self.repere_camera
-        except AttributeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
 
     def change_sens_X(self):
         self.dbg.p(1, "rentre dans 'change_sens_X'")
@@ -2438,7 +2430,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     pm = point
                 if ancienPoint != None:
-                    v = (pm - ancienPoint).norme() / self.deltaT
+                    v = (pm - ancienPoint).norme / self.deltaT
                 ancienPoint = pm
                 try:
                     for j in range(colonnes_sup):
@@ -2643,12 +2635,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         retenues pour l'échelle
         """
         self.dbg.p(1, "rentre dans 'feedbackEchelle'")
-        try:
+        if hasattr(self,"label_echelle_trace"):
             self.label_echelle_trace.hide()
             del self.label_echelle_trace
-        except Exception as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass  # si pas de vidéo preexistante
 
         self.label_echelle_trace = Label_Echelle_Trace(
             self.label_video, p1, p2)
