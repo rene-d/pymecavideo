@@ -35,9 +35,11 @@ class vecteur:
     def copy(self):
         return vecteur(self.x(), self.y())
 
+    @property
     def x(self):
         return self.value[0]
 
+    @property
     def y(self):
         return self.value[1]
 
@@ -58,67 +60,67 @@ class vecteur:
             self.value[0] + 0.5), math.floor(self.value[1] + 0.5))
 
     def __add__(self, v):
-        x = self.x() + v.x()
-        y = self.y() + v.y()
+        x = self.x + v.x
+        y = self.y + v.y
         return vecteur(x, y)
 
     def __sub__(self, v):
-        x = self.x() - v.x()
-        y = self.y() - v.y()
+        x = self.x - v.x
+        y = self.y - v.y
         return vecteur(x, y)
 
     def __mul__(self, v):
         if type(v) == type(self):
             # produit scalaire de deux vecteurs
-            return self.x() * v.x() + self.y() + v.y()
+            return self.x * v.x + self.y + v.y
         else:
             # produit du vecteur par un nombre
-            x = float(v) * self.x()
-            y = float(v) * self.y()
+            x = float(v) * self.x
+            y = float(v) * self.y
             return vecteur(self.signif(x, self.precision), self.signif(y, self.precision))
 
     def __str__(self):
-        return "(%5f, %5f)" % (self.x(), self.y())
+        return "(%5f, %5f)" % (self.x, self.y)
 
     def __repr__(self):
         return "vecteur %s" % self
 
     def norme(self):
-        return math.sqrt(self.x() * self.x() + self.y() * self.y())
+        return math.sqrt(self.x * self.x + self.y * self.y)
 
     def anglePolaire(self):
-        return math.atan2(self.y(), self.x())
+        return math.atan2(self.y, self.x)
 
     def minXY(self, v):
         if v == None:
             return self
         else:
-            if self.x() > v.x():
-                x = v.x()
+            if self.x > v.x:
+                x = v.x
             else:
-                x = self.x()
-            if self.y() > v.y():
-                y = v.y()
+                x = self.x
+            if self.y > v.y:
+                y = v.y
             else:
-                y = self.y()
+                y = self.y
             return vecteur(x, y)
 
     def maxXY(self, v):
         if v == None:
             return self
         else:
-            if self.x() < v.x():
-                x = v.x()
+            if self.x < v.x:
+                x = v.x
             else:
-                x = self.x()
-            if self.y() < v.y():
-                y = v.y()
+                x = self.x
+            if self.y < v.y:
+                y = v.y
             else:
-                y = self.y()
+                y = self.y
             return vecteur(x, y)
 
     def rotate(self, angle, largeur, hauteur):
-        x1, y1 = self.x(), self.y()
+        x1, y1 = self.x, self.y
         if angle == 90:
 
             return vecteur(hauteur-y1, x1)
@@ -137,4 +139,4 @@ class vecteur:
         return round(x, digit - int(math.floor(math.log10(abs(x)))) - 1)
 
     def homothetie(self, ratio):
-        return vecteur(self.x()*ratio, self.y()*ratio)
+        return vecteur(self.x*ratio, self.y*ratio)
