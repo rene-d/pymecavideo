@@ -2303,8 +2303,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         # Pour chaque point dans liste_points, insère les valeur dans la ligne
         for point in listePointsCliquesParImage:
             # ajoute les coordonnées "en pixel" des points dans des dictionnaires de coordonnées
-            x = point.x()
-            y = point.y()
+            x = point.x
+            y = point.y
             if x in self.pX.keys():
                 self.pX[x].append(point)
             else:
