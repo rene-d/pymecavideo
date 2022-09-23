@@ -188,7 +188,7 @@ class Label_Video(QLabel):
             self.painter.setPen(Qt.green)
             self.painter.translate(0, 0)
             try:
-                self.painter.translate(self.origine.x(), self.origine.y())
+                self.painter.translate(self.origine.x, self.origine.y)
             except AttributeError:
                 pass
             p1 = QPoint(self.app.sens_X * (-40), 0)
