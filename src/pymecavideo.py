@@ -306,7 +306,6 @@ class StartQt5(QMainWindow):
             self.openTheFile(self.filename)
         elif os.path.isfile(self.prefs.lastVideo):
             try:
-                x=1/0
                 self.openTheFile(self.prefs.lastVideo)
             except Exception as err:
                 self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
