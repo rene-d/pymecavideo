@@ -1307,7 +1307,6 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
                 self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
             else:
                 framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         ratioFilm = float(self.largeurFilm) / self.hauteurFilm
         self.dbg.p(3, "dans 'determineRatio', le ratio a été calculé à %s"%(ratioFilm))
         return ratioFilm
