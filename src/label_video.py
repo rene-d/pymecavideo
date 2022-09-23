@@ -66,16 +66,16 @@ class Label_Video(QLabel):
             else:
                 ratiow = self.width()/e.oldSize().height()
                 ratioh = self.height()/e.oldSize().width()
-            x = self.origine.x()*ratiow
-            y = self.origine.y()*ratioh
+            x = self.origine.x*ratiow
+            y = self.origine.y*ratioh
             self.origine = vecteur(x, y)
 
-            x = self.echelle_image.p1.x()*ratiow
-            y = self.echelle_image.p1.y()*ratioh
+            x = self.echelle_image.p1.x*ratiow
+            y = self.echelle_image.p1.y*ratioh
             self.echelle_image.p1 = vecteur(x, y)
 
-            x = self.echelle_image.p2.x()*ratiow
-            y = self.echelle_image.p2.y()*ratioh
+            x = self.echelle_image.p2.x*ratiow
+            y = self.echelle_image.p2.y*ratioh
             self.echelle_image.p2 = vecteur(x, y)
             self.app.feedbackEchelle(
                 self.echelle_image.p1, self.echelle_image.p2)
