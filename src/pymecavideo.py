@@ -90,6 +90,11 @@ licence['fr'] = u"""
 thisDir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, thisDir)
 
+from inspect import currentframe
+
+def get_linenumber():
+    cf = currentframe()
+    return cf.f_back.f_lineno
 
 #from export_python import ExportDialog
 # création précoce de l'objet application, déjà nécessaire pour traiter les bugs
@@ -301,8 +306,10 @@ class StartQt5(QMainWindow):
             self.openTheFile(self.filename)
         elif os.path.isfile(self.prefs.lastVideo):
             try:
+                x=1/0
                 self.openTheFile(self.prefs.lastVideo)
-            except:
+            except Exception as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 pass
 
     def init_variables(self, opts, filename=u""):
@@ -345,7 +352,8 @@ class StartQt5(QMainWindow):
         self.rotation = 0
         try:
             self.ratio = self.determineRatio()
-        except:
+        except Exception as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         self.listePoints = listePointee()
         self.pileDeDetections = []
@@ -374,7 +382,8 @@ class StartQt5(QMainWindow):
         self.ui.actionExemples.setEnabled(1)
         try:
             self.label_trajectoire.clear()
-        except AttributeError:
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             self.label_trajectoire = Label_Trajectoire(
                 parent=self.ui.containerWidget2)
             self.aspectlayout2.addWidget(self.label_trajectoire)
@@ -391,7 +400,8 @@ class StartQt5(QMainWindow):
 
         try:
             self.affiche_echelle()
-        except:
+        except Exception as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
@@ -418,8 +428,8 @@ class StartQt5(QMainWindow):
         try:
             self.dbg.p(3, "In : init_interface, clear Label_Video")
             self.label_video.clear()
-        except AttributeError:
-            self.dbg.p(3, "In : init_interface, cree Label_Video")
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             self.label_video = Label_Video(
                 parent=self.ui.containerWidget1, app=self)
             self.aspectlayout1.addWidget(self.label_video)
@@ -437,7 +447,8 @@ class StartQt5(QMainWindow):
         #mets à jour le ratio
         try : 
             self.ratio=self.determineRatio()
-        except: 
+        except Exception as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass #si lancé prématurément, la vidéo n'est pas chargée
         self.aspectlayout1.aspect = self.ratio
         self.aspectlayout2.aspect = self.ratio
@@ -486,7 +497,8 @@ class StartQt5(QMainWindow):
         self.montre_vitesses = False
         try:
             self.label_trajectoire.update()  # premier lancement sans fichier
-        except AttributeError:
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
 
         # ferme les widget d'affichages des x, y, v du 2e onglets si elles existent
@@ -506,13 +518,15 @@ class StartQt5(QMainWindow):
             self.label_video.setCursor(Qt.ArrowCursor)
             self.label_video.setEnabled(1)
             self.label_video.reinit_origine()
-        except AttributeError:
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         try:
             self.label_echelle_trace.hide()
             del self.label_echelle_trace
-        except AttributeError:
+        except AttributeError as err:
             # quand on demande un effacement tout au début. Comme par exemple, ouvrir les exmples.
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
 
         self.ui.Bouton_Echelle.setText(_translate(
@@ -521,7 +535,8 @@ class StartQt5(QMainWindow):
         self.init_variables(None, filename=self.filename)
         try:
             self.affiche_image()
-        except AttributeError:
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
 
         self.label_video.echelle_image = echelle()
@@ -545,7 +560,8 @@ class StartQt5(QMainWindow):
             plotItem.setTitle('')
             plotItem.hideAxis('bottom')
             plotItem.hideAxis('left')
-        except AttributeError:
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass  # pas eu de graphes dessiné
 
         ### Réactiver checkBox_avancees après réinitialisation ###
@@ -674,7 +690,8 @@ class StartQt5(QMainWindow):
                                               defaultName, _translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
         try :
             self.pixmapChrono.save(fichier[0])
-        except :
+        except Exception as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
                     fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
 
@@ -873,7 +890,8 @@ class StartQt5(QMainWindow):
         try:
             if self.monThread:
                 self.monThread.stopped = True
-        except AttributeError:
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         self.label_video.setEnabled(1)
         self.ui.pushButton_stopCalculs.setEnabled(0)
@@ -905,10 +923,11 @@ class StartQt5(QMainWindow):
                                                                 '').replace(')', '').replace('(', '')
                             assert (pct.isalnum())
                             exit = True
-                        except IndexError:
-
+                        except IndexError as err:
+                            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                             exit = False
-        except:
+        except Exception as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
 
     def refait_echelle(self):
@@ -956,7 +975,8 @@ class StartQt5(QMainWindow):
         try:
             self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.echelle_image.p1 %s, self.echelle_image.p2 %s" % (
                 self.label_video.echelle_image.p1, self.label_video.echelle_image.p2))
-        except AttributeError:
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         self.redimensionneSignal.emit(1)
 
@@ -984,7 +1004,8 @@ class StartQt5(QMainWindow):
                     serie, position, donnees[key], recalcul=True)
         try:
             del self.repere_camera
-        except AttributeError:
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
 
     def change_sens_X(self):
@@ -1138,33 +1159,39 @@ class StartQt5(QMainWindow):
         self.dbg.p(3, "rentre dans 'loads fichier : ' %s" % (self.filename))
         try:
             self.sens_X = int(dico_donnee['sens axe des X'])
-        except KeyError:
+        except KeyError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             self.sens_X = 1
         self.dbg.p(3, "rentre dans 'loads' : sens_x' %s" % (self.sens_X))
         try:
             self.sens_Y = int(dico_donnee['sens axe des Y'])
-        except KeyError:
+        except KeyError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             self.sens_Y = 1
         self.dbg.p(3, "rentre dans 'loads' sens_y %s" % (self.sens_Y))
         try:
             largeur = int(dico_donnee['largeur video'])
-        except KeyError:
+        except KeyError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             largeur = 640
         self.dbg.p(3, "rentre dans 'loads' largeur :  %s" % (largeur))
         try:
             hauteur = int(dico_donnee['hauteur video'])
-        except KeyError:
+        except KeyError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             largeur = 480
         self.dbg.p(3, "rentre dans 'loads' hauteur %s" % (hauteur))
         try:
             self.rotation = int(dico_donnee['rotation'])
-        except KeyError:
+        except KeyError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             self.rotation = 0
         self.dbg.p(3, "rentre dans 'loads' rotation %s" % (self.rotation))
         try:
             self.label_video.origine = vecteur(dico_donnee['origine de pointage'].split(
             )[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])
-        except KeyError:
+        except KeyError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             self.label_video.origine = vecteur(largeur//2, hauteur//2)
         self.dbg.p(3, "rentre dans 'loads' origine %s" %
                    (self.label_video.origine))
@@ -1266,7 +1293,8 @@ class StartQt5(QMainWindow):
             self.resize(self.size()+QSize(-1, 0))
             self.debut_capture(rouvre=True)
             
-        except:
+        except Exception as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             reponse = QMessageBox.warning(None, "Mauvais type de fichier",
                                           _translate("pymecavideo", """\
 Le fichier choisi n'est pas compatible avec pymecavideo""",
@@ -1385,7 +1413,8 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             if locale.getdefaultlocale()[0][0:2] == 'fr':
                 # en France, le séparateur décimal est la virgule
                 sep_decimal = ","
-        except TypeError:
+        except TypeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         if fichier != "":
             liste_des_cles = []
@@ -1421,7 +1450,8 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
                                               defaultName, _translate("pymecavideo", "Projet pymecavideo (*.mecavideo)", None))
             try :
                 self.enregistre(fichier[0])
-            except :
+            except Exception as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
                         fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
  
@@ -1440,7 +1470,8 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         try:
             # nécessaire sinon, label_video n'est pas actif.
             self.label_echelle_trace.lower()
-        except AttributeError:
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         self.nb_de_points = self.ui.spinBox_nb_de_points.value()
         self.affiche_nb_points(False)
@@ -1502,7 +1533,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             try:
                 self.label_auto.hide()
                 del self.label_auto
-            except:
+            except Exception as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 pass
             # in this label, motif(s) are defined.
             self.label_auto = Label_Auto(self.label_video, self)
@@ -1593,7 +1625,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     p = self.points[i][1 + n] - self.points[i][1 + referentiel]
                     min_ = p.minXY(min_)
                     max_ = p.maxXY(max_)
-                except:
+                except Exception as err:
+                    self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     pass  # si on s'arrête de cliquer avant d'avoir fini l'image
         if min_ != None and max_ != None:
             return (min_ + max_) * 0.5
@@ -1613,14 +1646,16 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         if len(self.listePoints) % self.nb_de_points != 0:
             try:
                 self.points[len(self.listePoints)/self.nb_de_points].pop()
-            except KeyError:
+            except KeyError as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 # liée au passage de ptyhon2 à python3 et au changement de comportement de /
                 self.dbg.p(1, "Erreur de clé : " +
                            str(len(self.listePoints)/self.nb_de_points))
         else:
             try:
                 del self.points[len(self.listePoints)/self.nb_de_points]
-            except KeyError:
+            except KeyError as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 self.dbg.p(1, "Erreur de clé : " +
                            str(len(self.listePoints)/self.nb_de_points))
         # dernière image à afficher
@@ -1811,12 +1846,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     try:
                         self.dictionnaire_grandeurs["xprime" +
                                                     str(i+1)].append(eval(expression_Vx))
-                    except IndexError:
+                    except IndexError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreur_indices += "la vitesse en X du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["xprime" +
                                                     str(i+1)].append(float('NaN'))
-                    except:
+                    except Exception as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée ! <br> """ % (str(expression_Vx.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         # erreurs_python_+=traceback.format_exc()
@@ -1825,12 +1862,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     try:
                         self.dictionnaire_grandeurs["yprime" +
                                                     str(i+1)].append(eval(expression_Vy))
-                    except IndexError:
+                    except IndexError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreur_indices += "la vitesse en Y du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["yprime" +
                                                     str(i+1)].append(float('NaN'))
-                    except:
+                    except Exception as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Vy.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         # erreurs_python_+=traceback.format_exc()
@@ -1840,11 +1879,13 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         
                         self.dictionnaire_grandeurs["V" +
                                                     str(i+1)].append(eval(expression_V))
-                    except IndexError:
+                    except IndexError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreur_indices += "la vitesse du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["V"+str(i+1)].append(float('NaN'))
-                    except:
+                    except Exception as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br>""" % (str(expression_V.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
@@ -1856,12 +1897,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     try:
                         self.dictionnaire_grandeurs["Ec" +
                                                     str(i+1)].append(eval(expression_Ec))
-                    except IndexError:
+                    except IndexError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreur_indices += "l'énergie Cinétique du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["Ec" +
                                                     str(i+1)].append(float('NaN'))
-                    except:
+                    except Exception as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !<br> """ % (str(expression_Ec.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         # erreurs_python_+=traceback.format_exc()
@@ -1870,12 +1913,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     try:
                         self.dictionnaire_grandeurs["Epp" +
                                                     str(i+1)].append(eval(expression_Epp))
-                    except IndexError:
+                    except IndexError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreur_indices += "l'énergie cinétique du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["Epp" +
                                                     str(i+1)].append(float('NaN'))
-                    except:
+                    except Exception as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Epp.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
@@ -1885,12 +1930,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     try:
                         self.dictionnaire_grandeurs["Em" +
                                                     str(i+1)].append(eval(expression_Em))
-                    except IndexError:
+                    except IndexError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreur_indices += "l'énergie mécanique du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["Em" +
                                                     str(i+1)].append(float('NaN'))
-                    except SyntaxError:
+                    except SyntaxError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Em.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
@@ -1905,12 +1952,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     try:
                         self.dictionnaire_grandeurs["vabsprime" +
                                                     str(i+1)].append(eval(expression_Ax))
-                    except IndexError:
+                    except IndexError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreur_indices += "l'accélération en X du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["vabsprime" +
                                                     str(i+1)].append(float('NaN'))
-                    except:
+                    except Exception as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée ! <br> """ % (str(expression_Ax.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
                         # erreurs_python_+=traceback.format_exc()
@@ -1919,12 +1968,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     try:
                         self.dictionnaire_grandeurs["vordprime" +
                                                     str(i+1)].append(eval(expression_Ay))
-                    except IndexError:
+                    except IndexError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreur_indices += "l'accélération en Y du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["vordprime" +
                                                     str(i+1)].append(float('NaN'))
-                    except:
+                    except Exception as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Ay.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
                         # erreurs_python_+=traceback.format_exc()
@@ -1933,11 +1984,13 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     try:
                         self.dictionnaire_grandeurs["A" +
                                                     str(i+1)].append(eval(expression_A))
-                    except IndexError:
+                    except IndexError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreur_indices += "l'accélération du point %s, n'a pas pu être calculée à la position %s<br>" % (
                             i+1, n)
                         self.dictionnaire_grandeurs["A"+str(i+1)].append(float('NaN'))
-                    except:
+                    except Exception as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br>""" % (str(expression_V.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
                         #erreurs_python_ +=traceback.format_exc()
@@ -2047,14 +2100,16 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         elif grandeurX != "Choisir ...":
             try:
                 X = self.dictionnaire_grandeurs[grandeurX]
-            except:
+            except Exception as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 pass
         if grandeurY == 't':
             Y = [i*self.deltaT for i in range(len(self.points))]
         elif grandeurY != "Choisir ...":
             try:
                 Y = self.dictionnaire_grandeurs[grandeurY]
-            except:
+            except Exception as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 pass
         if X != [] and Y != []:
             pg.setConfigOption('background', 'w')
@@ -2122,7 +2177,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                                               defaultName, _translate("pymecavideo", "fichiers images(*.png)", None))
             try :
                 self.pg_exporter.export(fichier[0])
-            except :
+            except Exception as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
                         fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
 
@@ -2348,7 +2404,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         self.mets_a_jour_label_infos(_translate(
                             "pymecavideo", " Merci d'indiquer une masse valable", None))
                     self.masse_objet = float(masse_objet[0])
-                except:
+                except Exception as err:
+                    self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     self.mets_a_jour_label_infos(_translate(
                         "pymecavideo", " Merci d'indiquer une masse valable", None))
                     self.ui.checkBox_Ec.setChecked(0)
@@ -2364,7 +2421,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             for point in self.points[ligne][1:]:
                 try:
                     pm = self.pointEnMetre(point)
-                except:
+                except Exception as err:
+                    self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     pm = point
                 self.ui.tableWidget.setItem(
                     ligne, i + 1, QTableWidgetItem(str(pm.x())))
@@ -2379,7 +2437,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             for point in self.points[ligne][1:]:
                 try:
                     pm = self.pointEnMetre(point)
-                except:
+                except Exception as err:
+                    self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     pm = point
                 if ancienPoint != None:
                     v = (pm - ancienPoint).norme() / self.deltaT
@@ -2401,7 +2460,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                             self.ui.tableWidget.setItem(
                                 ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Ec+Epp)))
                             cptr += 1
-                except UnboundLocalError:  # pour premier point, la vitesse n'est pas définie
+                except UnboundLocalError as err:  # pour premier point, la vitesse n'est pas définie
+                    self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     pass
                 i += 1
         ###Ajout d'un bouton pour refaire le point.
@@ -2460,7 +2520,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.index_de_l_image = self.ui.spinBox_image.value()
         try:
             self.affiche_image()
-        except:
+        except Exception as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
 
     def affiche_image(self):
@@ -2486,7 +2547,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             elif self.index_de_l_image > self.image_max:
                 self.index_de_l_image = self.image_max
                 self.lance_capture = False
-        except:
+        except Exception as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             # arrive quand on ouvreun fichier pour la prmeière fois, au premier resize.
             pass
 
@@ -2507,7 +2569,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         try:
             self.job.dialog.close()
             self.job.close()
-        except AttributeError:
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         self.demande_echelle()
 
@@ -2548,7 +2611,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.job.setPixmap(QPixmap(toQImage(self.image_opencv)))
                 self.job.show()
                 self.change_axe_ou_origine()
-        except ValueError:
+        except ValueError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             self.mets_a_jour_label_infos(_translate(
                 "pymecavideo", " Merci d'indiquer une échelle valable", None))
             self.demande_echelle()
@@ -2570,7 +2634,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x())))
                     self.ui.tableWidget.setItem(
                         i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y())))
-                except:
+                except Exception as err:
+                    self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     pass  # si pas le bon nb de points cliqués
         # esthétique : enleve la derniere ligne
         self.ui.tableWidget.removeRow(len(self.points))
@@ -2584,7 +2649,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         try:
             self.label_echelle_trace.hide()
             del self.label_echelle_trace
-        except:
+        except Exception as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass  # si pas de vidéo preexistante
 
         self.label_echelle_trace = Label_Echelle_Trace(
@@ -2631,7 +2697,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         if m != "":
             try:
                 float(m)
-            except:
+            except Exception as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 retour = QMessageBox.critical(
                     self,
                     _translate(u"pymecavideo", "MAUVAISE VALEUR !", None),
@@ -2646,7 +2713,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         if g != "":
             try:
                 float(g)
-            except:
+            except Exception as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 retour = QMessageBox.critical(
                     self,
                     _translate(u"pymecavideo", "MAUVAISE VALEUR !", None),
@@ -2694,7 +2762,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.openTheFile(filename)
         try:
             self.reinitialise_capture()
-        except:
+        except Exception as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
 
     def renomme_le_fichier(self):
@@ -2749,7 +2818,8 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.dbg.p(1, "rentre dans 'propos'")
         try:
             loc = locale.getdefaultlocale()[0][0:2]
-        except TypeError:
+        except TypeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             loc = ''
         if loc in licence.keys():
             licence_XX = licence[loc] % Version
@@ -2862,7 +2932,8 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 if os.path.isfile(val) and (os.path.splitext(val)[1] == ".csv" or  os.path.splitext(val)[1] == ".mecavideo"):
                     try:
                         self.rouvre(val)
-                    except AttributeError:
+                    except AttributeError as err:
+                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                         self.dbg.p(
                             1, "Issue in rouvre for this file : attributeerror")
                 if os.path.isfile(val) and os.path.splitext(val)[1] == ".avi":
@@ -2880,7 +2951,8 @@ def run():
     try:
         opts, args = getopt.getopt(
             args, "f:d:", ["fichier_mecavideo=", "debug="])
-    except getopt.GetoptError:
+    except getopt.GetoptError as err:
+        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
         usage()
         sys.exit(2)
 
