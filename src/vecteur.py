@@ -33,7 +33,7 @@ class vecteur:
                       self.signif(float(y), self.precision))
 
     def copy(self):
-        return vecteur(self.x(), self.y())
+        return vecteur(self.x, self.y)
 
     @property
     def x(self):
