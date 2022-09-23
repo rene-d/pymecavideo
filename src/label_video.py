@@ -146,7 +146,7 @@ class Label_Video(QLabel):
             self.painter.begin(self)
             try:
                 self.painter.drawPixmap(
-                    self.decal.x(), self.decal.y(), self.pixmap())
+                    round(self.decal.x), round(self.decal.y), self.pixmap())
             except TypeError:  # pixmap is not declare yet
                 pass
 
@@ -156,11 +156,13 @@ class Label_Video(QLabel):
             self.painter.setPen(Qt.green)
             try:
                 self.painter.drawLine(
-                    self.origine.x() - 5, self.origine.y(), self.origine.x() + 5, self.origine.y())
-                self.painter.drawLine(self.origine.x(), self.origine.y(
-                ) - 5, self.origine.x(), self.origine.y() + 5)
+                    round(self.origine.x) - 5, round(self.origine.y),
+                    round(self.origine.x) + 5, round(self.origine.y))
+                self.painter.drawLine(
+                    round(self.origine.x), round(self.origine.y) - 5,
+                    round(self.origine.x), round(self.origine.y) + 5)
                 self.painter.drawText(
-                    self.origine.x(), self.origine.y() + 15, "O")
+                    round(self.origine.x), round(self.origine.y) + 15, "O")
             except:
                 pass
 
@@ -188,13 +190,14 @@ class Label_Video(QLabel):
             self.painter.setPen(Qt.green)
             self.painter.translate(0, 0)
             try:
-                self.painter.translate(self.origine.x, self.origine.y)
+                self.painter.translate(
+                    round(self.origine.x), round(self.origine.y))
             except AttributeError:
                 pass
-            p1 = QPoint(self.app.sens_X * (-40), 0)
-            p2 = QPoint(self.app.sens_X * (40), 0)
-            p3 = QPoint(self.app.sens_X * (36), 2)
-            p4 = QPoint(self.app.sens_X * (36), -2)
+            p1 = QPoint(round(self.app.sens_X * (-40)), 0)
+            p2 = QPoint(round(self.app.sens_X * (40)), 0)
+            p3 = QPoint(round(self.app.sens_X * (36)), 2)
+            p4 = QPoint(round(self.app.sens_X * (36)), -2)
             self.painter.scale(1, 1)
             self.painter.drawPolyline(p1, p2, p3, p4, p2)
             self.painter.rotate(self.app.sens_X * self.app.sens_Y * (-90))
