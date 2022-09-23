@@ -137,9 +137,9 @@ class Label_Echelle(QLabel):
         painter.begin(self)
 
         painter.setPen(Qt.red)
-        if self.p1.x() > 0:
-            painter.drawLine(self.p1.x(), self.p1.y(),
-                             self.p2.x(), self.p2.y())
+        if self.p1.x > 0:
+            painter.drawLine(round(self.p1.x), round(self.p1.y),
+                             round(self.p2.x), round(self.p2.y))
         painter.end()
 
     def mouseMoveEvent(self, event):
@@ -154,13 +154,13 @@ class Label_Echelle(QLabel):
             self.update()
 
     def fait_crop(self, p):
-        rect = QRect(p.x() - 25, p.y() - 25, 50, 50)
+        rect = QRect(round(p.x) - 25, round(p.y) - 25, 50, 50)
         crop = self.app.imageAffichee.copy(rect)
         self.cropX2 = QPixmap.fromImage(
             crop.scaled(100, 100, Qt.KeepAspectRatio))
 
     def mouseReleaseEvent(self, event):
-        if event.button() == 1 and self.p1.x() >= 0:
+        if event.button() == 1 and self.p1.x >= 0:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
         self.zoom_croix.hide()
         self.app.ui.label_zoom.setPixmap(QPixmap())
