@@ -339,6 +339,7 @@ class StartQt5(QMainWindow):
         self.nb_de_points = 0  # nombre de points suivis
         self.point_attendu = 0
         self.nb_clics = 0
+        self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
         self.premiere_image = 1  # n° de la première image cliquée
         self.index_de_l_image = 1  # image à afficher
         self.chronoImg = 0
@@ -356,7 +357,6 @@ class StartQt5(QMainWindow):
             pass
         self.listePoints = listePointee()
         self.pileDeDetections = []
-        self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
         self.a_une_image = False
         self.resizing = False
         self.stopRedimensionne = False
@@ -379,15 +379,14 @@ class StartQt5(QMainWindow):
         if not self.a_une_image:
             self.ui.tabWidget.setTabEnabled(0, False)
         self.ui.actionExemples.setEnabled(1)
-        try:
+        # initialisation de self.label_trajectoire
+        if hasattr(self, "label_trajectoire"):
             self.label_trajectoire.clear()
-        except AttributeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            self.label_trajectoire = Label_Trajectoire(
-                parent=self.ui.containerWidget2)
-            self.aspectlayout2.addWidget(self.label_trajectoire)
-            self.label_trajectoire.chrono = False
-            self.label_trajectoire.show()
+        self.label_trajectoire = Label_Trajectoire(
+            parent=self.ui.containerWidget2)
+        self.aspectlayout2.addWidget(self.label_trajectoire)
+        self.label_trajectoire.chrono = False
+        self.label_trajectoire.show()
 
         self.update()
         self.ui.horizontalSlider.setEnabled(0)
