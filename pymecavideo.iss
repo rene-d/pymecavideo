@@ -17,7 +17,7 @@
 ;along with pymecavideo; if not, write to the Free Software
 ;Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#define AppVersion "7.2.1.0"
+#define AppVersion "7.2.2.0"
 
 
 [Setup]
@@ -27,7 +27,7 @@ AppVerName=pymecavideo {#AppVersion}
 AppVersion={#AppVersion}
 AppPublisher=Georges Khaznadar et Jean-Baptiste Butet
 AppCopyright=Copyright (C) 2007-2030 Georges Khaznadar <georgesk.debian.org>
-VersionInfoVersion = 7.2.1.0
+VersionInfoVersion = 7.2.2.0
 
 ;Répertoire de base contenant les fichiers
 SourceDir=C:\Users\JB\Documents\pymecavideo

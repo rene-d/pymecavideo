@@ -444,7 +444,8 @@ for k in range(1,len(x1)-1):
     ##############
     ##############""",
                 """
-plt.quiver(x1[1:-1], y1[1:-1], vx, vy, scale_units = 'xy', angles = 'xy', width = 0.003)
+#Pour afficher les vecteurs vitesses, décommentez le ligne suivante quand le code précédent est prêt.
+#plt.quiver(x1[1:-1], y1[1:-1], vx, vy, scale_units = 'xy', angles = 'xy', width = 0.003)
  """,
                 """
 ax = np.array(np.zeros(len(vx)-2))
@@ -768,6 +769,8 @@ class Export:
                 try:
                     m = __import__(mod)
                 except ImportError:
+                    DBG.p(3, "erreur d'export")
+                    DBG.p(3, EXPORT_MESSAGES)
                     msg = EXPORT_MESSAGES[3]
                     QMessageBox.critical(None, msg['titre'], msg['texte'].format(
                         mod), QMessageBox.Ok, QMessageBox.Ok)

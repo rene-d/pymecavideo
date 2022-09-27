@@ -27,7 +27,7 @@ shutil.rmtree("build", ignore_errors=True)
 includefiles = ['../AUTHORS', '../COPYING', '../README.fr',
                 ('../data', "data"),
                 #                     ('mencoder.exe', "mencoder.exe"),
-                'C:\Python38\Lib\site-packages\cv2\opencv_videoio_ffmpeg412_64.dll']
+                'C:/Users/jb/AppData/Local/Programs/Python/Python310/Lib/site-packages/cv2/opencv_videoio_ffmpeg460_64.dll']
 
 
 # Dependencies are automatically detected, but it might need fine tuning.
