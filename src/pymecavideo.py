@@ -451,8 +451,8 @@ class StartQt5(QMainWindow):
         # inactive le spinner pour les incréments de plus d'une image
         # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
         # non encore implémentée
-        self.label_incr.hide()
-        self.spinBox.hide()
+        self.ui.label_incr.hide()
+        self.ui.spinBox.hide()
 
     def affiche_lance_capture(self, active=False):
         """
