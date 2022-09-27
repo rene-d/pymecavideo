@@ -104,6 +104,7 @@ class Label_Echelle(QLabel):
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
+        self.pos_echelle = vecteur()
         self.cible_icon = os.path.join(
             self.app._dir("icones"), "curseur_cible.svg")
         pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
