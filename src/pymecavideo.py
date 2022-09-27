@@ -448,6 +448,12 @@ class StartQt5(QMainWindow):
         self.aspectlayout1.aspect = self.ratio
         self.aspectlayout2.aspect = self.ratio
 
+        # inactive le spinner pour les incréments de plus d'une image
+        # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
+        # non encore implémentée
+        self.label_incr.hide()
+        self.spinBox.hide()
+
     def affiche_lance_capture(self, active=False):
         """
         Met à jour l'affichage du bouton pour lancer la capture
