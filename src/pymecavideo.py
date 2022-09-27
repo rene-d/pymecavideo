@@ -2439,7 +2439,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                                 ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Ec)))
                             cptr += 1
                         if self.ui.checkBox_Epp.isChecked():
-                            Epp = self.masse_objet*9.81*pm.y()  # TODO faire varier g
+                            Epp = self.masse_objet*9.81*pm.y  # TODO faire varier g
                             self.ui.tableWidget.setItem(
                                 ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Epp)))
                             cptr += 1
