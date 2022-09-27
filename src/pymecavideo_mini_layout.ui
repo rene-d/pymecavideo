@@ -252,7 +252,7 @@
               <widget class="QLabel" name="label_5">
                <property name="text">
                 <string>Points à 
-étudier :</string>
+				étudier :</string>
                </property>
               </widget>
              </item>
@@ -412,7 +412,7 @@
             <widget class="QCheckBox" name="checkBox_abscisses">
              <property name="text">
               <string>Abscisses 
-vers la gauche</string>
+			    vers la gauche</string>
              </property>
             </widget>
            </item>
@@ -432,7 +432,7 @@ vers la gauche</string>
              </property>
              <property name="text">
               <string>Ordonnées 
-vers le bas</string>
+			    vers le bas</string>
              </property>
             </widget>
            </item>
@@ -486,6 +486,52 @@ vers le bas</string>
                </property>
                <property name="clearButtonEnabled">
                 <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_incr">
+             <item>
+              <widget class="QLabel" name="label_incr">
+               <property name="toolTip">
+                <string>Incrémenter le compteur d'image à chaque pointage</string>
+               </property>
+               <property name="statusTip">
+                <string>Incrémenter le compteur d'image à chaque pointage</string>
+               </property>
+               <property name="text">
+                <string>Incr :</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="spinBox">
+               <property name="toolTip">
+                <string>Incrémenter le compteur d'image à chaque pointage</string>
+               </property>
+               <property name="statusTip">
+                <string>Incrémenter le compteur d'image à chaque pointage</string>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>10</number>
                </property>
               </widget>
              </item>
@@ -844,7 +890,7 @@ vers le bas</string>
                <widget class="QCheckBox" name="checkBoxVectorSpeed">
                 <property name="text">
                  <string>Montrer les
-vecteurs vitesses</string>
+				  vecteurs vitesses</string>
                 </property>
                </widget>
               </item>
@@ -1505,7 +1551,7 @@ vecteurs vitesses</string>
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>29</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
