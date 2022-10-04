@@ -184,6 +184,7 @@ class StartQt5(QMainWindow):
         @param args les arguments restants après raitement des options
         """
         # QT
+        super(QMainWindow, self).__init__()
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
         self.hauteur = 1
@@ -285,6 +286,8 @@ class StartQt5(QMainWindow):
 
     def sizeHint(self):
         return QSize(1024, 800)
+    def moveEvent(self,e):
+        super(StartQt5, self).moveEvent(e)
 
     def showFullScreen_(self):
         #"""gère les dimensions en fonction de la largeur et la hauteur de l'écran"""
@@ -1202,12 +1205,7 @@ class StartQt5(QMainWindow):
         self.dbg.p(3, "rentre dans 'loads, dico données' %s" % (dico_donnee))
         self.calcul_deltaT(rouvre=True)
         self.label_video.resize(QSize(largeur, hauteur))
-        ########redimensionne l'application TODO : ATTENTION 
-        geom = self.label_video.geometry()
-        self.ui.containerWidget1.setGeometry(0,0, geom.width(),geom.height())
-        decalage_gauche = 220
-        decalage_haut = 130
-        self.setGeometry(0,0, self.label_video.width()+decalage_gauche, self.label_video.height()+decalage_haut)
+
         
         self.aspectlayout1.aspect = largeur/hauteur
         self.aspectlayout2.aspect = largeur/hauteur
@@ -1233,9 +1231,7 @@ class StartQt5(QMainWindow):
             # on récupère les données importantes
             dico_donnees = self.loads(dictionnaire_données_str)
             self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
-            self.init_interface()
             self.change_axe_ou_origine()
-
             # puis on trace le segment entre les points cliqués pour l'échelle
             # on réinitialise l'échelle.p1, self.echelle_image.p2)
             self.feedbackEchelle(
@@ -1277,8 +1273,7 @@ class StartQt5(QMainWindow):
             self.ui.tableWidget.show()
             self.recalculLesCoordonnees()
             ##HACK oblige le rdimensionnement pour mettre à jour l'image
-            self.resize(self.size()+QSize(1, 0))
-            self.resize(self.size()+QSize(-1, 0))
+            self.resize(self.size()+QSize(1, 100))
             self.debut_capture(rouvre=True)
             
         except Exception as err:
