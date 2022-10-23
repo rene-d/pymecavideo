@@ -34,6 +34,7 @@ class echelle(QObject):
     def __init__(self, p1=vecteur(0, 0), p2=vecteur(0, 0)):
         self.p1, self.p2 = p1, p2
         self.longueur_reelle_etalon = 1
+        self.estdefinie = False
 
     def __str__(self):
         return "echelle(%s,%s,%s m)" % (self.p1, self.p2, self.longueur_reelle_etalon)
@@ -182,6 +183,7 @@ class Label_Echelle(QLabel):
         self.app.mets_en_orange_echelle()
 
         # self.app.affiche_lance_capture(False)
+
         self.app.feedbackEchelle(self.p1, self.p2)
         self.app.change_axe_ou_origine()
         if len(self.app.listePoints) > 0:  # si on appelle l'échelle après avoir déjà pointé

@@ -238,8 +238,8 @@ class RalentiWidget(QDialog):
                 cv2.CAP_PROP_POS_FRAMES, image_suivante + self.cadreur.app.premiere_image)
             status, img = self.cadreur.capture.read()
             img = self.cadreur.rotateImage(img, self.cadreur.app.rotation)
-            w, h = int(taille.x), int(taille.y())
-            x, y = int(hautgauche.x), int(hautgauche.y())
+            w, h = int(taille.x), int(taille.y)
+            x, y = int(hautgauche.x), int(hautgauche.y)
 
             # Crop from x, y, w, h -> 100, 200, 300, 400
             crop_img = img[y:y+h, x:x+w]
@@ -326,12 +326,14 @@ class openCvReader:
             largeur = self.capture.get(cv2.CAP_PROP_FRAME_WIDTH)
             hauteur = self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
             if abs(angle) == 90:  # on a retourné la vidéo
+                print('cadreur on tourne')
                 largeur, hauteur = hauteur, largeur
         except:
             print("could not retrieve informations from the video file.")
             print("assuming fps = 25, frame count = 10.")
             return 25, 10, 320, 200
 #        return fps, fcount
+        print('cadreur', fps, fcount, int(largeur), int(hauteur))
         return fps, fcount, int(largeur), int(hauteur)
 
     def __str__(self):

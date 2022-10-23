@@ -109,7 +109,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>165</width>
+            <width>179</width>
             <height>0</height>
            </size>
           </property>
@@ -252,7 +252,7 @@
               <widget class="QLabel" name="label_5">
                <property name="text">
                 <string>Points à 
-				étudier :</string>
+étudier :</string>
                </property>
               </widget>
              </item>
@@ -412,7 +412,7 @@
             <widget class="QCheckBox" name="checkBox_abscisses">
              <property name="text">
               <string>Abscisses 
-			    vers la gauche</string>
+vers la gauche</string>
              </property>
             </widget>
            </item>
@@ -432,7 +432,7 @@
              </property>
              <property name="text">
               <string>Ordonnées 
-			    vers le bas</string>
+ vers le bas</string>
              </property>
             </widget>
            </item>
@@ -1551,7 +1551,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

@@ -48,9 +48,9 @@ licence['en'] = """
     pymecavideo version %s:
 
     a program to track moving points in a video frameset
-    
+
     Copyright (C) 2007-2016 Jean-Baptiste Butet <ashashiwa@gmail.com>
-    
+
     Copyright (C) 2007-2018 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
@@ -71,15 +71,15 @@ licence['fr'] = u"""
     pymecavideo version %s :
 
     un programme pour tracer les trajectoires des points dans une vidéo.
-    
+
     Copyright (C) 2007-2016 Jean-Baptiste Butet <ashashiwa@gmail.com>
-    
+
     Copyright (C) 2007-2018 Georges Khaznadar <georgesk@debian.org>
-    
+
     Ce projet est un logiciel libre : vous pouvez le redistribuer, le modifier selon les terme de la GPL (GNU Public License) dans les termes de la Free Software Foundation concernant la version 3 ou plus de la dite licence.
-    
+
     Ce programme est fait avec l'espoir qu'il sera utile mais SANS AUCUNE GARANTIE. Lisez la licence pour plus de détails.
-    
+
     <http://www.gnu.org/licenses/>.
 """
 #
@@ -178,13 +178,12 @@ class MonThreadDeCalcul(QThread):
 class StartQt5(QMainWindow):
     def __init__(self, parent=None, opts=[], args=[]):
         """
-        le constructeur reçoit les données principales du logiciel : 
+        le constructeur reçoit les données principales du logiciel :
         @param parent le widget parent, None pour une fenêtre principale
         @param opts les options de l'invocation bien rangées en tableau
         @param args les arguments restants après raitement des options
         """
         # QT
-        super(QMainWindow, self).__init__()
         QMainWindow.__init__(self)
         QWidget.__init__(self, parent)
         self.hauteur = 1
@@ -196,7 +195,7 @@ class StartQt5(QMainWindow):
         # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         self.pointsProbables = [None]
         self.methode_thread = 3  # définit la methode de calcul à utiliser pour la détection auto. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
-        
+
         # Mode plein écran
         self.plein_ecran = False
         QShortcut(QKeySequence(Qt.Key_F11), self, self.basculer_plein_ecran)
@@ -286,8 +285,6 @@ class StartQt5(QMainWindow):
 
     def sizeHint(self):
         return QSize(1024, 800)
-    def moveEvent(self,e):
-        super(StartQt5, self).moveEvent(e)
 
     def showFullScreen_(self):
         #"""gère les dimensions en fonction de la largeur et la hauteur de l'écran"""
@@ -387,7 +384,7 @@ class StartQt5(QMainWindow):
             self.label_trajectoire.clear()
         self.label_trajectoire = Label_Trajectoire(
             parent=self.ui.containerWidget2)
-        
+
         self.aspectlayout2.addWidget(self.label_trajectoire)
         self.label_trajectoire.chrono = False
         self.label_trajectoire.show()
@@ -441,9 +438,9 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_Em.setChecked(0)
         self.ui.checkBox_Epp.setChecked(0)
         self.label_trajectoire.label_video = self.label_video
-        
+
         #mets à jour le ratio
-        try : 
+        try :
             self.ratio=self.determineRatio()
         except Exception as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
@@ -557,7 +554,7 @@ class StartQt5(QMainWindow):
         self.ui.pushButton_stopCalculs.setEnabled(0)
         self.ui.pushButton_stopCalculs.hide()
 
-        # désactive grpahe si existant
+        # désactive graphe si existant
         try:
             plotItem = self.graphWidget.getPlotItem()
             plotItem.clear()
@@ -678,7 +675,7 @@ class StartQt5(QMainWindow):
         self.ui.pushButton_save.clicked.connect(self.enregistreChrono)
         self.ui.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
         self.ui.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
-        
+
     def changeChronoImg(self,img):
         self.chronoImg = img
         self.chronoPhoto()
@@ -987,13 +984,14 @@ class StartQt5(QMainWindow):
     def change_axe_ou_origine(self, origine=None):
         """mets à jour le tableau de données"""
         self.dbg.p(1, "rentre dans 'change_axe_ou_origine'")
+        self.dbg.p(3, "valeur de l'origine en argument %s"%(origine))
         # repaint axes and define origine
         if origine:
             self.label_video.origine = origine
         self.label_trajectoire.origine_mvt = self.label_video.origine
         self.label_trajectoire.update()
         self.label_video.update()
-
+        self.dbg.p(3, "valeur de l'origine calculée %s"%(self.label_video.origine))
         # construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
         if self.points_ecran != {}:
             liste_clef = []
@@ -1060,7 +1058,7 @@ class StartQt5(QMainWindow):
     def export(self, choix_export=None):
         self.dbg.p(1, "rentre dans 'export'")
         """
-        Traite le signal venu de exportCombo, puis remet l\'index de ce 
+        Traite le signal venu de exportCombo, puis remet l\'index de ce
         combo à zéro.
         """
         # Si appel depuis les QActions, choix_export contient la clé du dico
@@ -1123,7 +1121,7 @@ class StartQt5(QMainWindow):
 
     def rouvre_ui(self):
         self.dbg.p(1, "rentre dans 'rouvre_ui'")
-        
+
         dir_ = DOCUMENT_PATH[0]
         fichier, _ = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
                                                  dir_,
@@ -1142,12 +1140,17 @@ class StartQt5(QMainWindow):
         s = s[1:-2].replace("\n#", "\n")
         echelle, point, self.deltaT, self.nb_de_points = s.splitlines()[
             1:-1][-4:]
-        self.label_video.echelle_image.longueur_reelle_etalon = float(echelle.split()[
+        self.dbg.p(3, "echelle {}, point {}, self.deltaT {}, self.nb_de_points{}".format(echelle, point, self.deltaT, self.nb_de_points))
+        if point.split()[-1]=='None' : #échelle non définie dans ce fichier :
+            self.echelle_faite = False
+        else :
+            self.echelle_faite = True
+            self.label_video.echelle_image.longueur_reelle_etalon = float(echelle.split()[
                                                                       1])
-        x, y = float(point.split()[3][1:-1]), float(point.split()[4][:-1])
-        self.label_video.echelle_image.p1 = vecteur(x, y)
-        x, y = float(point.split()[5][1:-1]), float(point.split()[6][:-1])
-        self.label_video.echelle_image.p2 = vecteur(x, y)
+            x, y = float(point.split()[3][1:-1]), float(point.split()[4][:-1])
+            self.label_video.echelle_image.p1 = vecteur(x, y)
+            x, y = float(point.split()[5][1:-1]), float(point.split()[6][:-1])
+            self.label_video.echelle_image.p2 = vecteur(x, y)
         donnees_fichier = s.splitlines()[1:-1]
         dico_donnee = {}
         for donnee in donnees_fichier:
@@ -1189,6 +1192,7 @@ class StartQt5(QMainWindow):
         try:
             self.label_video.origine = vecteur(dico_donnee['origine de pointage'].split(
             )[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])
+            self.dbg.p(3, "origine définie en {}".format(self.label_video.origine))
         except KeyError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             self.label_video.origine = vecteur(largeur//2, hauteur//2)
@@ -1197,12 +1201,13 @@ class StartQt5(QMainWindow):
         self.premiere_image = int(dico_donnee['index de depart'])
         self.dbg.p(3, "rentre dans 'loads' première image %s" %
                    (self.premiere_image))
-        self.dbg.p(3, "rentre dans 'loads' longueur_reelle_etalon %s" %
-                   (self.label_video.echelle_image.longueur_reelle_etalon))
-        self.label_video.echelle_image.p1, self.label_video.echelle_image.p2 = vecteur(point.split(
-        )[-4][1:-1], point.split()[-3][:-1]), vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
-        self.dbg.p(3, "rentre dans 'loads' points de l'échelle %s" % (
-            [self.label_video.echelle_image.p1, self.label_video.echelle_image.p2]))
+        if self.echelle_faite :
+            self.dbg.p(3, "rentre dans 'loads' longueur_reelle_etalon %s" %
+                    (self.label_video.echelle_image.longueur_reelle_etalon))
+            self.label_video.echelle_image.p1, self.label_video.echelle_image.p2 = vecteur(point.split(
+            )[-4][1:-1], point.split()[-3][:-1]), vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
+            self.dbg.p(3, "rentre dans 'loads' points de l'échelle %s" % (
+                [self.label_video.echelle_image.p1, self.label_video.echelle_image.p2]))
         self.deltaT = float(self.deltaT.split()[-1])
         self.dbg.p(3, "rentre dans 'loads' delta_t %s" % (self.deltaT))
         self.nb_de_points = int(self.nb_de_points.split()[-2])
@@ -1211,11 +1216,14 @@ class StartQt5(QMainWindow):
         self.dbg.p(3, "rentre dans 'loads, dico données' %s" % (dico_donnee))
         self.calcul_deltaT(rouvre=True)
         self.label_video.resize(QSize(largeur, hauteur))
-
-        
+        ########redimensionne l'application TODO : ATTENTION
+        geom = self.label_video.geometry()
+        self.ui.containerWidget1.setGeometry(0,0, geom.width(),geom.height())
+        decalage_gauche = 220
+        decalage_haut = 130
+        self.setGeometry(self.pos().x(),self.pos().y(), self.label_video.width()+decalage_gauche, self.label_video.height()+decalage_haut)
         self.aspectlayout1.aspect = largeur/hauteur
         self.aspectlayout2.aspect = largeur/hauteur
-        
 
         self.init_cvReader()
         return dico_donnee
@@ -1235,9 +1243,12 @@ class StartQt5(QMainWindow):
         self.label_video.echelle_image = echelle()  # on réinitialise l'échelle
         try:
             # on récupère les données importantes
+            self.dbg.p(3, "dictionnaire des données : {} ".format(dictionnaire_données_str))
             dico_donnees = self.loads(dictionnaire_données_str)
             self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
+            self.init_interface()
             self.change_axe_ou_origine()
+
             # puis on trace le segment entre les points cliqués pour l'échelle
             # on réinitialise l'échelle.p1, self.echelle_image.p2)
             self.feedbackEchelle(
@@ -1279,9 +1290,10 @@ class StartQt5(QMainWindow):
             self.ui.tableWidget.show()
             self.recalculLesCoordonnees()
             ##HACK oblige le rdimensionnement pour mettre à jour l'image
-            self.resize(self.size()+QSize(1, 100))
+            self.resize(self.size()+QSize(1, 0))
+            self.resize(self.size()+QSize(-1, 0))
             self.debut_capture(rouvre=True)
-            
+
         except Exception as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             reponse = QMessageBox.warning(None, "Mauvais type de fichier",
@@ -1297,7 +1309,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             if self.cvReader is None:
                 self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
             else:
-                framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
+                framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(self.rotation)
         ratioFilm = float(self.largeurFilm) / self.hauteurFilm
         self.dbg.p(3, "dans 'determineRatio', le ratio a été calculé à %s"%(ratioFilm))
         return ratioFilm
@@ -1391,7 +1403,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 #suivi de %s point(s)
 #%s
 #""" % (self.filename, self.sens_X, self.sens_Y, self.label_video.width(), self.label_video.height(), self.rotation, self.label_video.origine, self.premiere_image, self.label_video.echelle_image.longueur_reelle_etalon, self.label_video.echelle_image.longueur_pixel_etalon(),
-            self.label_video.echelle_image.p1, self.label_video.echelle_image.p2, self.deltaT, self.nb_de_points, msg)
+            self.label_video.echelle_image.p1 if self.echelle_faite else None, self.label_video.echelle_image.p2 if self.echelle_faite else None, self.deltaT, self.nb_de_points, msg)
         return result
 
     def enregistre(self, fichier):
@@ -1442,7 +1454,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
                 self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
                         fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
- 
+
     def debut_capture(self, departManuel=True, rouvre=False):
         """
         permet de mettre en place le nombre de point à acquérir
@@ -1541,10 +1553,10 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.ui.tableWidget.setRowCount(1)
         colonnes_sup = self.ui.checkBox_Ec.isChecked()+self.ui.checkBox_Epp.isChecked() + \
             self.ui.checkBox_Em.isChecked()
-        
+
         self.ui.tableWidget.setColumnCount(
             self.nb_de_points * 2 + 2 + colonnes_sup*self.nb_de_points) #ajout d'une colonne bouton
-        
+
         self.ui.tableWidget.setDragEnabled(True)
         # on met des titres aux colonnes.
         self.ui.tableWidget.setHorizontalHeaderItem(
@@ -1579,7 +1591,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         #dernier pour le bouton
         self.ui.tableWidget.setHorizontalHeaderItem(
                         self.nb_de_points * 2 + 1 + colonnes_sup*self.nb_de_points, QTableWidgetItem("Refaire le point"))
-        
+
     def barycentre_trajectoires(self, referentiel):
         """
         calcule le barycentre de tous les points constituant les trajectoires
@@ -1731,7 +1743,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.dictionnaire_grandeurs["vabsprime"+str(i+1)] = []
             # doit s'appeler yprime pour que ça soit orthonal à V pour les replaces.
             self.dictionnaire_grandeurs["vordprime"+str(i+1)] = []
-            
+
         deltaT = self.deltaT
         for ligne in self.points.keys():
             i = 0
@@ -1754,16 +1766,16 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 grandeurAy = "self.dictionnaire_grandeurs['vordprime"+str(
                     i+1)+"']"
                 grandeurA = "self.dictionnaire_grandeurs['A"+str(i+1)+"']"
-                
+
                 grandeurEc = "self.dictionnaire_grandeurs['Ec"+str(i+1)+"']"
                 grandeurEpp = "self.dictionnaire_grandeurs['Epp"+str(i+1)+"']"
                 grandeurEm = "self.dictionnaire_grandeurs['Em"+str(i+1)+"']"
-                
-                
+
+
                 m = float(self.ui.lineEdit_m.text().replace(',', '.'))
                 g = float(self.ui.lineEdit_g.text().replace(',', '.'))
-                
-                
+
+
                 expression_Vx = '(X[n+1]-X[n-1])/(2*deltaT)'
                 expression_Vy = '(Y[n+1]-Y[n-1])/(2*deltaT)'
                 expression_V = 'math.sqrt(Vx[n]**2+Vy[n]**2)'
@@ -1773,7 +1785,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 expression_Ax = '(Vx[n+1]-Vx[n-1])/(2*deltaT)'
                 expression_Ay = '(Vy[n+1]-Vy[n-1])/(2*deltaT)'
                 expression_A = 'math.sqrt(Ax[n]**2+Ay[n]**2)'
-                
+
                 expression_Vx = expression_Vx.replace('X', grandeurX)
 
                 expression_Vy = expression_Vy.replace('Y', grandeurY)
@@ -1793,11 +1805,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 expression_Epp = expression_Epp.replace('Y', grandeurY)
 
                 expression_Em = expression_Em.replace('Ec', grandeurEc).replace('Epp', grandeurEpp)
-                
-                ###si un jour besoin : 
+
+                ###si un jour besoin :
                 #expression_Em = expression_Em.replace('X', grandeurX).replace('Y', grandeurY).replace('Vx', grandeurVx).replace(
                     ##'Vy', grandeurVy).replace('V', grandeurV).replace('Ec', grandeurEc).replace('Epp', grandeurEpp).replace('Em', grandeurEm)
-                
+
 
                 # CETTE PARTIE PERMET DE RENTRER MANUELLEMENT DES EXPRESSIONS.
                 #expression_Vx = self.ui.lineEdit_vx.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
@@ -1814,21 +1826,21 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     expression_Vy, i, n, 'Vy')
                 expression_V, err3 = self.traite_indices(
                     expression_V, i, n, 'V')
-                
+
                 expression_Ec, err4 = self.traite_indices(
                     expression_Ec, i, n, 'Ec')
                 expression_Epp, err5 = self.traite_indices(
                     expression_Epp, i, n, 'Epp')
                 expression_Em, err6 = self.traite_indices(
                     expression_Em, i, n, 'Em')
-                
+
                 expression_Ax, err7 = self.traite_indices(
                     expression_Ax, i, n, 'Ax')
                 expression_Ay, err8 = self.traite_indices(
                     expression_Ay, i, n, 'Ay')
                 expression_A, err9 = self.traite_indices(
                     expression_A, i, n, 'A')
-                                
+
                 erreur_indices += err1+err2+err3+err4+err5+err6+err7+err8+err9
                 if expression_Vx != '':
                     try:
@@ -1864,7 +1876,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreurs_python.append(erreurs_python_)
                 if expression_V != '':
                     try:
-                        
+
                         self.dictionnaire_grandeurs["V" +
                                                     str(i+1)].append(eval(expression_V))
                     except IndexError as err:
@@ -1880,7 +1892,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreurs_python.append(erreurs_python_)
 
 
-                        
+
                 if expression_Ec != '':
                     try:
                         self.dictionnaire_grandeurs["Ec" +
@@ -1912,8 +1924,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Epp.replace(
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)                
-                
+                        erreurs_python.append(erreurs_python_)
+
                 if expression_Em != '':
                     try:
                         self.dictionnaire_grandeurs["Em" +
@@ -1930,12 +1942,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
                         #erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
-                        
-                
-        #une fois que les vitesses ont été calculées : 
+
+
+        #une fois que les vitesses ont été calculées :
         for i in range(self.nb_de_points):
             for n in range(len(self.points.keys())):
-            
+
                 if expression_Ax != '':
                     try:
                         self.dictionnaire_grandeurs["vabsprime" +
@@ -1983,7 +1995,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                             "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
                         #erreurs_python_ +=traceback.format_exc()
                         erreurs_python.append(erreurs_python_)
-                
+
         self.dbg.p(3, "erreurs a la fin : %s" % erreur_indices)
         self.dbg.p(3, "erreurs python : %s" % erreurs_python)
         #text_textedit = entete + '<p>' + erreur_indices + '</p>'
@@ -2012,7 +2024,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 if self.dictionnaire_grandeurs[grandeur] != []:
                     numero = ''.join(
                         [grandeur[-2] if grandeur[-2].isdigit() else "", grandeur[-1]])
-                    if 'prime' in grandeur : 
+                    if 'prime' in grandeur :
                         if 'x' in grandeur :
                             grandeur_a_afficher = 'Vx'+numero
                         elif 'y' in grandeur :
@@ -2023,15 +2035,15 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                             grandeur_a_afficher = 'Ay'+numero
                     elif 'A' in grandeur or 'V' in grandeur:
                         grandeur_a_afficher = '|'+grandeur+'|'
-                        
-                    else : 
+
+                    else :
                         grandeur_a_afficher = grandeur
                     self.ui.comboBox_X.addItem(grandeur_a_afficher)
                     self.ui.comboBox_Y.addItem(grandeur_a_afficher)
         #else : #il y a déjà eu un choix de graphe
             #self.ui.comboBox_X.setItem(self.graphe_deja_choisi[1])
             #self.ui.comboBox_Y.setItem(self.graphe_deja_choisi[0])
-        
+
     def traite_indices(self, expression, i, n, grandeur):
         """cette fonction traite les indices négatifs afin que python, justement... ne les traite pas"""
         self.dbg.p(1, "rentre dans 'traite_indices'")
@@ -2058,10 +2070,10 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         return expression, erreur
 
     def dessine_graphe_avant(self):
-        if self.graphe_deja_choisi is not None : 
+        if self.graphe_deja_choisi is not None :
             self.graphe_deja_choisi = None #si changement ds les combobox, on réinitilaise le choix.
         self.dessine_graphe()
-        
+
     def dessine_graphe(self):
         """dessine les graphes avec pyqtgraph au moment où les combobox sont choisies"""
         self.dbg.p(1, "rentre dans 'dessine_graphe'")
@@ -2070,11 +2082,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             0, 0, 0), 'symbol': None}}  # Dictionnaire contenant les différents styles de graphes
         # Index du comboxBox styles, inspirés de Libreoffice
         style = self.ui.comboBox_style.currentIndex()
-        
-        if self.graphe_deja_choisi is not None : 
+
+        if self.graphe_deja_choisi is not None :
             abscisse = self.graphe_deja_choisi[1].strip('|')
             ordonnee = self.graphe_deja_choisi[0].strip('|')
-        else : 
+        else :
             abscisse = self.ui.comboBox_X.currentText().strip('|')
             ordonnee = self.ui.comboBox_Y.currentText().strip('|')
         # Définition des paramètres 'pen' et 'symbol' pour pyqtgraph
@@ -2154,7 +2166,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
             self.graphe_deja_choisi = (ordonnee, abscisse)
-                
+
     def enregistre_graphe(self):
         if hasattr (self, 'pg_exporter'):
             base_name = os.path.splitext(os.path.basename(self.filename))[0]
@@ -2225,7 +2237,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.dbg.p(1, "rentre dans 'affiche_point_attendu'")
         self.dbg.p(1, "Point n° %i" % n)
         self.mets_a_jour_label_infos(
-            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(n+1))
+            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(n+1))
 
     def clic_sur_label_video(self, liste_points=None, interactif=True):
         self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
@@ -2253,10 +2265,10 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.nb_clics = 0
             self.index_de_l_image += 1
             self.affiche_image()
-        
+
             if self.refait_point : #quandon refait 1 seul point faux.
                 self.fin_refait_point_depuis_tableau()
-        
+
     def enableDefaire(self, value):
         """
         Contrôle la possibilité de défaire un clic
@@ -2314,8 +2326,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         nieme  = self.nb_clics
         if self.refait_point : #arrive si on refait qu'un seul point à partir du tableau de l'onglet 3.
             self.listePoints[(self.index_de_l_image-self.premiere_image)*self.nb_de_points+nieme] = [i, nieme, point]
-            
-        else : 
+
+        else :
             self.listePoints.append([i, nieme, point])
         self.dbg.p(3, "dans 'enregistre_dans_listePoints', self.listePoints vaut %s"%self.listePoints)
         return
@@ -2330,7 +2342,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         if index_image == False:
             # l'index est sur la dernière image traitée
             index_image = self.listePoints[-1][0]
-        else : 
+        else :
             index_image = self.index_de_l_image-1
         t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
 
@@ -2361,7 +2373,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
     def affiche_tableau(self):
         """lancée à cahque affichage du tableau, recalcule les coordonnées à afficher à partir des listes de points."""
         self.dbg.p(1, "rentre dans 'affiche_tableau'")
-                
+
         # active ou désactive les checkbox énergies (n'ont un intérêt que si les échelles sont faites)
         if self.echelle_faite:
             self.ui.checkBox_Ec.setEnabled(1)
@@ -2453,7 +2465,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     pass
                 i += 1
         ###Ajout d'un bouton pour refaire le point.
-        
+
             qpushbutton = QPushButton()
             qpushbutton.setIcon(QIcon(":/data/icones/curseur_cible.svg"))
             qpushbutton.setToolTip("refaire le pointage\n de l'image %s"%(ligne+1))
@@ -2469,24 +2481,24 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         numero_image = qpbn.toolTip().split(' ')[-1]
         self.index_de_l_image_actuelle = self.index_de_l_image
         self.index_de_l_image = int(numero_image)+self.premiere_image-1
-        
+
         self.ui.tabWidget.setCurrentIndex(0)
         point_actuel = len(self.listePoints)%self.nb_de_points
         self.clic_sur_label_video_ajuste_ui(point_actuel)
-        
-    def fin_refait_point_depuis_tableau(self): 
+
+    def fin_refait_point_depuis_tableau(self):
         self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")
         self.refait_point = False
-        
+
         #####remplacement de la valeur de self.points pour la ligne correspondante
         self.stock_coordonnees_image(self.index_de_l_image-self.premiere_image-1, index_image=True)
-        
+
         self.index_de_l_image = self.index_de_l_image_actuelle
         self.index_de_l_image_actuelle = None
         self.clic_sur_label_video_ajuste_ui(0)
         self.ui.tabWidget.setCurrentIndex(2)
-        
-        
+
+
     def transforme_index_en_temps(self, index):
         self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")
         return float(self.deltaT * (index))
@@ -2711,7 +2723,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def mets_a_jour_label_infos(self, message):
         """
-        On utilise la barre de status pour afficher les messages : 
+        On utilise la barre de status pour afficher les messages :
         permet de gagner de la place en envelant le label_infos_image
         @param message message à afficher
         """

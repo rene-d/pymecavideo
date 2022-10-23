@@ -70,15 +70,16 @@ class Label_Video(QLabel):
             y = self.origine.y*ratioh
             self.origine = vecteur(x, y)
 
-            x = self.echelle_image.p1.x*ratiow
-            y = self.echelle_image.p1.y*ratioh
-            self.echelle_image.p1 = vecteur(x, y)
+            if self.app.echelle_faite:
+                x = self.echelle_image.p1.x*ratiow
+                y = self.echelle_image.p1.y*ratioh
+                self.echelle_image.p1 = vecteur(x, y)
 
-            x = self.echelle_image.p2.x*ratiow
-            y = self.echelle_image.p2.y*ratioh
-            self.echelle_image.p2 = vecteur(x, y)
-            self.app.feedbackEchelle(
-                self.echelle_image.p1, self.echelle_image.p2)
+                x = self.echelle_image.p2.x*ratiow
+                y = self.echelle_image.p2.y*ratioh
+                self.echelle_image.p2 = vecteur(x, y)
+                self.app.feedbackEchelle(
+                    self.echelle_image.p1, self.echelle_image.p2)
 
     def reinit(self):
         try:
@@ -152,15 +153,15 @@ class Label_Video(QLabel):
 
             ############################################################
             # paint the origin
-
+            longueur_origine = 500
             self.painter.setPen(Qt.green)
             try:
                 self.painter.drawLine(
-                    round(self.origine.x) - 5, round(self.origine.y),
-                    round(self.origine.x) + 5, round(self.origine.y))
+                    round(self.origine.x) - longueur_origine, round(self.origine.y),
+                    round(self.origine.x) + longueur_origine, round(self.origine.y))
                 self.painter.drawLine(
-                    round(self.origine.x), round(self.origine.y) - 5,
-                    round(self.origine.x), round(self.origine.y) + 5)
+                    round(self.origine.x), round(self.origine.y) - longueur_origine,
+                    round(self.origine.x), round(self.origine.y) + longueur_origine)
                 self.painter.drawText(
                     round(self.origine.x), round(self.origine.y) + 15, "O")
             except:
