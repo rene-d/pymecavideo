@@ -68,7 +68,7 @@ cible = Executable(
 
 print("version", version.Version.__str__())
 setup(name="pymecavideo",
-      version="7.1.0.1",
+      version="7.2.3",
       author='Jean-Baptiste Butet ; Georges Khaznadar',
       description=u"pymecavideo",
       options={"build_exe": build_exe_options},
