@@ -1223,7 +1223,7 @@ class StartQt5(QMainWindow):
         self.ui.containerWidget1.setGeometry(0,0, geom.width(),geom.height())
         decalage_gauche = 220
         decalage_haut = 130
-        self.setGeometry(self.pos().x(),self.pos().y(), self.label_video.width()+decalage_gauche, self.label_video.height()+decalage_haut)
+        self.setGeometry(self.pos().x(),self.pos().y()+37, self.label_video.width()+decalage_gauche, self.label_video.height()+decalage_haut)
         self.aspectlayout1.aspect = largeur/hauteur
         self.aspectlayout2.aspect = largeur/hauteur
 
