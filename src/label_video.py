@@ -153,7 +153,7 @@ class Label_Video(QLabel):
 
             ############################################################
             # paint the origin
-            longueur_origine = 500
+            longueur_origine = 5
             self.painter.setPen(Qt.green)
             try:
                 self.painter.drawLine(
