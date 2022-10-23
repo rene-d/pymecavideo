@@ -595,7 +595,7 @@ class StartQt5(QMainWindow):
 
         # HACK : oblige le redimensionnement
         self.resize(self.size()+QSize(1, 0))
-        #self.resize(self.size()+QSize(-1, 0))
+        self.resize(self.size()+QSize(-1, 0))
 
     ############ les signaux spéciaux #####################
     clic_sur_video = pyqtSignal()
@@ -1345,6 +1345,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             self.tourne = False
             # HACK : oblige le redimensionnement
             self.resize(self.size()+QSize(1, 0))
+            self.resize(self.size()+QSize(-1, 0))
 
         if self.lance_capture:
             self.dbg.p(2, "on fixe les hauteurs du label")
