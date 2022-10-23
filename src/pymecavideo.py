@@ -320,6 +320,7 @@ class StartQt5(QMainWindow):
         self.sens_Y = 1
         self.repere = 0
         self.masse_objet = 0
+        self.premier_chargement_fichier_mecavideo = False #gere l'origine au premier chargement
         self.dictionnairePlotWidget = {}
         # contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
         self.dictionnaire_grandeurs = {}
@@ -986,7 +987,7 @@ class StartQt5(QMainWindow):
         self.dbg.p(1, "rentre dans 'change_axe_ou_origine'")
         self.dbg.p(3, "valeur de l'origine en argument %s"%(origine))
         # repaint axes and define origine
-        if origine:
+        if origine is not None:
             self.label_video.origine = origine
         self.label_trajectoire.origine_mvt = self.label_video.origine
         self.label_trajectoire.update()
@@ -1192,6 +1193,7 @@ class StartQt5(QMainWindow):
         try:
             self.label_video.origine = vecteur(dico_donnee['origine de pointage'].split(
             )[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])
+            self.premier_chargement_fichier_mecavideo = True
             self.dbg.p(3, "origine définie en {}".format(self.label_video.origine))
         except KeyError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
@@ -1257,6 +1259,9 @@ class StartQt5(QMainWindow):
                 self.rotation)
             self.rouvert = True
             self.premierResize = False
+
+
+
             # on régénère self.listePoints et self.points
             for l in lignes:
                 if l[0] == "#":
@@ -1267,11 +1272,16 @@ class StartQt5(QMainWindow):
                     t = "%4f" % (float(d[0].replace(",", ".")))
                     self.points[i] = [t]
                     for j in range(1, len(d), 2):
-                        pos = vecteur(float(d[j].replace(",", ".")) * self.label_video.echelle_image.pxParM()
-                                      + self.label_video.origine.x, self.label_video.origine.y - float(
-                            d[j + 1].replace(",", ".")) * self.label_video.echelle_image.pxParM())
+                        x = -self.sens_X*round(float(d[j].replace(",", ".")) * self.label_video.echelle_image.pxParM())
+                        y = self.sens_Y*round((float(
+                            d[j + 1].replace(",", ".")) * self.label_video.echelle_image.pxParM()))
+                        x_ = self.label_video.origine.x- x
+                        y_ = self.label_video.origine.y- y
+
+                        pos = vecteur(x_,y_)
+
                         self.enregistre_dans_listePoints(
-                            pos, index=int(float(t)*framerate) +
+                            pos, index=round(float(t)*framerate) +
                             self.premiere_image
                         )
                         self.points[i].append(pos)
@@ -1315,8 +1325,11 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         return ratioFilm
 
     def redimensionneFenetre(self, tourne=False, old=None):
+        self.dbg.p(1, "rentre dans 'redimensionneFenetre'")
+
         self.tourne = tourne  # n'est utilisée que ici et dans label_video
         if tourne:  # on vient de cliquer sur tourner. rien n'est changé.
+            self.dbg.p(1, "Dans 'redimensionneFenetre', tourne")
             largeur = self.label_video.width()
             hauteur = self.label_video.height()
             self.label_video.origine = self.label_video.origine.rotate(
@@ -1359,14 +1372,14 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         # si la hauteur est trop petite, ne permet plus de redimensionnement
         self.dbg.p(1, "retre dans 'widthForHeight'")
         self.dbg.p(2, "argument h : %s" % (str(h)))
-        return int(h*self.ratio)
+        return round(h*self.ratio)
 
     def heightForWidth_label_video(self, w):
         # calcul self.largeur et self.hauteur
         # si la largeur est trop petite, ne permet plus de redimensionnement
         self.dbg.p(1, "retre dans 'heightForWidth'")
         self.dbg.p(2, "argument w : %s" % (str(w)))
-        return int(w/self.ratio)
+        return round(w/self.ratio)
 
     def enterEvent(self, e):
         self.gardeLargeur()
@@ -1441,7 +1454,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 
     def enregistre_ui(self):
         self.dbg.p(1, "rentre dans 'enregistre_ui'")
-        if self.points != {}:
+        if self.points != {} and  self.echelle_faite:
             base_name = os.path.splitext(os.path.basename(self.filename))[0]
             defaultName = os.path.join(DOCUMENT_PATH[0], base_name+'.mecavideo')
             fichier = QFileDialog.getSaveFileName(self,
@@ -1452,9 +1465,10 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
                 self.enregistre(fichier[0])
             except Exception as err:
                 self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
+                QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier", None).format(
                         fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
-
+        else :
+            QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Il manque les ou l'échelle", None), QMessageBox.Ok, QMessageBox.Ok)
     def debut_capture(self, departManuel=True, rouvre=False):
         """
         permet de mettre en place le nombre de point à acquérir
@@ -2622,7 +2636,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.vitesses = {}
 
     def recalculLesCoordonnees(self):
-        """permet de remplir le tableau des coordonnées à la demande. Se produit quand on ouvre un fichier mecavideo ou quan don recommence l'échelle"""
+        """permet de remplir le tableau des coordonnées à la demande. Se produit quand on ouvre un fichier mecavideo ou quand on recommence l'échelle"""
+        self.dbg.p(1, "Rentre dans recalculLesCoordonnees" )
+        self.dbg.p(3, "Dans recalculLesCoordonnees, self.points {}".format(self.points) )
         for i in range(len(self.points)):
             self.ui.tableWidget.insertRow(i)
             self.ui.tableWidget.setItem(

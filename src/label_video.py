@@ -29,10 +29,13 @@ from zoom import Zoom_Croix
 import os
 from echelle import echelle
 import icon_rc
+from dbg import Dbg
+DBG = Dbg(0)
 
 class Label_Video(QLabel):
     def __init__(self, parent, app):
         QLabel.__init__(self, parent)
+        self.dbg = Dbg(0)
         self.app = app
         self.app.dbg.p(1, "In : Label_Video, __init__")
         self.cropX2 = None
@@ -45,7 +48,7 @@ class Label_Video(QLabel):
         self.zoom_croix.hide()
         self.setMouseTracking(True)
         self.origine = vecteur(self.width()//2, self.height()//2)
-        self.echelle_image = echelle()  # objet gérant l'image
+        self.echelle_image = echelle()  # objet gérant l'échelle
         # TODO
         self.decal = vecteur(0, 0)  # if video is not 4:3, center video
 
@@ -68,18 +71,23 @@ class Label_Video(QLabel):
                 ratioh = self.height()/e.oldSize().width()
             x = self.origine.x*ratiow
             y = self.origine.y*ratioh
-            self.origine = vecteur(x, y)
+            if not self.app.premier_chargement_fichier_mecavideo:
+                self.origine = vecteur(x, y)
+
 
             if self.app.echelle_faite:
                 x = self.echelle_image.p1.x*ratiow
                 y = self.echelle_image.p1.y*ratioh
-                self.echelle_image.p1 = vecteur(x, y)
+                if not self.app.premier_chargement_fichier_mecavideo:
+                    self.echelle_image.p1 = vecteur(x, y)
 
                 x = self.echelle_image.p2.x*ratiow
                 y = self.echelle_image.p2.y*ratioh
-                self.echelle_image.p2 = vecteur(x, y)
+                if not self.app.premier_chargement_fichier_mecavideo:
+                    self.echelle_image.p2 = vecteur(x, y)
                 self.app.feedbackEchelle(
                     self.echelle_image.p1, self.echelle_image.p2)
+            #self.app.premier_chargement_fichier_mecavideo = False
 
     def reinit(self):
         try:
@@ -153,7 +161,9 @@ class Label_Video(QLabel):
 
             ############################################################
             # paint the origin
-            longueur_origine = 50
+            longueur_origine = 5
+            #print("Dans label_video, peint l'origine. Coordonnées  : {} {}'".format(self.origine.x, self.origine.y))
+
             self.painter.setPen(Qt.green)
             try:
                 self.painter.drawLine(

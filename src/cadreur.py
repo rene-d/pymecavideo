@@ -326,14 +326,13 @@ class openCvReader:
             largeur = self.capture.get(cv2.CAP_PROP_FRAME_WIDTH)
             hauteur = self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
             if abs(angle) == 90:  # on a retourné la vidéo
-                print('cadreur on tourne')
                 largeur, hauteur = hauteur, largeur
         except:
             print("could not retrieve informations from the video file.")
             print("assuming fps = 25, frame count = 10.")
             return 25, 10, 320, 200
 #        return fps, fcount
-        print('cadreur', fps, fcount, int(largeur), int(hauteur))
+        #print('cadreur', fps, fcount, int(largeur), int(hauteur))
         return fps, fcount, int(largeur), int(hauteur)
 
     def __str__(self):
