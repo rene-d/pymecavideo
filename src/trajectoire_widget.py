@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-    Label_Video, a module for pymecavideo:
+    trajectoire_widget, a module for pymecavideo:
       a program to track moving points in a video frameset
       
     Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    Copyright (C) 2022 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,14 +23,16 @@ from math import sqrt, atan2, degrees
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QRect, QPoint, QPointF
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPicture, QPainter, QColor, QFont, QPainterPath, QPen, QFontMetrics
-from PyQt5.QtWidgets import QLabel, QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+
+from image_widget import ImageWidget
 
 from vecteur import vecteur
 
 
-class Label_Trajectoire(QLabel):
+class TrajectoireWidget(ImageWidget):
     def __init__(self, parent):
-        QLabel.__init__(self, parent)
+        ImageWidget.__init__(self, parent)
 
         self.chrono = False
 
@@ -47,6 +50,11 @@ class Label_Trajectoire(QLabel):
         self.origine_mvt = vecteur(0,0)
         self.origine = vecteur(0,0)
         self.referentiel = 0
+        return
+
+    def clear(self):
+        self.setImage()
+        return
 
     def reDraw(self):
         """call when somthing change as repere, origine ..."""
@@ -55,13 +63,13 @@ class Label_Trajectoire(QLabel):
         self.repaint()
 
     def maj(self):
-        self.origine_mvt = self.label_video.origine
+        self.origine_mvt = self.video.origine
 
     def giveCoordonatesToPaint(self):
         self.speedToDraw = []
-        if self.label_video.app.ui.checkBoxVectorSpeed.isChecked():
-            for key in self.label_video.app.points.keys():
-                points = self.label_video.app.points[key]
+        if self.video.app.ui.checkBoxVectorSpeed.isChecked():
+            for key in self.video.app.points.keys():
+                points = self.video.app.points[key]
                 for i in range(len(points)):
                     wroteSpeed = False
 
@@ -71,9 +79,9 @@ class Label_Trajectoire(QLabel):
                             ptreferentiel = points[int(self.referentiel)]
 
                             try:
-                                ptreferentielAfter = self.label_video.app.points[key + 1][int(
+                                ptreferentielAfter = self.video.app.points[key + 1][int(
                                     self.referentiel)]
-                                ptreferentielBefore = self.label_video.app.points[key - 1][int(
+                                ptreferentielBefore = self.video.app.points[key - 1][int(
                                     self.referentiel)]
                             except KeyError:  # last point -> can't compute speed
                                 break
@@ -86,37 +94,37 @@ class Label_Trajectoire(QLabel):
                         pass
 
                     if type(point) != type(""):
-                        if self.label_video.app.ui.radioButtonNearMouse.isChecked() and self.pos_souris != None:
+                        if self.video.app.ui.radioButtonNearMouse.isChecked() and self.pos_souris != None:
                             near = 20
                             pos = self.pos_souris
                             distance = QPoint(
                                 round(point.x + self.origine.x - ptreferentiel.x),
                                 round(point.y + self.origine.y - ptreferentiel.y)) - pos
                             if distance.manhattanLength() < near:
-                                self.label_video.app.dbg.p(
+                                self.video.app.dbg.p(
                                     2, "mouse near a point")
                                 wroteSpeed = True
 
-                        elif self.label_video.app.ui.radioButtonSpeedEveryWhere.isChecked():
+                        elif self.video.app.ui.radioButtonSpeedEveryWhere.isChecked():
                             wroteSpeed = True
 
                         if wroteSpeed:
-                            keyMax = len(self.label_video.app.points.keys())
+                            keyMax = len(self.video.app.points.keys())
                             # first and last point can't have speed.
                             if key != 0 and key != keyMax - 1:
                                 # coordonnates of n-1 and n+1 point
                                 try:
                                     tempsAfter = float(
-                                        self.label_video.app.points[key + 1][0])/self.label_video.app.deltaT  # en "delta_T"
+                                        self.video.app.points[key + 1][0])/self.video.app.deltaT  # en "delta_T"
                                     tempsBefore = float(
-                                        self.label_video.app.points[key-1][0])/self.label_video.app.deltaT  # en "delta_T"
+                                        self.video.app.points[key-1][0])/self.video.app.deltaT  # en "delta_T"
                                     pointBefore = vecteur(
-                                        (self.label_video.app.points[key - 1][i].x + self.origine.x - ptreferentielBefore.x)/(tempsAfter-tempsBefore),
-                                        (self.label_video.app.points[key - 1][i].y + self.origine.y - ptreferentielBefore.y)/(tempsAfter-tempsBefore))
+                                        (self.video.app.points[key - 1][i].x + self.origine.x - ptreferentielBefore.x)/(tempsAfter-tempsBefore),
+                                        (self.video.app.points[key - 1][i].y + self.origine.y - ptreferentielBefore.y)/(tempsAfter-tempsBefore))
 
                                     pointAfter = vecteur(
-                                        (self.label_video.app.points[key + 1][i].x + self.origine.x - ptreferentielAfter.x)/(tempsAfter-tempsBefore),
-                                        (self.label_video.app.points[key + 1][i].y + self.origine.y - ptreferentielAfter.y)/(tempsAfter-tempsBefore))
+                                        (self.video.app.points[key + 1][i].x + self.origine.x - ptreferentielAfter.x)/(tempsAfter-tempsBefore),
+                                        (self.video.app.points[key + 1][i].y + self.origine.y - ptreferentielAfter.y)/(tempsAfter-tempsBefore))
 
                                     vector_speed = pointAfter - pointBefore
 
@@ -131,7 +139,7 @@ class Label_Trajectoire(QLabel):
     def mouseMoveEvent(self, event):
         # Look if mouse is near a point
         self.pos_souris = event.pos()
-        if self.label_video.app.ui.radioButtonNearMouse.isChecked():
+        if self.video.app.ui.radioButtonNearMouse.isChecked():
             self.reDraw()
 
     def paintEvent(self, event):
@@ -145,7 +153,7 @@ class Label_Trajectoire(QLabel):
             couleur_de_fond = QColor("grey")
         if not self.chrono == 1 :
             self.painter.fillRect(
-                QRect(0, 0, self.label_video.width(), self.label_video.height()), couleur_de_fond)
+                QRect(0, 0, self.video.width(), self.video.height()), couleur_de_fond)
         
         ############################################################
         # paint the origin
@@ -182,9 +190,9 @@ class Label_Trajectoire(QLabel):
                 self.painter.setPen(Qt.blue)
             # Ecrit l'intervalle de temps
             try:
-                text = unicode("{0}t = {1:.3f} s").format(unichr(916), self.label_video.app.deltaT)
+                text = unicode("{0}t = {1:.3f} s").format(unichr(916), self.video.app.deltaT)
             except NameError:
-                text = "{0}t = {1:.3f} s".format(chr(916), self.label_video.app.deltaT)
+                text = "{0}t = {1:.3f} s".format(chr(916), self.video.app.deltaT)
             font_metrics = QFontMetrics(font)
             text_width = font_metrics.width(text)
             text_height = font_size
@@ -195,12 +203,12 @@ class Label_Trajectoire(QLabel):
             self.painter.drawText(self.width()-text_width-x1, y1, text)
             # dessine l'échelle
             if self.chrono == 2:  # chronogramme
-                if self.label_video.app.echelle_faite : #dessine une échelle en haut, horizontalement
-                    longueur = round((self.label_video.echelle_image.p1 - self.label_video.echelle_image.p2).norme)
+                if self.video.app.echelle_faite : #dessine une échelle en haut, horizontalement
+                    longueur = round((self.video.echelle_image.p1 - self.video.echelle_image.p2).norme)
                     self.painter.drawLine(x1, y1-10, x1, y1+10)
                     self.painter.drawLine(x1, y1, longueur+x1, y1)
                     self.painter.drawLine(longueur+x1, y1-10, longueur+x1, y1+10)
-                    text = "d = {0:.2e} m".format(self.label_video.echelle_image.longueur_reelle_etalon)   
+                    text = "d = {0:.2e} m".format(self.video.echelle_image.longueur_reelle_etalon)   
                     font_metrics = QFontMetrics(font)
                     text_width = font_metrics.width(text)
                     self.painter.drawText(max(x1+round((longueur/2)-(text_width/2)), 0), y1+30, text) 
@@ -218,19 +226,19 @@ class Label_Trajectoire(QLabel):
                 pen = QPen(Qt.blue)
                 pen.setWidth(3)
                 self.painter.setPen(pen)
-                if self.label_video.app.echelle_faite: 
+                if self.video.app.echelle_faite: 
                     self.painter.drawLine(
-                        round(self.label_video.app.label_echelle_trace.p1.x),
-                        round(self.label_video.app.label_echelle_trace.p1.y),
-                        round(self.label_video.app.label_echelle_trace.p2.x),
-                        round(self.label_video.app.label_echelle_trace.p2.y))
+                        round(self.video.app.echelle_trace.p1.x),
+                        round(self.video.app.echelle_trace.p1.y),
+                        round(self.video.app.echelle_trace.p2.x),
+                        round(self.video.app.echelle_trace.p2.y))
 
                     echelle = "d = {0:.2e} m".format(
-                            self.label_video.echelle_image.longueur_reelle_etalon)
+                            self.video.echelle_image.longueur_reelle_etalon)
 
                     self.painter.drawText(
-                        round(self.label_video.app.label_echelle_trace.p1.x),
-                        round((self.label_video.app.label_echelle_trace.p1.y + self.label_video.app.label_echelle_trace.p2.y)/2)+20,
+                        round(self.video.app.echelle_trace.p1.x),
+                        round((self.video.app.echelle_trace.p1.y + self.video.app.echelle_trace.p2.y)/2)+20,
                         echelle)
                 else : #pas d'échelle 
                     self.painter.drawText(x1, y1+20, "échelle non précisée")
@@ -248,10 +256,10 @@ class Label_Trajectoire(QLabel):
         listePoints = []
         listeParImage = []
 
-        for point in self.label_video.app.listePoints:
+        for point in self.video.app.listePoints:
             #    #TODO :si quelqu'un veut implémenter un slicing de l'objet listePointee...
             listeParImage.append(point[2])
-            if len(listeParImage) % self.label_video.app.nb_de_points == 0:
+            if len(listeParImage) % self.video.app.nb_de_points == 0:
                 listePoints.append(listeParImage)
                 listeParImage = []
 
@@ -305,17 +313,17 @@ class Label_Trajectoire(QLabel):
             # self.painter.translate(0,0)
             self.painter.translate(
                 round(self.origine_mvt.x), round(self.origine_mvt.y))
-            p1 = QPoint(round(self.label_video.app.sens_X * (-40)), 0)
-            p2 = QPoint(round(self.label_video.app.sens_X * (40)), 0)
-            p3 = QPoint(round(self.label_video.app.sens_X * (36)), 2)
-            p4 = QPoint(round(self.label_video.app.sens_X * (36)), -2)
+            p1 = QPoint(round(self.video.app.sens_X * (-40)), 0)
+            p2 = QPoint(round(self.video.app.sens_X * (40)), 0)
+            p3 = QPoint(round(self.video.app.sens_X * (36)), 2)
+            p4 = QPoint(round(self.video.app.sens_X * (36)), -2)
             self.painter.scale(1, 1)
             self.painter.drawPolyline(p1, p2, p3, p4, p2)
-            self.painter.rotate(self.label_video.app.sens_X *
-                                self.label_video.app.sens_Y * (-90))
+            self.painter.rotate(self.video.app.sens_X *
+                                self.video.app.sens_Y * (-90))
             self.painter.drawPolyline(p1, p2, p3, p4, p2)
-            self.painter.rotate(self.label_video.app.sens_X *
-                                self.label_video.app.sens_Y * (90))
+            self.painter.rotate(self.video.app.sens_X *
+                                self.video.app.sens_Y * (90))
             self.painter.translate(
                 round(-self.origine_mvt.x), round(-self.origine_mvt.y))
             self.painter.end()
@@ -331,8 +339,8 @@ class Label_Trajectoire(QLabel):
                     self.painter.setRenderHint(QPainter.Antialiasing)
                     self.painter.setPen(QColor(self.couleurs[i - 1]))
                     try:
-                        speed = vector_speed.norme * float(self.label_video.echelle_image.mParPx()) / (2 * self.label_video.app.deltaT) * float(self.label_video.app.ui.checkBoxScale.currentText())
-                        self.label_video.app.ui.checkBoxScale.setStyleSheet(
+                        speed = vector_speed.norme * float(self.video.echelle_image.mParPx()) / (2 * self.video.app.deltaT) * float(self.video.app.ui.checkBoxScale.currentText())
+                        self.video.app.ui.checkBoxScale.setStyleSheet(
                             "background-color:none")
                         path = QPainterPath()
                         path.moveTo(0, 0)
@@ -352,7 +360,7 @@ class Label_Trajectoire(QLabel):
 
                         path.moveTo(0, 0)
                     except ValueError:
-                        self.label_video.app.checkBoxScale.setStyleSheet(
+                        self.video.app.checkBoxScale.setStyleSheet(
                             "background-color: red")
                     self.painter.end()
                 else:

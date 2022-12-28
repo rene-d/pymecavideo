@@ -23,7 +23,7 @@ from math import sqrt
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
@@ -81,7 +81,7 @@ class echelle(QObject):
         self.longueur_reelle_etalon = float(l)
 
 
-class Label_Echelle(QLabel):
+class EchelleWidget(QWidget):
     """
     Widget qui permet de définir l'échelles
 
@@ -95,9 +95,10 @@ class Label_Echelle(QLabel):
     ...
     """
     def __init__(self, parent, app):
-        QLabel.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.parent = parent
         self.app = app
+        self.image=None
         self.setGeometry(
             QRect(0, 0, self.parent.width(), self.parent.height()))
         self.largeur = self.parent.width()
@@ -112,7 +113,7 @@ class Label_Echelle(QLabel):
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
         self.cropX2 = None
-        self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
+        self.zoom_croix = Zoom_Croix(self.app.ui.zoom_zone, self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
         self.pressed = False
@@ -122,8 +123,8 @@ class Label_Echelle(QLabel):
         except AttributeError:
             pass
         try:
-            self.app.label_echelle_trace.hide()
-            del self.app.label_echelle_trace
+            self.app.echelle_trace.hide()
+            del self.app.echelle_trace
         except AttributeError:
             pass
 
@@ -148,34 +149,26 @@ class Label_Echelle(QLabel):
         self.zoom_croix.show()
         if (event.x() > 0 and event.x() < self.largeur) and (event.y() > 0 and event.y() < self.hauteur):
             self.pos_echelle = vecteur(event.x(), event.y())
-        self.fait_crop(self.pos_echelle)
-        self.app.ui.label_zoom.setPixmap(self.cropX2)
+        self.app.ui.zoom_zone.fait_crop(self.pos_echelle)
 
         if self.pressed:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
             self.update()
 
-    def fait_crop(self, p):
-        rect = QRect(round(p.x) - 25, round(p.y) - 25, 50, 50)
-        crop = self.app.imageAffichee.copy(rect)
-        self.cropX2 = QPixmap.fromImage(
-            crop.scaled(100, 100, Qt.KeepAspectRatio))
-
     def mouseReleaseEvent(self, event):
         if event.button() == 1 and self.p1.x >= 0:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
         self.zoom_croix.hide()
-        self.app.ui.label_zoom.setPixmap(QPixmap())
-        # self.app.ui.label_zoom.repaint()
+        self.app.ui.zoom_zone.setImage()
         del self.zoom_croix
         self.parent.index_du_point = 0
 
-        self.app.label_video.echelle_image.p1 = self.p1.copy()
-        self.app.label_video.echelle_image.p2 = self.p2.copy()
+        self.app.video.echelle_image.p1 = self.p1.copy()
+        self.app.video.echelle_image.p2 = self.p2.copy()
 
         #self.app.p1 = self.p1.copy()
         #self.app.p2 = self.p2.copy()
-        epxParM = self.app.label_video.echelle_image.pxParM()
+        epxParM = self.app.video.echelle_image.pxParM()
         self.app.affiche_echelle()
         # self.app.affiche_nb_points(True)
         self.app.mets_a_jour_label_infos(self.app.tr(
@@ -196,10 +189,11 @@ class Label_Echelle(QLabel):
         self.close()
 
 
-class Label_Echelle_Trace(QLabel):
+class Echelle_TraceWidget(QWidget):
     def __init__(self, parent, p1, p2):
-        QLabel.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.parent = parent
+        self.image = None
         self.setGeometry(
             QRect(0, 0, self.parent.width(), self.parent.height()))
         self.setAutoFillBackground(False)

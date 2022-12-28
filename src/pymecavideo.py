@@ -22,19 +22,19 @@ import platform
 import threading
 from export import Export, EXPORT_FORMATS
 import re
-from echelle import Label_Echelle_Trace
 from toQimage import toQImage
 from dialogencode import QMessageBoxEncode
-from label_auto import Label_Auto
+from suivi_auto import SelRectWidget
 from version import Version
 from listes import listePointee
 from dbg import Dbg
 from preferences import Preferences
 from cadreur import Cadreur, openCvReader
-from label_origine import Label_Origine
-from label_trajectoire import Label_Trajectoire
-from label_video import Label_Video
-from echelle import Label_Echelle, echelle
+from choix_origine import ChoixOrigineWidget
+from trajectoire_widget import TrajectoireWidget
+from videoWidget import VideoWidget
+from echelle import Echelle_TraceWidget, EchelleWidget, echelle
+from zoom import Zoom_Croix
 from glob import glob
 import pyqtgraph as pg
 import pyqtgraph.exporters
@@ -212,6 +212,10 @@ class StartQt5(QMainWindow):
         self.ui = Ui_pymecavideo()
         self.ui.setupUi(self)
 
+        # définition des widgets importants
+        self.video = None
+        self.ui.zoom_zone.setApp(self)
+
         # gestion des layout pour redimensionnement
         self.aspectlayout1 = AspectLayout(self.ratio)
         self.ui.containerWidget1.setLayout(self.aspectlayout1)
@@ -278,7 +282,14 @@ class StartQt5(QMainWindow):
 
         # prise en compte d'options de la ligne de commande
         self.traiteOptions()
+        return
 
+    def zoom_croix(self):
+        """
+        Crée une zone zoomée pour chercher à placer une nouvelle origine
+        """
+        return Zoom_Croix(self.ui.zoom_zone, self)
+    
     def hasHeightForWidth(self):
         # This tells the layout manager that the banner's height does depend on its width
         return True
@@ -380,15 +391,15 @@ class StartQt5(QMainWindow):
         if not self.a_une_image:
             self.ui.tabWidget.setTabEnabled(0, False)
         self.ui.actionExemples.setEnabled(1)
-        # initialisation de self.label_trajectoire
-        if hasattr(self, "label_trajectoire"):
-            self.label_trajectoire.clear()
-        self.label_trajectoire = Label_Trajectoire(
+        # initialisation de self.trajectoire
+        if hasattr(self, "trajectoire_widget"):
+            self.trajectoire_widget.clear()
+        self.trajectoire_widget = TrajectoireWidget(
             parent=self.ui.containerWidget2)
 
-        self.aspectlayout2.addWidget(self.label_trajectoire)
-        self.label_trajectoire.chrono = False
-        self.label_trajectoire.show()
+        self.aspectlayout2.addWidget(self.trajectoire_widget)
+        self.trajectoire_widget.chrono = False
+        self.trajectoire_widget.show()
 
         self.update()
         self.ui.horizontalSlider.setEnabled(0)
@@ -399,7 +410,7 @@ class StartQt5(QMainWindow):
         self.ui.Bouton_Echelle.setStyleSheet("background-color:None;")
 
         # on essaie d'afficher l'échelle, si possible
-        if hasattr(self, 'label_video'):
+        if self.video != None:
             self.affiche_echelle()
         self.ui.tab_traj.setEnabled(0)
         self.ui.actionSaveData.setEnabled(0)
@@ -422,14 +433,14 @@ class StartQt5(QMainWindow):
             self.ui.pushButton_rot_droite.setEnabled(1)
             self.ui.pushButton_rot_gauche.setEnabled(1)
 
-        # création du label qui contiendra la vidéo.
-        if hasattr(self, 'label_video'):
-            self.label_video.clear()
+        # création du widget qui contiendra la vidéo.
+        if self.video != None:
+            self.video.clear()
         else:
-            self.label_video = Label_Video(
+            self.video = VideoWidget(
                 parent=self.ui.containerWidget1, app=self)
-            self.aspectlayout1.addWidget(self.label_video)
-            self.label_video.show()
+            self.aspectlayout1.addWidget(self.video)
+            self.video.show()
 
         self.ui.tabWidget.setCurrentIndex(0)  # montre l'onglet video
         self.ui.pushButton_stopCalculs.setEnabled(0)
@@ -438,7 +449,7 @@ class StartQt5(QMainWindow):
         self.ui.checkBox_Ec.setChecked(0)
         self.ui.checkBox_Em.setChecked(0)
         self.ui.checkBox_Epp.setChecked(0)
-        self.label_trajectoire.label_video = self.label_video
+        self.trajectoire_widget.video = self.video
 
         #mets à jour le ratio
         try :
@@ -452,7 +463,7 @@ class StartQt5(QMainWindow):
         # inactive le spinner pour les incréments de plus d'une image
         # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
         # non encore implémentée
-        self.ui.label_incr.hide()
+        self.ui.imgno_incr.hide()
         self.ui.spinBox.hide()
 
     def affiche_lance_capture(self, active=False):
@@ -477,12 +488,12 @@ class StartQt5(QMainWindow):
         affiche l'échelle courante pour les distances sur l'image
         """
         self.dbg.p(1, "rentre dans 'affiche_echelle'")
-        if self.label_video.echelle_image.isUndef():
+        if self.video.echelle_image.isUndef():
             self.ui.echelleEdit.setText(
                 _translate("pymecavideo", "indéf.", None))
             self.ui.Bouton_Echelle.setEnabled(True)
         else:
-            epxParM = self.label_video.echelle_image.pxParM()
+            epxParM = self.video.echelle_image.pxParM()
             if epxParM > 20:
                 self.ui.echelleEdit.setText("%.1f" % epxParM)
             else:
@@ -498,7 +509,7 @@ class StartQt5(QMainWindow):
         self.dbg.p(1, "rentre dans 'reinitialise_capture'")
         self.montre_vitesses = False
         try:
-            self.label_trajectoire.update()  # premier lancement sans fichier
+            self.trajectoire_widget.update()  # premier lancement sans fichier
         except AttributeError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
@@ -516,16 +527,16 @@ class StartQt5(QMainWindow):
         self.aspectlayout1.aspect = ratio
         self.aspectlayout2.aspect = ratio
         try:
-            self.label_video.update()
-            self.label_video.setCursor(Qt.ArrowCursor)
-            self.label_video.setEnabled(1)
-            self.label_video.reinit_origine()
+            self.video.update()
+            self.video.setCursor(Qt.ArrowCursor)
+            self.video.setEnabled(1)
+            self.video.reinit_origine()
         except AttributeError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         try:
-            self.label_echelle_trace.hide()
-            del self.label_echelle_trace
+            self.echelle_trace.hide()
+            del self.echelle_trace
         except AttributeError as err:
             # quand on demande un effacement tout au début. Comme par exemple, ouvrir les exmples.
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
@@ -541,7 +552,7 @@ class StartQt5(QMainWindow):
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
 
-        self.label_video.echelle_image = echelle()
+        self.video.echelle_image = echelle()
         self.affiche_echelle()
         self.ui.horizontalSlider.setEnabled(1)
         self.ui.spinBox_image.setEnabled(1)
@@ -598,7 +609,7 @@ class StartQt5(QMainWindow):
         self.resize(self.size()+QSize(-1, 0))
 
     ############ les signaux spéciaux #####################
-    clic_sur_video = pyqtSignal()
+    clic_sur_video_signal = pyqtSignal()
     change_axe_origine = pyqtSignal()
     selection_done = pyqtSignal()
     selection_motif_done = pyqtSignal()
@@ -631,7 +642,7 @@ class StartQt5(QMainWindow):
             self.affiche_image_slider_move)
         self.ui.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
         self.ui.Bouton_lance_capture.clicked.connect(self.debut_capture)
-        self.clic_sur_video.connect(self.clic_sur_label_video)
+        self.clic_sur_video_signal.connect(self.clic_sur_la_video)
         self.ui.comboBox_referentiel.currentIndexChanged.connect(
             self.tracer_trajectoires)
         #self.ui.comboBox_mode_tracer.currentIndexChanged.connect(
@@ -641,7 +652,7 @@ class StartQt5(QMainWindow):
         self.ui.checkBoxVectorSpeed.stateChanged.connect(self.enableSpeed)
         self.ui.radioButtonSpeedEveryWhere.clicked.connect(self.enableSpeed)
         self.ui.radioButtonNearMouse.clicked.connect(self.enableSpeed)
-        self.ui.button_video.clicked.connect(self.video)
+        self.ui.button_video.clicked.connect(self.montre_video)
         self.ui.pushButton_select_all_table.clicked.connect(self.presse_papier)
         self.ui.comboBoxChrono.currentIndexChanged.connect(self.chronoPhoto)
         self.ui.pushButton_reinit.clicked.connect(self.reinitialise_capture)
@@ -682,8 +693,8 @@ class StartQt5(QMainWindow):
         self.chronoPhoto()
 
     def enregistreChrono(self):
-        self.pixmapChrono = QPixmap(self.label_trajectoire.size())
-        self.label_trajectoire.render(self.pixmapChrono)
+        self.pixmapChrono = QPixmap(self.trajectoire_widget.size())
+        self.trajectoire_widget.render(self.pixmapChrono)
         base_name = os.path.splitext(os.path.basename(self.filename))[0]
         defaultName = os.path.join(DOCUMENT_PATH[0], base_name)
         fichier = QFileDialog.getSaveFileName(self,
@@ -698,7 +709,7 @@ class StartQt5(QMainWindow):
                     fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
 
     def chronoPhoto(self):
-        """lance la sauvegarde du label_trajectoire.
+        """lance la sauvegarde du trajectoire_widget.
         Si chronophotographie, on ajoute l'image et la trace de l'échelle comme pointée.
         Si chronophotogramme, on ne met pas l'image et la trace est en haut.
         """
@@ -718,7 +729,7 @@ class StartQt5(QMainWindow):
             self.ui.widget_speed.setEnabled(False)
             self.ui.checkBoxVectorSpeed.setChecked(False)
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
-        # ajoute la première image utilisée pour le pointage sur le fond du label
+        # ajoute la première image utilisée pour le pointage sur le fond du vidget
         liste_types_photos = ['chronophotographie', 'chronophotogramme']
 
         if self.ui.comboBoxChrono.currentIndex() != 0:
@@ -726,21 +737,21 @@ class StartQt5(QMainWindow):
             )-1]
             self.dbg.p(2, "dans 'chronoPhoto, on a choisi le type %s'" %
                        (photo_chrono))
-            if photo_chrono == 'chronophotographie':  # on extrait le première image que l'on rajoute au label
-                self.label_trajectoire.chrono = 1  # 1 pour chronophotographie
+            if photo_chrono == 'chronophotographie':  # on extrait le première image que l'on rajoute au widget
+                self.trajectoire_widget.chrono = 1  # 1 pour chronophotographie
                 ok, img = self.cvReader.getImage(
                     self.chronoImg, self.rotation)
                 self.imageChrono = toQImage(img).scaled(
-                    self.label_video.width(), self.label_video.height(), Qt.KeepAspectRatio)
-                self.label_trajectoire.setPixmap(
+                    self.video.width(), self.video.height(), Qt.KeepAspectRatio)
+                self.trajectoire_widget.setPixmap(
                     QPixmap.fromImage(self.imageChrono))
             else:
-                self.label_trajectoire.chrono = 2  # 2 pour chronophotogramme
-                self.label_trajectoire.setPixmap(QPixmap())
+                self.trajectoire_widget.chrono = 2  # 2 pour chronophotogramme
+                self.trajectoire_widget.setPixmap(QPixmap())
             #self.enregistreChrono()
         else:
-            self.label_trajectoire.setPixmap(QPixmap())
-            self.label_trajectoire.chrono = 0
+            self.trajectoire_widget.setPixmap(QPixmap())
+            self.trajectoire_widget.chrono = 0
         self.redimensionneFenetre()
         self.update()
 
@@ -776,25 +787,23 @@ class StartQt5(QMainWindow):
                 self.ui.checkBoxScale.insertItem(0, "1")
             self.ui.radioButtonNearMouse.show()
             self.ui.radioButtonSpeedEveryWhere.show()
-            self.label_trajectoire.reDraw()
+            self.trajectoire_widget.reDraw()
         else:
             self.ui.checkBoxScale.setEnabled(0)
             self.ui.radioButtonNearMouse.hide()
             self.ui.radioButtonSpeedEveryWhere.hide()
-            self.label_trajectoire.reDraw()
+            self.trajectoire_widget.reDraw()
 
     def suiviDuMotif(self):
         self.dbg.p(1, "rentre dans 'suiviDuMotif'")
         if len(self.motif) == self.nb_de_points:
             self.dbg.p(3, "selection des motifs finie")
-            self.label_auto.hide()
-            self.label_auto.close()
-            del self.label_auto
+            self.selRect.finish(delete=True)
             self.indexMotif = 0
             self.ui.pushButton_stopCalculs.setText("STOP")
             self.ui.pushButton_stopCalculs.setEnabled(1)
             self.ui.pushButton_stopCalculs.show()
-            self.label_video.setEnabled(0)
+            self.video.setEnabled(0)
             self.pileDeDetections = []
             for i in range(self.index_de_l_image, int(self.image_max)+1):
                 for j in range(self.nb_de_points):
@@ -828,7 +837,7 @@ class StartQt5(QMainWindow):
             point = filter_picture(
                 self.motif, self.indexMotif, self.imageAffichee, self.pointsProbables)
             self.pointsProbables[0] = point
-            self.label_video.storePoint(vecteur(point[0], point[1]))
+            self.video.storePoint(vecteur(point[0], point[1]))
 
             # programme le suivi du point suivant après un délai de 5 ms,
             # pour laisser une chance aux évènement de l'interface graphique
@@ -841,13 +850,12 @@ class StartQt5(QMainWindow):
         self.dbg.p(1, "rentre dans 'storeMotif'")
         if len(self.motif) == self.nb_de_points:
             self.dbg.p(3, "selection des motifs finie")
-            self.label_auto.hide()
-            self.label_auto.close()
+            self.selRect.finish()
             self.indexMotif = 0
             self.ui.pushButton_stopCalculs.setText("STOP")
             self.ui.pushButton_stopCalculs.setEnabled(1)
             self.ui.pushButton_stopCalculs.show()
-            self.label_video.setEnabled(0)
+            self.video.setEnabled(0)
             self.goCalcul = True
             # TODO : tests avec les différents mode de threading
             if self.methode_thread == 1:
@@ -895,7 +903,7 @@ class StartQt5(QMainWindow):
         except AttributeError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
-        self.label_video.setEnabled(1)
+        self.video.setEnabled(1)
         self.ui.pushButton_stopCalculs.setEnabled(0)
         self.ui.pushButton_stopCalculs.hide()
 
@@ -906,7 +914,7 @@ class StartQt5(QMainWindow):
         self.dbg.p(1, "rentre dans 'onePointFind'")
         self.pointsFound.append(self.pointTrouve)  # stock all points found
         for point in self.pointsFound:
-            self.label_video.storePoint(vecteur(point[0], point[1]))
+            self.video.storePoint(vecteur(point[0], point[1]))
 
     def readStdout(self):
         self.dbg.p(1, "rentre dans 'readStdout'")
@@ -943,8 +951,7 @@ class StartQt5(QMainWindow):
             self,
             u"NOUVELLE ORIGINE",
             u"Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
-        label = Label_Origine(parent=self.label_video, app=self)
-        label.show()
+        ChoixOrigineWidget(parent=self.video, app=self).show()
 
     def tourne_droite(self):
         self.dbg.p(1, "rentre dans 'tourne_droite'")
@@ -972,11 +979,11 @@ class StartQt5(QMainWindow):
 
         # gestion de l'origine et de l'échelle :
         # DEBUG
-        self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, largeur label_video%s, hauteur label_video%s" % (
-            self.label_video.origine, self.label_video.width(), self.label_video.height()))
+        self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, largeur video%s, hauteur video%s" % (
+            self.video.origine, self.video.width(), self.video.height()))
         try:
             self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.echelle_image.p1 %s, self.echelle_image.p2 %s" % (
-                self.label_video.echelle_image.p1, self.label_video.echelle_image.p2))
+                self.video.echelle_image.p1, self.video.echelle_image.p2))
         except AttributeError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
@@ -988,11 +995,11 @@ class StartQt5(QMainWindow):
         self.dbg.p(3, "valeur de l'origine en argument %s"%(origine))
         # repaint axes and define origine
         if origine is not None:
-            self.label_video.origine = origine
-        self.label_trajectoire.origine_mvt = self.label_video.origine
-        self.label_trajectoire.update()
-        self.label_video.update()
-        self.dbg.p(3, "valeur de l'origine calculée %s"%(self.label_video.origine))
+            self.video.origine = origine
+        self.trajectoire_widget.origine_mvt = self.video.origine
+        self.trajectoire_widget.update()
+        self.video.update()
+        self.dbg.p(3, "valeur de l'origine calculée %s"%(self.video.origine))
         # construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
         if self.points_ecran != {}:
             liste_clef = []
@@ -1039,7 +1046,7 @@ class StartQt5(QMainWindow):
         @param point un point en "coordonnées d\'écran"
         """
         self.dbg.p(1, "rentre dans 'pointEnMetre'")
-        return vecteur(self.sens_X * (float(p.x - self.label_video.origine.x) * self.label_video.echelle_image.mParPx()), self.sens_Y * float(self.label_video.origine.y - p.y) * self.label_video.echelle_image.mParPx())
+        return vecteur(self.sens_X * (float(p.x - self.video.origine.x) * self.video.echelle_image.mParPx()), self.sens_Y * float(self.video.origine.y - p.y) * self.video.echelle_image.mParPx())
 
     def presse_papier(self):
         """Sélectionne la totalité du tableau de coordonnées
@@ -1146,12 +1153,12 @@ class StartQt5(QMainWindow):
             self.echelle_faite = False
         else :
             self.echelle_faite = True
-            self.label_video.echelle_image.longueur_reelle_etalon = float(echelle.split()[
+            self.video.echelle_image.longueur_reelle_etalon = float(echelle.split()[
                                                                       1])
             x, y = float(point.split()[3][1:-1]), float(point.split()[4][:-1])
-            self.label_video.echelle_image.p1 = vecteur(x, y)
+            self.video.echelle_image.p1 = vecteur(x, y)
             x, y = float(point.split()[5][1:-1]), float(point.split()[6][:-1])
-            self.label_video.echelle_image.p2 = vecteur(x, y)
+            self.video.echelle_image.p2 = vecteur(x, y)
         donnees_fichier = s.splitlines()[1:-1]
         dico_donnee = {}
         for donnee in donnees_fichier:
@@ -1191,25 +1198,25 @@ class StartQt5(QMainWindow):
             self.rotation = 0
         self.dbg.p(3, "rentre dans 'loads' rotation %s" % (self.rotation))
         try:
-            self.label_video.origine = vecteur(dico_donnee['origine de pointage'].split(
+            self.video.origine = vecteur(dico_donnee['origine de pointage'].split(
             )[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])
             self.premier_chargement_fichier_mecavideo = True
-            self.dbg.p(3, "origine définie en {}".format(self.label_video.origine))
+            self.dbg.p(3, "origine définie en {}".format(self.video.origine))
         except KeyError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            self.label_video.origine = vecteur(largeur//2, hauteur//2)
+            self.video.origine = vecteur(largeur//2, hauteur//2)
         self.dbg.p(3, "rentre dans 'loads' origine %s" %
-                   (self.label_video.origine))
+                   (self.video.origine))
         self.premiere_image = int(dico_donnee['index de depart'])
         self.dbg.p(3, "rentre dans 'loads' première image %s" %
                    (self.premiere_image))
         if self.echelle_faite :
             self.dbg.p(3, "rentre dans 'loads' longueur_reelle_etalon %s" %
-                    (self.label_video.echelle_image.longueur_reelle_etalon))
-            self.label_video.echelle_image.p1, self.label_video.echelle_image.p2 = vecteur(point.split(
+                    (self.video.echelle_image.longueur_reelle_etalon))
+            self.video.echelle_image.p1, self.video.echelle_image.p2 = vecteur(point.split(
             )[-4][1:-1], point.split()[-3][:-1]), vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
             self.dbg.p(3, "rentre dans 'loads' points de l'échelle %s" % (
-                [self.label_video.echelle_image.p1, self.label_video.echelle_image.p2]))
+                [self.video.echelle_image.p1, self.video.echelle_image.p2]))
         self.deltaT = float(self.deltaT.split()[-1])
         self.dbg.p(3, "rentre dans 'loads' delta_t %s" % (self.deltaT))
         self.nb_de_points = int(self.nb_de_points.split()[-2])
@@ -1217,13 +1224,13 @@ class StartQt5(QMainWindow):
                    (self.nb_de_points))
         self.dbg.p(3, "rentre dans 'loads, dico données' %s" % (dico_donnee))
         self.calcul_deltaT(rouvre=True)
-        self.label_video.resize(QSize(largeur, hauteur))
+        self.video.resize(QSize(largeur, hauteur))
         ########redimensionne l'application TODO : ATTENTION
-        geom = self.label_video.geometry()
+        geom = self.video.geometry()
         self.ui.containerWidget1.setGeometry(0,0, geom.width(),geom.height())
         decalage_gauche = 220
         decalage_haut = 130
-        self.setGeometry(self.pos().x(),self.pos().y()+37, self.label_video.width()+decalage_gauche, self.label_video.height()+decalage_haut)
+        self.setGeometry(self.pos().x(),self.pos().y()+37, self.video.width()+decalage_gauche, self.video.height()+decalage_haut)
         self.aspectlayout1.aspect = largeur/hauteur
         self.aspectlayout2.aspect = largeur/hauteur
 
@@ -1242,7 +1249,7 @@ class StartQt5(QMainWindow):
         for l in lignes:
             if l[0] == "#":
                 dictionnaire_données_str += l
-        self.label_video.echelle_image = echelle()  # on réinitialise l'échelle
+        self.video.echelle_image = echelle()  # on réinitialise l'échelle
         try:
             # on récupère les données importantes
             self.dbg.p(3, "dictionnaire des données : {} ".format(dictionnaire_données_str))
@@ -1254,7 +1261,7 @@ class StartQt5(QMainWindow):
             # puis on trace le segment entre les points cliqués pour l'échelle
             # on réinitialise l'échelle.p1, self.echelle_image.p2)
             self.feedbackEchelle(
-                self.label_video.echelle_image.p1, self.label_video.echelle_image.p2)
+                self.video.echelle_image.p1, self.video.echelle_image.p2)
             framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(
                 self.rotation)
             self.rouvert = True
@@ -1272,11 +1279,11 @@ class StartQt5(QMainWindow):
                     t = "%4f" % (float(d[0].replace(",", ".")))
                     self.points[i] = [t]
                     for j in range(1, len(d), 2):
-                        x = -self.sens_X*round(float(d[j].replace(",", ".")) * self.label_video.echelle_image.pxParM())
+                        x = -self.sens_X*round(float(d[j].replace(",", ".")) * self.video.echelle_image.pxParM())
                         y = self.sens_Y*round((float(
-                            d[j + 1].replace(",", ".")) * self.label_video.echelle_image.pxParM()))
-                        x_ = self.label_video.origine.x- x
-                        y_ = self.label_video.origine.y- y
+                            d[j + 1].replace(",", ".")) * self.video.echelle_image.pxParM()))
+                        x_ = self.video.origine.x- x
+                        y_ = self.video.origine.y- y
 
                         pos = vecteur(x_,y_)
 
@@ -1327,18 +1334,18 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
     def redimensionneFenetre(self, tourne=False, old=None):
         self.dbg.p(1, "rentre dans 'redimensionneFenetre'")
 
-        self.tourne = tourne  # n'est utilisée que ici et dans label_video
+        self.tourne = tourne  # n'est utilisée que ici et dans video
         if tourne:  # on vient de cliquer sur tourner. rien n'est changé.
             self.dbg.p(1, "Dans 'redimensionneFenetre', tourne")
-            largeur = self.label_video.width()
-            hauteur = self.label_video.height()
-            self.label_video.origine = self.label_video.origine.rotate(
+            largeur = self.video.width()
+            hauteur = self.video.height()
+            self.video.origine = self.video.origine.rotate(
                 self.increment, largeur, hauteur)
-            self.label_video.echelle_image.p1 = self.label_video.echelle_image.p1.rotate(
+            self.video.echelle_image.p1 = self.video.echelle_image.p1.rotate(
                 self.increment, largeur, hauteur)
-            self.label_video.echelle_image.p2 = self.label_video.echelle_image.p2.rotate(
+            self.video.echelle_image.p2 = self.video.echelle_image.p2.rotate(
                 self.increment, largeur, hauteur)
-            self.label_video.setGeometry(0, 0, hauteur, largeur)
+            self.video.setGeometry(0, 0, hauteur, largeur)
             self.ratio = 1/self.ratio
             self.aspectlayout1.aspect = self.ratio
             self.aspectlayout2.aspect = self.ratio
@@ -1348,34 +1355,34 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             self.resize(self.size()+QSize(-1, 0))
 
         if self.lance_capture:
-            self.dbg.p(2, "on fixe les hauteurs du label")
+            self.dbg.p(2, "on fixe les hauteurs du widget")
             self.ui.containerWidget1.setFixedHeight(
                 self.ui.containerWidget1.height())
             self.ui.containerWidget1.setFixedWidth(
                 self.ui.containerWidget1.width())
             self.dbg.p(2, "on fixe les hauteurs de la fenetre")
 
-        if hasattr(self, 'label_video'):
-            self.dbg.p(2, "on fixe les hauteurs de label_video")
-            self.dbg.p(2, "label_vidéo situé en %s %s" %
-                       (self.label_video.pos().x, self.label_video.pos().y))
-            self.dbg.p(3, "label_vidéo largeur :  %s hauteur : %s" %
-                       (self.label_video.width(), self.label_video.height()))
-            self.dbg.p(2, "MAJ de label_video")
-            self.label_video.maj()
-            self.label_trajectoire.maj()
+        if self.video != None:
+            self.dbg.p(2, "on fixe les hauteurs de video")
+            self.dbg.p(2, "widget_vidéo situé en %s %s" %
+                       (self.video.pos().x, self.video.pos().y))
+            self.dbg.p(3, "widget_vidéo largeur :  %s hauteur : %s" %
+                       (self.video.width(), self.video.height()))
+            self.dbg.p(2, "MAJ de video")
+            self.video.maj()
+            self.trajectoire_widget.maj()
             self.affiche_image()
 
         self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget")
 
-    def widthForHeight_label_video(self, h):
+    def widthForHeight_video(self, h):
         # calcule self.largeur et self.hauteur si la hauteur est prédominante
         # si la hauteur est trop petite, ne permet plus de redimensionnement
         self.dbg.p(1, "retre dans 'widthForHeight'")
         self.dbg.p(2, "argument h : %s" % (str(h)))
         return round(h*self.ratio)
 
-    def heightForWidth_label_video(self, w):
+    def heightForWidth_video(self, w):
         # calcul self.largeur et self.hauteur
         # si la largeur est trop petite, ne permet plus de redimensionnement
         self.dbg.p(1, "retre dans 'heightForWidth'")
@@ -1416,8 +1423,8 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 #intervalle de temps : %f
 #suivi de %s point(s)
 #%s
-#""" % (self.filename, self.sens_X, self.sens_Y, self.label_video.width(), self.label_video.height(), self.rotation, self.label_video.origine, self.premiere_image, self.label_video.echelle_image.longueur_reelle_etalon, self.label_video.echelle_image.longueur_pixel_etalon(),
-            self.label_video.echelle_image.p1 if self.echelle_faite else None, self.label_video.echelle_image.p2 if self.echelle_faite else None, self.deltaT, self.nb_de_points, msg)
+#""" % (self.filename, self.sens_X, self.sens_Y, self.video.width(), self.video.height(), self.rotation, self.video.origine, self.premiere_image, self.video.echelle_image.longueur_reelle_etalon, self.video.echelle_image.longueur_pixel_etalon(),
+            self.video.echelle_image.p1 if self.echelle_faite else None, self.video.echelle_image.p2 if self.echelle_faite else None, self.deltaT, self.nb_de_points, msg)
         return result
 
     def enregistre(self, fichier):
@@ -1478,13 +1485,13 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 
         """
         self.dbg.p(1, "rentre dans 'debut_capture'")
-        self.label_video.setFocus()
-        self.label_video.show()
-        self.label_video.activateWindow()
-        self.label_video.setVisible(True)
+        self.video.setFocus()
+        self.video.show()
+        self.video.activateWindow()
+        self.video.setVisible(True)
         try:
-            # nécessaire sinon, label_video n'est pas actif.
-            self.label_echelle_trace.lower()
+            # nécessaire sinon, video n'est pas actif.
+            self.echelle_trace.lower()
         except AttributeError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
@@ -1503,7 +1510,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.affiche_point_attendu(0)
         self.lance_capture = True
         self.fixeLesDimensions()
-        self.label_video.setCursor(Qt.CrossCursor)
+        self.video.setCursor(Qt.CrossCursor)
         self.ui.tab_traj.setEnabled(1)
         self.ui.actionSaveData.setEnabled(1)
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
@@ -1529,15 +1536,15 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.fixeLesDimensions()
 
         # si aucune échelle n'a été définie, on place l'étalon à 1 px pou 1 m.
-        if self.label_video.echelle_image.mParPx() == 1:
-            self.label_video.echelle_image.longueur_reelle_etalon = 1
-            self.label_video.echelle_image.p1 = vecteur(0, 0)
-            self.label_video.echelle_image.p1 = vecteur(0, 1)
+        if self.video.echelle_image.mParPx() == 1:
+            self.video.echelle_image.longueur_reelle_etalon = 1
+            self.video.echelle_image.p1 = vecteur(0, 0)
+            self.video.echelle_image.p1 = vecteur(0, 1)
 
         # automatic capture
         if self.ui.checkBox_auto.isChecked():
             #self.auto = True
-            self.mets_a_jour_label_infos(
+            self.mets_a_jour_widget_infos(
                 _translate("pymecavideo", "Pointage Automatique", None))
             reponse = QMessageBox.warning(None, "Capture Automatique",
                                           _translate("pymecavideo", """\
@@ -1546,14 +1553,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                                                      None),
                                           QMessageBox.Ok, QMessageBox.Ok)
             try:
-                self.label_auto.hide()
-                del self.label_auto
+                self.selRect.finish(delete=True)
+                del self.selRect
             except Exception as err:
                 self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 pass
-            # in this label, motif(s) are defined.
-            self.label_auto = Label_Auto(self.label_video, self)
-            self.label_auto.show()
+            # in this widget, motif(s) are defined.
+            self.selRect = SelRectWidget(self.video, self)
+            self.selRect.show()
             # IMPORTANT : permet de gagner en fluidité de l'affichage lors du pointage autmatique. BUG lié au rafraichissment du slider.
             self.ui.horizontalSlider.valueChanged.disconnect()
             self.ui.spinBox_image.valueChanged.disconnect()
@@ -1685,7 +1692,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     self.index_de_l_image = self.listePoints[len(
                         self.listePoints)-1][0]+1
         self.affiche_image()
-        self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
+        self.clic_sur_video_ajuste_ui(self.index_de_l_image)
 
     def refait_point_suivant(self):
         """rétablit le point suivant après un effacement
@@ -1699,9 +1706,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.index_de_l_image = self.listePoints[len(
                 self.listePoints)-1][0]+1
         self.affiche_image()
-        self.clic_sur_label_video_ajuste_ui(self.index_de_l_image)
+        self.clic_sur_video_ajuste_ui(self.index_de_l_image)
 
-    def video(self):
+    def montre_video(self):
         self.dbg.p(1, "rentre dans 'videos'")
         ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
         if len(ref) == 0 or ref == "camera":
@@ -2218,31 +2225,31 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.dbg.p(1, "rentre dans 'tracer_trajectoires'")
         if newValue == "absolu":
             ref = "camera"
-            self.label_trajectoire.origine_mvt = self.label_video.origine
+            self.trajectoire_widget.origine_mvt = self.video.origine
             # mets à jour le comboBox referentiel :
             self.ui.comboBox_referentiel.setCurrentIndex(
                 self.ui.comboBox_referentiel.count()-1)
             self.ui.comboBox_referentiel.update()
         else:
             ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
-            self.label_trajectoire.origine_mvt = self.label_video.origine
+            self.trajectoire_widget.origine_mvt = self.video.origine
         if len(ref) == 0:
             return
         if ref != "camera":
             self.ui.button_video.setEnabled(1)
-            self.label_trajectoire.chrono = False
+            self.trajectoire_widget.chrono = False
             bc = self.mediane_trajectoires(int(ref) - 1)
-            origine = vecteur(self.label_video.width() // 2,
-                              self.label_video.height() // 2) - bc
-            self.label_trajectoire.origine = origine
-            self.label_trajectoire.origine_mvt = origine
-            self.label_trajectoire.referentiel = ref
+            origine = vecteur(self.video.width() // 2,
+                              self.video.height() // 2) - bc
+            self.trajectoire_widget.origine = origine
+            self.trajectoire_widget.origine_mvt = origine
+            self.trajectoire_widget.referentiel = ref
         else:  # if camera, all tranlsations are disabled
-            self.label_trajectoire.referentiel = 0
-            self.label_trajectoire.origine = vecteur(0, 0)
+            self.trajectoire_widget.referentiel = 0
+            self.trajectoire_widget.origine = vecteur(0, 0)
         self.dbg.p(3, "origine %s, ref %s" %
-                   (str(self.label_trajectoire.origine), str(ref)))
-        self.label_trajectoire.reDraw()
+                   (str(self.trajectoire_widget.origine), str(ref)))
+        self.trajectoire_widget.reDraw()
 
     def affiche_point_attendu(self, n):
         """
@@ -2251,11 +2258,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         """
         self.dbg.p(1, "rentre dans 'affiche_point_attendu'")
         self.dbg.p(1, "Point n° %i" % n)
-        self.mets_a_jour_label_infos(
+        self.mets_a_jour_widget_infos(
             _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(n+1))
 
-    def clic_sur_label_video(self, liste_points=None, interactif=True):
-        self.dbg.p(1, "rentre dans 'clic_sur_label_video'")
+    def clic_sur_la_video(self, liste_points=None, interactif=True):
+        self.dbg.p(1, "rentre dans 'clic_sur_video'")
         self.lance_capture = True
         # on fait des marques pour les points déjà visités
         etiquette = "@abcdefghijklmnopqrstuvwxyz"[
@@ -2269,10 +2276,10 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 ligne=int((len(self.listePoints)-1)/self.nb_de_points))
             if interactif:
                 self.modifie = True
-            self.clic_sur_label_video_ajuste_ui(self.point_attendu)
+            self.clic_sur_video_ajuste_ui(self.point_attendu)
         if self.index_de_l_image > self.image_max:
             self.lance_capture = False
-            self.mets_a_jour_label_infos(_translate(
+            self.mets_a_jour_widget_infos(_translate(
                 "pymecavideo", "Vous avez atteint la fin de la vidéo", None))
             self.index_de_l_image = self.image_max
         self.nb_clics += 1
@@ -2305,12 +2312,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.ui.pushButton_refait.setEnabled(value)
         self.ui.actionRefaire.setEnabled(value)
 
-    def clic_sur_label_video_ajuste_ui(self, point_attendu):
+    def clic_sur_video_ajuste_ui(self, point_attendu):
         """
         Ajuste l'interface utilisateur pour attendre un nouveau clic
         @param point_attendu le numéro du point qui est à cliquer
         """
-        self.dbg.p(1, "rentre dans 'clic_sur_label_video_ajuste_ui'")
+        self.dbg.p(1, "rentre dans 'clic_sur_video_ajuste_ui'")
         self.lance_capture = True
         if point_attendu == 1:  # pour une acquisition sur une nouvelle image
             self.dbg.p(1, "self.nb_image_deja_analysees >= len(self.points) ? %s %s" % (
@@ -2328,7 +2335,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         numéro de l'image, rang du point (0,1 ou 2 s'il y a trois
         points à saisir par image), et le point lui-même.
 
-        Le calcul du rang du point est lié à self.nb_clics, calculé dans clic_sur_label_video()
+        Le calcul du rang du point est lié à self.nb_clics, calculé dans clic_sur_video()
         @param point un point à enregistrer
         @param index un numéro d'image. S'il est indéfini (par défaut), il
         est remplacé par self.index_de_l_image.
@@ -2416,12 +2423,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     masse_objet = [
                         float(masse_objet_raw[0].replace(",", ".")), masse_objet_raw[1]]
                     if masse_objet[0] <= 0 or masse_objet[1] == False:
-                        self.mets_a_jour_label_infos(_translate(
+                        self.mets_a_jour_widget_infos(_translate(
                             "pymecavideo", " Merci d'indiquer une masse valable", None))
                     self.masse_objet = float(masse_objet[0])
                 except Exception as err:
                     self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                    self.mets_a_jour_label_infos(_translate(
+                    self.mets_a_jour_widget_infos(_translate(
                         "pymecavideo", " Merci d'indiquer une masse valable", None))
                     self.ui.checkBox_Ec.setChecked(0)
         # initialise tout le tableau (nb de colonnes, unités etc.)
@@ -2499,7 +2506,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
         self.ui.tabWidget.setCurrentIndex(0)
         point_actuel = len(self.listePoints)%self.nb_de_points
-        self.clic_sur_label_video_ajuste_ui(point_actuel)
+        self.clic_sur_video_ajuste_ui(point_actuel)
 
     def fin_refait_point_depuis_tableau(self):
         self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")
@@ -2510,7 +2517,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
         self.index_de_l_image = self.index_de_l_image_actuelle
         self.index_de_l_image_actuelle = None
-        self.clic_sur_label_video_ajuste_ui(0)
+        self.clic_sur_video_ajuste_ui(0)
         self.ui.tabWidget.setCurrentIndex(2)
 
 
@@ -2533,53 +2540,45 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         #self.efface_point_precedent()
                         self.refait_point_suivant()
         self.index_de_l_image = self.ui.spinBox_image.value()
-        try:
-            self.affiche_image()
-        except Exception as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
+        self.affiche_image()
 
     def affiche_image(self):
-        try:
-            self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' +
-                       str(self.index_de_l_image) + ' ' + str(self.image_max))
-            if self.index_de_l_image <= self.image_max:
-                self.index_avant = self.index_de_l_image
-                self.dbg.p(1, "affiche_image " +
-                           "self.index_de_l_image <= self.image_max")
-                ok, self.image_opencv = self.extract_image(
-                    self.index_de_l_image)  # 2ms
-                self.imageExtraite = toQImage(self.image_opencv)
-                self.dbg.p(2, "Image extraite : largeur : %s, hauteur %s: " % (
-                    self.imageExtraite.width(), self.imageExtraite.height()))
-                if hasattr(self, "label_video"):
-                    self.afficheJusteImage()  # 4 ms
-                if self.ui.horizontalSlider.value() != self.index_de_l_image:
-                    self.dbg.p(1, "affiche_image " + "horizontal")
-                    self.ui.horizontalSlider.setValue(self.index_de_l_image)
-                    self.ui.spinBox_image.setValue(
-                        self.index_de_l_image)  # 0.01 ms
-            elif self.index_de_l_image > self.image_max:
-                self.index_de_l_image = self.image_max
-                self.lance_capture = False
-        except Exception as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            # arrive quand on ouvreun fichier pour la prmeière fois, au premier resize.
-            pass
-
+        self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' +
+                   str(self.index_de_l_image) + ' ' + str(self.image_max))
+        if self.index_de_l_image <= self.image_max:
+            self.index_avant = self.index_de_l_image
+            self.dbg.p(1, "affiche_image " +
+                       "self.index_de_l_image <= self.image_max")
+            ok, self.image_opencv = self.extract_image(
+                self.index_de_l_image)  # 2ms
+            self.imageExtraite = toQImage(self.image_opencv)
+            self.dbg.p(2, "Image extraite : largeur : %s, hauteur %s: " % (
+                self.imageExtraite.width(), self.imageExtraite.height()))
+            if self.video != None:
+                self.afficheJusteImage()  # 4 ms
+            if self.ui.horizontalSlider.value() != self.index_de_l_image:
+                self.dbg.p(1, "affiche_image " + "horizontal")
+                self.ui.horizontalSlider.setValue(self.index_de_l_image)
+                self.ui.spinBox_image.setValue(
+                    self.index_de_l_image)  # 0.01 ms
+        elif self.index_de_l_image > self.image_max:
+            self.index_de_l_image = self.image_max
+            self.lance_capture = False
+        return
+    
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans 'AffichejusteImage'")
         if self.a_une_image:
             self.imageAffichee = self.imageExtraite.scaled(
-                self.label_video.width(), self.label_video.height())  # 4-6 ms
-            self.label_video.setMouseTracking(True)
-            self.label_video.setPixmap(QPixmap.fromImage(self.imageAffichee))
-            self.label_video.met_a_jour_crop()
+                self.video.width(), self.video.height())  # 4-6 ms
+            self.video.setMouseTracking(True)
+            self.video.setImage(self.imageAffichee)
+            self.video.met_a_jour_crop()
 
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
         self.ui.tabWidget.setCurrentIndex(0)
-        self.label_video.echelle_image = echelle()
+        self.video.echelle_image = echelle()
         self.affiche_echelle()
         try:
             self.job.dialog.close()
@@ -2618,17 +2617,16 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             echelle_result = [
                 float(echelle_result_raw[0].replace(",", ".")), echelle_result_raw[1]]
             if echelle_result[0] <= 0 or echelle_result[1] == False:
-                self.mets_a_jour_label_infos(_translate(
+                self.mets_a_jour_widget_infos(_translate(
                     "pymecavideo", " Merci d'indiquer une échelle valable", None))
             else:
-                self.label_video.echelle_image.etalonneReel(echelle_result[0])
-                self.job = Label_Echelle(self.label_video, self)
-                self.job.setPixmap(QPixmap(toQImage(self.image_opencv)))
+                self.video.echelle_image.etalonneReel(echelle_result[0])
+                self.job = EchelleWidget(self.video, self)
                 self.job.show()
                 self.change_axe_ou_origine()
         except ValueError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            self.mets_a_jour_label_infos(_translate(
+            self.mets_a_jour_widget_infos(_translate(
                 "pymecavideo", " Merci d'indiquer une échelle valable", None))
             self.demande_echelle()
 
@@ -2663,15 +2661,15 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         retenues pour l'échelle
         """
         self.dbg.p(1, "rentre dans 'feedbackEchelle'")
-        if hasattr(self,"label_echelle_trace"):
-            self.label_echelle_trace.hide()
-            del self.label_echelle_trace
+        if hasattr(self,"echelle_trace"):
+            self.echelle_trace.hide()
+            del self.echelle_trace
 
-        self.label_echelle_trace = Label_Echelle_Trace(
-            self.label_video, p1, p2)
+        self.echelle_trace = Echelle_TraceWidget(
+            self.video, p1, p2)
         # on garde les valeurs pour le redimensionnement
         self.dbg.p(2, "Points de l'echelle : p1 : %s, p2 : %s" % (p1, p2))
-        self.label_echelle_trace.show()
+        self.echelle_trace.show()
         if self.echelle_faite:
             self.mets_en_orange_echelle()
             self.ui.Bouton_Echelle.setEnabled(1)
@@ -2738,13 +2736,13 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.affiche_grapheur()
         self.dessine_graphe()
 
-    def mets_a_jour_label_infos(self, message):
+    def mets_a_jour_widget_infos(self, message):
         """
         On utilise la barre de status pour afficher les messages :
-        permet de gagner de la place en envelant le label_infos_image
+        permet de gagner de la place en envelant le message de statut
         @param message message à afficher
         """
-        self.dbg.p(1, "rentre dans 'mets_a_jour_label_infos'")
+        self.dbg.p(1, "rentre dans 'mets_a_jour_widget_infos'")
         self.statusBar().showMessage(message)
 
     def openexample(self):
@@ -2818,7 +2816,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
         self.ui.menuE_xporter_vers.setEnabled(1)
         self.ui.actionSaveData.setEnabled(1)
-        self.mets_a_jour_label_infos(
+        self.mets_a_jour_widget_infos(
             _translate("pymecavideo", "Veuillez choisir une image (et définir l'échelle)", None))
         self.ui.Bouton_Echelle.setEnabled(True)
         self.ui.spinBox_nb_de_points.setEnabled(True)
@@ -2868,7 +2866,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ui.spinBox_image.setMinimum(1)
         self.calcul_deltaT()
         self.defini_barre_avancement()
-        self.label_video.echelle_image = echelle()
+        self.video.echelle_image = echelle()
         self.affiche_echelle()
         self.ui.tab_traj.setEnabled(0)
         self.ui.spinBox_image.setEnabled(1)
@@ -2902,7 +2900,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                     print(
                         "ERREUR à la lecture de la vidéo, vitesse des trames indéfinie, on suppose 40 trames par seconde")
                     self.deltaT = 1.0/40
-                # mets à jour le label contenant les IPS
+                # mets à jour le widget contenant les IPS
                 IPS = round(1/self.deltaT)
                 self.ui.lineEdit_IPS.setText(str(IPS))
                 print("la vidéo a été détectée à %s Images Par Seconde" % IPS)
@@ -2933,7 +2931,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
         ok, image_opencv = self.cvReader.getImage(index, self.rotation)
         if not ok:
-            self.mets_a_jour_label_infos(
+            self.mets_a_jour_widget_infos(
                 _translate("pymecavideo", "Pymecavideo n'arrive pas à lire l'image", None))
             return False, None
         self.a_une_image = ok

@@ -24,7 +24,6 @@ from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, Q
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
-
 class Zoom_Croix(QWidget):
     def __init__(self, parent, app):
         QWidget.__init__(self, parent)
@@ -34,6 +33,7 @@ class Zoom_Croix(QWidget):
         self.setEnabled(True)
         self.setGeometry(QRect(0, 0, 100, 100))
         self.setAutoFillBackground(False)
+        return
 
     def paintEvent(self, event):
         painter = QPainter()

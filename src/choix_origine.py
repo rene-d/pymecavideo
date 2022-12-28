@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-    Label_Origine, a module for pymecavideo:
+    choix_origine, a module for pymecavideo:
       a program to track moving points in a video frameset
       
     Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    Copyright (C) 2022 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,15 +21,20 @@
 """
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect, QPoint, QPointF
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QPen, QColor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
-from zoom import Zoom_Croix
 
 
-class Label_Origine(QLabel):
+class ChoixOrigineWidget(QWidget):
+    """
+    Un widget pour choisir une nouvelle origine ; il est posé sur le
+    widget vidéo, et durant sa vie, il permet d'avoir un retour visuel
+    pendant qu'on bouge la souris vers la nouvelle origine.
+    """
+    
     def __init__(self, parent, app):
-        QLabel.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.parent = parent
         self.app = app
         self.setGeometry(
@@ -37,29 +43,19 @@ class Label_Origine(QLabel):
 
         self.setCursor(Qt.CrossCursor)
         self.cropX2 = None
-        self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
+        self.zoom_croix = self.app.zoom_croix()
         self.zoom_croix.hide()
         self.setMouseTracking(True)
 
     def mouseMoveEvent(self, event):
         self.zoom_croix.show()
         self.pos_zoom = vecteur(event.x(), event.y())
-        self.fait_crop(self.pos_zoom)
-        self.app.ui.label_zoom.setPixmap(self.cropX2)
-
-    def fait_crop(self, p):
-        rect = QRect(round(p.x) - 25, round(p.y) - 25, 50, 50)
-        crop = self.app.imageAffichee.copy(rect)
-        self.cropX2 = QPixmap.fromImage(
-            crop.scaled(100, 100, Qt.KeepAspectRatio))
+        self.app.ui.zoom_zone.fait_crop(self.pos_zoom)
 
     def mouseReleaseEvent(self, event):
-        self.app.label_video.origine = vecteur(event.x() + 1, event.y() + 1)
+        self.app.video.origine = vecteur(event.x() + 1, event.y() + 1)
         self.zoom_croix.hide()
-        try:
-            self.app.ui.label_zoom.setPixmap(QPixmap(None))
-        except TypeError:
-            self.app.ui.label_zoom.setPixmap(QPixmap())
+        self.app.ui.zoom_zone.setImage()
         del self.zoom_croix
 
         self.app.change_axe_ou_origine()

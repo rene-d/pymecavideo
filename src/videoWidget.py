@@ -22,19 +22,20 @@
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect, QPoint, QPointF
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QPen, QColor, QFont, QResizeEvent
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
 from zoom import Zoom_Croix
 import os
 from echelle import echelle
+from image_widget import ImageWidget
 import icon_rc
 from dbg import Dbg
 DBG = Dbg(0)
 
-class Label_Video(QLabel):
+class VideoWidget(ImageWidget):
     def __init__(self, parent, app):
-        QLabel.__init__(self, parent)
+        ImageWidget.__init__(self, parent)
         self.dbg = Dbg(0)
         self.app = app
         self.app.dbg.p(1, "In : Label_Video, __init__")
@@ -44,7 +45,7 @@ class Label_Video(QLabel):
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
         self.pos_zoom = vecteur(50, 50)
-        self.zoom_croix = Zoom_Croix(self.app.ui.label_zoom, self.app)
+        self.zoom_croix = Zoom_Croix(self.app.ui.zoom_zone, self.app)
         self.zoom_croix.hide()
         self.setMouseTracking(True)
         self.origine = vecteur(self.width()//2, self.height()//2)
@@ -56,7 +57,11 @@ class Label_Video(QLabel):
                          "yellow", "gray", "green"]
         self.tourne = False
         self.premier_resize = True
+        return
 
+    def clear(self):
+        self.image = None
+        
     def resizeEvent(self, e):
         if self.premier_resize:  # Au premier resize, la taille est changée mais pas l'origine.
             self.premier_resize = False
@@ -104,7 +109,7 @@ class Label_Video(QLabel):
         if self.app.lance_capture == True:
             self.app.enregistre_dans_listePoints(point)
             self.pos_avant = self.pos_zoom
-            self.app.clic_sur_video.emit()
+            self.app.clic_sur_video_signal.emit()
             self.met_a_jour_crop(self.pos_zoom)
             self.update()
 
@@ -127,20 +132,17 @@ class Label_Video(QLabel):
 
 
     def met_a_jour_crop(self, pos_zoom=vecteur(50, 50)):
-        self.fait_crop(pos_zoom)
-        self.app.ui.label_zoom.setPixmap(self.cropX2)
-
-    # def leaveEvent(self, event):
-        # if self.app.lance_capture == True:
-        # self.cache_zoom()
-        # self.app.gardeLargeur()
+        """
+        met à jour la zone autour de la souris, zoomée.
+        """
+        self.app.ui.zoom_zone.fait_crop(pos_zoom)
+        return
 
     def mouseMoveEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
             self.zoom_croix.show()
             self.pos_zoom = vecteur(event.x(), event.y())
-            self.fait_crop(self.pos_zoom)
-            self.app.ui.label_zoom.setPixmap(self.cropX2)
+            self.app.ui.zoom_zone.fait_crop(self.pos_zoom)
 
     def cache_zoom(self):
         pass
@@ -148,17 +150,13 @@ class Label_Video(QLabel):
     def paintEvent(self, event):
         if self.app.a_une_image:
             if self.app.echelle_faite and self.app.lance_capture:
-                self.fait_crop(self.pos_zoom)
-                self.app.ui.label_zoom.setPixmap(self.cropX2)
+                self.app.ui.zoom_zone.fait_crop(self.pos_zoom)
 
             self.painter = QPainter()
             self.painter.begin(self)
-            try:
+            if self.image != None:
                 self.painter.drawPixmap(
-                    round(self.decal.x), round(self.decal.y), self.pixmap())
-            except TypeError:  # pixmap is not declare yet
-                pass
-
+                    round(self.decal.x), round(self.decal.y), self.image)
             ############################################################
             # paint the origin
             longueur_origine = 5
@@ -216,9 +214,3 @@ class Label_Video(QLabel):
             ############################################################
 
             self.painter.end()
-
-    def fait_crop(self, p):
-        rect = QRect(round(p.x) - 25, round(p.y) - 25, 50, 50)
-        crop = self.app.imageAffichee.copy(rect)
-        self.cropX2 = QPixmap.fromImage(
-            crop.scaled(100, 100, Qt.KeepAspectRatio))

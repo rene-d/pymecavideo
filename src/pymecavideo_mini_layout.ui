@@ -145,10 +145,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_zoom">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
+              <widget class="Zoom" name="zoom_zone" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -160,27 +157,6 @@
                  <width>100</width>
                  <height>100</height>
                 </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-               <property name="autoFillBackground">
-                <bool>true</bool>
-               </property>
-               <property name="frameShape">
-                <enum>QFrame::StyledPanel</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Sunken</enum>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignHCenter|Qt::AlignTop</set>
                </property>
               </widget>
              </item>
@@ -507,7 +483,7 @@ vers la gauche</string>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_incr">
              <item>
-              <widget class="QLabel" name="label_incr">
+              <widget class="QLabel" name="imgno_incr">
                <property name="toolTip">
                 <string>Incrémenter le compteur d'image à chaque pointage</string>
                </property>
@@ -1551,7 +1527,7 @@ vers la gauche</string>
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -1772,6 +1748,12 @@ vers la gauche</string>
    <class>standardDragTable</class>
    <extends>QTableWidget</extends>
    <header>standarddragtable.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Zoom</class>
+   <extends>QWidget</extends>
+   <header location="global">image_widget</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

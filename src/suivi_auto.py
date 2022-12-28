@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-    videotraj, a module for pymecavideo:
+    suivi_auto, a module for pymecavideo:
       a program to track moving points in a video frameset
       
     Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    Copyright (C) 2022 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,20 +23,24 @@
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect, QPoint, QPointF
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QPen, QColor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
 import os.path
 
 
-class Label_Auto(QLabel):
+class SelRectWidget(QWidget):
+    """
+    Sert au retour visuel quand l'utilisateur doit sélectionner une
+    zone rectangulaire pour le suivi automatique
+    """
     def __init__(self, parent, app):
         """make a rectangle near point to be tracked"""
-        QLabel.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.parent = parent
         self.app = app
         self.setGeometry(
-            QRect(0, 0, self.app.label_video.width(), self.app.label_video.height()))
+            QRect(0, 0, self.app.video.width(), self.app.video.height()))
         self.setAutoFillBackground(False)
 
         # prend un beau gros curseur rouge inmanquable
@@ -46,7 +51,19 @@ class Label_Auto(QLabel):
         self.setCursor(self.cursor)
 
         self.setMouseTracking(True)
+        return
 
+    def finish(self, delete=False):
+        """
+        Cache le rectangle de sélection
+        @param delete s'il est vrai, l'objet se détruit lui-même
+        """
+        self.hide()
+        self.close()
+        if delete:
+            del self
+        return
+        
     def mousePressEvent(self, event):
         self.setMouseTracking(False)
         self.x_1 = event.x()
@@ -63,10 +80,9 @@ class Label_Auto(QLabel):
             self.y_2 = y
         self.pos_zoom = vecteur(x, y)
         self.parent.pos_zoom = self.pos_zoom
-        self.app.label_video.zoom_croix.show()
+        self.app.video.zoom_croix.show()
 
-        self.app.label_video.fait_crop(self.pos_zoom)
-        self.app.ui.label_zoom.setPixmap(self.app.label_video.cropX2)
+        self.app.ui.zoom_zone.fait_crop(self.pos_zoom)
         self.update()
 
     def mouseReleaseEvent(self, event):

@@ -61,9 +61,9 @@ class Cadreur(QObject):
             str(self.app.filename.encode('utf8'), 'utf8'))
         self.fps = self.capture.get(cv2.CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
-        self.app.dbg.p(2, "In : Label_Video, self.numpoint %s" %
+        self.app.dbg.p(2, "In : Video, self.numpoint %s" %
                        (self.numpoint))
-        self.app.dbg.p(3, "In : Label_Video, __init__, fps = %s and delay = %s" % (
+        self.app.dbg.p(3, "In : Video, __init__, fps = %s and delay = %s" % (
             self.fps, self.delay))
 
         self.ralenti = 3
@@ -77,8 +77,8 @@ class Cadreur(QObject):
         @return un triplet échelle, largeur, hauteur (de l'image dans le widget de de pymecavideo)
         """
         m = self.app.imageExtraite.size()
-        echx = 1.0 * m.width() / self.app.label_video.width()
-        echy = 1.0 * m.height() / self.app.label_video.height()
+        echx = 1.0 * m.width() / self.app.video.width()
+        echy = 1.0 * m.height() / self.app.video.height()
         ech = max(echx, echy)
         return ech, int(m.width() / ech), int(m.height() / ech)
 
