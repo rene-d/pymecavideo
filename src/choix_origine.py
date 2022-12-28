@@ -43,20 +43,15 @@ class ChoixOrigineWidget(QWidget):
 
         self.setCursor(Qt.CrossCursor)
         self.cropX2 = None
-        self.zoom_croix = self.app.zoom_croix()
-        self.zoom_croix.hide()
         self.setMouseTracking(True)
 
     def mouseMoveEvent(self, event):
-        self.zoom_croix.show()
         self.pos_zoom = vecteur(event.x(), event.y())
-        self.app.ui.zoom_zone.fait_crop(self.pos_zoom)
+        self.app.zoom_zone.fait_crop(self.pos_zoom)
 
     def mouseReleaseEvent(self, event):
         self.app.video.origine = vecteur(event.x() + 1, event.y() + 1)
-        self.zoom_croix.hide()
-        self.app.ui.zoom_zone.setImage()
-        del self.zoom_croix
+        self.app.zoom_zone.fait_crop(vecteur(50,50))
 
         self.app.change_axe_ou_origine()
         self.close()

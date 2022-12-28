@@ -129,7 +129,7 @@ class DataframePandas:
         """
         import pandas as pd
         self.DataFrame = pd.DataFrame
-        table = app.ui.tableWidget
+        table = app.tableWidget
         df = self.write_qtable_to_df(table)
         df.to_pickle(filepath)
         QMessageBox.information(None, _translate("export_pandas", "Fichier Pandas sauvegardé"), _translate(
@@ -169,7 +169,7 @@ class FichierCSV:
             _decimal = d.decimal
             _field = d.field
             _header = d.checkBox.isChecked()
-            tw = app.ui.tableWidget
+            tw = app.tableWidget
             with open(filepath, 'w', newline='') as csvfile:
                 csvwriter = csv.writer(csvfile, delimiter=_field,
                                        quotechar='"', quoting=csv.QUOTE_MINIMAL)

@@ -26,7 +26,6 @@ from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
-from zoom import Zoom_Croix
 import os
 
 
@@ -113,8 +112,6 @@ class EchelleWidget(QWidget):
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
         self.cropX2 = None
-        self.zoom_croix = Zoom_Croix(self.app.ui.zoom_zone, self.app)
-        self.zoom_croix.hide()
         self.setMouseTracking(True)
         self.pressed = False
         try:
@@ -146,10 +143,9 @@ class EchelleWidget(QWidget):
         painter.end()
 
     def mouseMoveEvent(self, event):
-        self.zoom_croix.show()
         if (event.x() > 0 and event.x() < self.largeur) and (event.y() > 0 and event.y() < self.hauteur):
             self.pos_echelle = vecteur(event.x(), event.y())
-        self.app.ui.zoom_zone.fait_crop(self.pos_echelle)
+        self.app.zoom_zone.fait_crop(self.pos_echelle)
 
         if self.pressed:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
@@ -158,9 +154,7 @@ class EchelleWidget(QWidget):
     def mouseReleaseEvent(self, event):
         if event.button() == 1 and self.p1.x >= 0:
             self.p2 = vecteur(event.x() + 1, event.y() + 1)
-        self.zoom_croix.hide()
-        self.app.ui.zoom_zone.setImage()
-        del self.zoom_croix
+        self.app.zoom_zone.fait_crop(vecteur(50,50))
         self.parent.index_du_point = 0
 
         self.app.video.echelle_image.p1 = self.p1.copy()
@@ -171,7 +165,7 @@ class EchelleWidget(QWidget):
         epxParM = self.app.video.echelle_image.pxParM()
         self.app.affiche_echelle()
         # self.app.affiche_nb_points(True)
-        self.app.mets_a_jour_label_infos(self.app.tr(
+        self.app.mets_a_jour_widget_infos(self.app.tr(
             u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
         self.app.mets_en_orange_echelle()
 
@@ -180,7 +174,7 @@ class EchelleWidget(QWidget):
         self.app.feedbackEchelle(self.p1, self.p2)
         self.app.change_axe_ou_origine()
         if len(self.app.listePoints) > 0:  # si on appelle l'échelle après avoir déjà pointé
-            self.app.mets_a_jour_label_infos(self.app.tr(
+            self.app.mets_a_jour_widget_infos(self.app.tr(
                 "Vous pouvez continuer votre acquisition"))
             self.app.affiche_nb_points(False)
             self.app.refait_echelle()

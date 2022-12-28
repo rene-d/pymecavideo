@@ -25,7 +25,6 @@ from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor,
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
-from zoom import Zoom_Croix
 import os
 from echelle import echelle
 from image_widget import ImageWidget
@@ -45,8 +44,6 @@ class VideoWidget(ImageWidget):
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)
         self.pos_zoom = vecteur(50, 50)
-        self.zoom_croix = Zoom_Croix(self.app.ui.zoom_zone, self.app)
-        self.zoom_croix.hide()
         self.setMouseTracking(True)
         self.origine = vecteur(self.width()//2, self.height()//2)
         self.echelle_image = echelle()  # objet gérant l'échelle
@@ -95,10 +92,6 @@ class VideoWidget(ImageWidget):
             #self.app.premier_chargement_fichier_mecavideo = False
 
     def reinit(self):
-        try:
-            del self.zoom_croix
-        except:
-            pass
         self.met_a_jour_crop()
         self.setMouseTracking(True)
 
@@ -135,14 +128,13 @@ class VideoWidget(ImageWidget):
         """
         met à jour la zone autour de la souris, zoomée.
         """
-        self.app.ui.zoom_zone.fait_crop(pos_zoom)
+        self.app.zoom_zone.fait_crop(pos_zoom)
         return
 
     def mouseMoveEvent(self, event):
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
-            self.zoom_croix.show()
             self.pos_zoom = vecteur(event.x(), event.y())
-            self.app.ui.zoom_zone.fait_crop(self.pos_zoom)
+            self.app.zoom_zone.fait_crop(self.pos_zoom)
 
     def cache_zoom(self):
         pass
@@ -150,7 +142,7 @@ class VideoWidget(ImageWidget):
     def paintEvent(self, event):
         if self.app.a_une_image:
             if self.app.echelle_faite and self.app.lance_capture:
-                self.app.ui.zoom_zone.fait_crop(self.pos_zoom)
+                self.app.zoom_zone.fait_crop(self.pos_zoom)
 
             self.painter = QPainter()
             self.painter.begin(self)

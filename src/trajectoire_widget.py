@@ -53,7 +53,7 @@ class TrajectoireWidget(ImageWidget):
         return
 
     def clear(self):
-        self.setImage()
+        self.fait_crop(vecteur(50,50))
         return
 
     def reDraw(self):
@@ -67,7 +67,7 @@ class TrajectoireWidget(ImageWidget):
 
     def giveCoordonatesToPaint(self):
         self.speedToDraw = []
-        if self.video.app.ui.checkBoxVectorSpeed.isChecked():
+        if self.video.app.checkBoxVectorSpeed.isChecked():
             for key in self.video.app.points.keys():
                 points = self.video.app.points[key]
                 for i in range(len(points)):
@@ -94,7 +94,7 @@ class TrajectoireWidget(ImageWidget):
                         pass
 
                     if type(point) != type(""):
-                        if self.video.app.ui.radioButtonNearMouse.isChecked() and self.pos_souris != None:
+                        if self.video.app.radioButtonNearMouse.isChecked() and self.pos_souris != None:
                             near = 20
                             pos = self.pos_souris
                             distance = QPoint(
@@ -105,7 +105,7 @@ class TrajectoireWidget(ImageWidget):
                                     2, "mouse near a point")
                                 wroteSpeed = True
 
-                        elif self.video.app.ui.radioButtonSpeedEveryWhere.isChecked():
+                        elif self.video.app.radioButtonSpeedEveryWhere.isChecked():
                             wroteSpeed = True
 
                         if wroteSpeed:
@@ -139,7 +139,7 @@ class TrajectoireWidget(ImageWidget):
     def mouseMoveEvent(self, event):
         # Look if mouse is near a point
         self.pos_souris = event.pos()
-        if self.video.app.ui.radioButtonNearMouse.isChecked():
+        if self.video.app.radioButtonNearMouse.isChecked():
             self.reDraw()
 
     def paintEvent(self, event):
@@ -339,8 +339,8 @@ class TrajectoireWidget(ImageWidget):
                     self.painter.setRenderHint(QPainter.Antialiasing)
                     self.painter.setPen(QColor(self.couleurs[i - 1]))
                     try:
-                        speed = vector_speed.norme * float(self.video.echelle_image.mParPx()) / (2 * self.video.app.deltaT) * float(self.video.app.ui.checkBoxScale.currentText())
-                        self.video.app.ui.checkBoxScale.setStyleSheet(
+                        speed = vector_speed.norme * float(self.video.echelle_image.mParPx()) / (2 * self.video.app.deltaT) * float(self.video.app.checkBoxScale.currentText())
+                        self.video.app.checkBoxScale.setStyleSheet(
                             "background-color:none")
                         path = QPainterPath()
                         path.moveTo(0, 0)

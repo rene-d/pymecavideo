@@ -1752,7 +1752,7 @@ vers la gauche</string>
   <customwidget>
    <class>Zoom</class>
    <extends>QWidget</extends>
-   <header location="global">image_widget</header>
+   <header location="global">image_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
