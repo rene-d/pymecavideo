@@ -29,16 +29,11 @@ import os
 from echelle import echelle
 from image_widget import ImageWidget
 import icon_rc
-from dbg import Dbg
-DBG = Dbg(0)
 
 class VideoWidget(ImageWidget):
-    def __init__(self, parent, app):
+    def __init__(self, parent):
         ImageWidget.__init__(self, parent)
-        self.dbg = Dbg(0)
-        self.app = app
-        self.app.dbg.p(1, "In : Label_Video, __init__")
-        self.cropX2 = None
+        self.app = None
         self.cible_icon = ":/data/icones/curseur_cible.svg"        
         pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
@@ -56,6 +51,10 @@ class VideoWidget(ImageWidget):
         self.premier_resize = True
         return
 
+    def setApp(self, app):
+        self.app = app
+        return
+    
     def clear(self):
         self.image = None
         

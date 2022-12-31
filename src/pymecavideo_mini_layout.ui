@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>762</height>
+    <width>1041</width>
+    <height>760</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -739,17 +739,17 @@ vers la gauche</string>
            </widget>
           </item>
           <item>
-           <widget class="QWidget" name="containerWidget1" native="true">
+           <widget class="VideoWidget" name="video" native="true">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>1</horstretch>
               <verstretch>1</verstretch>
              </sizepolicy>
             </property>
             <property name="minimumSize">
              <size>
-              <width>640</width>
-              <height>480</height>
+              <width>0</width>
+              <height>0</height>
              </size>
             </property>
            </widget>
@@ -1041,17 +1041,17 @@ vers la gauche</string>
            </widget>
           </item>
           <item>
-           <widget class="QWidget" name="containerWidget2" native="true">
+           <widget class="TrajectoireWidget" name="trajectoire_widget" native="true">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>1</horstretch>
               <verstretch>1</verstretch>
              </sizepolicy>
             </property>
             <property name="minimumSize">
              <size>
-              <width>640</width>
-              <height>480</height>
+              <width>0</width>
+              <height>0</height>
              </size>
             </property>
            </widget>
@@ -1484,18 +1484,12 @@ vers la gauche</string>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="widget_graph">
-          <property name="minimumSize">
-           <size>
-            <width>600</width>
-            <height>450</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color:#CCC</string>
-          </property>
-          <property name="text">
-           <string/>
+         <widget class="ImageWidget" name="widget_graph" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
          </widget>
         </item>
@@ -1526,7 +1520,7 @@ vers la gauche</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
+     <width>1041</width>
      <height>20</height>
     </rect>
    </property>
@@ -1751,6 +1745,24 @@ vers la gauche</string>
   </customwidget>
   <customwidget>
    <class>Zoom</class>
+   <extends>QWidget</extends>
+   <header>image_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VideoWidget</class>
+   <extends>QWidget</extends>
+   <header>videoWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TrajectoireWidget</class>
+   <extends>QWidget</extends>
+   <header>trajectoire_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ImageWidget</class>
    <extends>QWidget</extends>
    <header location="global">image_widget.h</header>
    <container>1</container>

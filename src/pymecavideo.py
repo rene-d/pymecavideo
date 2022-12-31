@@ -215,15 +215,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.setupUi(self)
 
         # définition des widgets importants
-        self.video = None
         self.zoom_zone.setApp(self)
 
         # gestion des layout pour redimensionnement
         self.aspectlayout1 = AspectLayout(self.ratio)
-        self.containerWidget1.setLayout(self.aspectlayout1)
 
         self.aspectlayout2 = AspectLayout(self.ratio)
-        self.containerWidget2.setLayout(self.aspectlayout2)
 
         self.dbg = Dbg(0)
         for o in opts:
@@ -291,12 +288,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         return True
 
     def sizeHint(self):
-        return QSize(1024, 800)
+        return QSize(1024, 768)
 
     def showFullScreen_(self):
         #"""gère les dimensions en fonction de la largeur et la hauteur de l'écran"""
-        #self.setFixedSize(QSize(self.width_screen,self.height_screen ))
-        self.showFullScreen()
+        self.setFixedSize(QSize(self.width_screen,self.height_screen ))
+        return
 
     def basculer_plein_ecran(self):
         """Basculer en mode plein écran / mode fenétré"""
@@ -387,13 +384,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if not self.a_une_image:
             self.tabWidget.setTabEnabled(0, False)
         self.actionExemples.setEnabled(1)
-        # initialisation de self.trajectoire
-        self.trajectoire_widget = TrajectoireWidget(
-            parent=self.containerWidget2)
-
-        self.aspectlayout2.addWidget(self.trajectoire_widget)
+        # initialisation de self.trajectoire_widget
         self.trajectoire_widget.chrono = False
-        self.trajectoire_widget.show()
 
         self.update()
         self.horizontalSlider.setEnabled(0)
@@ -427,15 +419,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.pushButton_rot_droite.setEnabled(1)
             self.pushButton_rot_gauche.setEnabled(1)
 
-        # création du widget qui contiendra la vidéo.
-        if self.video != None:
-            self.video.clear()
-        else:
-            self.video = VideoWidget(
-                parent=self.containerWidget1, app=self)
-            self.aspectlayout1.addWidget(self.video)
-            self.video.show()
-
+        self.video.setApp(self)
         self.tabWidget.setCurrentIndex(0)  # montre l'onglet video
         self.pushButton_stopCalculs.setEnabled(0)
         self.pushButton_stopCalculs.hide()
@@ -737,14 +721,14 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     self.chronoImg, self.rotation)
                 self.imageChrono = toQImage(img).scaled(
                     self.video.width(), self.video.height(), Qt.KeepAspectRatio)
-                self.trajectoire_widget.setPixmap(
+                self.trajectoire_widget.setImage(
                     QPixmap.fromImage(self.imageChrono))
             else:
                 self.trajectoire_widget.chrono = 2  # 2 pour chronophotogramme
-                self.trajectoire_widget.setPixmap(QPixmap())
+                self.trajectoire_widget.setImage(QPixmap())
             #self.enregistreChrono()
         else:
-            self.trajectoire_widget.setPixmap(QPixmap())
+            self.trajectoire_widget.setImage(QPixmap())
             self.trajectoire_widget.chrono = 0
         self.redimensionneFenetre()
         self.update()
@@ -1220,8 +1204,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.calcul_deltaT(rouvre=True)
         self.video.resize(QSize(largeur, hauteur))
         ########redimensionne l'application TODO : ATTENTION
-        geom = self.video.geometry()
-        self.containerWidget1.setGeometry(0,0, geom.width(),geom.height())
         decalage_gauche = 220
         decalage_haut = 130
         self.setGeometry(self.pos().x(),self.pos().y()+37, self.video.width()+decalage_gauche, self.video.height()+decalage_haut)
@@ -1350,10 +1332,10 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 
         if self.lance_capture:
             self.dbg.p(2, "on fixe les hauteurs du widget")
-            self.containerWidget1.setFixedHeight(
-                self.containerWidget1.height())
-            self.containerWidget1.setFixedWidth(
-                self.containerWidget1.width())
+            self.video.setFixedHeight(
+                self.video.height())
+            self.video.setFixedWidth(
+                self.video.width())
             self.dbg.p(2, "on fixe les hauteurs de la fenetre")
 
         if self.video != None:
@@ -1403,23 +1385,22 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
-        result = u"""#pymecavideo
-#video = %s
-#sens axe des X = %d
-#sens axe des Y = %d
-#largeur video = %d
-#hauteur video = %d
-#rotation = %d
-#origine de pointage = %s
-#index de depart = %d
-#echelle %5f m pour %5f pixel
-#echelle pointee en %s %s
-#intervalle de temps : %f
-#suivi de %s point(s)
-#%s
-#""" % (self.filename, self.sens_X, self.sens_Y, self.video.width(), self.video.height(), self.rotation, self.video.origine, self.premiere_image, self.video.echelle_image.longueur_reelle_etalon, self.video.echelle_image.longueur_pixel_etalon(),
-            self.video.echelle_image.p1 if self.echelle_faite else None, self.video.echelle_image.p2 if self.echelle_faite else None, self.deltaT, self.nb_de_points, msg)
-        return result
+        return f"""\
+#pymecavideo
+#video = {self.filename}
+#sens axe des X = {self.sens_X}
+#sens axe des Y = {self.sens_Y}
+#largeur video = {self.video.width()}
+#hauteur video = {self.video.height()}
+#rotation = {self.rotation}
+#origine de pointage = {self.video.origine}
+#index de depart = {self.premiere_image}
+#echelle {self.video.echelle_image.longueur_reelle_etalon} m pour {self.video.echelle_image.longueur_pixel_etalon()} pixel
+#echelle pointee en {self.video.echelle_image.p1 if self.echelle_faite else None} {self.video.echelle_image.p2 if self.echelle_faite else None}
+#intervalle de temps : {self.deltaT}
+#suivi de {self.nb_de_points} point(s)
+#{msg}
+#"""
 
     def enregistre(self, fichier):
         self.dbg.p(1, "rentre dans 'enregistre'")
@@ -2155,7 +2136,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 unite_y = ordonnee+'(m)'
 
             if not hasattr(self, 'graphWidget'):  # premier tour
-                self.widget_graph.setText('')
                 self.graphWidget = pg.PlotWidget(
                     title=titre, parent=self.widget_graph)
                 self.graphWidget.setMenuEnabled(False)
@@ -2898,7 +2878,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 # mets à jour le widget contenant les IPS
                 IPS = round(1/self.deltaT)
                 self.lineEdit_IPS.setText(str(IPS))
-                print("la vidéo a été détectée à %s Images Par Seconde" % IPS)
+                self.dbg.p(1,"la vidéo a été détectée à %s Images Par Seconde" % IPS)
             else:
                 IPS = int(self.lineEdit_IPS.text())
                 self.deltaT = float(1.0 / IPS)

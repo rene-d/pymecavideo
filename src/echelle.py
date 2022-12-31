@@ -65,12 +65,10 @@ class echelle(QObject):
     def applique_echelle(self, pos_echelle):
         """
         les positions pos sont en pixels, ça renvoie une liste
-        de positions (vecteurs) en mètre.
+        de positions (vecteurs) en mètre. L'origine est en (0, self.app.hauteur)
         """
-        result = []
-        for p in pos_echelle:
-            result.append((vecteur(0, self.app.hauteur) - p) * self.mParPx())
-        return result
+        return [(vecteur(0, self.app.hauteur) - p) * self.mParPx()
+                for p in pos_echelle]
 
     def etalonneReel(self, l):
         """
@@ -148,12 +146,12 @@ class EchelleWidget(QWidget):
         self.app.zoom_zone.fait_crop(self.pos_echelle)
 
         if self.pressed:
-            self.p2 = vecteur(event.x() + 1, event.y() + 1)
+            self.p2 = vecteur(event.x(), event.y())
             self.update()
 
     def mouseReleaseEvent(self, event):
         if event.button() == 1 and self.p1.x >= 0:
-            self.p2 = vecteur(event.x() + 1, event.y() + 1)
+            self.p2 = vecteur(event.x(), event.y())
         self.app.zoom_zone.fait_crop(vecteur(50,50))
         self.parent.index_du_point = 0
 

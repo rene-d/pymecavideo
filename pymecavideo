@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 
-import pymecavideo.pymecavideo
+import os,sys
 
-pymecavideo.pymecavideo.run()
+srcDir = os.path.join(os.path.dirname(__file__), "src")
+if os.path.exists(srcDir):
+    import src.pymecavideo
+    src.pymecavideo.run()
+else:
+    import pymecavideo.pymecavideo
+    pymecavideo.pymecavideo.run()
