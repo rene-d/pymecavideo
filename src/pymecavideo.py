@@ -303,6 +303,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def splashVideo(self):
         self.dbg.p(1, "rentre dans 'splashVideo'")
+        if not self.filename:
+            return
         if os.path.isfile(self.filename):
             self.openTheFile(self.filename)
         elif os.path.isfile(self.prefs.lastVideo):
@@ -1371,9 +1373,11 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.dbg.p(2, "MAJ de video")
         self.video.maj()
         self.trajectoire_widget.maj()
-        self.affiche_image()
+        if self.filename:
+            self.affiche_image()
 
         self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget")
+        return
 
     def widthForHeight_video(self, h):
         # calcule self.largeur et self.hauteur si la hauteur est prédominante

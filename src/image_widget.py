@@ -75,6 +75,8 @@ class Zoom(ImageWidget):
         param image une image
         @param p un vecteur
         """
+        if not image:
+            return
         rect = QRect(round(p.x) - 25, round(p.y) - 25, 50, 50)
         crop = image.copy(rect)
         if isinstance(crop, QImage):

@@ -1,4 +1,5 @@
 import sys, os
+from subprocess import call
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
@@ -20,10 +21,7 @@ class PymecavideoTest(unittest.TestCase):
         '''Teste les états par défaut de l'interface graphique'''
         # Le numéro d'image vaut 1 si une vidéo a été chargée par exemple
         # parce qu'il y avait des données de préférence
-        if hasattr(self.w, "imageAffichee"):
-            self.assertEqual(self.w.spinBox_image.value(), 1)
-        else:
-            self.assertEqual(self.w.spinBox_image.value(), 0)
+        self.assertEqual(self.w.spinBox_image.value(), 1)
         # le slider associé au spinbox précédent est à 1
         self.assertEqual(self.w.horizontalSlider.value(), 1)
         # le nombre de points à suivre
@@ -40,8 +38,15 @@ class PymecavideoTest(unittest.TestCase):
         """
         start = QPoint(100,100)
         end   = QPoint(600,100)
-        # le bouton d'échelle est censé être actif mais on ne le cliquera pas
-        self.assertEqual(self.w.Bouton_Echelle.isEnabled(), True)
+        # dans un premier temps, on enlève tout fichier de configuration
+        # préexistant
+        call ("rm -rf ~/.local/share/pymecavideo/*", shell=True)
+        # alors, l'étalon est forcément indéfini
+        self.assertEqual(self.w.echelleEdit.text(), "indéf.")
+        # ensuite on charge le fichier
+        # /usr/share/python3-mecavideo/video/Principe_inertie.avi
+        self.w.openTheFile(
+            "/usr/share/python3-mecavideo/video/Principe_inertie.avi")
         # l'application est censée "croire" que l'étalon fait 1 mètre
         self.assertEqual(self.w.video.echelle_image.longueur_reelle_etalon,1)
         # on démarre un widget EchelleWidget, puis on simule un tirer-glisser
