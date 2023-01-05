@@ -1111,7 +1111,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         else:
             # vérifie/crée les repertoires
             dd = FenetrePrincipale._dir("conf")
-            if not os.path.exists(dd):
+            if not os.path.exists(dd) and \
+               os.access(os.path.dirname(dd), os.W_OK):
                 os.makedirs(dd)
     _dir = staticmethod(_dir)
 
