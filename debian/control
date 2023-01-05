@@ -1,21 +1,35 @@
 Source: pymecavideo
 Section: python
-Priority: extra
+Priority: optional
 Maintainer: Georges Khaznadar <georgesk@debian.org>
-Build-Depends: debhelper (>= 10), python3-all,
- pyqt5-dev-tools, qttools5-dev-tools, xsltproc, docbook-xsl,
- librsvg2-bin
-X-Python3-Version: >= 3.5
-Standards-Version: 4.1.3
+Build-Depends: debhelper-compat (= 13),
+ python3-all,
+ dh-python,
+ pyqt5-dev-tools,
+ qttools5-dev-tools,
+ xsltproc,
+ docbook-xsl,
+ docbook-xml,
+ docbook-utils,
+ librsvg2-bin,
+ xvfb
+X-Python3-Version: >= 3.8
+Standards-Version: 4.5.0
+Vcs-Browser: https://salsa.debian.org/georgesk/pymecavideo
+Vcs-Git: https://salsa.debian.org/georgesk/pymecavideo.git
 
-Package: python-mecavideo
+Package: python3-mecavideo
+Provides: python-mecavideo
+Replaces: python-mecavideo (<<6.4)
+Conflicts: python-mecavideo (<<6.4)
 Architecture: all
 Depends: ${python3:Depends}, ${misc:Depends},
- iceweasel|firefox-esr|www-browser, 
- python3-qt5, xdg-utils, evince|postscript-viewer, python3-opencv(>=3.1),
- python3-matplotlib, python3-odf, python3-pyqtgraph, shared-mime-info
-Recommends: mencoder, mplayer|vlc|xine
-Suggests: transcode
+ python3-pyqt5, xdg-utils, python3-opencv(>=3.1),
+ python3-odf, python3-pyqtgraph, shared-mime-info
+Recommends:
+ mencoder,
+ python3-pandas,
+ python3-nbformat
 Description: pedagogic tool to analyze video records for mechanics
  You can track the movement of one or many points in video frames and export
  the position measurements to standard analysis tools.

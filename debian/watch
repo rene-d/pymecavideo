@@ -1,5 +1,5 @@
 version=3
 
-opts=dversionmangle=s/pymecavideo-/archive.tar.gz?ref=v/ \
-https://gitlab.com/oppl/pymecavideo/tags \
-   /oppl/pymecavideo/repository/archive\.tar\.gz\?ref=[Vv](.*)
+opts=uversionmangle=s/(beta|RC)/~$1/ \
+https://gitlab.com/oppl/pymecavideo/-/tags \
+   /oppl/pymecavideo/-/archive/[Vv]?(.*)/pymecavideo-.*\.tar\.gz

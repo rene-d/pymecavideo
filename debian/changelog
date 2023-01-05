@@ -1,9 +1,156 @@
-pymecavideo (7.0~rc1-1) unstable; urgency=medium
+pymecavideo (7.3.0-1) unstable; urgency=medium
 
-  * upgraded to the new upstream version: based on Python3 + Qt5
-  * updated dependencies, Standards-Version, compat level
+  * new upstream
 
- -- Georges Khaznadar <georgesk@debian.org>  Sun, 10 Sep 2017 17:45:17 +0200
+ -- Georges Khaznadar <georgesk@debian.org>  Fri, 30 Dec 2022 17:43:42 +0100
+
+pymecavideo (7.2.3~beta-1) unstable; urgency=medium
+
+  * fixed the watch file
+  * updated the debian patch
+  * added build dependencies: docbook-xml, docbook-utils
+  * New upstream version 7.2.3~beta
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 13 Nov 2022 12:34:36 +0100
+
+pymecavideo (7.2.1-3) unstable; urgency=medium
+
+  * rebuilt with python3.10; Closes: #1010747
+
+ -- Georges Khaznadar <georgesk@debian.org>  Wed, 18 May 2022 09:34:33 +0200
+
+pymecavideo (7.2.1-2) unstable; urgency=medium
+
+  * dependences iceweasel | firefox-esr, evince | postscript-viewer,
+    python3-matplotlib are removed
+  * recommendations mplayer | vlc | xine, geany, thonny, gedit are removed
+  * added recommendations: python3-pandas, python3-nbformat
+  * the suggestion transcode is removed
+
+ -- Georges Khaznadar <georgesk@debian.org>  Fri, 11 Jun 2021 14:33:55 +0200
+
+pymecavideo (7.2.1-1) unstable; urgency=medium
+
+  * new upstream version
+
+ -- Georges Khaznadar <georgesk@debian.org>  Mon, 07 Jun 2021 18:21:13 +0200
+
+pymecavideo (7.0~alpha1a-1) unstable; urgency=medium
+
+  * new upstream version
+
+ -- Georges Khaznadar <georgesk@debian.org>  Tue, 05 Jan 2021 16:36:48 +0100
+
+pymecavideo (7.0~alpha1-1) unstable; urgency=medium
+
+  * upgraded to the latest upstream version
+  * upgraded: debhelper-compat (= 13)
+
+ -- Georges Khaznadar <georgesk@debian.org>  Wed, 30 Dec 2020 16:50:55 +0100
+
+pymecavideo (6.5.6-1) unstable; urgency=medium
+
+  * improved the precision of time data when saving them; fix a bug
+    documented by florent jouines <jouines_florent@yahoo.fr> (Thanks!)
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 21 Nov 2020 12:31:27 +0100
+
+pymecavideo (6.5.5-1) unstable; urgency=medium
+
+  * new upstream
+  * fixed the cropped movie viewer
+  * upgraded to debhelper-compat (= 12), Standards-Version: 4.5.0
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 16 Aug 2020 17:14:02 +0200
+
+pymecavideo (6.5.4-1) unstable; urgency=medium
+
+  * new upstream version
+  * changes to use Python3 only, so the debian patch is useless
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 01 Feb 2020 17:22:04 +0100
+
+pymecavideo (6.5.3-1) UNRELEASED; urgency=medium
+
+  * new upstream version
+  * defined the translate function
+  * added a new export mode, to Python files
+  * added Recommends for Geany, Thonny, Gedit
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 01 Feb 2020 17:09:46 +0100
+
+pymecavideo (6.5.2-1) unstable; urgency=medium
+
+  * new upstream version
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 04 Jan 2020 15:02:19 +0100
+
+pymecavideo (6.5.1-1) unstable; urgency=medium
+
+  * added VCS stuff
+  * new upstream, which fixes an error with export to clipboard, rename
+    references to Oo.o as LibreOffice
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 15 Sep 2018 21:54:08 +0200
+
+pymecavideo (6.5-3) unstable; urgency=medium
+
+  * changed the priority to optional. Closes: #900391
+  * added a build-dependency on dh-python. Closes: #900392
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 03 Jun 2018 11:48:07 +0200
+
+pymecavideo (6.5-2) unstable; urgency=medium
+
+  * improved the installation of icons
+
+ -- Georges Khaznadar <georgesk@debian.org>  Mon, 21 May 2018 19:14:28 +0200
+
+pymecavideo (6.5-1) unstable; urgency=medium
+
+  * New upstream release: fixes bugs with automatic detection, data
+    restoration, and simple data plotting.
+  * updated Standards-Version: 4.1.4
+  * updated debian/watch
+
+ -- Georges Khaznadar <georgesk@debian.org>  Mon, 21 May 2018 15:55:23 +0200
+
+pymecavideo (6.4-1) unstable; urgency=medium
+
+  * New upstream release
+  *  upgraded Standards-Version: 4.1.3
+  * changed build dependencies to cope with Qt5, and dependencies to use
+    python-qt5 and python-opencv(>=3.1)
+  * removed debian/menu as there is a desktop file.
+  * renamed the package python-mecavideo to python3-mecavideo and added
+    a Provides: python-mecavideo
+
+ -- Georges Khaznadar <georgesk@debian.org>  Wed, 21 Mar 2018 18:13:46 +0100
+
+pymecavideo (6.3-2) UNPUBLISHED; urgency=medium
+
+  * fixed the watch file
+  * upgraded Standards-Version: 4.1.1, and dh level: 10
+
+ -- Georges Khaznadar <georgesk@debian.org>  Fri, 24 Nov 2017 20:21:17 +0100
+
+pymecavideo (6.3-1) unstable; urgency=medium
+
+  * upgraded to the new upstream version
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 31 Oct 2015 21:31:25 +0100
+
+pymecavideo (6.3~beta-1) unstable; urgency=medium
+
+  * upgraded to the new upstream version
+
+ -- Georges Khaznadar <georgesk@debian.org>  Mon, 21 Sep 2015 17:26:23 +0200
+
+pymecavideo (6.3~alpha-1) unstable; urgency=medium
+
+  * upgraded to the new upstream version
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sat, 16 May 2015 14:38:22 +0200
 
 pymecavideo (6.2cRC2-1) unstable; urgency=medium
 

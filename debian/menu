@@ -1,5 +1,0 @@
-?package(python-mecavideo): \
-needs="X11" \
-section="Applications/Science/Physics" \
-title="pymecavideo" \
-command="/usr/bin/pymecavideo"

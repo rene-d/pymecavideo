@@ -9,25 +9,26 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-PACKAGE = python-mecavideo
+PACKAGE = python3-mecavideo
 
 %:
-	dh $@ --with python2
+	dh $@ --with python3
 
 override_dh_clean:
+	find . -type d -name __pycache__ | xargs rm -rf
 	dh_clean
-
-override_dh_auto_build:
-	python setup.py build
 
 override_dh_auto_install:
 	$(MAKE) DESTDIR=$(CURDIR)/debian/$(PACKAGE) install-for-debian
-	python setup.py install --root $(CURDIR)/debian/$(PACKAGE)
+	python3 setup.py install --root $(CURDIR)/debian/$(PACKAGE)
 	# remove redundant icons and video files
 	find $(CURDIR)/debian/$(PACKAGE)/usr/lib -name icones -type d | xargs rm -rf
 	find $(CURDIR)/debian/$(PACKAGE)/usr/lib -name video -type d | xargs rm -rf
 	# remove files make_exe.py from the distribution
 	find $(CURDIR)/debian/$(PACKAGE) -name make_exe.py | xargs rm -f
+
+override_dh_auto_test:
+	cd test && xvfb-run python3 pymecavideoTest.py
 
 override_dh_compress:
 	dh_compress -X.xhtml
