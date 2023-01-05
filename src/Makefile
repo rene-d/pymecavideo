@@ -1,6 +1,6 @@
 DESTDIR = 
 HELPFILES = $(shell ls help | grep -E 'xhtml$$|css$$|png$$')
-LRELEASE = lrelease
+LRELEASE = /usr/lib/qt5/bin/lrelease
 
 all:	Ui_pymecavideo_mini_layout.py helpfiles languages icon_rc.py
 
@@ -12,8 +12,8 @@ Ui_%.py: %.ui
 	pyuic5 $< > $@
 
 languages:
-	pylupdate5 -translate-function _translate pymecavideo_project.pro
-	lrelease -qt5 ../data/lang/*.ts
+	LC_ALL=en_US.UTF-8 pylupdate5 -translate-function _translate pymecavideo_project.pro
+	lrelease ../data/lang/*.ts
 
 
 helpfiles:

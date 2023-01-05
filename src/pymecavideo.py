@@ -402,6 +402,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.tab_traj.setEnabled(0)
         self.actionSaveData.setEnabled(0)
         self.actionCopier_dans_le_presse_papier.setEnabled(0)
+        self.spinBox_image.setEnabled(0)
         self.affiche_lance_capture(False)
         if not refait:
             self.horizontalSlider.setValue(1)
@@ -1298,6 +1299,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             derniere_image = self.listePoints[len(self.listePoints)-1][0]+1
             self.horizontalSlider.setValue(derniere_image)
             self.spinBox_image.setValue(derniere_image)
+            self.spinBox_chrono.setMaximum(derniere_image)
             self.affiche_nb_points(self.nb_de_points)
             self.enableDefaire(True)
             self.enableRefaire(False)
@@ -2300,7 +2302,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         # permet de remettre l'interface à zéro
         if not value:
             self.active_controle_image()
-
+        return
+    
     def enableRefaire(self, value):
         """
         Contrôle la possibilité de refaire un clic
@@ -2800,6 +2803,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 self.init_image()
                 self.init_capture()
                 self.ratio = self.determineRatio()
+                self.spinBox_chrono.setMaximum(int(self.image_max))
                 self.change_axe_ou_origine()
                 self.prefs.videoDir = os.path.dirname(self.filename)
                 self.prefs.save()
@@ -2857,6 +2861,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.ratio = self.determineRatio()
         self.init_interface()
         self.trajectoire = {}
+        self.spinBox_image.setMinimum(1)
         self.calcul_deltaT()
         self.defini_barre_avancement()
         self.video.echelle_image = echelle()
@@ -2909,6 +2914,9 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         self.dbg.p(3,
                    "In :  'defini_barre_avancement', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
+        self.horizontalSlider.setMinimum(1)
+        self.horizontalSlider.setMaximum(int(self.image_max))
+        self.spinBox_image.setMaximum(int(self.image_max))
         self.extract_image(1)
 
     def extract_image(self, index):

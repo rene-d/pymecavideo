@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>pymecavideo1</class>
- <widget class="QMainWindow" name="pymecavideo1">
+ <class>pymecavideo</class>
+ <widget class="QMainWindow" name="pymecavideo">
   <property name="geometry">
    <rect>
     <x>0</x>
