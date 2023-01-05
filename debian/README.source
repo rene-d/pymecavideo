@@ -60,4 +60,4 @@ run:
 You may need to run quilt pop -a to unapply patches first before running
 this command.
 
- -- Georges Khaznadar <georgesk@debian.org>, Mon, 21 May 2018 19:56:42 +0200
+ -- Georges Khaznadar <georgesk@debian.org>, Thu,  5 Jan 2023 18:56:06 +0100
