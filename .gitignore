@@ -5,7 +5,14 @@
 Ui_*
 *.1
 *.xhtml
+
+# debuild
 debian/files
-debian/*.debhelper*
-debian/*.substvars
+debian/*debhelper*
+debian/*substvars
 data/help/*w32.png
+build/
+debian/python3-mecavideo/
+
+# quilt
+.pc/

@@ -33,7 +33,7 @@ from vecteur import vecteur
 class TrajectoireWidget(ImageWidget):
     def __init__(self, parent):
         ImageWidget.__init__(self, parent)
-
+        self.app = None
         self.chrono = False
 
         self.setCursor(Qt.ArrowCursor)
@@ -52,10 +52,10 @@ class TrajectoireWidget(ImageWidget):
         self.referentiel = 0
         return
 
-    def clear(self):
-        self.setImage()
+    def setApp(self, app):
+        self.app = app
         return
-
+    
     def reDraw(self):
         """call when somthing change as repere, origine ..."""
         self.giveCoordonatesToPaint()
@@ -67,7 +67,7 @@ class TrajectoireWidget(ImageWidget):
 
     def giveCoordonatesToPaint(self):
         self.speedToDraw = []
-        if self.video.app.ui.checkBoxVectorSpeed.isChecked():
+        if self.video.app.checkBoxVectorSpeed.isChecked():
             for key in self.video.app.points.keys():
                 points = self.video.app.points[key]
                 for i in range(len(points)):
@@ -94,7 +94,7 @@ class TrajectoireWidget(ImageWidget):
                         pass
 
                     if type(point) != type(""):
-                        if self.video.app.ui.radioButtonNearMouse.isChecked() and self.pos_souris != None:
+                        if self.video.app.radioButtonNearMouse.isChecked() and self.pos_souris != None:
                             near = 20
                             pos = self.pos_souris
                             distance = QPoint(
@@ -105,7 +105,7 @@ class TrajectoireWidget(ImageWidget):
                                     2, "mouse near a point")
                                 wroteSpeed = True
 
-                        elif self.video.app.ui.radioButtonSpeedEveryWhere.isChecked():
+                        elif self.video.app.radioButtonSpeedEveryWhere.isChecked():
                             wroteSpeed = True
 
                         if wroteSpeed:
@@ -139,9 +139,44 @@ class TrajectoireWidget(ImageWidget):
     def mouseMoveEvent(self, event):
         # Look if mouse is near a point
         self.pos_souris = event.pos()
-        if self.video.app.ui.radioButtonNearMouse.isChecked():
+        if self.video.app.radioButtonNearMouse.isChecked():
             self.reDraw()
 
+        return
+
+    def paintText(self, x, y, text,
+                  color = Qt.white, bgcolor = Qt.lightGray,
+                  fontsize = 12,
+                  fontfamily = None):
+        """
+        Trace un texte (self.painter doit être actif !)
+        @param x abscisse
+        @param y ordonnée
+        @param text le teste à tracer
+        @param color couleur de texte (defaut : Qt.white)
+        @param bgcolor couleur de fond (par défaut : Qt.lightGray) ; 
+          peut être None pour pas de fond
+        @param fontsize taille de police (par défaut : 12)
+        @param fontfamily famille de police (par défaut: None)
+        """
+        if fontfamily:
+            font = QFont(fontfamily, fontsize, QFont.Bold)
+        else:
+            font = QFont()
+        font.setPointSize(fontsize)
+        self.painter.setFont(font)
+        font_metrics = QFontMetrics(font)
+        text_width = font_metrics.width(text)
+        text_height = fontsize
+        self.painter.setPen(color)
+        if bgcolor:
+            self.painter.setBrush(bgcolor)
+            self.painter.drawRect(
+                x-5, y-text_height-5,
+                text_width+10, text_height+10)
+        self.painter.drawText(x, y, text)
+        return
+    
     def paintEvent(self, event):
         self.painter = QPainter()
         self.painter.begin(self)
@@ -171,49 +206,41 @@ class TrajectoireWidget(ImageWidget):
 
         # peint les informations pour le mode chronophotographie
         if self.chrono:  # ceci est géré dans pymecavideo.py, chercher : self.label_trajectoire.chrono
-
             self.painter = QPainter()
             self.painter.begin(self)
             if self.chrono==1:
-                self.painter.drawPixmap(0, 0, self.pixmap())
-            font = QFont()
-            font_size = 12
-            font.setPointSize(font_size)
-            self.painter.setFont(font)
+                self.painter.drawPixmap(0, 0, self.image)
             self.painter.setRenderHint(QPainter.TextAntialiasing)
             self.painter.setRenderHint(QPainter.Antialiasing)
             x1 = 50 # marge en largeur
             y1 = 50 # marge en hauteur
-            if self.chrono == 2 :
-                self.painter.setPen(Qt.black)
-            else :
-                self.painter.setPen(Qt.blue)
             # Ecrit l'intervalle de temps
-            try:
-                text = unicode("{0}t = {1:.3f} s").format(unichr(916), self.video.app.deltaT)
-            except NameError:
-                text = "{0}t = {1:.3f} s".format(chr(916), self.video.app.deltaT)
-            font_metrics = QFontMetrics(font)
-            text_width = font_metrics.width(text)
-            text_height = font_size
             if self.chrono == 1:  # rends plus lisible si le fond est foncé
-                self.painter.setPen(Qt.white)
-                self.painter.setBrush(Qt.lightGray)
-                self.painter.drawRect(self.width()-text_width-x1-5, y1-text_height-5, text_width+10, text_height+10)
-            self.painter.drawText(self.width()-text_width-x1, y1, text)
+                text = f"Δt = {self.app.deltaT:.3f} s"
+                self.paintText(self.width() - x1 - 100, y1, text)
+                text = f"t = {self.app.deltaT*(self.app.spinBox_chrono.value()-1):.3f} s"
+                self.paintText(self.width() - x1 - 100, 2 * y1, text)
             # dessine l'échelle
             if self.chrono == 2:  # chronogramme
+                self.painter.setPen(Qt.black)
                 if self.video.app.echelle_faite : #dessine une échelle en haut, horizontalement
                     longueur = round((self.video.echelle_image.p1 - self.video.echelle_image.p2).norme)
                     self.painter.drawLine(x1, y1-10, x1, y1+10)
                     self.painter.drawLine(x1, y1, longueur+x1, y1)
                     self.painter.drawLine(longueur+x1, y1-10, longueur+x1, y1+10)
-                    text = "d = {0:.2e} m".format(self.video.echelle_image.longueur_reelle_etalon)   
-                    font_metrics = QFontMetrics(font)
-                    text_width = font_metrics.width(text)
-                    self.painter.drawText(max(x1+round((longueur/2)-(text_width/2)), 0), y1+30, text) 
+                    text = "d = {0:.2e} m".format(self.video.echelle_image.longueur_reelle_etalon)
+                    self.paintText(
+                        max(x1+round((longueur/2)-(text_width/2)), 0), y1+30,
+                        text,
+                        color = Qt.black,
+                        bgcolor = None
+                    )
                 else : #échelle non faite
-                    self.painter.drawText(x1, y1+20, "échelle non précisée")
+                    self.paintText(
+                        x1, y1+20,
+                        "échelle non précisée",
+                         color = Qt.black,
+                         bgcolor = None)
                 self.painter.end()
 
             ############################################################
@@ -221,7 +248,6 @@ class TrajectoireWidget(ImageWidget):
             if self.chrono == 1:  # chronophotographie
                 self.painter = QPainter()
                 self.painter.begin(self)
-                self.painter.setFont(QFont("Times", 15, QFont.Bold))
                 self.painter.setRenderHint(QPainter.Antialiasing)
                 pen = QPen(Qt.blue)
                 pen.setWidth(3)
@@ -236,12 +262,21 @@ class TrajectoireWidget(ImageWidget):
                     echelle = "d = {0:.2e} m".format(
                             self.video.echelle_image.longueur_reelle_etalon)
 
-                    self.painter.drawText(
+                    self.paintText(
                         round(self.video.app.echelle_trace.p1.x),
                         round((self.video.app.echelle_trace.p1.y + self.video.app.echelle_trace.p2.y)/2)+20,
-                        echelle)
+                        echelle,
+                        color = Qt.blue,
+                        bgcolor = None,
+                        fontfamily = "Times",
+                        fontsize = 15,
+                    )
                 else : #pas d'échelle 
-                    self.painter.drawText(x1, y1+20, "échelle non précisée")
+                    self.paintText(x1, y1+20, "échelle non précisée",
+                                   color = Qt.blue,
+                                   bgcolor = None,
+                                   fontfamily = "Times",
+                                   fontsize = 15,)
                     
                 self.painter.end()
 
@@ -339,8 +374,8 @@ class TrajectoireWidget(ImageWidget):
                     self.painter.setRenderHint(QPainter.Antialiasing)
                     self.painter.setPen(QColor(self.couleurs[i - 1]))
                     try:
-                        speed = vector_speed.norme * float(self.video.echelle_image.mParPx()) / (2 * self.video.app.deltaT) * float(self.video.app.ui.checkBoxScale.currentText())
-                        self.video.app.ui.checkBoxScale.setStyleSheet(
+                        speed = vector_speed.norme * float(self.video.echelle_image.mParPx()) / (2 * self.video.app.deltaT) * float(self.video.app.checkBoxScale.currentText())
+                        self.video.app.checkBoxScale.setStyleSheet(
                             "background-color:none")
                         path = QPainterPath()
                         path.moveTo(0, 0)

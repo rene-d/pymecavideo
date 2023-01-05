@@ -19,9 +19,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt5.QtCore import QRect, Qt
+from PyQt5.QtCore import QRect, Qt, QPointF
 from PyQt5.QtWidgets import QWidget, qApp
-from PyQt5.QtGui import QPixmap, QImage, QPainter
+from PyQt5.QtGui import QPixmap, QImage, QPainter, QPen, QColor
 
 class ImageWidget(QWidget):
     """
@@ -68,23 +68,37 @@ class Zoom(ImageWidget):
         self.app = app
         return
 
-    def fait_crop(self, p):
+    def fait_crop(self, image, p):
         """
         récupère une zone rectangulaire dans l'image affiché e
         (dans le widget vidéo) et l'affiche grandie deux fois.
+        param image une image
         @param p un vecteur
         """
         rect = QRect(round(p.x) - 25, round(p.y) - 25, 50, 50)
-        crop = self.app.imageAffichee.copy(rect)
-        cropX2 = QPixmap.fromImage(
-            crop.scaled(100, 100, Qt.KeepAspectRatio))
+        crop = image.copy(rect)
+        if isinstance(crop, QImage):
+            cropX2 = QPixmap.fromImage(
+                crop.scaled(100, 100, Qt.KeepAspectRatio))
+        else:
+            cropX2 = crop.scaled(100, 100, Qt.KeepAspectRatio)
         self.setImage(cropX2)
         return
 
     def paintEvent(self, event):
         if self.app.a_une_image:
-            self.painter = QPainter()
-            self.painter.begin(self)
+            painter = QPainter()
+            painter.begin(self)
             if self.image != None:
-                self.painter.drawPixmap(0, 0, self.image)
-            self.painter.end()
+                painter.drawPixmap(0, 0, self.image)
+            painter.setPen(Qt.red)
+            painter.drawLine(50, 0, 50, 45)
+            painter.drawLine(50, 55, 50, 100)
+            painter.drawLine(0, 50, 45, 50)
+            painter.drawLine(55, 50, 100, 50)
+
+            # fixe la couleur du crayon et la largeur pour le dessin - forme compactée
+            painter.setPen(QPen(QColor(255, 64, 255), 1))
+            # cf QPen(QBrush brush, float width, Qt.PenStyle style = Qt.SolidLine, Qt.PenCapStyle cap = Qt.SquareCap, Qt.PenJoinStyle join = Qt.BevelJoin)
+            painter.drawEllipse(QPointF(50, 50), 5, 5)
+            painter.end()

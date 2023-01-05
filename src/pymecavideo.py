@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import sys,os
+thisDir = os.path.dirname(__file__)
+sys.path.insert(0, thisDir)
+
 import subprocess
-import os.path
-import os
+
 from globdef import HOME_PATH, VIDEO_PATH, CONF_PATH, \
     ICON_PATH, LANG_PATH, \
     DATA_PATH, HELP_PATH, DOCUMENT_PATH
@@ -11,7 +14,6 @@ import getopt
 import locale
 import traceback
 import time
-import sys
 from aspectlayout import AspectLayout
 import functools
 from detect import filter_picture
@@ -34,7 +36,6 @@ from choix_origine import ChoixOrigineWidget
 from trajectoire_widget import TrajectoireWidget
 from videoWidget import VideoWidget
 from echelle import Echelle_TraceWidget, EchelleWidget, echelle
-from zoom import Zoom_Croix
 from glob import glob
 import pyqtgraph as pg
 import pyqtgraph.exporters
@@ -51,7 +52,7 @@ licence['en'] = """
 
     Copyright (C) 2007-2016 Jean-Baptiste Butet <ashashiwa@gmail.com>
 
-    Copyright (C) 2007-2018 Georges Khaznadar <georgesk@debian.org>
+    Copyright (C) 2007-2023 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -74,7 +75,7 @@ licence['fr'] = u"""
 
     Copyright (C) 2007-2016 Jean-Baptiste Butet <ashashiwa@gmail.com>
 
-    Copyright (C) 2007-2018 Georges Khaznadar <georgesk@debian.org>
+    Copyright (C) 2007-2023 Georges Khaznadar <georgesk@debian.org>
 
     Ce projet est un logiciel libre : vous pouvez le redistribuer, le modifier selon les terme de la GPL (GNU Public License) dans les termes de la Free Software Foundation concernant la version 3 ou plus de la dite licence.
 
@@ -175,7 +176,9 @@ class MonThreadDeCalcul(QThread):
         self.stopped = True
 
 
-class StartQt5(QMainWindow):
+from Ui_pymecavideo_mini_layout import Ui_pymecavideo
+
+class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def __init__(self, parent=None, opts=[], args=[]):
         """
         le constructeur reçoit les données principales du logiciel :
@@ -184,11 +187,13 @@ class StartQt5(QMainWindow):
         @param args les arguments restants après raitement des options
         """
         # QT
-        QMainWindow.__init__(self)
+        QMainWindow.__init__(self, parent)
+        Ui_pymecavideo.__init__(self)
         QWidget.__init__(self, parent)
         self.hauteur = 1
         self.largeur = 0
         self.ratio = 4/3
+        self.image_max = None
         self.decalh = 0
         self.decalw = 0
         self.rotation = 0  # permet de retourner une vidéo mal prise
@@ -203,25 +208,21 @@ class StartQt5(QMainWindow):
         self.height_screen, self.width_screen = QDesktopWidget(
         ).screenGeometry().height(), QDesktopWidget().screenGeometry().width()
 
-        from Ui_pymecavideo_mini_layout import Ui_pymecavideo
 
         self.setWindowFlags(self.windowFlags() |
                             Qt.WindowSystemMenuHint |
                             Qt.WindowMinMaxButtonsHint)
 
-        self.ui = Ui_pymecavideo()
-        self.ui.setupUi(self)
+        self.setupUi(self)
 
         # définition des widgets importants
-        self.video = None
-        self.ui.zoom_zone.setApp(self)
+        self.zoom_zone.setApp(self)
+        self.trajectoire_widget.setApp(self)
 
         # gestion des layout pour redimensionnement
         self.aspectlayout1 = AspectLayout(self.ratio)
-        self.ui.containerWidget1.setLayout(self.aspectlayout1)
 
         self.aspectlayout2 = AspectLayout(self.ratio)
-        self.ui.containerWidget2.setLayout(self.aspectlayout2)
 
         self.dbg = Dbg(0)
         for o in opts:
@@ -241,36 +242,31 @@ class StartQt5(QMainWindow):
 
         # intialise les répertoires
         self._dir()
-        #defait_icon = os.path.join(self._dir("icones"), "undo.png")
-
-        #self.ui.pushButton_defait.setIcon(QIcon(defait_icon))
-        #refait_icon = os.path.join(self._dir("icones"), "redo.png")
-        #self.ui.pushButton_refait.setIcon(QIcon(refait_icon))
 
         # variables à initialiser
         # disable UI at beginning
-        self.ui.tabWidget.setEnabled(0)
-        self.ui.actionDefaire.setEnabled(0)
-        self.ui.actionRefaire.setEnabled(0)
-        self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
-        self.ui.menuE_xporter_vers.setEnabled(0)
-        self.ui.actionSaveData.setEnabled(0)
-        self.ui.actionExemples.setEnabled(0)
-        self.ui.widget_chronophoto.setEnabled(False)
+        self.tabWidget.setEnabled(0)
+        self.actionDefaire.setEnabled(0)
+        self.actionRefaire.setEnabled(0)
+        self.actionCopier_dans_le_presse_papier.setEnabled(0)
+        self.menuE_xporter_vers.setEnabled(0)
+        self.actionSaveData.setEnabled(0)
+        self.actionExemples.setEnabled(0)
+        self.widget_chronophoto.setEnabled(False)
 
         # exportCombo
-        self.ui.exportCombo.addItem('Exporter vers...')
+        self.exportCombo.addItem('Exporter vers...')
         # Ajoute les différents formats d'exportation
         for key in sorted(EXPORT_FORMATS.keys()):
-            self.ui.exportCombo.addItem(EXPORT_FORMATS[key]['nom'])
+            self.exportCombo.addItem(EXPORT_FORMATS[key]['nom'])
 
         #exportQactions
         for key in sorted(EXPORT_FORMATS.keys()):
             action = QAction(EXPORT_FORMATS[key]
-                             ['nom'], self.ui.menuE_xporter_vers)
+                             ['nom'], self.menuE_xporter_vers)
             action.triggered.connect(
                 lambda checked, index=key: self.export(index))
-            self.ui.menuE_xporter_vers.addAction(action)
+            self.menuE_xporter_vers.addAction(action)
 
         self.init_variables(opts)
         self.init_interface()
@@ -284,23 +280,17 @@ class StartQt5(QMainWindow):
         self.traiteOptions()
         return
 
-    def zoom_croix(self):
-        """
-        Crée une zone zoomée pour chercher à placer une nouvelle origine
-        """
-        return Zoom_Croix(self.ui.zoom_zone, self)
-    
     def hasHeightForWidth(self):
         # This tells the layout manager that the banner's height does depend on its width
         return True
 
     def sizeHint(self):
-        return QSize(1024, 800)
+        return QSize(1024, 768)
 
     def showFullScreen_(self):
-        #"""gère les dimensions en fonction de la largeur et la hauteur de l'écran"""
-        #self.setFixedSize(QSize(self.width_screen,self.height_screen ))
-        self.showFullScreen()
+        """gère les dimensions en fonction de la largeur et la hauteur de l'écran"""
+        self.setFixedSize(QSize(self.width_screen,self.height_screen ))
+        return
 
     def basculer_plein_ecran(self):
         """Basculer en mode plein écran / mode fenétré"""
@@ -321,6 +311,10 @@ class StartQt5(QMainWindow):
             except Exception as err:
                 self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 pass
+        # prévoit un reinitialise_capture
+        self.calcul_deltaT()
+        timer = QTimer.singleShot(50, self.reinitialise_capture)
+        return
 
     def init_variables(self, opts, filename=u""):
         self.dbg.p(1, "rentre dans 'init_variables'")
@@ -375,80 +369,65 @@ class StartQt5(QMainWindow):
         self.refait_point = False
         self.graphe_deja_choisi = None
         self.defixeLesDimensions()
-
+        return
+    
     def init_interface(self, refait=0):
         self.dbg.p(1, "rentre dans 'init_interface'")
 
-        self.ui.tabWidget.setEnabled(1)
+        self.tabWidget.setEnabled(1)
         if len(self.points) == 0:
-            self.ui.tabWidget.setTabEnabled(3, False)
-            self.ui.tabWidget.setTabEnabled(2, False)
-            self.ui.tabWidget.setTabEnabled(1, False)
-        else:  # quando n ouvre un fichier via la ligne de commande
-            self.ui.tabWidget.setTabEnabled(3, True)
-            self.ui.tabWidget.setTabEnabled(2, True)
-            self.ui.tabWidget.setTabEnabled(1, True)
+            self.tabWidget.setTabEnabled(3, False)
+            self.tabWidget.setTabEnabled(2, False)
+            self.tabWidget.setTabEnabled(1, False)
+        else:  # quand on ouvre un fichier via la ligne de commande
+            self.tabWidget.setTabEnabled(3, True)
+            self.tabWidget.setTabEnabled(2, True)
+            self.tabWidget.setTabEnabled(1, True)
         if not self.a_une_image:
-            self.ui.tabWidget.setTabEnabled(0, False)
-        self.ui.actionExemples.setEnabled(1)
-        # initialisation de self.trajectoire
-        if hasattr(self, "trajectoire_widget"):
-            self.trajectoire_widget.clear()
-        self.trajectoire_widget = TrajectoireWidget(
-            parent=self.ui.containerWidget2)
-
-        self.aspectlayout2.addWidget(self.trajectoire_widget)
+            self.tabWidget.setTabEnabled(0, False)
+        self.actionExemples.setEnabled(1)
+        # initialisation de self.trajectoire_widget
         self.trajectoire_widget.chrono = False
-        self.trajectoire_widget.show()
 
         self.update()
-        self.ui.horizontalSlider.setEnabled(0)
-        self.ui.echelleEdit.setEnabled(0)
-        self.ui.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
-        self.ui.Bouton_Echelle.setText(_translate(
+        self.active_controle_image(False)
+        self.echelleEdit.setEnabled(0)
+        self.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
+        self.Bouton_Echelle.setText(_translate(
             "pymecavideo", "Définir l'échelle", None))
-        self.ui.Bouton_Echelle.setStyleSheet("background-color:None;")
+        self.Bouton_Echelle.setStyleSheet("background-color:None;")
 
         # on essaie d'afficher l'échelle, si possible
-        if self.video != None:
-            self.affiche_echelle()
-        self.ui.tab_traj.setEnabled(0)
-        self.ui.actionSaveData.setEnabled(0)
-        self.ui.actionCopier_dans_le_presse_papier.setEnabled(0)
-        self.ui.spinBox_image.setEnabled(0)
+        self.affiche_echelle()
+        self.tab_traj.setEnabled(0)
+        self.actionSaveData.setEnabled(0)
+        self.actionCopier_dans_le_presse_papier.setEnabled(0)
         self.affiche_lance_capture(False)
         if not refait:
-            self.ui.horizontalSlider.setValue(1)
+            self.horizontalSlider.setValue(1)
 
         self.affiche_nb_points(False)
-        self.ui.Bouton_Echelle.setEnabled(False)
-        self.ui.checkBoxScale.setDuplicatesEnabled(False)
-        self.ui.radioButtonNearMouse.hide()
-        self.ui.radioButtonSpeedEveryWhere.hide()
+        self.Bouton_Echelle.setEnabled(False)
+        self.checkBoxScale.setDuplicatesEnabled(False)
+        self.radioButtonNearMouse.hide()
+        self.radioButtonSpeedEveryWhere.hide()
 
         if not self.a_une_image:
-            self.ui.pushButton_rot_droite.setEnabled(0)
-            self.ui.pushButton_rot_gauche.setEnabled(0)
+            self.pushButton_rot_droite.setEnabled(0)
+            self.pushButton_rot_gauche.setEnabled(0)
         else:
-            self.ui.pushButton_rot_droite.setEnabled(1)
-            self.ui.pushButton_rot_gauche.setEnabled(1)
+            self.pushButton_rot_droite.setEnabled(1)
+            self.pushButton_rot_gauche.setEnabled(1)
 
-        # création du widget qui contiendra la vidéo.
-        if self.video != None:
-            self.video.clear()
-        else:
-            self.video = VideoWidget(
-                parent=self.ui.containerWidget1, app=self)
-            self.aspectlayout1.addWidget(self.video)
-            self.video.show()
-
-        self.ui.tabWidget.setCurrentIndex(0)  # montre l'onglet video
-        self.ui.pushButton_stopCalculs.setEnabled(0)
-        self.ui.pushButton_stopCalculs.hide()
-        self.ui.button_video.setEnabled(0)
-        self.ui.checkBox_Ec.setChecked(0)
-        self.ui.checkBox_Em.setChecked(0)
-        self.ui.checkBox_Epp.setChecked(0)
+        self.video.setApp(self)
+        self.video.setZoom(self.zoom_zone)
+        self.tabWidget.setCurrentIndex(0)  # montre l'onglet video
+        self.pushButton_stopCalculs.setEnabled(0)
+        self.pushButton_stopCalculs.hide()
+        self.button_video.setEnabled(0)
+        self.checkBox_Ec.setChecked(0)
+        self.checkBox_Em.setChecked(0)
+        self.checkBox_Epp.setChecked(0)
         self.trajectoire_widget.video = self.video
 
         #mets à jour le ratio
@@ -463,16 +442,17 @@ class StartQt5(QMainWindow):
         # inactive le spinner pour les incréments de plus d'une image
         # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
         # non encore implémentée
-        self.ui.imgno_incr.hide()
-        self.ui.spinBox.hide()
-
+        self.imgno_incr.hide()
+        self.spinBox.hide()
+        return
+    
     def affiche_lance_capture(self, active=False):
         """
         Met à jour l'affichage du bouton pour lancer la capture
         @param active vrai si le bouton doit être activé
         """
         self.dbg.p(1, "rentre dans 'affiche_lance_capture'")
-        self.ui.Bouton_lance_capture.setEnabled(active)
+        self.Bouton_lance_capture.setEnabled(active)
 
     def affiche_nb_points(self, active=False):
         """
@@ -480,8 +460,8 @@ class StartQt5(QMainWindow):
         @param active vrai si on doit permettre la saisie du nombre de points
         """
         self.dbg.p(1, "rentre dans 'affiche_nb_points'")
-        self.ui.spinBox_nb_de_points.setEnabled(active)
-        self.ui.spinBox_nb_de_points.setValue(self.nb_de_points)
+        self.spinBox_nb_de_points.setEnabled(active)
+        self.spinBox_nb_de_points.setValue(self.nb_de_points)
 
     def affiche_echelle(self):
         """
@@ -489,18 +469,44 @@ class StartQt5(QMainWindow):
         """
         self.dbg.p(1, "rentre dans 'affiche_echelle'")
         if self.video.echelle_image.isUndef():
-            self.ui.echelleEdit.setText(
+            self.echelleEdit.setText(
                 _translate("pymecavideo", "indéf.", None))
-            self.ui.Bouton_Echelle.setEnabled(True)
+            self.Bouton_Echelle.setEnabled(True)
         else:
             epxParM = self.video.echelle_image.pxParM()
             if epxParM > 20:
-                self.ui.echelleEdit.setText("%.1f" % epxParM)
+                self.echelleEdit.setText("%.1f" % epxParM)
             else:
-                self.ui.echelleEdit.setText("%8e" % epxParM)
-        self.ui.echelleEdit.show()
-        self.ui.Bouton_Echelle.show()
+                self.echelleEdit.setText("%8e" % epxParM)
+        self.echelleEdit.show()
+        self.Bouton_Echelle.show()
+        return
 
+    def active_controle_image(self, state=True):
+        """
+        Gère les deux widgets horizontalSlider et spinBox_image
+        @param state (vrai par défaut) ; si state == True, les deux
+          widgets sont activés et leurs signaux valueChanged sont pris
+          en compte ; sinon ils sont désactivés ainsi que les signaux
+        """
+        if state:
+            self.horizontalSlider.setMinimum(1)
+            self.spinBox_image.setMinimum(1)
+            if self.image_max:
+                self.horizontalSlider.setMaximum(int(self.image_max))
+                self.spinBox_image.setMaximum(int(self.image_max))
+            self.horizontalSlider.valueChanged.connect(
+                self.affiche_image_slider_move)
+            self.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
+        else:
+            if self.horizontalSlider.receivers(self.horizontalSlider.valueChanged):
+                self.horizontalSlider.valueChanged.disconnect()
+            if self.spinBox_image.receivers(self.spinBox_image.valueChanged):
+                self.spinBox_image.valueChanged.disconnect()
+        self.horizontalSlider.setEnabled(state)
+        self.spinBox_image.setEnabled(state)
+        return
+        
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
@@ -526,14 +532,7 @@ class StartQt5(QMainWindow):
         ratio = self.determineRatio()
         self.aspectlayout1.aspect = ratio
         self.aspectlayout2.aspect = ratio
-        try:
-            self.video.update()
-            self.video.setCursor(Qt.ArrowCursor)
-            self.video.setEnabled(1)
-            self.video.reinit_origine()
-        except AttributeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
+        self.video.reinit()
         try:
             self.echelle_trace.hide()
             del self.echelle_trace
@@ -542,10 +541,10 @@ class StartQt5(QMainWindow):
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
 
-        self.ui.Bouton_Echelle.setText(_translate(
+        self.Bouton_Echelle.setText(_translate(
             "pymecavideo", "Définir l'échelle", None))
-        self.ui.Bouton_Echelle.setStyleSheet("background-color:None;")
-        self.init_variables(None, filename=self.filename)
+        self.Bouton_Echelle.setStyleSheet("background-color:None;")
+        self.init_variables(tuple(), filename=self.filename)
         try:
             self.affiche_image()
         except AttributeError as err:
@@ -554,17 +553,16 @@ class StartQt5(QMainWindow):
 
         self.video.echelle_image = echelle()
         self.affiche_echelle()
-        self.ui.horizontalSlider.setEnabled(1)
-        self.ui.spinBox_image.setEnabled(1)
-        self.ui.spinBox_image.setValue(1)
+        self.active_controle_image()
+        self.spinBox_image.setValue(1)
         self.enableDefaire(False)
         self.enableRefaire(False)
         self.affiche_nb_points(1)
-        self.ui.Bouton_lance_capture.setEnabled(1)
+        self.Bouton_lance_capture.setEnabled(1)
 
         # désactive le bouton de calculs si existant :
-        self.ui.pushButton_stopCalculs.setEnabled(0)
-        self.ui.pushButton_stopCalculs.hide()
+        self.pushButton_stopCalculs.setEnabled(0)
+        self.pushButton_stopCalculs.hide()
 
         # désactive graphe si existant
         try:
@@ -578,31 +576,29 @@ class StartQt5(QMainWindow):
             pass  # pas eu de graphes dessiné
 
         ### Réactiver checkBox_avancees après réinitialisation ###
-        self.ui.pushButton_origine.setEnabled(1)
-        self.ui.checkBox_abscisses.setEnabled(1)
-        self.ui.checkBox_ordonnees.setEnabled(1)
-        self.ui.checkBox_auto.setEnabled(1)
-        self.ui.checkBox_abscisses.setCheckState(Qt.Unchecked)
-        self.ui.checkBox_ordonnees.setCheckState(Qt.Unchecked)
-        self.ui.checkBox_auto.setCheckState(Qt.Unchecked)
+        self.pushButton_origine.setEnabled(1)
+        self.checkBox_abscisses.setEnabled(1)
+        self.checkBox_ordonnees.setEnabled(1)
+        self.checkBox_auto.setEnabled(1)
+        self.checkBox_abscisses.setCheckState(Qt.Unchecked)
+        self.checkBox_ordonnees.setCheckState(Qt.Unchecked)
+        self.checkBox_auto.setCheckState(Qt.Unchecked)
         if self.a_une_image:
-            self.ui.pushButton_rot_droite.setEnabled(1)
-            self.ui.pushButton_rot_gauche.setEnabled(1)
+            self.pushButton_rot_droite.setEnabled(1)
+            self.pushButton_rot_gauche.setEnabled(1)
         else:
-            self.ui.pushButton_rot_droite.setEnabled(0)
-            self.ui.pushButton_rot_gauche.setEnabled(0)
-        # remets le signal enlevé :
-        self.ui.horizontalSlider.valueChanged.connect(
-            self.affiche_image_slider_move)
-        self.ui.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
-        self.ui.tabWidget.setTabEnabled(3, False)
-        self.ui.tabWidget.setTabEnabled(2, False)
-        self.ui.tabWidget.setTabEnabled(1, False)
-        self.ui.checkBox_Ec.setChecked(0)
-        self.ui.checkBox_Em.setChecked(0)
-        self.ui.checkBox_Epp.setChecked(0)
-        if self.ui.tableWidget:
-            self.ui.tableWidget.clear()
+            self.pushButton_rot_droite.setEnabled(0)
+            self.pushButton_rot_gauche.setEnabled(0)
+        # réactive les contrôles de l'image (spinbox et slider) :
+        self.active_controle_image()
+        self.tabWidget.setTabEnabled(3, False)
+        self.tabWidget.setTabEnabled(2, False)
+        self.tabWidget.setTabEnabled(1, False)
+        self.checkBox_Ec.setChecked(0)
+        self.checkBox_Em.setChecked(0)
+        self.checkBox_Epp.setChecked(0)
+        if self.tableWidget:
+            self.tableWidget.clear()
 
         # HACK : oblige le redimensionnement
         self.resize(self.size()+QSize(1, 0))
@@ -624,46 +620,42 @@ class StartQt5(QMainWindow):
     def ui_connections(self):
         """connecte les signaux de Qt"""
         self.dbg.p(1, "rentre dans 'ui_connections'")
-        self.ui.actionOuvrir_un_fichier.triggered.connect(self.openfile)
-        self.ui.actionExemples.triggered.connect(self.openexample)
-        self.ui.action_propos.triggered.connect(self.propos)
-        self.ui.actionAide.triggered.connect(self.aide)
-        self.ui.actionDefaire.triggered.connect(self.efface_point_precedent)
-        self.ui.actionRefaire.triggered.connect(self.refait_point_suivant)
-        self.ui.actionQuitter.triggered.connect(self.close)
-        self.ui.actionSaveData.triggered.connect(self.enregistre_ui)
-        self.ui.actionCopier_dans_le_presse_papier.triggered.connect(
+        self.actionOuvrir_un_fichier.triggered.connect(self.openfile)
+        self.actionExemples.triggered.connect(self.openexample)
+        self.action_propos.triggered.connect(self.propos)
+        self.actionAide.triggered.connect(self.aide)
+        self.actionDefaire.triggered.connect(self.efface_point_precedent)
+        self.actionRefaire.triggered.connect(self.refait_point_suivant)
+        self.actionQuitter.triggered.connect(self.close)
+        self.actionSaveData.triggered.connect(self.enregistre_ui)
+        self.actionCopier_dans_le_presse_papier.triggered.connect(
             self.presse_papier)
-        self.ui.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
-        self.ui.Bouton_Echelle.clicked.connect(self.demande_echelle)
-        self.ui.horizontalSlider.sliderReleased.connect(
-            self.affiche_image_slider)
-        self.ui.horizontalSlider.valueChanged.connect(
-            self.affiche_image_slider_move)
-        self.ui.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
-        self.ui.Bouton_lance_capture.clicked.connect(self.debut_capture)
+        self.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
+        self.Bouton_Echelle.clicked.connect(self.demande_echelle)
+        self.active_controle_image()
+        self.Bouton_lance_capture.clicked.connect(self.debut_capture)
         self.clic_sur_video_signal.connect(self.clic_sur_la_video)
-        self.ui.comboBox_referentiel.currentIndexChanged.connect(
+        self.comboBox_referentiel.currentIndexChanged.connect(
             self.tracer_trajectoires)
-        #self.ui.comboBox_mode_tracer.currentIndexChanged.connect(
+        #self.comboBox_mode_tracer.currentIndexChanged.connect(
             #self.tracer_courbe)
-        self.ui.tabWidget.currentChanged.connect(self.choix_onglets)
-        self.ui.checkBoxScale.currentIndexChanged.connect(self.enableSpeed)
-        self.ui.checkBoxVectorSpeed.stateChanged.connect(self.enableSpeed)
-        self.ui.radioButtonSpeedEveryWhere.clicked.connect(self.enableSpeed)
-        self.ui.radioButtonNearMouse.clicked.connect(self.enableSpeed)
-        self.ui.button_video.clicked.connect(self.montre_video)
-        self.ui.pushButton_select_all_table.clicked.connect(self.presse_papier)
-        self.ui.comboBoxChrono.currentIndexChanged.connect(self.chronoPhoto)
-        self.ui.pushButton_reinit.clicked.connect(self.reinitialise_capture)
-        self.ui.pushButton_defait.clicked.connect(self.efface_point_precedent)
-        self.ui.pushButton_refait.clicked.connect(self.refait_point_suivant)
-        self.ui.pushButton_origine.clicked.connect(
+        self.tabWidget.currentChanged.connect(self.choix_onglets)
+        self.checkBoxScale.currentIndexChanged.connect(self.enableSpeed)
+        self.checkBoxVectorSpeed.stateChanged.connect(self.enableSpeed)
+        self.radioButtonSpeedEveryWhere.clicked.connect(self.enableSpeed)
+        self.radioButtonNearMouse.clicked.connect(self.enableSpeed)
+        self.button_video.clicked.connect(self.montre_video)
+        self.pushButton_select_all_table.clicked.connect(self.presse_papier)
+        self.comboBoxChrono.currentIndexChanged.connect(self.chronoPhoto)
+        self.pushButton_reinit.clicked.connect(self.reinitialise_capture)
+        self.pushButton_defait.clicked.connect(self.efface_point_precedent)
+        self.pushButton_refait.clicked.connect(self.refait_point_suivant)
+        self.pushButton_origine.clicked.connect(
             self.choisi_nouvelle_origine)
-        self.ui.checkBox_abscisses.stateChanged.connect(self.change_sens_X)
-        self.ui.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
-        self.ui.pushButton_rot_droite.clicked.connect(self.tourne_droite)
-        self.ui.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
+        self.checkBox_abscisses.stateChanged.connect(self.change_sens_X)
+        self.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
+        self.pushButton_rot_droite.clicked.connect(self.tourne_droite)
+        self.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
         self.change_axe_origine.connect(self.change_axe_ou_origine)
         self.selection_done.connect(self.picture_detect)
         self.selection_motif_done.connect(self.suiviDuMotif)
@@ -671,22 +663,22 @@ class StartQt5(QMainWindow):
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
         self.redimensionneSignal.connect(self.redimensionneFenetre)
         self.stopCalculs.connect(self.stopComputing)
-        self.ui.pushButton_stopCalculs.clicked.connect(self.stopCalculs)
+        self.pushButton_stopCalculs.clicked.connect(self.stopCalculs)
         self.updateProgressBar.connect(self.updatePB)
-        self.ui.exportCombo.currentIndexChanged.connect(self.export)
-        self.ui.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
-        self.ui.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
-        self.ui.checkBox_Epp.stateChanged.connect(self.affiche_tableau)
-        self.ui.checkBox_Em.stateChanged.connect(self.affiche_tableau)
-        self.ui.comboBox_X.currentIndexChanged.connect(self.dessine_graphe_avant)
-        self.ui.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe_avant)
-        self.ui.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
-        self.ui.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
-        self.ui.lineEdit_IPS.textChanged.connect(self.verifie_IPS)
-        self.ui.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
-        self.ui.pushButton_save.clicked.connect(self.enregistreChrono)
-        self.ui.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
-        self.ui.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
+        self.exportCombo.currentIndexChanged.connect(self.export)
+        self.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
+        self.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
+        self.checkBox_Epp.stateChanged.connect(self.affiche_tableau)
+        self.checkBox_Em.stateChanged.connect(self.affiche_tableau)
+        self.comboBox_X.currentIndexChanged.connect(self.dessine_graphe_avant)
+        self.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe_avant)
+        self.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
+        self.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
+        self.lineEdit_IPS.textChanged.connect(self.verifie_IPS)
+        self.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
+        self.pushButton_save.clicked.connect(self.enregistreChrono)
+        self.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
+        self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
 
     def changeChronoImg(self,img):
         self.chronoImg = img
@@ -714,26 +706,29 @@ class StartQt5(QMainWindow):
         Si chronophotogramme, on ne met pas l'image et la trace est en haut.
         """
         # Configure l'UI en fonction du mode
-        if self.ui.comboBoxChrono.currentIndex() == 0 :
-            self.ui.widget_chronophoto.setEnabled(False)
-            self.ui.topWidget2.setEnabled(True)
-            self.ui.widget_speed.setEnabled(True)
-        elif self.ui.comboBoxChrono.currentIndex() == 1 :
-            self.ui.widget_chronophoto.setEnabled(True)
-            self.ui.topWidget2.setEnabled(False)
-            self.ui.widget_speed.setEnabled(False)
-            self.ui.checkBoxVectorSpeed.setChecked(False)
-        elif self.ui.comboBoxChrono.currentIndex() == 2 :
-            self.ui.widget_chronophoto.setEnabled(False)
-            self.ui.topWidget2.setEnabled(False)
-            self.ui.widget_speed.setEnabled(False)
-            self.ui.checkBoxVectorSpeed.setChecked(False)
+        if self.comboBoxChrono.currentIndex() == 0 :
+            self.widget_chronophoto.setEnabled(False)
+            self.trajectoire_widget.setEnabled(True)
+            self.widget_speed.setEnabled(True)
+        elif self.comboBoxChrono.currentIndex() == 1 :
+            self.widget_chronophoto.setEnabled(True)
+            self.trajectoire_widget.setEnabled(False)
+            self.widget_speed.setEnabled(False)
+            self.checkBoxVectorSpeed.setChecked(False)
+            self.spinBox_chrono.setMaximum(int(self.image_max))
+            self.spinBox_chrono.setMinimum(1)
+
+        elif self.comboBoxChrono.currentIndex() == 2 :
+            self.widget_chronophoto.setEnabled(False)
+            self.trajectoire_widget.setEnabled(False)
+            self.widget_speed.setEnabled(False)
+            self.checkBoxVectorSpeed.setChecked(False)
         self.dbg.p(1, "rentre dans 'chronoPhoto'")
         # ajoute la première image utilisée pour le pointage sur le fond du vidget
         liste_types_photos = ['chronophotographie', 'chronophotogramme']
 
-        if self.ui.comboBoxChrono.currentIndex() != 0:
-            photo_chrono = liste_types_photos[self.ui.comboBoxChrono.currentIndex(
+        if self.comboBoxChrono.currentIndex() != 0:
+            photo_chrono = liste_types_photos[self.comboBoxChrono.currentIndex(
             )-1]
             self.dbg.p(2, "dans 'chronoPhoto, on a choisi le type %s'" %
                        (photo_chrono))
@@ -743,14 +738,14 @@ class StartQt5(QMainWindow):
                     self.chronoImg, self.rotation)
                 self.imageChrono = toQImage(img).scaled(
                     self.video.width(), self.video.height(), Qt.KeepAspectRatio)
-                self.trajectoire_widget.setPixmap(
+                self.trajectoire_widget.setImage(
                     QPixmap.fromImage(self.imageChrono))
             else:
                 self.trajectoire_widget.chrono = 2  # 2 pour chronophotogramme
-                self.trajectoire_widget.setPixmap(QPixmap())
+                self.trajectoire_widget.setImage(QPixmap())
             #self.enregistreChrono()
         else:
-            self.trajectoire_widget.setPixmap(QPixmap())
+            self.trajectoire_widget.setImage(QPixmap())
             self.trajectoire_widget.chrono = 0
         self.redimensionneFenetre()
         self.update()
@@ -762,9 +757,14 @@ class StartQt5(QMainWindow):
         self.setFixedSize(QSize(self.width(), self.height()))
 
     def defixeLesDimensions(self):
-        self.setMinimumWidth(1000)
+        """
+        donne une taille minimale à la fenêtre, 640 x 480 ; 
+        il s'y ajoute bien sûr les contraintes des widgets définis
+        par l'interface utilisateur qui est créée à l'aide de designer.
+        """
+        self.setMinimumWidth(640)
         self.setMaximumWidth(16000000)
-        self.setMinimumHeight(800)
+        self.setMinimumHeight(480)
         self.setMaximumHeight(16000000)
         pass
 
@@ -780,18 +780,18 @@ class StartQt5(QMainWindow):
         de rappel de cette fonction ont un paramètre supplémentaire
         """
         self.dbg.p(1, "rentre dans 'enableSpeed'")
-        if self.ui.checkBoxVectorSpeed.isChecked():
+        if self.checkBoxVectorSpeed.isChecked():
             self.dbg.p(2, "In enableSpeed")
-            self.ui.checkBoxScale.setEnabled(1)
-            if self.ui.checkBoxScale.count() < 1:
-                self.ui.checkBoxScale.insertItem(0, "1")
-            self.ui.radioButtonNearMouse.show()
-            self.ui.radioButtonSpeedEveryWhere.show()
+            self.checkBoxScale.setEnabled(1)
+            if self.checkBoxScale.count() < 1:
+                self.checkBoxScale.insertItem(0, "1")
+            self.radioButtonNearMouse.show()
+            self.radioButtonSpeedEveryWhere.show()
             self.trajectoire_widget.reDraw()
         else:
-            self.ui.checkBoxScale.setEnabled(0)
-            self.ui.radioButtonNearMouse.hide()
-            self.ui.radioButtonSpeedEveryWhere.hide()
+            self.checkBoxScale.setEnabled(0)
+            self.radioButtonNearMouse.hide()
+            self.radioButtonSpeedEveryWhere.hide()
             self.trajectoire_widget.reDraw()
 
     def suiviDuMotif(self):
@@ -800,9 +800,9 @@ class StartQt5(QMainWindow):
             self.dbg.p(3, "selection des motifs finie")
             self.selRect.finish(delete=True)
             self.indexMotif = 0
-            self.ui.pushButton_stopCalculs.setText("STOP")
-            self.ui.pushButton_stopCalculs.setEnabled(1)
-            self.ui.pushButton_stopCalculs.show()
+            self.pushButton_stopCalculs.setText("STOP")
+            self.pushButton_stopCalculs.setEnabled(1)
+            self.pushButton_stopCalculs.show()
             self.video.setEnabled(0)
             self.pileDeDetections = []
             for i in range(self.index_de_l_image, int(self.image_max)+1):
@@ -830,7 +830,7 @@ class StartQt5(QMainWindow):
                 self.indexMotif = 0
             index_de_l_image = self.pileDeDetections.pop(0)
             texteDuBouton = "STOP (%d)" % index_de_l_image
-            self.ui.pushButton_stopCalculs.setText(texteDuBouton)
+            self.pushButton_stopCalculs.setText(texteDuBouton)
             # TODO : principal point noir du calcul.
             self.dbg.p(2, "On lance la detection avec : self.motif %s, self.indexMotif %s" % (
                 self.motif, self.indexMotif))
@@ -852,9 +852,9 @@ class StartQt5(QMainWindow):
             self.dbg.p(3, "selection des motifs finie")
             self.selRect.finish()
             self.indexMotif = 0
-            self.ui.pushButton_stopCalculs.setText("STOP")
-            self.ui.pushButton_stopCalculs.setEnabled(1)
-            self.ui.pushButton_stopCalculs.show()
+            self.pushButton_stopCalculs.setText("STOP")
+            self.pushButton_stopCalculs.setEnabled(1)
+            self.pushButton_stopCalculs.show()
             self.video.setEnabled(0)
             self.goCalcul = True
             # TODO : tests avec les différents mode de threading
@@ -904,8 +904,11 @@ class StartQt5(QMainWindow):
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         self.video.setEnabled(1)
-        self.ui.pushButton_stopCalculs.setEnabled(0)
-        self.ui.pushButton_stopCalculs.hide()
+        self.pushButton_stopCalculs.setEnabled(0)
+        self.pushButton_stopCalculs.hide()
+        # rétablit les fonctions du spinbox et du slider pour gérer l'image
+        self.active_controle_image()
+        return
 
     def onePointFind(self):
         """est appelée quand un point a été trouvé lors de la détection automatique
@@ -926,7 +929,7 @@ class StartQt5(QMainWindow):
             else:
                 while not self.exitDecode:
                     stdout_file = open(self.stdout_file, 'w+')
-                    stdout = stdout_filepointsProbables.readlines()  # a gloabliser poru windows
+                    stdout = stdout_filepointsProbables.readlines()  # à globaliser pour windows
                     if not self.exitDecode:
                         try:
                             pct = stdout[-1].split()[3].replace('%',
@@ -978,7 +981,6 @@ class StartQt5(QMainWindow):
                    str(self.rotation))
 
         # gestion de l'origine et de l'échelle :
-        # DEBUG
         self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, largeur video%s, hauteur video%s" % (
             self.video.origine, self.video.width(), self.video.height()))
         try:
@@ -1015,7 +1017,7 @@ class StartQt5(QMainWindow):
 
     def change_sens_X(self):
         self.dbg.p(1, "rentre dans 'change_sens_X'")
-        if self.ui.checkBox_abscisses.isChecked():
+        if self.checkBox_abscisses.isChecked():
             self.sens_X = -1
         else:
             self.sens_X = 1
@@ -1023,7 +1025,7 @@ class StartQt5(QMainWindow):
 
     def change_sens_Y(self):
         self.dbg.p(1, "rentre dans 'change_sens_Y'")
-        if self.ui.checkBox_ordonnees.isChecked():
+        if self.checkBox_ordonnees.isChecked():
             self.sens_Y = -1
         else:
             self.sens_Y = 1
@@ -1031,13 +1033,13 @@ class StartQt5(QMainWindow):
 
     def check_uncheck_direction_axes(self):
         if self.sens_X == -1:
-            self.ui.checkBox_abscisses.setChecked(1)
+            self.checkBox_abscisses.setChecked(1)
         else:
-            self.ui.checkBox_abscisses.setChecked(0)
+            self.checkBox_abscisses.setChecked(0)
         if self.sens_Y == -1:
-            self.ui.checkBox_ordonnees.setChecked(1)
+            self.checkBox_ordonnees.setChecked(1)
         else:
-            self.ui.checkBox_ordonnees.setChecked(0)
+            self.checkBox_ordonnees.setChecked(0)
 
     def pointEnMetre(self, p):
         """
@@ -1058,10 +1060,10 @@ class StartQt5(QMainWindow):
         self.dbg.p(1, "rentre dans 'presse_papier'")
         self.affiche_tableau()
         trange = QTableWidgetSelectionRange(0, 0,
-                                            self.ui.tableWidget.rowCount() - 1,
-                                            self.ui.tableWidget.columnCount() - 1)
-        self.ui.tableWidget.setRangeSelected(trange, True)
-        self.ui.tableWidget.selection()
+                                            self.tableWidget.rowCount() - 1,
+                                            self.tableWidget.columnCount() - 1)
+        self.tableWidget.setRangeSelected(trange, True)
+        self.tableWidget.selection()
 
     def export(self, choix_export=None):
         self.dbg.p(1, "rentre dans 'export'")
@@ -1072,10 +1074,10 @@ class StartQt5(QMainWindow):
         # Si appel depuis les QActions, choix_export contient la clé du dico
         if not choix_export:
             # Si appel depuis le comboBox, on cherche l'index
-            choix_export = self.ui.exportCombo.currentIndex()
+            choix_export = self.exportCombo.currentIndex()
         if choix_export > 0:
             # Les choix d'export du comboBox commencent à l'index 1. Le dico EXPORT_FORMATS commence à 1 et pas à zéro
-            self.ui.exportCombo.setCurrentIndex(0)
+            self.exportCombo.setCurrentIndex(0)
             self.affiche_tableau()
             Export(self, choix_export)
 
@@ -1105,7 +1107,7 @@ class StartQt5(QMainWindow):
             self.close()
         else:
             # vérifie/crée les repertoires
-            dd = StartQt5._dir("conf")
+            dd = FenetrePrincipale._dir("conf")
             if not os.path.exists(dd):
                 os.makedirs(dd)
     _dir = staticmethod(_dir)
@@ -1138,9 +1140,9 @@ class StartQt5(QMainWindow):
             self.rouvre(fichier)
 
     def mets_en_orange_echelle(self):
-        self.ui.Bouton_Echelle.setEnabled(1)
-        self.ui.Bouton_Echelle.setText("refaire l'échelle")
-        self.ui.Bouton_Echelle.setStyleSheet("background-color:orange;")
+        self.Bouton_Echelle.setEnabled(1)
+        self.Bouton_Echelle.setText("refaire l'échelle")
+        self.Bouton_Echelle.setStyleSheet("background-color:orange;")
 
     def loads(self, s):
         """lis la chaine de caractère issue du fichier mecavideo et en extrait les données utiles"""
@@ -1226,8 +1228,6 @@ class StartQt5(QMainWindow):
         self.calcul_deltaT(rouvre=True)
         self.video.resize(QSize(largeur, hauteur))
         ########redimensionne l'application TODO : ATTENTION
-        geom = self.video.geometry()
-        self.ui.containerWidget1.setGeometry(0,0, geom.width(),geom.height())
         decalage_gauche = 220
         decalage_haut = 130
         self.setGeometry(self.pos().x(),self.pos().y()+37, self.video.width()+decalage_gauche, self.video.height()+decalage_haut)
@@ -1296,15 +1296,14 @@ class StartQt5(QMainWindow):
             self.defini_barre_avancement()
             self.affiche_echelle()  # on met à jour le widget d'échelle
             derniere_image = self.listePoints[len(self.listePoints)-1][0]+1
-            self.ui.horizontalSlider.setValue(derniere_image)
-            self.ui.spinBox_image.setValue(derniere_image)
-            self.ui.spinBox_chrono.setMaximum(derniere_image)
+            self.horizontalSlider.setValue(derniere_image)
+            self.spinBox_image.setValue(derniere_image)
             self.affiche_nb_points(self.nb_de_points)
             self.enableDefaire(True)
             self.enableRefaire(False)
             self.affiche_image()  # on affiche l'image
             self.mets_en_orange_echelle()
-            self.ui.tableWidget.show()
+            self.tableWidget.show()
             self.recalculLesCoordonnees()
             ##HACK oblige le rdimensionnement pour mettre à jour l'image
             self.resize(self.size()+QSize(1, 0))
@@ -1356,22 +1355,21 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 
         if self.lance_capture:
             self.dbg.p(2, "on fixe les hauteurs du widget")
-            self.ui.containerWidget1.setFixedHeight(
-                self.ui.containerWidget1.height())
-            self.ui.containerWidget1.setFixedWidth(
-                self.ui.containerWidget1.width())
+            self.video.setFixedHeight(
+                self.video.height())
+            self.video.setFixedWidth(
+                self.video.width())
             self.dbg.p(2, "on fixe les hauteurs de la fenetre")
 
-        if self.video != None:
-            self.dbg.p(2, "on fixe les hauteurs de video")
-            self.dbg.p(2, "widget_vidéo situé en %s %s" %
-                       (self.video.pos().x, self.video.pos().y))
-            self.dbg.p(3, "widget_vidéo largeur :  %s hauteur : %s" %
-                       (self.video.width(), self.video.height()))
-            self.dbg.p(2, "MAJ de video")
-            self.video.maj()
-            self.trajectoire_widget.maj()
-            self.affiche_image()
+        self.dbg.p(2, "on fixe les hauteurs de video")
+        self.dbg.p(2, "widget_vidéo situé en %s %s" %
+                   (self.video.pos().x, self.video.pos().y))
+        self.dbg.p(3, "widget_vidéo largeur :  %s hauteur : %s" %
+                   (self.video.width(), self.video.height()))
+        self.dbg.p(2, "MAJ de video")
+        self.video.maj()
+        self.trajectoire_widget.maj()
+        self.affiche_image()
 
         self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget")
 
@@ -1401,7 +1399,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans 'resizeEvent'")
         self.redimensionneFenetre(tourne=False, old=event.oldSize())
-        return super(StartQt5, self).resizeEvent(event)
+        return super(FenetrePrincipale, self).resizeEvent(event)
 
     def showEvent(self, event):
         self.dbg.p(1, "rentre dans 'showEvent'")
@@ -1409,23 +1407,22 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 
     def entete_fichier(self, msg=""):
         self.dbg.p(1, "rentre dans 'entete_fichier'")
-        result = u"""#pymecavideo
-#video = %s
-#sens axe des X = %d
-#sens axe des Y = %d
-#largeur video = %d
-#hauteur video = %d
-#rotation = %d
-#origine de pointage = %s
-#index de depart = %d
-#echelle %5f m pour %5f pixel
-#echelle pointee en %s %s
-#intervalle de temps : %f
-#suivi de %s point(s)
-#%s
-#""" % (self.filename, self.sens_X, self.sens_Y, self.video.width(), self.video.height(), self.rotation, self.video.origine, self.premiere_image, self.video.echelle_image.longueur_reelle_etalon, self.video.echelle_image.longueur_pixel_etalon(),
-            self.video.echelle_image.p1 if self.echelle_faite else None, self.video.echelle_image.p2 if self.echelle_faite else None, self.deltaT, self.nb_de_points, msg)
-        return result
+        return f"""\
+#pymecavideo
+#video = {self.filename}
+#sens axe des X = {self.sens_X}
+#sens axe des Y = {self.sens_Y}
+#largeur video = {self.video.width()}
+#hauteur video = {self.video.height()}
+#rotation = {self.rotation}
+#origine de pointage = {self.video.origine}
+#index de depart = {self.premiere_image}
+#echelle {self.video.echelle_image.longueur_reelle_etalon} m pour {self.video.echelle_image.longueur_pixel_etalon()} pixel
+#echelle pointee en {self.video.echelle_image.p1 if self.echelle_faite else None} {self.video.echelle_image.p2 if self.echelle_faite else None}
+#intervalle de temps : {self.deltaT}
+#suivi de {self.nb_de_points} point(s)
+#{msg}
+#"""
 
     def enregistre(self, fichier):
         self.dbg.p(1, "rentre dans 'enregistre'")
@@ -1477,6 +1474,8 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
                         fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
         else :
             QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Il manque les ou l'échelle", None), QMessageBox.Ok, QMessageBox.Ok)
+        return
+    
     def debut_capture(self, departManuel=True, rouvre=False):
         """
         permet de mettre en place le nombre de point à acquérir
@@ -1495,42 +1494,41 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         except AttributeError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
-        self.nb_de_points = self.ui.spinBox_nb_de_points.value()
+        self.nb_de_points = self.spinBox_nb_de_points.value()
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
-        self.ui.horizontalSlider.setEnabled(0)
-        self.ui.spinBox_image.setEnabled(0)
-        self.ui.tabWidget.setEnabled(1)
-        self.ui.tabWidget.setTabEnabled(3, True)
-        self.ui.tabWidget.setTabEnabled(2, True)
-        self.ui.tabWidget.setTabEnabled(1, True)
+        self.active_controle_image(False)
+        self.tabWidget.setEnabled(1)
+        self.tabWidget.setTabEnabled(3, True)
+        self.tabWidget.setTabEnabled(2, True)
+        self.tabWidget.setTabEnabled(1, True)
         self.arretAuto = False
         if not rouvre : #si rouvre, self.premiere_imageest déjà définie
-            self.premiere_image = self.ui.horizontalSlider.value()
+            self.premiere_image = self.horizontalSlider.value()
         self.affiche_point_attendu(0)
         self.lance_capture = True
         self.fixeLesDimensions()
         self.video.setCursor(Qt.CrossCursor)
-        self.ui.tab_traj.setEnabled(1)
-        self.ui.actionSaveData.setEnabled(1)
-        self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
-        self.ui.comboBox_referentiel.setEnabled(1)
-        self.ui.pushButton_select_all_table.setEnabled(1)
+        self.tab_traj.setEnabled(1)
+        self.actionSaveData.setEnabled(1)
+        self.actionCopier_dans_le_presse_papier.setEnabled(1)
+        self.comboBox_referentiel.setEnabled(1)
+        self.pushButton_select_all_table.setEnabled(1)
 
-        self.ui.comboBox_referentiel.clear()
-        self.ui.comboBox_referentiel.insertItem(-1, "camera")
+        self.comboBox_referentiel.clear()
+        self.comboBox_referentiel.insertItem(-1, "camera")
         for i in range(self.nb_de_points):
-            self.ui.comboBox_referentiel.insertItem(-1, _translate(
+            self.comboBox_referentiel.insertItem(-1, _translate(
                 "pymecavideo", "point N° {0}", None).format(i+1))
 
-        self.ui.pushButton_origine.setEnabled(0)
-        self.ui.checkBox_abscisses.setEnabled(0)
-        self.ui.checkBox_ordonnees.setEnabled(0)
-        self.ui.checkBox_auto.setEnabled(0)
-        # self.ui.Bouton_Echelle.setEnabled(0)
-        self.ui.Bouton_lance_capture.setEnabled(0)
-        self.ui.pushButton_rot_droite.setEnabled(0)
-        self.ui.pushButton_rot_gauche.setEnabled(0)
+        self.pushButton_origine.setEnabled(0)
+        self.checkBox_abscisses.setEnabled(0)
+        self.checkBox_ordonnees.setEnabled(0)
+        self.checkBox_auto.setEnabled(0)
+        # self.Bouton_Echelle.setEnabled(0)
+        self.Bouton_lance_capture.setEnabled(0)
+        self.pushButton_rot_droite.setEnabled(0)
+        self.pushButton_rot_gauche.setEnabled(0)
 
         # on empêche le redimensionnement
         self.fixeLesDimensions()
@@ -1542,7 +1540,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             self.video.echelle_image.p1 = vecteur(0, 1)
 
         # automatic capture
-        if self.ui.checkBox_auto.isChecked():
+        if self.checkBox_auto.isChecked():
             #self.auto = True
             self.mets_a_jour_widget_infos(
                 _translate("pymecavideo", "Pointage Automatique", None))
@@ -1561,29 +1559,30 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             # in this widget, motif(s) are defined.
             self.selRect = SelRectWidget(self.video, self)
             self.selRect.show()
-            # IMPORTANT : permet de gagner en fluidité de l'affichage lors du pointage autmatique. BUG lié au rafraichissment du slider.
-            self.ui.horizontalSlider.valueChanged.disconnect()
-            self.ui.spinBox_image.valueChanged.disconnect()
+            # IMPORTANT : permet de gagner en fluidité de l'affichage
+            # lors du pointage automatique.
+            self.active_controle_image(False)
+        return
 
     def cree_tableau(self):
         """
         Crée un tableau de coordonnées neuf dans l'onglet idoine.
         """
         self.dbg.p(1, "rentre dans 'cree_tableau'")
-        self.ui.tableWidget.clear()
-        self.ui.tab_coord.setEnabled(1)
-        self.ui.tableWidget.setRowCount(1)
-        colonnes_sup = self.ui.checkBox_Ec.isChecked()+self.ui.checkBox_Epp.isChecked() + \
-            self.ui.checkBox_Em.isChecked()
+        self.tableWidget.clear()
+        self.tab_coord.setEnabled(1)
+        self.tableWidget.setRowCount(1)
+        colonnes_sup = self.checkBox_Ec.isChecked()+self.checkBox_Epp.isChecked() + \
+            self.checkBox_Em.isChecked()
 
-        self.ui.tableWidget.setColumnCount(
+        self.tableWidget.setColumnCount(
             self.nb_de_points * 2 + 2 + colonnes_sup*self.nb_de_points) #ajout d'une colonne bouton
 
-        self.ui.tableWidget.setDragEnabled(True)
+        self.tableWidget.setDragEnabled(True)
         # on met des titres aux colonnes.
-        self.ui.tableWidget.setHorizontalHeaderItem(
+        self.tableWidget.setHorizontalHeaderItem(
             0, QTableWidgetItem('t (s)'))
-        self.ui.tableWidget.setRowCount(len(self.points))
+        self.tableWidget.setRowCount(len(self.points))
         for i in range(self.nb_de_points):
             if self.echelle_faite:
                 x = "X%d (m)" % (1 + i)
@@ -1592,26 +1591,26 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 x = "X%d (px)" % (1 + i)
                 y = "Y%d (px)" % (1 + i)
 
-            self.ui.tableWidget.setHorizontalHeaderItem(
+            self.tableWidget.setHorizontalHeaderItem(
                 1 + (2+colonnes_sup) * i, QTableWidgetItem(x))
-            self.ui.tableWidget.setHorizontalHeaderItem(
+            self.tableWidget.setHorizontalHeaderItem(
                 2 + (2+colonnes_sup) * i, QTableWidgetItem(y))
             for j in range(colonnes_sup):
                 cptr = 0
-                if self.ui.checkBox_Ec.isChecked():
-                    self.ui.tableWidget.setHorizontalHeaderItem(
+                if self.checkBox_Ec.isChecked():
+                    self.tableWidget.setHorizontalHeaderItem(
                         3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Ec%d (J)" % (1 + i)))
                     cptr += 1
-                if self.ui.checkBox_Epp.isChecked():
-                    self.ui.tableWidget.setHorizontalHeaderItem(
+                if self.checkBox_Epp.isChecked():
+                    self.tableWidget.setHorizontalHeaderItem(
                         3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Epp%d (J)" % (1 + i)))
                     cptr += 1
-                if self.ui.checkBox_Em.isChecked():
-                    self.ui.tableWidget.setHorizontalHeaderItem(
+                if self.checkBox_Em.isChecked():
+                    self.tableWidget.setHorizontalHeaderItem(
                         3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Em%d (J)" % (1 + i)))
                     cptr += 1
         #dernier pour le bouton
-        self.ui.tableWidget.setHorizontalHeaderItem(
+        self.tableWidget.setHorizontalHeaderItem(
                         self.nb_de_points * 2 + 1 + colonnes_sup*self.nb_de_points, QTableWidgetItem("Refaire le point"))
 
     def barycentre_trajectoires(self, referentiel):
@@ -1660,7 +1659,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         """
         self.dbg.p(1, "rentre dans 'efface_point_precedent'")
         # efface la dernière entrée dans le tableau
-        self.ui.tableWidget.removeRow(
+        self.tableWidget.removeRow(
             int((len(self.listePoints)-1)/self.nb_de_points))
         self.listePoints.decPtr()
         self.dbg.p(2, "self.listePoints" + str(self.listePoints) +
@@ -1710,7 +1709,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def montre_video(self):
         self.dbg.p(1, "rentre dans 'videos'")
-        ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+        ref = self.comboBox_referentiel.currentText().split(" ")[-1]
         if len(ref) == 0 or ref == "camera":
             return
         c = Cadreur(int(ref), self)
@@ -1721,13 +1720,13 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         traite les signaux émis par le changement d'onglet, ou
         par le changement de référentiel dans l'onglet des trajectoires."""
         self.dbg.p(1, "rentre dans 'choix_onglets'")
-        if self.ui.tabWidget.currentIndex() == 1:
+        if self.tabWidget.currentIndex() == 1:
             self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
             self.tracer_trajectoires("absolu")
-        elif self.ui.tabWidget.currentIndex() == 2:
+        elif self.tabWidget.currentIndex() == 2:
             self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
             self.affiche_tableau()
-        elif self.ui.tabWidget.currentIndex() == 3:
+        elif self.tabWidget.currentIndex() == 3:
             self.affiche_grapheur()
             self.MAJ_combox_box_grapheur()
             self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
@@ -1794,8 +1793,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 grandeurEm = "self.dictionnaire_grandeurs['Em"+str(i+1)+"']"
 
 
-                m = float(self.ui.lineEdit_m.text().replace(',', '.'))
-                g = float(self.ui.lineEdit_g.text().replace(',', '.'))
+                m = float(self.lineEdit_m.text().replace(',', '.'))
+                g = float(self.lineEdit_g.text().replace(',', '.'))
 
 
                 expression_Vx = '(X[n+1]-X[n-1])/(2*deltaT)'
@@ -1834,12 +1833,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
 
                 # CETTE PARTIE PERMET DE RENTRER MANUELLEMENT DES EXPRESSIONS.
-                #expression_Vx = self.ui.lineEdit_vx.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #expression_Vy = self.ui.lineEdit_vy.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #expression_V = self.ui.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #expression_Ec = self.ui.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #expression_Epp = self.ui.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #expression_Em = self.ui.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_Vx = self.lineEdit_vx.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_Vy = self.lineEdit_vy.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_V = self.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_Ec = self.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_Epp = self.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
+                #expression_Em = self.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
 
                 # il faut traiter le cas particulier des indices négatifs : par défaut, si python évalue 'n-1' avec n qui vaut 0, il renvoie un résultat tout de même... ce qui fausse les calculs de vitesse.
                 expression_Vx, err1 = self.traite_indices(
@@ -2034,14 +2033,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def MAJ_combox_box_grapheur(self):
         if self.graphe_deja_choisi is None : #premier choix de graphe
-            self.ui.comboBox_X.clear()
-            self.ui.comboBox_Y.clear()
-            self.ui.comboBox_X.insertItem(-1,
+            self.comboBox_X.clear()
+            self.comboBox_Y.clear()
+            self.comboBox_X.insertItem(-1,
                                         _translate("pymecavideo", "Choisir ...", None))
-            self.ui.comboBox_Y.insertItem(-1,
+            self.comboBox_Y.insertItem(-1,
                                         _translate("pymecavideo", "Choisir ...", None))
-            self.ui.comboBox_X.addItem('t')
-            self.ui.comboBox_Y.addItem('t')
+            self.comboBox_X.addItem('t')
+            self.comboBox_Y.addItem('t')
             for grandeur in self.dictionnaire_grandeurs.keys():
                 if self.dictionnaire_grandeurs[grandeur] != []:
                     numero = ''.join(
@@ -2060,11 +2059,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
                     else :
                         grandeur_a_afficher = grandeur
-                    self.ui.comboBox_X.addItem(grandeur_a_afficher)
-                    self.ui.comboBox_Y.addItem(grandeur_a_afficher)
+                    self.comboBox_X.addItem(grandeur_a_afficher)
+                    self.comboBox_Y.addItem(grandeur_a_afficher)
         #else : #il y a déjà eu un choix de graphe
-            #self.ui.comboBox_X.setItem(self.graphe_deja_choisi[1])
-            #self.ui.comboBox_Y.setItem(self.graphe_deja_choisi[0])
+            #self.comboBox_X.setItem(self.graphe_deja_choisi[1])
+            #self.comboBox_Y.setItem(self.graphe_deja_choisi[0])
 
     def traite_indices(self, expression, i, n, grandeur):
         """cette fonction traite les indices négatifs afin que python, justement... ne les traite pas"""
@@ -2103,14 +2102,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         styles = {0: {'pen': None, 'symbol': '+'}, 1: {'pen': (0, 0, 0), 'symbol': '+'}, 2: {'pen': (
             0, 0, 0), 'symbol': None}}  # Dictionnaire contenant les différents styles de graphes
         # Index du comboxBox styles, inspirés de Libreoffice
-        style = self.ui.comboBox_style.currentIndex()
+        style = self.comboBox_style.currentIndex()
 
         if self.graphe_deja_choisi is not None :
             abscisse = self.graphe_deja_choisi[1].strip('|')
             ordonnee = self.graphe_deja_choisi[0].strip('|')
         else :
-            abscisse = self.ui.comboBox_X.currentText().strip('|')
-            ordonnee = self.ui.comboBox_Y.currentText().strip('|')
+            abscisse = self.comboBox_X.currentText().strip('|')
+            ordonnee = self.comboBox_Y.currentText().strip('|')
         # Définition des paramètres 'pen' et 'symbol' pour pyqtgraph
         pen, symbol = styles[style]['pen'], styles[style]['symbol']
         grandeurX = abscisse.replace(
@@ -2161,13 +2160,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 unite_y = ordonnee+'(m)'
 
             if not hasattr(self, 'graphWidget'):  # premier tour
-                self.ui.widget_graph.setText('')
                 self.graphWidget = pg.PlotWidget(
-                    title=titre, parent=self.ui.widget_graph)
+                    title=titre, parent=self.widget_graph)
                 self.graphWidget.setMenuEnabled(False)
                 self.graphWidget.setLabel('bottom', unite_x)
                 self.graphWidget.setLabel('left', unite_y)
-                self.verticalLayout_onglet4 = QVBoxLayout(self.ui.widget_graph)
+                self.verticalLayout_onglet4 = QVBoxLayout(self.widget_graph)
                 self.verticalLayout_onglet4.setContentsMargins(0, 0, 0, 0)
                 self.verticalLayout_onglet4.setObjectName(
                     "verticalLayout_graph")
@@ -2205,7 +2203,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
 
     def nettoyage_points(self, X_, Y_):
-        """permet de tenir compte des expressions "négatives" quand on va chercher des indices : python évlaue corerctement X[-1] alors qu'on ne le veut pas. Un passage dans self.traite_indices à mis certaines valeurs non calculées à False. Il suffit de les enlever dans X et Y"""
+        """permet de tenir compte des expressions "négatives" quand on va chercher des indices : python évalue correctement X[-1] alors qu'on ne le veut pas. Un passage dans self.traite_indices à mis certaines valeurs non calculées à False. Il suffit de les enlever dans X et Y"""
         X_f, Y_f = [], []
         for i in range(len(X_)):
             if X_[i] != False and Y_[i] != False:
@@ -2227,16 +2225,16 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             ref = "camera"
             self.trajectoire_widget.origine_mvt = self.video.origine
             # mets à jour le comboBox referentiel :
-            self.ui.comboBox_referentiel.setCurrentIndex(
-                self.ui.comboBox_referentiel.count()-1)
-            self.ui.comboBox_referentiel.update()
+            self.comboBox_referentiel.setCurrentIndex(
+                self.comboBox_referentiel.count()-1)
+            self.comboBox_referentiel.update()
         else:
-            ref = self.ui.comboBox_referentiel.currentText().split(" ")[-1]
+            ref = self.comboBox_referentiel.currentText().split(" ")[-1]
             self.trajectoire_widget.origine_mvt = self.video.origine
         if len(ref) == 0:
             return
         if ref != "camera":
-            self.ui.button_video.setEnabled(1)
+            self.button_video.setEnabled(1)
             self.trajectoire_widget.chrono = False
             bc = self.mediane_trajectoires(int(ref) - 1)
             origine = vecteur(self.video.width() // 2,
@@ -2297,11 +2295,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         @param value booléen
         """
         self.dbg.p(1, "rentre dans 'enableDefaire, %s'" % (str(value)))
-        self.ui.pushButton_defait.setEnabled(value)
-        self.ui.actionDefaire.setEnabled(value)
+        self.pushButton_defait.setEnabled(value)
+        self.actionDefaire.setEnabled(value)
         # permet de remettre l'interface à zéro
         if not value:
-            self.ui.spinBox_image.setEnabled(True)
+            self.active_controle_image()
 
     def enableRefaire(self, value):
         """
@@ -2309,8 +2307,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         @param value booléen
         """
         self.dbg.p(1, "rentre dans 'enableRefaire, %s'" % (value))
-        self.ui.pushButton_refait.setEnabled(value)
-        self.ui.actionRefaire.setEnabled(value)
+        self.pushButton_refait.setEnabled(value)
+        self.actionRefaire.setEnabled(value)
 
     def clic_sur_video_ajuste_ui(self, point_attendu):
         """
@@ -2398,17 +2396,17 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
         # active ou désactive les checkbox énergies (n'ont un intérêt que si les échelles sont faites)
         if self.echelle_faite:
-            self.ui.checkBox_Ec.setEnabled(1)
-            self.ui.checkBox_Epp.setEnabled(1)
-            if self.ui.checkBox_Ec.isChecked() and self.ui.checkBox_Epp.isChecked():
-                self.ui.checkBox_Em.setEnabled(1)
+            self.checkBox_Ec.setEnabled(1)
+            self.checkBox_Epp.setEnabled(1)
+            if self.checkBox_Ec.isChecked() and self.checkBox_Epp.isChecked():
+                self.checkBox_Em.setEnabled(1)
         else:
-            self.ui.checkBox_Ec.setEnabled(0)
-            self.ui.checkBox_Em.setEnabled(0)
-            self.ui.checkBox_Epp.setEnabled(0)
+            self.checkBox_Ec.setEnabled(0)
+            self.checkBox_Em.setEnabled(0)
+            self.checkBox_Epp.setEnabled(0)
 
         # masse de l'objet
-        if self.ui.checkBox_Ec.isChecked():
+        if self.checkBox_Ec.isChecked():
             if self.masse_objet == 0:
                 masse_objet_raw = QInputDialog.getText(None,
                                                        _translate(
@@ -2430,14 +2428,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     self.mets_a_jour_widget_infos(_translate(
                         "pymecavideo", " Merci d'indiquer une masse valable", None))
-                    self.ui.checkBox_Ec.setChecked(0)
+                    self.checkBox_Ec.setChecked(0)
         # initialise tout le tableau (nb de colonnes, unités etc.)
         self.cree_tableau()
-        colonnes_sup = self.ui.checkBox_Ec.isChecked()+self.ui.checkBox_Epp.isChecked() + \
-            self.ui.checkBox_Em.isChecked()
+        colonnes_sup = self.checkBox_Ec.isChecked()+self.checkBox_Epp.isChecked() + \
+            self.checkBox_Em.isChecked()
         for ligne in self.points.keys():
             # rentre le temps dans la première colonne
-            self.ui.tableWidget.setItem(
+            self.tableWidget.setItem(
                 ligne, 0, QTableWidgetItem(self.points[ligne][0]))
             i = 0
             for point in self.points[ligne][1:]:
@@ -2446,9 +2444,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 except Exception as err:
                     self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     pm = point
-                self.ui.tableWidget.setItem(
+                self.tableWidget.setItem(
                     ligne, i + 1, QTableWidgetItem(str(pm.x)))
-                self.ui.tableWidget.setItem(
+                self.tableWidget.setItem(
                     ligne, i + 2, QTableWidgetItem(str(pm.y)))
                 i += 2+colonnes_sup
 
@@ -2468,18 +2466,18 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 try:
                     for j in range(colonnes_sup):
                         cptr = 0
-                        if self.ui.checkBox_Ec.isChecked():
+                        if self.checkBox_Ec.isChecked():
                             Ec = 0.5*self.masse_objet*v*v
-                            self.ui.tableWidget.setItem(
+                            self.tableWidget.setItem(
                                 ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Ec)))
                             cptr += 1
-                        if self.ui.checkBox_Epp.isChecked():
+                        if self.checkBox_Epp.isChecked():
                             Epp = self.masse_objet*9.81*pm.y  # TODO faire varier g
-                            self.ui.tableWidget.setItem(
+                            self.tableWidget.setItem(
                                 ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Epp)))
                             cptr += 1
-                        if self.ui.checkBox_Em.isChecked():
-                            self.ui.tableWidget.setItem(
+                        if self.checkBox_Em.isChecked():
+                            self.tableWidget.setItem(
                                 ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Ec+Epp)))
                             cptr += 1
                 except UnboundLocalError as err:  # pour premier point, la vitesse n'est pas définie
@@ -2495,7 +2493,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             qpushbutton.clicked.connect( lambda checked, b=qpushbutton: self.refait_point_depuis_tableau( b ))
 
             #self.liste_qpushbutton.append(qpushbutton) #nécessaire sinon le ramsse miette vire tout
-            self.ui.tableWidget.setCellWidget(
+            self.tableWidget.setCellWidget(
                                     ligne, self.nb_de_points * 2 + 1 + colonnes_sup*self.nb_de_points, qpushbutton)
 
     def refait_point_depuis_tableau(self, qpbn ):
@@ -2504,7 +2502,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.index_de_l_image_actuelle = self.index_de_l_image
         self.index_de_l_image = int(numero_image)+self.premiere_image-1
 
-        self.ui.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(0)
         point_actuel = len(self.listePoints)%self.nb_de_points
         self.clic_sur_video_ajuste_ui(point_actuel)
 
@@ -2518,7 +2516,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.index_de_l_image = self.index_de_l_image_actuelle
         self.index_de_l_image_actuelle = None
         self.clic_sur_video_ajuste_ui(0)
-        self.ui.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(2)
 
 
     def transforme_index_en_temps(self, index):
@@ -2528,18 +2526,18 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
     def affiche_image_spinbox(self):
         self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
         if self.lance_capture:
-            if self.ui.spinBox_image.value() < self.index_de_l_image:
+            if self.spinBox_image.value() < self.index_de_l_image:
                 # si le point est sur une image, on efface le point
-                if self.ui.spinBox_image.value() == self.listePoints[len(self.listePoints)-1][0]:
+                if self.spinBox_image.value() == self.listePoints[len(self.listePoints)-1][0]:
                     for i in range(self.nb_de_points):
                         self.efface_point_precedent()
-            if self.ui.spinBox_image.value() > self.index_de_l_image:
+            if self.spinBox_image.value() > self.index_de_l_image:
                 # on refait le point
-                if self.ui.spinBox_image.value() <= self.listePoints[len(self.listePoints)-1][0]:
+                if self.spinBox_image.value() <= self.listePoints[len(self.listePoints)-1][0]:
                     for i in range(self.nb_de_points):
                         #self.efface_point_precedent()
                         self.refait_point_suivant()
-        self.index_de_l_image = self.ui.spinBox_image.value()
+        self.index_de_l_image = self.spinBox_image.value()
         self.affiche_image()
 
     def affiche_image(self):
@@ -2554,13 +2552,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.imageExtraite = toQImage(self.image_opencv)
             self.dbg.p(2, "Image extraite : largeur : %s, hauteur %s: " % (
                 self.imageExtraite.width(), self.imageExtraite.height()))
-            if self.video != None:
-                self.afficheJusteImage()  # 4 ms
-            if self.ui.horizontalSlider.value() != self.index_de_l_image:
+            self.afficheJusteImage()  # 4 ms
+            if self.horizontalSlider.value() != self.index_de_l_image:
                 self.dbg.p(1, "affiche_image " + "horizontal")
-                self.ui.horizontalSlider.setValue(self.index_de_l_image)
-                self.ui.spinBox_image.setValue(
-                    self.index_de_l_image)  # 0.01 ms
+                i = int(self.index_de_l_image)
+                self.horizontalSlider.setValue(i)
+                self.spinBox_image.setValue(i)  # 0.01 ms
         elif self.index_de_l_image > self.image_max:
             self.index_de_l_image = self.image_max
             self.lance_capture = False
@@ -2569,15 +2566,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
     def afficheJusteImage(self):
         self.dbg.p(1, "Rentre dans 'AffichejusteImage'")
         if self.a_une_image:
-            self.imageAffichee = self.imageExtraite.scaled(
-                self.video.width(), self.video.height())  # 4-6 ms
-            self.video.setMouseTracking(True)
-            self.video.setImage(self.imageAffichee)
-            self.video.met_a_jour_crop()
-
+            self.video.placeImage(self.imageExtraite, self.ratio)
+        return
+    
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
-        self.ui.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(0)
         self.video.echelle_image = echelle()
         self.affiche_echelle()
         try:
@@ -2590,13 +2584,13 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def affiche_image_slider(self):
         self.dbg.p(1, "rentre dans 'affiche_image_slider'")
-        self.index_de_l_image = self.ui.horizontalSlider.value()
+        self.index_de_l_image = self.horizontalSlider.value()
         self.affiche_image()
 
     def affiche_image_slider_move(self):
         """only change spinBox value"""
         self.dbg.p(1, "rentre dans 'affiche_image_slider_move'")
-        self.ui.spinBox_image.setValue(self.ui.horizontalSlider.value())
+        self.spinBox_image.setValue(self.horizontalSlider.value())
         # self.enableRefaire(0)
 
     def demande_echelle(self):
@@ -2639,21 +2633,21 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.dbg.p(1, "Rentre dans recalculLesCoordonnees" )
         self.dbg.p(3, "Dans recalculLesCoordonnees, self.points {}".format(self.points) )
         for i in range(len(self.points)):
-            self.ui.tableWidget.insertRow(i)
-            self.ui.tableWidget.setItem(
+            self.tableWidget.insertRow(i)
+            self.tableWidget.setItem(
                 i, 0, QTableWidgetItem(self.points[i][0]))
             for j in range(self.nb_de_points):
                 try:
                     p = self.pointEnMetre(self.points[i][j+1])
-                    self.ui.tableWidget.setItem(
+                    self.tableWidget.setItem(
                         i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x)))
-                    self.ui.tableWidget.setItem(
+                    self.tableWidget.setItem(
                         i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y)))
                 except Exception as err:
                     self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                     pass  # si pas le bon nb de points cliqués
         # esthétique : enleve la derniere ligne
-        self.ui.tableWidget.removeRow(len(self.points))
+        self.tableWidget.removeRow(len(self.points))
 
     def feedbackEchelle(self, p1, p2):
         """
@@ -2672,7 +2666,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.echelle_trace.show()
         if self.echelle_faite:
             self.mets_en_orange_echelle()
-            self.ui.Bouton_Echelle.setEnabled(1)
+            self.Bouton_Echelle.setEnabled(1)
 
     def closeEvent(self, event):
         """
@@ -2705,7 +2699,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             return True
 
     def verifie_m_grapheur(self):
-        m = self.ui.lineEdit_m.text().replace(',', '.')
+        m = self.lineEdit_m.text().replace(',', '.')
         if m != "":
             try:
                 float(m)
@@ -2721,7 +2715,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.dessine_graphe()
 
     def verifie_g_grapheur(self):
-        g = self.ui.lineEdit_g.text().replace(',', '.')
+        g = self.lineEdit_g.text().replace(',', '.')
         if g != "":
             try:
                 float(g)
@@ -2802,29 +2796,28 @@ Merci de bien vouloir le renommer avant de continuer""", None),
             goOn = self.init_cvReader()
             if goOn:  # video is in good format
                 self.prefs.lastVideo = self.filename
-                self.ui.tabWidget.setTabEnabled(0, True)
+                self.tabWidget.setTabEnabled(0, True)
                 self.init_image()
                 self.init_capture()
                 self.ratio = self.determineRatio()
-                self.ui.spinBox_chrono.setMaximum(int(self.image_max))
                 self.change_axe_ou_origine()
                 self.prefs.videoDir = os.path.dirname(self.filename)
                 self.prefs.save()
 
     def init_capture(self):
         """met le panneaux de capture visible"""
-        self.ui.actionCopier_dans_le_presse_papier.setEnabled(1)
-        self.ui.menuE_xporter_vers.setEnabled(1)
-        self.ui.actionSaveData.setEnabled(1)
+        self.actionCopier_dans_le_presse_papier.setEnabled(1)
+        self.menuE_xporter_vers.setEnabled(1)
+        self.actionSaveData.setEnabled(1)
         self.mets_a_jour_widget_infos(
             _translate("pymecavideo", "Veuillez choisir une image (et définir l'échelle)", None))
-        self.ui.Bouton_Echelle.setEnabled(True)
-        self.ui.spinBox_nb_de_points.setEnabled(True)
-        self.ui.horizontalSlider.setEnabled(1)
-        self.ui.checkBox_abscisses.setEnabled(1)
-        self.ui.checkBox_ordonnees.setEnabled(1)
-        self.ui.checkBox_auto.setEnabled(1)
-        self.ui.Bouton_lance_capture.setEnabled(True)
+        self.Bouton_Echelle.setEnabled(True)
+        self.spinBox_nb_de_points.setEnabled(True)
+        self.active_controle_image()
+        self.checkBox_abscisses.setEnabled(1)
+        self.checkBox_ordonnees.setEnabled(1)
+        self.checkBox_auto.setEnabled(1)
+        self.Bouton_lance_capture.setEnabled(True)
 
     def propos(self):
         self.dbg.p(1, "rentre dans 'propos'")
@@ -2858,24 +2851,24 @@ Merci de bien vouloir le renommer avant de continuer""", None),
     def init_image(self):
         """intialise certaines variables lors le la mise en place d'une nouvelle image"""
         self.dbg.p(1, "rentre dans 'init_image'")
+        self.reinitialise_capture()
         self.index_de_l_image = 1
         ok, self.image_opencv = self.extract_image(self.index_de_l_image)
         self.ratio = self.determineRatio()
         self.init_interface()
         self.trajectoire = {}
-        self.ui.spinBox_image.setMinimum(1)
         self.calcul_deltaT()
         self.defini_barre_avancement()
         self.video.echelle_image = echelle()
         self.affiche_echelle()
-        self.ui.tab_traj.setEnabled(0)
-        self.ui.spinBox_image.setEnabled(1)
+        self.tab_traj.setEnabled(0)
+        self.active_controle_image()
         self.affiche_image()
 
     def verifie_IPS(self):
         self.dbg.p(1, "rentre dans 'verifie_IPS'")
         # si ce qui est rentré n'est pas un entier
-        if not self.ui.lineEdit_IPS.text().isdigit() and len(self.ui.lineEdit_IPS.text()) > 0:
+        if not self.lineEdit_IPS.text().isdigit() and len(self.lineEdit_IPS.text()) > 0:
             retour = QMessageBox.warning(
                 self,
                 _translate(
@@ -2889,7 +2882,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         self.dbg.p(1, "rentre dans 'calcul_deltaT'")
         if rouvre:  # se produit quand on lit un deltaT depuis un fichier mecavideo
             IPS = round(1/self.deltaT)
-            self.ui.lineEdit_IPS.setText(str(IPS))
+            self.lineEdit_IPS.setText(str(IPS))
         else:
             if not ips_from_line_edit:
                 framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
@@ -2902,10 +2895,10 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                     self.deltaT = 1.0/40
                 # mets à jour le widget contenant les IPS
                 IPS = round(1/self.deltaT)
-                self.ui.lineEdit_IPS.setText(str(IPS))
-                print("la vidéo a été détectée à %s Images Par Seconde" % IPS)
+                self.lineEdit_IPS.setText(str(IPS))
+                self.dbg.p(1,"la vidéo a été détectée à %s Images Par Seconde" % IPS)
             else:
-                IPS = int(self.ui.lineEdit_IPS.text())
+                IPS = int(self.lineEdit_IPS.text())
                 self.deltaT = float(1.0 / IPS)
                 self.dbg.p(3,
                            "In :  'calcul_deltaT', self.deltaT a été recalculé d'après une rentrée manuelle = %s" % (self.deltaT))
@@ -2916,9 +2909,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
         self.dbg.p(3,
                    "In :  'defini_barre_avancement', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
-        self.ui.horizontalSlider.setMinimum(1)
-        self.ui.horizontalSlider.setMaximum(int(self.image_max))
-        self.ui.spinBox_image.setMaximum(int(self.image_max))
         self.extract_image(1)
 
     def extract_image(self, index):
@@ -2974,12 +2964,12 @@ def run():
     if qtTranslator.load("qt_" + locale):
         app.installTranslator(qtTranslator)
     appTranslator = QTranslator()
-    langdir = os.path.join(StartQt5._dir("langues"),
+    langdir = os.path.join(FenetrePrincipale._dir("langues"),
                            r"pymecavideo_" + locale)
     if appTranslator.load(langdir):
         b = app.installTranslator(appTranslator)
-    windows = StartQt5(None, opts, args)
-    windows.show()
+    window = FenetrePrincipale(None, opts, args)
+    window.show()
     sys.exit(app.exec_())
 
 

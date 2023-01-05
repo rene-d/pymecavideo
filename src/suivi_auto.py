@@ -78,11 +78,9 @@ class SelRectWidget(QWidget):
         if not self.hasMouseTracking():  # lancé lors de la sélection.
             self.x_2 = x
             self.y_2 = y
-        self.pos_zoom = vecteur(x, y)
-        self.parent.pos_zoom = self.pos_zoom
-        self.app.video.zoom_croix.show()
-
-        self.app.ui.zoom_zone.fait_crop(self.pos_zoom)
+        #self.pos_zoom = vecteur(x, y)
+        #self.parent.pos_zoom = self.pos_zoom
+        self.app.video.updateZoom(vecteur(x, y))
         self.update()
 
     def mouseReleaseEvent(self, event):
