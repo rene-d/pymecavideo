@@ -21,9 +21,7 @@
 """
 
 from PyQt5.QtCore import QObject
-from PyQt5.QtGui import QEvent
-
-from collections import OrderedDict
+from PyQt5.QtGui import QMouseEvent
 
 from vecteur import vecteur
 
@@ -39,13 +37,21 @@ class Pointage(QObject):
     self.suivis est une liste limitative de désignations d'objets
 
     self.deltaT est l'intervalle de temps entre deux images d'une vidéo
+
+    self.echelle est l'échelle en px par mètre
     """
     def __init__(self):
         QObject.__init__(self)
         self.data   = None
         self.suivis = None
         self.deltaT = None
+        self.echelle = None
+        return
 
+    def setEchelle(self, echelle):
+        self.echelle = echelle
+        return
+    
     def dimensionne(self, n_suivis, deltaT, n_images):
         """
         Crée les structures de données quand on en connaît par avance
@@ -55,13 +61,14 @@ class Pointage(QObject):
         @param n_images le nombre d'images de la vidéo étudiée
         """
         self.suivis = list(range(1, n_suivis+1)) # nombres 1, 2, ...
-        self.deltatT = deltaT
-        self.data = OrderedDict()
+        self.deltaT = deltaT
+        self.dates = [deltaT * i for i in range(n_images)]
+        self.data = {}
         for index in range(n_images):
             # crée une structure avec pour chaque date, un dictionnaire
             # désignation d'objet => vecteur ; les vecteurs sont initialement
             # indéfinis (représentés par None)
-            self.data[index*deltaT] = {self.suivis[index]: None}
+            self.data[index*deltaT] = {o: None for o in self.suivis}
         return
 
     def pointe(self, objet, position, index=None, date=None):
@@ -74,17 +81,23 @@ class Pointage(QObject):
         @param date permet de donner directement la date ; l'index reste
           prioritaire
         """
-        if index is None and data is None:
+        if index is None and date is None:
             raise Exception(
                 "index et date tous deux inconnus pour Pointage.pointe")
-        if isinstance(position, QEvent):
-            position = vecteur(position.x(), position.y()
-        if index:
+        if isinstance(position, QMouseEvent):
+            position = vecteur(position.x(), position.y())
+        elif isinstance(position, vecteur):
+            pass
+        else:
+            raise Exception("dans Pointage.pointe, la position est soit QMouseEvent, soit vecteur")
+        if index is not None:
             date = index * self.deltaT
-        self.data[data][objet] = position
+        if date not in self.dates:
+            raise Exception(f"date incorrecte dans Pointage.pointe : {date}")
+        self.data[date][objet] = position
         return
 
-    def position(self, objet, index=None, date=None):
+    def position(self, objet, index=None, date=None, unite="px"):
         """
         ajoute un pointage aux données ; on peut soit préciser l'index
         et la date s'en déduit, soit directement la date
@@ -92,40 +105,122 @@ class Pointage(QObject):
         @param index s'il est donné la date est index * self.deltaT
         @param date permet de donner directement la date ; l'index reste
           prioritaire
+        @param unite l'unité du vecteur position : peut être "px" pour pixel
+          (par défaut) ou "m" pour mètre
 
         @return un vecteur : position de l'objet à la date donnée
         """
-        if index is None and data is None:
+        if index is None and date is None:
             raise Exception(
                 "index et date tous deux inconnus pour Pointage.position")
-        if index:
+        if index is not None:
             date = index * self.deltaT
-        return self.data[date][objet]
-
-    def trajectoire(self, objet, mode="liste"):
+        if date not in self.dates:
+            raise Exception("date incorrecte dans Pointage.pointe")
+        if unite =="px":
+            return self.data[date][objet]
+        elif unite == "m":
+            return self.data[date][objet]*(1/self.echelle)
+        else:
+            raise Exception(f"dans Pointage.position, unité illégale {unite}")
+        
+    def trajectoire(self, objet, mode="liste", unite = "px"):
         """
         @param objet la désignation d'un objet suivi ; couramment : un nombre
         @param mode "liste" ou "dico" ("liste" par défaut)
+        @param unite l'unité du vecteur position : peut être "px" pour pixel
+          (par défaut) ou "m" pour mètre
+
         @return une liste de vecteurs (ou None quand la position est inconnue)
           les mode = "liste", sinon un dictionnaire date=>vecteur
         """
+        if unite == "px":
+            mul =1
+        elif unite == "m":
+            mul = 1/self.echelle
+        else:
+            raise Exception(f"dans Pointage.trajectoire, unité illégale {unite}")
         if mode == "liste":
-            return [self.data[t][objet] for t in self.data]
-        return {t: self.data[t][objet] for t in self.data}
+            return [self.data[t][objet]*mul for t in self.dates]
+        return {t: self.data[t][objet]*mul for t in self.dates}
 
-    def __str__(self):
+    def __str__(self, sep =";", unite="px"):
         """
         renvoie self.data sous une forme acceptable (CSV)
+        @param sep le séparateur de champ, point-virgule par défaut.
+        @param unite l'unité du vecteur position : peut être "px" pour pixel
+          (par défaut) ou "m" pour mètre
         """
-        result=""
+        if unite == "px":
+            mul =1
+        elif unite == "m":
+            mul = 1/self.echelle
+        else:
+            raise Exception(f"dans Pointage.trajectoire, unité illégale {unite}")
+
+        result=[]
+        en_tete = ["t"]
+        for o in self.suivis:
+            en_tete.append(f"x{o}")
+            en_tete.append(f"y{o}")
+        result.append(sep.join(en_tete))
         for t in self.data:
             ligne = [f"{t:.3f}"]
             for o in self.suivis:
-                               
-                ligne.append("{self.data[t][o].x:.3f}")
-                               f"{self.data[t][o].y:.3f}"
-                )
-            result.append(";".join(liste))    
-        return result
+                if self.data[t][o] is not None:
+                    ligne.append(f"{self.data[t][o].x * mul:.3f}")
+                    ligne.append(f"{self.data[t][o].y * mul:.3f}")
+            result.append(sep.join(ligne))
+        result.append("") # pour finir sur un saut de ligne
+        return "\n".join(result)
     
-
+def test():
+    """
+    Vérification que la structure de données et OK
+    """
+    p = Pointage()
+    p.dimensionne(3, 0.040, 5) # 3 objets, 25 images par s, 5 images
+    assert(p.data == {
+        0.000: {1: None, 2: None, 3: None}, 
+        0.040: {1: None, 2: None, 3: None}, 
+        0.080: {1: None, 2: None, 3: None}, 
+        0.120: {1: None, 2: None, 3: None}, 
+        0.160: {1: None, 2: None, 3: None}, 
+    })
+    for i in range(5):
+        p.pointe(1, vecteur(i, i), index=i)
+        p.pointe(2, vecteur(i, 2*i), date = i * 0.040)
+    assert(p.data == {
+        0.000: {1: vecteur(0,0), 2: vecteur(0,0), 3: None}, 
+        0.040: {1: vecteur(1,1), 2: vecteur(1,2), 3: None}, 
+        0.080: {1: vecteur(2,2), 2: vecteur(2,4), 3: None}, 
+        0.120: {1: vecteur(3,3), 2: vecteur(3,6), 3: None}, 
+        0.160: {1: vecteur(4,4), 2: vecteur(4,8), 3: None}, 
+    })
+    assert(p.position(1, date=.08) == vecteur(2,2))
+    assert(p.position(2, index=3)  == vecteur(3,6))
+    assert(p.trajectoire(1) == [vecteur(i,i) for i in range(5)])
+    assert(p.trajectoire(2) == [vecteur(i,2*i) for i in range(5)])
+    assert(p.trajectoire(2, mode="dico") == {i*.04: vecteur(i,2*i) for i in range(5)})
+    p.setEchelle(50) # 50 pixels par mètre
+    assert(p.trajectoire(2, mode="dico", unite="m") == {i*.04: vecteur(i/50,2*i/50) for i in range(5)})
+    assert(str(p) == """\
+t;x1;y1;x2;y2;x3;y3
+0.000;0.000;0.000;0.000;0.000
+0.040;1.000;1.000;1.000;2.000
+0.080;2.000;2.000;2.000;4.000
+0.120;3.000;3.000;3.000;6.000
+0.160;4.000;4.000;4.000;8.000
+""")
+    assert(p.__str__(unite="m") == """\
+t;x1;y1;x2;y2;x3;y3
+0.000;0.000;0.000;0.000;0.000
+0.040;0.020;0.020;0.020;0.040
+0.080;0.040;0.040;0.040;0.080
+0.120;0.060;0.060;0.060;0.120
+0.160;0.080;0.080;0.080;0.160
+""")
+    return
+    
+if __name__ == "__main__":
+    test()
