@@ -64,6 +64,9 @@ class vecteur:
         y = self.y + v.y
         return vecteur(x, y)
 
+    def __eq__(self, v):
+        return x == v.x and y == v.y
+    
     def __sub__(self, v):
         x = self.x - v.x
         y = self.y - v.y
