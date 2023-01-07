@@ -8,7 +8,8 @@ import subprocess
 
 from globdef import HOME_PATH, VIDEO_PATH, CONF_PATH, \
     ICON_PATH, LANG_PATH, \
-    DATA_PATH, HELP_PATH, DOCUMENT_PATH
+    DATA_PATH, HELP_PATH, DOCUMENT_PATH, \
+    _translate
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QVBoxLayout, QTableWidgetSelectionRange, QDialog, QAction, QPushButton
 import getopt
 import locale
@@ -34,7 +35,6 @@ from preferences import Preferences
 from cadreur import Cadreur, openCvReader
 from choix_origine import ChoixOrigineWidget
 from trajectoire_widget import TrajectoireWidget
-from videoWidget import VideoWidget
 from echelle import Echelle_TraceWidget, EchelleWidget, echelle
 from glob import glob
 import pyqtgraph as pg
@@ -120,10 +120,6 @@ def time_it(func):
     return wrapper
 
 
-def _translate(context, text, disambig):
-    return QApplication.translate(context, text, disambig)
-
-
 class MonThreadDeCalcul2(QThread):
     """Thread permettant le calcul des points automatiquement. Version Qt. 20/04/2015 : focntionne mal sous windows"""
 
@@ -196,7 +192,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.image_max = None
         self.decalh = 0
         self.decalw = 0
-        self.rotation = 0  # permet de retourner une vidéo mal prise
         # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         self.pointsProbables = [None]
         self.methode_thread = 3  # définit la methode de calcul à utiliser pour la détection auto. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
@@ -306,10 +301,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if not self.filename:
             return
         if os.path.isfile(self.filename):
-            self.openTheFile(self.filename)
+            self.video.openTheFile(self.filename)
         elif os.path.isfile(self.prefs.lastVideo):
             try:
-                self.openTheFile(self.prefs.lastVideo)
+                self.video.openTheFile(self.prefs.lastVideo)
             except Exception as err:
                 self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 pass
@@ -321,7 +316,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def init_variables(self, opts, filename=u""):
         self.dbg.p(1, "rentre dans 'init_variables'")
         self.logiciel_acquisition = False
-        self.points_ecran = {}
         self.index_max = 1
         self.sens_X = 1
         self.sens_Y = 1
@@ -355,17 +349,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.opts = opts
         self.stdout_file = os.path.join(CONF_PATH, "stdout")
         self.exitDecode = False
-        self.echelle_faite = False
-        self.layout().setSizeConstraint(QLayout.SetMaximumSize)  # TODO
-        self.rotation = 0
-        try:
-            self.ratio = self.determineRatio()
-        except Exception as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
-        self.listePoints = listePointee()
-        self.pileDeDetections = []
-        self.a_une_image = False
+        self.video.echelle_faite = False
         self.resizing = False
         self.stopRedimensionne = False
         self.refait_point = False
@@ -385,14 +369,15 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.tabWidget.setTabEnabled(3, True)
             self.tabWidget.setTabEnabled(2, True)
             self.tabWidget.setTabEnabled(1, True)
-        if not self.a_une_image:
+        if not self.video.a_une_image:
             self.tabWidget.setTabEnabled(0, False)
         self.actionExemples.setEnabled(1)
         # initialisation de self.trajectoire_widget
         self.trajectoire_widget.chrono = False
 
         self.update()
-        self.active_controle_image(False)
+        self.video.setApp(self) # !!! ne devrait intervenir qu'une seule fois !!!
+        self.video.active_controle_image(False)
         self.echelleEdit.setEnabled(0)
         self.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
         self.Bouton_Echelle.setText(_translate(
@@ -400,7 +385,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.Bouton_Echelle.setStyleSheet("background-color:None;")
 
         # on essaie d'afficher l'échelle, si possible
-        self.affiche_echelle()
+        self.video.affiche_echelle()
         self.tab_traj.setEnabled(0)
         self.actionSaveData.setEnabled(0)
         self.actionCopier_dans_le_presse_papier.setEnabled(0)
@@ -415,7 +400,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.radioButtonNearMouse.hide()
         self.radioButtonSpeedEveryWhere.hide()
 
-        if not self.a_une_image:
+        if not self.video.a_une_image:
             self.pushButton_rot_droite.setEnabled(0)
             self.pushButton_rot_gauche.setEnabled(0)
         else:
@@ -432,15 +417,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.checkBox_Em.setChecked(0)
         self.checkBox_Epp.setChecked(0)
         self.trajectoire_widget.video = self.video
-
-        #mets à jour le ratio
-        try :
-            self.ratio=self.determineRatio()
-        except Exception as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass #si lancé prématurément, la vidéo n'est pas chargée
-        self.aspectlayout1.aspect = self.ratio
-        self.aspectlayout2.aspect = self.ratio
 
         # inactive le spinner pour les incréments de plus d'une image
         # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
@@ -466,62 +442,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.spinBox_nb_de_points.setEnabled(active)
         self.spinBox_nb_de_points.setValue(self.nb_de_points)
 
-    def affiche_echelle(self):
-        """
-        affiche l'échelle courante pour les distances sur l'image
-        """
-        self.dbg.p(1, "rentre dans 'affiche_echelle'")
-        if self.video.echelle_image.isUndef():
-            self.echelleEdit.setText(
-                _translate("pymecavideo", "indéf.", None))
-            self.Bouton_Echelle.setEnabled(True)
-        else:
-            epxParM = self.video.echelle_image.pxParM()
-            if epxParM > 20:
-                self.echelleEdit.setText("%.1f" % epxParM)
-            else:
-                self.echelleEdit.setText("%8e" % epxParM)
-        self.echelleEdit.show()
-        self.Bouton_Echelle.show()
-        return
-
-    def active_controle_image(self, state=True):
-        """
-        Gère les deux widgets horizontalSlider et spinBox_image
-        @param state (vrai par défaut) ; si state == True, les deux
-          widgets sont activés et leurs signaux valueChanged sont pris
-          en compte ; sinon ils sont désactivés ainsi que les signaux
-        """
-        if state:
-            self.horizontalSlider.setMinimum(1)
-            self.spinBox_image.setMinimum(1)
-            if self.image_max:
-                self.horizontalSlider.setMaximum(int(self.image_max))
-                self.spinBox_image.setMaximum(int(self.image_max))
-            self.horizontalSlider.valueChanged.connect(
-                self.affiche_image_slider_move)
-            self.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
-        else:
-            if self.horizontalSlider.receivers(self.horizontalSlider.valueChanged):
-                self.horizontalSlider.valueChanged.disconnect()
-            if self.spinBox_image.receivers(self.spinBox_image.valueChanged):
-                self.spinBox_image.valueChanged.disconnect()
-        self.horizontalSlider.setEnabled(state)
-        self.spinBox_image.setEnabled(state)
-        return
-        
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
         session de capture.
         """
         self.dbg.p(1, "rentre dans 'reinitialise_capture'")
-        self.montre_vitesses = False
-        try:
-            self.trajectoire_widget.update()  # premier lancement sans fichier
-        except AttributeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
 
         # ferme les widget d'affichages des x, y, v du 2e onglets si elles existent
         for plotwidget in self.dictionnairePlotWidget.values():
@@ -532,9 +458,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.rotation = 0
         self.defixeLesDimensions()
         # remet le ratio à l'initialisation
-        ratio = self.determineRatio()
-        self.aspectlayout1.aspect = ratio
-        self.aspectlayout2.aspect = ratio
+        #ratio = self.determineRatio()
+        #self.aspectlayout1.aspect = ratio
+        #self.aspectlayout2.aspect = ratio
         self.video.reinit()
         try:
             self.echelle_trace.hide()
@@ -556,7 +482,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         self.video.echelle_image = echelle()
         self.affiche_echelle()
-        self.active_controle_image()
+        self.video.active_controle_image()
         self.spinBox_image.setValue(1)
         self.enableDefaire(False)
         self.enableRefaire(False)
@@ -586,14 +512,14 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.checkBox_abscisses.setCheckState(Qt.Unchecked)
         self.checkBox_ordonnees.setCheckState(Qt.Unchecked)
         self.checkBox_auto.setCheckState(Qt.Unchecked)
-        if self.a_une_image:
+        if self.video.a_une_image:
             self.pushButton_rot_droite.setEnabled(1)
             self.pushButton_rot_gauche.setEnabled(1)
         else:
             self.pushButton_rot_droite.setEnabled(0)
             self.pushButton_rot_gauche.setEnabled(0)
         # réactive les contrôles de l'image (spinbox et slider) :
-        self.active_controle_image()
+        self.video.active_controle_image()
         self.tabWidget.setTabEnabled(3, False)
         self.tabWidget.setTabEnabled(2, False)
         self.tabWidget.setTabEnabled(1, False)
@@ -635,9 +561,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.presse_papier)
         self.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
         self.Bouton_Echelle.clicked.connect(self.demande_echelle)
-        self.active_controle_image()
+        self.video.active_controle_image()
         self.Bouton_lance_capture.clicked.connect(self.debut_capture)
-        self.clic_sur_video_signal.connect(self.clic_sur_la_video)
+        self.clic_sur_video_signal.connect(self.video.clic_sur_la_video)
         self.comboBox_referentiel.currentIndexChanged.connect(
             self.tracer_trajectoires)
         #self.comboBox_mode_tracer.currentIndexChanged.connect(
@@ -659,7 +585,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
         self.pushButton_rot_droite.clicked.connect(self.tourne_droite)
         self.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
-        self.change_axe_origine.connect(self.change_axe_ou_origine)
+        self.change_axe_origine.connect(self.video.change_axe_ou_origine)
         self.selection_done.connect(self.picture_detect)
         self.selection_motif_done.connect(self.suiviDuMotif)
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
@@ -910,7 +836,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_stopCalculs.setEnabled(0)
         self.pushButton_stopCalculs.hide()
         # rétablit les fonctions du spinbox et du slider pour gérer l'image
-        self.active_controle_image()
+        self.video.active_controle_image()
         return
 
     def onePointFind(self):
@@ -993,30 +919,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
         self.redimensionneSignal.emit(1)
-
-    def change_axe_ou_origine(self, origine=None):
-        """mets à jour le tableau de données"""
-        self.dbg.p(1, "rentre dans 'change_axe_ou_origine'")
-        self.dbg.p(3, "valeur de l'origine en argument %s"%(origine))
-        # repaint axes and define origine
-        if origine is not None:
-            self.video.origine = origine
-        self.trajectoire_widget.origine_mvt = self.video.origine
-        self.trajectoire_widget.update()
-        self.video.update()
-        self.dbg.p(3, "valeur de l'origine calculée %s"%(self.video.origine))
-        # construit un dico plus simple à manier, dont la clef est point_ID et qui contient les coordoonées
-        if self.points_ecran != {}:
-            liste_clef = []
-            donnees = {}
-            for key in self.points_ecran:
-                donnees[self.points_ecran[key][2]] = self.points_ecran[key][3]
-                liste_clef.append(self.points_ecran[key][2])
-            liste_clef.sort()
-            for key in liste_clef:
-                serie, position = self.couleur_et_numero(int(key))
-                self.rempli_tableau(
-                    serie, position, donnees[key], recalcul=True)
 
     def change_sens_X(self):
         self.dbg.p(1, "rentre dans 'change_sens_X'")
@@ -1116,23 +1018,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 os.makedirs(dd)
     _dir = staticmethod(_dir)
 
-    def init_cvReader(self):
-        """
-        Initialise le lecteur de flux vidéo pour OpenCV
-        et recode la vidéo si nécessaire.
-        """
-        self.dbg.p(1, "rentre dans 'init_cvReader', ouverture de %s" %
-                   (self.filename))
-        self.cvReader = openCvReader(self.filename)
-        time.sleep(0.1)
-        if not self.cvReader.ok:
-            QMessageBox.warning(None, "Format vidéo non pris en charge",
-                                _translate("pymecavideo", """\le format de cette vidéo n'est pas pris en charge par pymecavideo""",
-                                           None),
-                                QMessageBox.Ok, QMessageBox.Ok)
-        else:
-            return True
-
     def rouvre_ui(self):
         self.dbg.p(1, "rentre dans 'rouvre_ui'")
 
@@ -1156,9 +1041,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             1:-1][-4:]
         self.dbg.p(3, "echelle {}, point {}, self.deltaT {}, self.nb_de_points{}".format(echelle, point, self.deltaT, self.nb_de_points))
         if point.split()[-1]=='None' : #échelle non définie dans ce fichier :
-            self.echelle_faite = False
+            self.video.echelle_faite = False
         else :
-            self.echelle_faite = True
+            self.video.echelle_faite = True
             self.video.echelle_image.longueur_reelle_etalon = float(echelle.split()[
                                                                       1])
             x, y = float(point.split()[3][1:-1]), float(point.split()[4][:-1])
@@ -1216,7 +1101,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.premiere_image = int(dico_donnee['index de depart'])
         self.dbg.p(3, "rentre dans 'loads' première image %s" %
                    (self.premiere_image))
-        if self.echelle_faite :
+        if self.video.echelle_faite :
             self.dbg.p(3, "rentre dans 'loads' longueur_reelle_etalon %s" %
                     (self.video.echelle_image.longueur_reelle_etalon))
             self.video.echelle_image.p1, self.video.echelle_image.p2 = vecteur(point.split(
@@ -1260,7 +1145,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             dico_donnees = self.loads(dictionnaire_données_str)
             self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
             self.init_interface()
-            self.change_axe_ou_origine()
+            self.video.change_axe_ou_origine()
 
             # puis on trace le segment entre les points cliqués pour l'échelle
             # on réinitialise l'échelle.p1, self.echelle_image.p2)
@@ -1297,7 +1182,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                         )
                         self.points[i].append(pos)
                     i += 1
-            self.defini_barre_avancement()
+            self.video.active_controle_image()
+            self.extract_image(1)
+            self.definit_controles_image()
             self.affiche_echelle()  # on met à jour le widget d'échelle
             derniere_image = self.listePoints[len(self.listePoints)-1][0]+1
             self.horizontalSlider.setValue(derniere_image)
@@ -1322,18 +1209,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 Le fichier choisi n'est pas compatible avec pymecavideo""",
                                                      None),
                                           QMessageBox.Ok, QMessageBox.Ok)
-            self.a_une_image = False
-
-    def determineRatio(self):
-        self.dbg.p(1, "rentre dans 'determineRatio'")
-        if self.premierResize:
-            if self.cvReader is None:
-                self.image_max, self.largeurFilm, self.hauteurFilm = 10, 320, 200
-            else:
-                framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(self.rotation)
-        ratioFilm = float(self.largeurFilm) / self.hauteurFilm
-        self.dbg.p(3, "dans 'determineRatio', le ratio a été calculé à %s"%(ratioFilm))
-        return ratioFilm
+            self.video.a_une_image = False
 
     def redimensionneFenetre(self, tourne=False, old=None):
         self.dbg.p(1, "rentre dans 'redimensionneFenetre'")
@@ -1425,7 +1301,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 #origine de pointage = {self.video.origine}
 #index de depart = {self.premiere_image}
 #echelle {self.video.echelle_image.longueur_reelle_etalon} m pour {self.video.echelle_image.longueur_pixel_etalon()} pixel
-#echelle pointee en {self.video.echelle_image.p1 if self.echelle_faite else None} {self.video.echelle_image.p2 if self.echelle_faite else None}
+#echelle pointee en {self.video.echelle_image.p1 if self.video.echelle_faite else None} {self.video.echelle_image.p2 if self.video.echelle_faite else None}
 #intervalle de temps : {self.deltaT}
 #suivi de {self.nb_de_points} point(s)
 #{msg}
@@ -1466,7 +1342,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 
     def enregistre_ui(self):
         self.dbg.p(1, "rentre dans 'enregistre_ui'")
-        if self.points != {} and  self.echelle_faite:
+        if self.points != {} and  self.video.echelle_faite:
             base_name = os.path.splitext(os.path.basename(self.filename))[0]
             defaultName = os.path.join(DOCUMENT_PATH[0], base_name+'.mecavideo')
             fichier = QFileDialog.getSaveFileName(self,
@@ -1504,7 +1380,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.nb_de_points = self.spinBox_nb_de_points.value()
         self.affiche_nb_points(False)
         self.affiche_lance_capture(False)
-        self.active_controle_image(False)
+        self.video.active_controle_image(False)
         self.tabWidget.setEnabled(1)
         self.tabWidget.setTabEnabled(3, True)
         self.tabWidget.setTabEnabled(2, True)
@@ -1568,7 +1444,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.selRect.show()
             # IMPORTANT : permet de gagner en fluidité de l'affichage
             # lors du pointage automatique.
-            self.active_controle_image(False)
+            self.video.active_controle_image(False)
         return
 
     def cree_tableau(self):
@@ -1591,7 +1467,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             0, QTableWidgetItem('t (s)'))
         self.tableWidget.setRowCount(len(self.points))
         for i in range(self.nb_de_points):
-            if self.echelle_faite:
+            if self.video.echelle_faite:
                 x = "X%d (m)" % (1 + i)
                 y = "Y%d (m)" % (1 + i)
             else:
@@ -2266,36 +2142,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.mets_a_jour_widget_infos(
             _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(n+1))
 
-    def clic_sur_la_video(self, liste_points=None, interactif=True):
-        self.dbg.p(1, "rentre dans 'clic_sur_video'")
-        self.lance_capture = True
-        # on fait des marques pour les points déjà visités
-        etiquette = "@abcdefghijklmnopqrstuvwxyz"[
-            len(self.listePoints) % self.nb_de_points]
-        self.point_attendu = len(self.listePoints) % self.nb_de_points
-        self.dbg.p(2, "self.point_attendu %s" % self.point_attendu)
-        self.affiche_point_attendu(self.point_attendu)
-        if self.index_de_l_image <= self.image_max:  # si on n'atteint pas encore la fin de la vidéo
-            self.lance_capture = True
-            self.stock_coordonnees_image(
-                ligne=int((len(self.listePoints)-1)/self.nb_de_points))
-            if interactif:
-                self.modifie = True
-            self.clic_sur_video_ajuste_ui(self.point_attendu)
-        if self.index_de_l_image > self.image_max:
-            self.lance_capture = False
-            self.mets_a_jour_widget_infos(_translate(
-                "pymecavideo", "Vous avez atteint la fin de la vidéo", None))
-            self.index_de_l_image = self.image_max
-        self.nb_clics += 1
-        if self.nb_clics == self.nb_de_points:
-            self.nb_clics = 0
-            self.index_de_l_image += 1
-            self.affiche_image()
-
-            if self.refait_point : #quandon refait 1 seul point faux.
-                self.fin_refait_point_depuis_tableau()
-
     def enableDefaire(self, value):
         """
         Contrôle la possibilité de défaire un clic
@@ -2306,7 +2152,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.actionDefaire.setEnabled(value)
         # permet de remettre l'interface à zéro
         if not value:
-            self.active_controle_image()
+            self.video.active_controle_image()
         return
     
     def enableRefaire(self, value):
@@ -2403,7 +2249,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.dbg.p(1, "rentre dans 'affiche_tableau'")
 
         # active ou désactive les checkbox énergies (n'ont un intérêt que si les échelles sont faites)
-        if self.echelle_faite:
+        if self.video.echelle_faite:
             self.checkBox_Ec.setEnabled(1)
             self.checkBox_Epp.setEnabled(1)
             if self.checkBox_Ec.isChecked() and self.checkBox_Epp.isChecked():
@@ -2546,37 +2392,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         #self.efface_point_precedent()
                         self.refait_point_suivant()
         self.index_de_l_image = self.spinBox_image.value()
-        self.affiche_image()
+        self.video.affiche_image()
 
-    def affiche_image(self):
-        self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' +
-                   str(self.index_de_l_image) + ' ' + str(self.image_max))
-        if self.index_de_l_image <= self.image_max:
-            self.index_avant = self.index_de_l_image
-            self.dbg.p(1, "affiche_image " +
-                       "self.index_de_l_image <= self.image_max")
-            ok, self.image_opencv = self.extract_image(
-                self.index_de_l_image)  # 2ms
-            self.imageExtraite = toQImage(self.image_opencv)
-            self.dbg.p(2, "Image extraite : largeur : %s, hauteur %s: " % (
-                self.imageExtraite.width(), self.imageExtraite.height()))
-            self.afficheJusteImage()  # 4 ms
-            if self.horizontalSlider.value() != self.index_de_l_image:
-                self.dbg.p(1, "affiche_image " + "horizontal")
-                i = int(self.index_de_l_image)
-                self.horizontalSlider.setValue(i)
-                self.spinBox_image.setValue(i)  # 0.01 ms
-        elif self.index_de_l_image > self.image_max:
-            self.index_de_l_image = self.image_max
-            self.lance_capture = False
-        return
-    
-    def afficheJusteImage(self):
-        self.dbg.p(1, "Rentre dans 'AffichejusteImage'")
-        if self.a_une_image:
-            self.video.placeImage(self.imageExtraite, self.ratio)
-        return
-    
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
         self.tabWidget.setCurrentIndex(0)
@@ -2625,7 +2442,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.video.echelle_image.etalonneReel(echelle_result[0])
                 self.job = EchelleWidget(self.video, self)
                 self.job.show()
-                self.change_axe_ou_origine()
+                self.video.change_axe_ou_origine()
         except ValueError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             self.mets_a_jour_widget_infos(_translate(
@@ -2672,7 +2489,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         # on garde les valeurs pour le redimensionnement
         self.dbg.p(2, "Points de l'echelle : p1 : %s, p2 : %s" % (p1, p2))
         self.echelle_trace.show()
-        if self.echelle_faite:
+        if self.video.echelle_faite:
             self.mets_en_orange_echelle()
             self.Bouton_Echelle.setEnabled(1)
 
@@ -2759,7 +2576,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 None
             )
         )
-        self.openTheFile(filename)
+        self.video.openTheFile(filename)
 
     def openfile(self):
         """
@@ -2773,7 +2590,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             _translate("pymecavideo",
                        "fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)",
                        None))
-        self.openTheFile(filename)
+        self.video.openTheFile(filename)
         try:
             self.reinitialise_capture()
         except Exception as err:
@@ -2790,43 +2607,43 @@ Merci de bien vouloir le renommer avant de continuer""", None),
         filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"),
                                                self._dir("videos", None),
                                                "*.avi")
-        self.openTheFile(filename)
+        self.video.openTheFile(filename)
 
-    def openTheFile(self, filename):
-        """
-        Ouvre le fichier de nom filename, enregistre les préférences de
-        fichier vidéo.
-        @param filename nom du fichier
-        """
-        self.dbg.p(1, "rentre dans 'openTheFile'")
-        if filename != "":
-            self.filename = filename
-            goOn = self.init_cvReader()
-            if goOn:  # video is in good format
-                self.prefs.lastVideo = self.filename
-                self.tabWidget.setTabEnabled(0, True)
-                self.init_image()
-                self.init_capture()
-                self.ratio = self.determineRatio()
-                self.spinBox_chrono.setMaximum(int(self.image_max))
-                self.change_axe_ou_origine()
-                self.prefs.videoDir = os.path.dirname(self.filename)
-                self.prefs.save()
 
-    def init_capture(self):
-        """met le panneaux de capture visible"""
+    def init_capture(self, filename):
+        """
+        Prépare une session de pointage, au niveau de la
+        fenêtre principale, et met à jour les préférences
+        """
+        self.prefs.lastVideo = self.filename
+        self.prefs.videoDir = os.path.dirname(self.filename)
+        self.prefs.save()
+
+        self.spinBox_image.setMinimum(1)
+        self.spinBox_chrono.setMaximum(self.video.image_max)
+        self.spinBox_nb_de_points.setEnabled(True)
+        self.tab_traj.setEnabled(0)
+        self.tabWidget.setTabEnabled(0, True)
+        self.video.active_controle_image()
         self.actionCopier_dans_le_presse_papier.setEnabled(1)
         self.menuE_xporter_vers.setEnabled(1)
         self.actionSaveData.setEnabled(1)
+
         self.mets_a_jour_widget_infos(
             _translate("pymecavideo", "Veuillez choisir une image (et définir l'échelle)", None))
         self.Bouton_Echelle.setEnabled(True)
-        self.spinBox_nb_de_points.setEnabled(True)
-        self.active_controle_image()
+        self.video.active_controle_image()
         self.checkBox_abscisses.setEnabled(1)
         self.checkBox_ordonnees.setEnabled(1)
         self.checkBox_auto.setEnabled(1)
         self.Bouton_lance_capture.setEnabled(True)
+        self.montre_vitesses = False
+        try:
+            self.trajectoire_widget.update()  # premier lancement sans fichier
+        except AttributeError as err:
+            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
+            pass
+        return
 
     def propos(self):
         self.dbg.p(1, "rentre dans 'propos'")
@@ -2857,24 +2674,6 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 None, "Aide",
                 _translate("pymecavideo", "Désolé pas de fichier d'aide pour le langage {0}.", None).format(lang))
 
-    def init_image(self):
-        """intialise certaines variables lors le la mise en place d'une nouvelle image"""
-        self.dbg.p(1, "rentre dans 'init_image'")
-        self.reinitialise_capture()
-        self.index_de_l_image = 1
-        ok, self.image_opencv = self.extract_image(self.index_de_l_image)
-        self.ratio = self.determineRatio()
-        self.init_interface()
-        self.trajectoire = {}
-        self.spinBox_image.setMinimum(1)
-        self.calcul_deltaT()
-        self.defini_barre_avancement()
-        self.video.echelle_image = echelle()
-        self.affiche_echelle()
-        self.tab_traj.setEnabled(0)
-        self.active_controle_image()
-        self.affiche_image()
-
     def verifie_IPS(self):
         self.dbg.p(1, "rentre dans 'verifie_IPS'")
         # si ce qui est rentré n'est pas un entier
@@ -2885,61 +2684,8 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                     u"pymecavideo", "Le nombre d'images par seconde doit être un entier", None),
                 _translate(u"pymecavideo", "merci de recommencer", None),
                 QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-        else:
-            self.calcul_deltaT(ips_from_line_edit=True)
-
-    def calcul_deltaT(self, ips_from_line_edit=False, rouvre=False):
-        self.dbg.p(1, "rentre dans 'calcul_deltaT'")
-        if rouvre:  # se produit quand on lit un deltaT depuis un fichier mecavideo
-            IPS = round(1/self.deltaT)
-            self.lineEdit_IPS.setText(str(IPS))
-        else:
-            if not ips_from_line_edit:
-                framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-                self.dbg.p(3,
-                           "In :  'calcul_deltaT', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
-                self.deltaT = float(1.0 / framerate)
-                if math.isnan(self.deltaT):
-                    print(
-                        "ERREUR à la lecture de la vidéo, vitesse des trames indéfinie, on suppose 40 trames par seconde")
-                    self.deltaT = 1.0/40
-                # mets à jour le widget contenant les IPS
-                IPS = round(1/self.deltaT)
-                self.lineEdit_IPS.setText(str(IPS))
-                self.dbg.p(1,"la vidéo a été détectée à %s Images Par Seconde" % IPS)
-            else:
-                IPS = int(self.lineEdit_IPS.text())
-                self.deltaT = float(1.0 / IPS)
-                self.dbg.p(3,
-                           "In :  'calcul_deltaT', self.deltaT a été recalculé d'après une rentrée manuelle = %s" % (self.deltaT))
-
-    def defini_barre_avancement(self):
-        """récupère le maximum d'images de la vidéo et défini la spinbox et le slider"""
-        self.dbg.p(1, "rentre dans 'defini_barre_avancement'")
-        framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos()
-        self.dbg.p(3,
-                   "In :  'defini_barre_avancement', framerate, self.image_max = %s, %s" % (framerate, self.image_max))
-        self.horizontalSlider.setMinimum(1)
-        self.horizontalSlider.setMaximum(int(self.image_max))
-        self.spinBox_image.setMaximum(int(self.image_max))
-        self.extract_image(1)
-
-    def extract_image(self, index):
-        """
-        extrait une image de la video à l'aide d'OpenCV et l'enregistre
-        @param video le nom du fichier video
-        @param index le numéro de l'image
-        @param force permet de forcer l'écriture d'une image
-        """
-        self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
-        ok, image_opencv = self.cvReader.getImage(index, self.rotation)
-        if not ok:
-            self.mets_a_jour_widget_infos(
-                _translate("pymecavideo", "Pymecavideo n'arrive pas à lire l'image", None))
-            return False, None
-        self.a_une_image = ok
-        return ok, image_opencv
-
+        return
+    
     def traiteOptions(self):
         self.dbg.p(1, "rentre dans 'traiteOptions'")
         for opt, val in self.opts:
@@ -2952,7 +2698,7 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                         self.dbg.p(
                             1, "Issue in rouvre for this file : attributeerror")
                 if os.path.isfile(val) and os.path.splitext(val)[1] == ".avi":
-                    self.openTheFile(val)
+                    self.video.openTheFile(val)
 
 
 def usage():

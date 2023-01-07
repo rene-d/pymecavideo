@@ -2,6 +2,8 @@
 
 from version import Version
 from PyQt5.QtCore import QStandardPaths
+from PyQt5.QtWidgets import QApplication
+
 import subprocess
 import os
 import sys
@@ -163,3 +165,8 @@ def GetChildStdErr():
         return childstderr, win32process.CREATE_NO_WINDOW
     else:
         return None, 0
+
+def _translate(context, text, disambig):
+    return QApplication.translate(context, text, disambig)
+
+

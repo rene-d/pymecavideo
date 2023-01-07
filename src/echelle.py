@@ -160,7 +160,7 @@ class EchelleWidget(QWidget):
         #self.app.p1 = self.p1.copy()
         #self.app.p2 = self.p2.copy()
         epxParM = self.app.video.echelle_image.pxParM()
-        self.app.affiche_echelle()
+        self.app.video.affiche_echelle()
         # self.app.affiche_nb_points(True)
         self.app.mets_a_jour_widget_infos(self.app.tr(
             u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
@@ -169,14 +169,14 @@ class EchelleWidget(QWidget):
         # self.app.affiche_lance_capture(False)
 
         self.app.feedbackEchelle(self.p1, self.p2)
-        self.app.change_axe_ou_origine()
+        self.app.video.change_axe_ou_origine()
         if len(self.app.listePoints) > 0:  # si on appelle l'échelle après avoir déjà pointé
             self.app.mets_a_jour_widget_infos(self.app.tr(
                 "Vous pouvez continuer votre acquisition"))
             self.app.affiche_nb_points(False)
             self.app.refait_echelle()
 
-        self.app.echelle_faite = True
+        self.app.video.echelle_faite = True
         self.close()
 
 

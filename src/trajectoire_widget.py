@@ -223,7 +223,7 @@ class TrajectoireWidget(ImageWidget):
             # dessine l'échelle
             if self.chrono == 2:  # chronogramme
                 self.painter.setPen(Qt.black)
-                if self.video.app.echelle_faite : #dessine une échelle en haut, horizontalement
+                if self.video.echelle_faite : #dessine une échelle en haut, horizontalement
                     longueur = round((self.video.echelle_image.p1 - self.video.echelle_image.p2).norme)
                     self.painter.drawLine(x1, y1-10, x1, y1+10)
                     self.painter.drawLine(x1, y1, longueur+x1, y1)
@@ -252,7 +252,7 @@ class TrajectoireWidget(ImageWidget):
                 pen = QPen(Qt.blue)
                 pen.setWidth(3)
                 self.painter.setPen(pen)
-                if self.video.app.echelle_faite: 
+                if self.video.echelle_faite: 
                     self.painter.drawLine(
                         round(self.video.app.echelle_trace.p1.x),
                         round(self.video.app.echelle_trace.p1.y),

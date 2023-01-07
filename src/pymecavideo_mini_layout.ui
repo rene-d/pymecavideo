@@ -21,7 +21,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -592,7 +592,7 @@ vers le bas</string>
             </widget>
            </item>
            <item>
-            <widget class="VideoWidget" name="video" native="true"/>
+            <widget class="VideoPointeeWidget" name="video" native="true"/>
            </item>
           </layout>
          </widget>
@@ -1518,12 +1518,6 @@ vecteurs vitesse</string>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>VideoWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">videoWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>TrajectoireWidget</class>
    <extends>QWidget</extends>
    <header>trajectoire_widget.h</header>
@@ -1533,6 +1527,12 @@ vecteurs vitesse</string>
    <class>ImageWidget</class>
    <extends>QWidget</extends>
    <header>image_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VideoPointeeWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">videoWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
