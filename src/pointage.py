@@ -39,13 +39,17 @@ class Pointage(QObject):
     self.deltaT est l'intervalle de temps entre deux images d'une vidéo
 
     self.echelle est l'échelle en px par mètre
+
+    self.vide reste vrai tant qu'on n'a pas encore pointé ; modifié par
+      self.pointe(...)
     """
     def __init__(self):
         QObject.__init__(self)
-        self.data   = None
-        self.suivis = None
-        self.deltaT = None
+        self.data    = None
+        self.suivis  = None
+        self.deltaT  = None
         self.echelle = None
+        self.vide    = True
         return
 
     def setEchelle(self, echelle):
@@ -64,6 +68,7 @@ class Pointage(QObject):
         self.deltaT = deltaT
         self.dates = [deltaT * i for i in range(n_images)]
         self.data = {}
+        self.vide = True
         for index in range(n_images):
             # crée une structure avec pour chaque date, un dictionnaire
             # désignation d'objet => vecteur ; les vecteurs sont initialement
@@ -95,6 +100,7 @@ class Pointage(QObject):
         if date not in self.dates:
             raise Exception(f"date incorrecte dans Pointage.pointe : {date}")
         self.data[date][objet] = position
+        self.vide = False
         return
 
     def position(self, objet, index=None, date=None, unite="px"):

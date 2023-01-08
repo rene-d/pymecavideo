@@ -164,13 +164,13 @@ class EchelleWidget(QWidget):
         # self.app.affiche_nb_points(True)
         self.app.mets_a_jour_widget_infos(self.app.tr(
             u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
-        self.app.mets_en_orange_echelle()
+        self.app.video.mets_en_orange_echelle()
 
         # self.app.affiche_lance_capture(False)
 
-        self.app.feedbackEchelle(self.p1, self.p2)
+        self.app.video.feedbackEchelle(self.p1, self.p2)
         self.app.video.change_axe_ou_origine()
-        if len(self.app.listePoints) > 0:  # si on appelle l'échelle après avoir déjà pointé
+        if not self.app.video.vide:  # si on a déjà pointé une position au moins
             self.app.mets_a_jour_widget_infos(self.app.tr(
                 "Vous pouvez continuer votre acquisition"))
             self.app.affiche_nb_points(False)

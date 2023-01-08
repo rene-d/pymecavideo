@@ -27,7 +27,6 @@ from export import Export, EXPORT_FORMATS
 import re
 from toQimage import toQImage
 from dialogencode import QMessageBoxEncode
-from suivi_auto import SelRectWidget
 from version import Version
 from listes import listePointee
 from dbg import Dbg
@@ -451,7 +450,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.actionCopier_dans_le_presse_papier.triggered.connect(
             self.presse_papier)
         self.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
-        self.Bouton_Echelle.clicked.connect(self.demande_echelle)
+        self.Bouton_Echelle.clicked.connect(self.video.demande_echelle)
         self.video.active_controle_image()
         self.Bouton_lance_capture.clicked.connect(self.video.debut_capture)
         self.clic_sur_video_signal.connect(self.video.clic_sur_la_video)
@@ -918,11 +917,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                                                  _translate("pymecavideo", "Projet Pymecavideo (*.mecavideo)", None))
         if fichier != "":
             self.rouvre(fichier)
-
-    def mets_en_orange_echelle(self):
-        self.Bouton_Echelle.setEnabled(1)
-        self.Bouton_Echelle.setText("refaire l'échelle")
-        self.Bouton_Echelle.setStyleSheet("background-color:orange;")
 
     def loads(self, s):
         """lis la chaine de caractère issue du fichier mecavideo et en extrait les données utiles"""
@@ -2187,37 +2181,6 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.dbg.p(1, "rentre dans 'affiche_image_slider_move'")
         self.spinBox_image.setValue(self.horizontalSlider.value())
         # self.enableRefaire(0)
-
-    def demande_echelle(self):
-        """
-        demande l'échelle interactivement
-        """
-        self.dbg.p(1, "rentre dans 'demande_echelle'")
-        echelle_result_raw = QInputDialog.getText(None,
-                                                  _translate(
-                                                      "pymecavideo", "Définir léchelle", None),
-                                                  _translate("pymecavideo",
-                                                             "Quelle est la longueur en mètre de votre étalon sur l'image ?",
-                                                             None),
-                                                  QLineEdit.Normal, u"1.0")
-        if echelle_result_raw[1] == False:
-            return None
-        try:
-            echelle_result = [
-                float(echelle_result_raw[0].replace(",", ".")), echelle_result_raw[1]]
-            if echelle_result[0] <= 0 or echelle_result[1] == False:
-                self.mets_a_jour_widget_infos(_translate(
-                    "pymecavideo", " Merci d'indiquer une échelle valable", None))
-            else:
-                self.video.echelle_image.etalonneReel(echelle_result[0])
-                self.job = EchelleWidget(self.video, self)
-                self.job.show()
-                self.video.change_axe_ou_origine()
-        except ValueError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            self.mets_a_jour_widget_infos(_translate(
-                "pymecavideo", " Merci d'indiquer une échelle valable", None))
-            self.demande_echelle()
 
     def calculeLesVitesses(self):
         """à partir des sets de points, renvoie les vitesses selon l'axe X, selon l'axe Y et les normes des vitesses"""

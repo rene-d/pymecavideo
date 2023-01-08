@@ -34,6 +34,7 @@ from pointage import Pointage
 from globdef import _translate
 from cadreur import openCvReader
 from toQimage import toQImage
+from suivi_auto import SelRectWidget
 
 import icon_rc
 
@@ -259,29 +260,32 @@ class VideoPointeeWidget(VideoWidget, Pointage):
         self.echelle_faite = False # vrai quand l'échelle est définie
         self.nb_objets = None      # nombre d'objets suivis
         self.echelle_trace = None  # widget pour tracer l'échelle
+        self.selRect = None        # un objet gérant la sélection par rectangle
         return
     
     def paintEvent(self, event):
-        if self.a_une_image:
+        if self.image:
+            """
             if self.echelle_faite and self.lance_capture:
                 self.updateZoom(self.hotspot)
-            self.painter = QPainter()
-            self.painter.begin(self)
+            """
+            painter = QPainter()
+            painter.begin(self)
             if self.image != None:
-                self.painter.drawPixmap(
+                painter.drawPixmap(
                     round(self.decal.x), round(self.decal.y), self.image)
 
             ############################################################
             # dessin de l'origine
             longueur_origine = 5
-            self.painter.setPen(Qt.green)
-            self.painter.drawLine(
+            painter.setPen(Qt.green)
+            painter.drawLine(
                 round(self.origine.x) - longueur_origine, round(self.origine.y),
                 round(self.origine.x) + longueur_origine, round(self.origine.y))
-            self.painter.drawLine(
+            painter.drawLine(
                 round(self.origine.x), round(self.origine.y) - longueur_origine,
                 round(self.origine.x), round(self.origine.y) + longueur_origine)
-            self.painter.drawText(
+            painter.drawText(
                 round(self.origine.x), round(self.origine.y) + 15, "O")
             ############################################################
             # draw points
@@ -292,21 +296,21 @@ class VideoPointeeWidget(VideoWidget, Pointage):
                     color = int(obj)
                     point = self.data[date][obj]
                     if point:
-                        self.painter.setPen(QColor(self.couleurs[color]))
-                        self.painter.setFont(QFont("", 10))
-                        self.painter.translate(point.x, point.y)
-                        self.painter.drawLine(-2, 0, 2, 0)
-                        self.painter.drawLine(0, -2, 0, 2)
-                        self.painter.translate(-10, +10)
-                        self.painter.drawText(0, 0, str(color+1))
-                        self.painter.translate(-point.x + 10, -point.y - 10)
+                        painter.setPen(QColor(self.couleurs[color]))
+                        painter.setFont(QFont("", 10))
+                        painter.translate(point.x, point.y)
+                        painter.drawLine(-2, 0, 2, 0)
+                        painter.drawLine(0, -2, 0, 2)
+                        painter.translate(-10, +10)
+                        painter.drawText(0, 0, str(color+1))
+                        painter.translate(-point.x + 10, -point.y - 10)
 
             ############################################################
             # paint repere
-            self.painter.setPen(Qt.green)
-            self.painter.translate(0, 0)
+            painter.setPen(Qt.green)
+            painter.translate(0, 0)
             try:
-                self.painter.translate(
+                painter.translate(
                     round(self.origine.x), round(self.origine.y))
             except AttributeError:
                 pass
@@ -314,13 +318,13 @@ class VideoPointeeWidget(VideoWidget, Pointage):
             p2 = QPoint(round(self.app.sens_X * (40)), 0)
             p3 = QPoint(round(self.app.sens_X * (36)), 2)
             p4 = QPoint(round(self.app.sens_X * (36)), -2)
-            self.painter.scale(1, 1)
-            self.painter.drawPolyline(p1, p2, p3, p4, p2)
-            self.painter.rotate(self.app.sens_X * self.app.sens_Y * (-90))
-            self.painter.drawPolyline(p1, p2, p3, p4, p2)
+            painter.scale(1, 1)
+            painter.drawPolyline(p1, p2, p3, p4, p2)
+            painter.rotate(self.app.sens_X * self.app.sens_Y * (-90))
+            painter.drawPolyline(p1, p2, p3, p4, p2)
             ############################################################
 
-            self.painter.end()
+            painter.end()
         return
 
     def extract_image(self, index):
@@ -674,12 +678,8 @@ Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
 Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",
                                                      None),
                                           QMessageBox.Ok, QMessageBox.Ok)
-            try:
+            if self.selRect:
                 self.selRect.finish(delete=True)
-                del self.selRect
-            except Exception as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                pass
             # in this widget, motif(s) are defined.
             self.selRect = SelRectWidget(self, self.app)
             self.selRect.show()
@@ -694,9 +694,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         retenues pour l'échelle
         """
         self.dbg.p(1, "rentre dans 'feedbackEchelle'")
-        if hasattr(self,"echelle_trace"):
+        if self.echelle_trace:
             self.echelle_trace.hide()
-            del self.echelle_trace
 
         self.echelle_trace = Echelle_TraceWidget(
             self, p1, p2)
@@ -802,4 +801,38 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.dbg.p(1, "rentre dans 'enableRefaire, %s'" % (value))
         self.pushButton_refait.setEnabled(value)
         self.app.actionRefaire.setEnabled(value)
+
+    def demande_echelle(self):
+        """
+        demande l'échelle interactivement
+        """
+        self.dbg.p(1, "rentre dans 'demande_echelle'")
+        reponse, ok = QInputDialog.getText(
+            None,
+            _translate("pymecavideo", "Définir léchelle", None),
+            _translate("pymecavideo", "Quelle est la longueur en mètre de votre étalon sur l'image ?", None),
+            QLineEdit.Normal, "1.0")
+        if not ok:
+            return
+        try:
+            reponse = float(reponse.replace(",", "."))
+            if reponse <= 0:
+                self.app.mets_a_jour_widget_infos(_translate(
+                    "pymecavideo", " Merci d'indiquer une échelle valable", None))
+            else:
+                self.echelle_image.etalonneReel(reponse)
+                self.job = EchelleWidget(self, self.app)
+                self.job.show()
+                self.change_axe_ou_origine()
+        except ValueError as err:
+            self.mets_a_jour_widget_infos(_translate(
+                "pymecavideo", " Merci d'indiquer une échelle valable", None))
+            self.demande_echelle()
+        return
+    
+    def mets_en_orange_echelle(self):
+        self.Bouton_Echelle.setEnabled(1)
+        self.Bouton_Echelle.setText("refaire l'échelle")
+        self.Bouton_Echelle.setStyleSheet("background-color:orange;")
+        return
 
