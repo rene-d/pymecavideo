@@ -265,10 +265,9 @@ class VideoPointeeWidget(VideoWidget, Pointage):
     
     def paintEvent(self, event):
         if self.image:
-            """
             if self.echelle_faite and self.lance_capture:
                 self.updateZoom(self.hotspot)
-            """
+
             painter = QPainter()
             painter.begin(self)
             if self.image != None:
