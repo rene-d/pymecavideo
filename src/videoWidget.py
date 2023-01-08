@@ -337,6 +337,7 @@ class VideoPointeeWidget(VideoWidget, Pointage):
                 _translate("pymecavideo", "Pymecavideo n'arrive pas à lire l'image", None))
             return False, None
         self.a_une_image = ok
+        self.imageExtraite = toQImage(image_opencv)
         return ok, image_opencv
 
     def calcul_deltaT(self, ips_from_line_edit=False, rouvre=False):
@@ -410,10 +411,13 @@ class VideoPointeeWidget(VideoWidget, Pointage):
         return
 
     def init_image(self):
-        """intialise certaines variables lors le la mise en place d'une nouvelle image"""
+        """
+        initialise certaines variables lors le la mise en place d'une 
+        nouvelle vidéo
+        """
         self.dbg.p(1, "rentre dans 'init_image'")
         self.index = 1
-        ok, self.image_opencv = self.extract_image(self.index)
+        self.extract_image(1)
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
             self.cvReader.recupere_avi_infos(self.rotation)
         # openCV renvoir quelques flottants, qu'il faut convertir en entiers
@@ -426,7 +430,6 @@ class VideoPointeeWidget(VideoWidget, Pointage):
         # on dimensionne les données pour les pointages
         self.dimensionne(1, self.deltaT, self.image_max)
         self.active_controle_image()
-        self.extract_image(1)
         self.echelle_image = echelle()
         self.affiche_echelle()
         self.affiche_image()
@@ -438,13 +441,7 @@ class VideoPointeeWidget(VideoWidget, Pointage):
         if not self.filename:
             return
         if self.index <= self.image_max:
-            self.dbg.p(1, "affiche_image " +
-                       "self.index <= self.image_max")
-            ok, self.image_opencv = self.extract_image(
-                self.index)  # 2ms
-            self.imageExtraite = toQImage(self.image_opencv)
-            self.dbg.p(2, "Image extraite : largeur : %s, hauteur %s: " % (
-                self.imageExtraite.width(), self.imageExtraite.height()))
+            self.extract_image(self.index)  # 2ms
             self.afficheJusteImage()  # 4 ms
             if self.horizontalSlider.value() != self.index:
                 self.dbg.p(1, "affiche_image " + "horizontal")
@@ -485,7 +482,6 @@ class VideoPointeeWidget(VideoWidget, Pointage):
         """
         self.app.prefs.lastVideo = self.filename
         self.app.prefs.videoDir = os.path.dirname(self.filename)
-        print("GRRRR preferences %s" % self.app.prefs)
         self.app.prefs.save()
 
         self.spinBox_image.setMinimum(1)
