@@ -314,8 +314,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(1, "rentre dans 'init_variables'")
         self.logiciel_acquisition = False
         self.index_max = 1
-        self.sens_X = 1
-        self.sens_Y = 1
         self.repere = 0
         self.masse_objet = 0
         self.premier_chargement_fichier_mecavideo = False #gere l'origine au premier chargement
@@ -325,7 +323,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.rouvert = False  # positionné a vrai si on vien d'ouvrir un fichier mecavideo
         self.auto = False
         self.motif = []
-        self.lance_capture = False
+        self.video.lance_capture = False
         # est Vraie si le fichier est odifié. permet de sauvegarder les changements
         self.modifie = False
         self.points = {}  # dictionnaire des points cliqués, par n d'image.
@@ -339,7 +337,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.point_attendu = 0
         self.nb_clics = 0
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
-        self.premiere_image = 1  # n° de la première image cliquée
+        self.premiere_image_pointee = 1  # n° de la première image cliquée
         self.video.index = 1  # image à afficher
         self.chronoImg = 0
         self.filename = filename
@@ -682,7 +680,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     self, self.motif[self.indexMotif], self.imageAffichee)
                 self.monThread.start()
             elif self.methode_thread == 2:  # 1 thread par image
-                for i in range((self.video.image_max-self.premiere_image)*self.nb_de_points):
+                for i in range((self.video.image_max-self.premiere_image_pointee)*self.nb_de_points):
                     self.liste_thread = [MonThreadDeCalcul2(
                         self, self.image, self.motif[self.indexMotif], self.imageAffichee)]
             elif self.methode_thread == 3:  # pour l'instant celle qui foncitonne le mieux
@@ -826,16 +824,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.sens_Y = 1
         self.change_axe_origine.emit()
 
-    def check_uncheck_direction_axes(self):
-        if self.sens_X == -1:
-            self.checkBox_abscisses.setChecked(1)
-        else:
-            self.checkBox_abscisses.setChecked(0)
-        if self.sens_Y == -1:
-            self.checkBox_ordonnees.setChecked(1)
-        else:
-            self.checkBox_ordonnees.setChecked(0)
-
     def pointEnMetre(self, p):
         """
         renvoie un point, dont les coordonnées sont en mètre, dans un
@@ -912,189 +900,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(1, "rentre dans 'rouvre_ui'")
 
         dir_ = DOCUMENT_PATH[0]
-        fichier, _ = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
-                                                 dir_,
-                                                 _translate("pymecavideo", "Projet Pymecavideo (*.mecavideo)", None))
+        fichier, _ = QFileDialog.getOpenFileName(
+            self,
+            _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
+            dir_,
+            _translate("pymecavideo", "Projet Pymecavideo (*.mecavideo)", None))
         if fichier != "":
-            self.rouvre(fichier)
-
-    def loads(self, s):
-        """lis la chaine de caractère issue du fichier mecavideo et en extrait les données utiles"""
-        self.dbg.p(1, "rentre dans 'loads'")
-        s = s[1:-2].replace("\n#", "\n")
-        echelle, point, self.deltaT, self.nb_de_points = s.splitlines()[
-            1:-1][-4:]
-        self.dbg.p(3, "echelle {}, point {}, self.deltaT {}, self.nb_de_points{}".format(echelle, point, self.deltaT, self.nb_de_points))
-        if point.split()[-1]=='None' : #échelle non définie dans ce fichier :
-            self.video.echelle_faite = False
-        else :
-            self.video.echelle_faite = True
-            self.video.echelle_image.longueur_reelle_etalon = float(echelle.split()[
-                                                                      1])
-            x, y = float(point.split()[3][1:-1]), float(point.split()[4][:-1])
-            self.video.echelle_image.p1 = vecteur(x, y)
-            x, y = float(point.split()[5][1:-1]), float(point.split()[6][:-1])
-            self.video.echelle_image.p2 = vecteur(x, y)
-        donnees_fichier = s.splitlines()[1:-1]
-        dico_donnee = {}
-        for donnee in donnees_fichier:
-            if len(donnee.split('=')) == 2:
-                cle, valeur = donnee.split('=')
-                dico_donnee[cle.strip()] = valeur.strip()
-        self.filename = dico_donnee["video"]
-        self.dbg.p(3, "rentre dans 'loads fichier : ' %s" % (self.filename))
-        try:
-            self.sens_X = int(dico_donnee['sens axe des X'])
-        except KeyError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            self.sens_X = 1
-        self.dbg.p(3, "rentre dans 'loads' : sens_x' %s" % (self.sens_X))
-        try:
-            self.sens_Y = int(dico_donnee['sens axe des Y'])
-        except KeyError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            self.sens_Y = 1
-        self.dbg.p(3, "rentre dans 'loads' sens_y %s" % (self.sens_Y))
-        try:
-            largeur = int(dico_donnee['largeur video'])
-        except KeyError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            largeur = 640
-        self.dbg.p(3, "rentre dans 'loads' largeur :  %s" % (largeur))
-        try:
-            hauteur = int(dico_donnee['hauteur video'])
-        except KeyError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            largeur = 480
-        self.dbg.p(3, "rentre dans 'loads' hauteur %s" % (hauteur))
-        try:
-            self.rotation = int(dico_donnee['rotation'])
-        except KeyError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            self.rotation = 0
-        self.dbg.p(3, "rentre dans 'loads' rotation %s" % (self.rotation))
-        try:
-            self.video.origine = vecteur(dico_donnee['origine de pointage'].split(
-            )[-2][1:-1], dico_donnee['origine de pointage'].split()[-1][:-1])
-            self.premier_chargement_fichier_mecavideo = True
-            self.dbg.p(3, "origine définie en {}".format(self.video.origine))
-        except KeyError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            self.video.origine = vecteur(largeur//2, hauteur//2)
-        self.dbg.p(3, "rentre dans 'loads' origine %s" %
-                   (self.video.origine))
-        self.premiere_image = int(dico_donnee['index de depart'])
-        self.dbg.p(3, "rentre dans 'loads' première image %s" %
-                   (self.premiere_image))
-        if self.video.echelle_faite :
-            self.dbg.p(3, "rentre dans 'loads' longueur_reelle_etalon %s" %
-                    (self.video.echelle_image.longueur_reelle_etalon))
-            self.video.echelle_image.p1, self.video.echelle_image.p2 = vecteur(point.split(
-            )[-4][1:-1], point.split()[-3][:-1]), vecteur(point.split()[-2][1:-1], point.split()[-1][:-1])
-            self.dbg.p(3, "rentre dans 'loads' points de l'échelle %s" % (
-                [self.video.echelle_image.p1, self.video.echelle_image.p2]))
-        self.deltaT = float(self.deltaT.split()[-1])
-        self.dbg.p(3, "rentre dans 'loads' delta_t %s" % (self.deltaT))
-        self.nb_de_points = int(self.nb_de_points.split()[-2])
-        self.dbg.p(3, "rentre dans 'loads' nb de points %s" %
-                   (self.nb_de_points))
-        self.dbg.p(3, "rentre dans 'loads, dico données' %s" % (dico_donnee))
-        self.calcul_deltaT(rouvre=True)
-        self.video.resize(QSize(largeur, hauteur))
-        ########redimensionne l'application TODO : ATTENTION
-        decalage_gauche = 220
-        decalage_haut = 130
-        self.setGeometry(self.pos().x(),self.pos().y()+37, self.video.width()+decalage_gauche, self.video.height()+decalage_haut)
-        self.aspectlayout1.aspect = largeur/hauteur
-        self.aspectlayout2.aspect = largeur/hauteur
-
-        self.init_cvReader()
-        return dico_donnee
-
-    def rouvre(self, fichier):
-        """Open a mecavideo file"""
-        self.dbg.p(1, "rentre dans 'rouvre'")
-        self.reinitialise_capture()
-        lignes = open(fichier, "r").readlines()
-        i = 0
-        self.points = {}  # dictionnaire des données, simple. Les clefs sont les index de l'image. les données les
-        self.listePoints = listePointee()
-        dictionnaire_données_str = ""
-        for l in lignes:
-            if l[0] == "#":
-                dictionnaire_données_str += l
-        self.video.echelle_image = echelle()  # on réinitialise l'échelle
-        try:
-            # on récupère les données importantes
-            self.dbg.p(3, "dictionnaire des données : {} ".format(dictionnaire_données_str))
-            dico_donnees = self.loads(dictionnaire_données_str)
-            self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
-            self.init_interface()
-            self.video.change_axe_ou_origine()
-
-            # puis on trace le segment entre les points cliqués pour l'échelle
-            # on réinitialise l'échelle.p1, self.echelle_image.p2)
-            self.feedbackEchelle(
-                self.video.echelle_image.p1, self.video.echelle_image.p2)
-            framerate, self.video.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(
-                self.rotation)
-            self.rouvert = True
-            self.premierResize = False
-
-
-
-            # on régénère self.listePoints et self.points
-            for l in lignes:
-                if l[0] == "#":
-                    pass
-                else:
-                    l = l.strip('\t\n')
-                    d = l.split("\t")
-                    t = "%4f" % (float(d[0].replace(",", ".")))
-                    self.points[i] = [t]
-                    for j in range(1, len(d), 2):
-                        x = -self.sens_X*round(float(d[j].replace(",", ".")) * self.video.echelle_image.pxParM())
-                        y = self.sens_Y*round((float(
-                            d[j + 1].replace(",", ".")) * self.video.echelle_image.pxParM()))
-                        x_ = self.video.origine.x- x
-                        y_ = self.video.origine.y- y
-
-                        pos = vecteur(x_,y_)
-
-                        self.enregistre_dans_listePoints(
-                            pos, index=round(float(t)*framerate) +
-                            self.premiere_image
-                        )
-                        self.points[i].append(pos)
-                    i += 1
-            self.video.active_controle_image()
-            self.extract_image(1)
-            self.definit_controles_image()
-            self.affiche_echelle()  # on met à jour le widget d'échelle
-            derniere_image = self.listePoints[len(self.listePoints)-1][0]+1
-            self.horizontalSlider.setValue(derniere_image)
-            self.spinBox_image.setValue(derniere_image)
-            self.spinBox_chrono.setMaximum(derniere_image)
-            self.affiche_nb_points(self.nb_de_points)
-            self.enableDefaire(True)
-            self.enableRefaire(False)
-            self.affiche_image()  # on affiche l'image
-            self.mets_en_orange_echelle()
-            self.tableWidget.show()
-            self.recalculLesCoordonnees()
-            ##HACK oblige le rdimensionnement pour mettre à jour l'image
-            self.resize(self.size()+QSize(1, 0))
-            self.resize(self.size()+QSize(-1, 0))
-            self.debut_capture(rouvre=True)
-
-        except Exception as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            reponse = QMessageBox.warning(None, "Mauvais type de fichier",
-                                          _translate("pymecavideo", """\
-Le fichier choisi n'est pas compatible avec pymecavideo""",
-                                                     None),
-                                          QMessageBox.Ok, QMessageBox.Ok)
-            self.video.a_une_image = False
+            self.video.rouvre(fichier)
 
     def redimensionneFenetre(self, tourne=False, old=None):
         self.dbg.p(1, "rentre dans 'redimensionneFenetre'")
@@ -1119,7 +931,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             self.resize(self.size()+QSize(1, 0))
             self.resize(self.size()+QSize(-1, 0))
 
-        if self.lance_capture:
+        if self.video.lance_capture:
             self.dbg.p(2, "on fixe les hauteurs du widget")
             self.video.setFixedHeight(
                 self.video.height())
@@ -1183,7 +995,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
 #hauteur video = {self.video.height()}
 #rotation = {self.rotation}
 #origine de pointage = {self.video.origine}
-#index de depart = {self.premiere_image}
+#index de depart = {self.premiere_image_pointee}
 #echelle {self.video.echelle_image.longueur_reelle_etalon} m pour {self.video.echelle_image.longueur_pixel_etalon()} pixel
 #echelle pointee en {self.video.echelle_image.p1 if self.video.echelle_faite else None} {self.video.echelle_image.p2 if self.video.echelle_faite else None}
 #intervalle de temps : {self.deltaT}
@@ -1934,7 +1746,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         @param point_attendu le numéro du point qui est à cliquer
         """
         self.dbg.p(1, "rentre dans 'clic_sur_video_ajuste_ui'")
-        self.lance_capture = True
+        self.video.lance_capture = True
         if point_attendu == 1:  # pour une acquisition sur une nouvelle image
             self.dbg.p(1, "self.nb_image_deja_analysees >= len(self.points) ? %s %s" % (
                 len(self.listePoints), self.nb_de_points-len(self.listePoints) % self.nb_de_points))
@@ -1963,7 +1775,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             i = self.video.index
         nieme  = self.nb_clics
         if self.refait_point : #arrive si on refait qu'un seul point à partir du tableau de l'onglet 3.
-            self.listePoints[(self.video.index-self.premiere_image)*self.nb_de_points+nieme] = [i, nieme, point]
+            self.listePoints[(self.video.index-self.premiere_image_pointee)*self.nb_de_points+nieme] = [i, nieme, point]
 
         else :
             self.listePoints.append([i, nieme, point])
@@ -1982,7 +1794,7 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
             index_image = self.listePoints[-1][0]
         else :
             index_image = self.video.index-1
-        t = "%4f" % ((index_image - self.premiere_image) * self.deltaT)
+        t = "%4f" % ((index_image - self.premiere_image_pointee) * self.deltaT)
 
         self.dbg.p(2, "dans 'stock_coordonnees_image', index_image = %s"%(index_image))
 
@@ -2118,18 +1930,18 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.refait_point=True
         numero_image = qpbn.toolTip().split(' ')[-1]
         self.index_de_l_image_actuelle = self.video.index
-        self.video.index = int(numero_image)+self.premiere_image-1
+        self.video.index = int(numero_image)+self.premiere_image_pointee-1
 
         self.tabWidget.setCurrentIndex(0)
         point_actuel = len(self.listePoints)%self.nb_de_points
         self.clic_sur_video_ajuste_ui(point_actuel)
 
     def fin_refait_point_depuis_tableau(self):
-        self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")
+        self.dbg.p(1, "rentre dans 'fin_refait_point_depuis_tableau'")
         self.refait_point = False
 
         #####remplacement de la valeur de self.points pour la ligne correspondante
-        self.stock_coordonnees_image(self.video.index-self.premiere_image-1, index_image=True)
+        self.stock_coordonnees_image(self.video.index-self.premiere_image_pointee-1, index_image=True)
 
         self.video.index = self.index_de_l_image_actuelle
         self.index_de_l_image_actuelle = None
@@ -2137,13 +1949,9 @@ Le fichier choisi n'est pas compatible avec pymecavideo""",
         self.tabWidget.setCurrentIndex(2)
 
 
-    def transforme_index_en_temps(self, index):
-        self.dbg.p(1, "rentre dans 'transforme_index_en_temps'")
-        return float(self.deltaT * (index))
-
     def affiche_image_spinbox(self):
         self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
-        if self.lance_capture:
+        if self.video.lance_capture:
             if self.spinBox_image.value() < self.video.index:
                 # si le point est sur une image, on efface le point
                 if self.spinBox_image.value() == self.listePoints[len(self.listePoints)-1][0]:

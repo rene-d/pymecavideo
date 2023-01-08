@@ -25,7 +25,7 @@ from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, Q
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QPen, QColor, QFont, QResizeEvent
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
-import os, time
+import os, time, re
 
 from vecteur import vecteur
 from echelle import echelle, Echelle_TraceWidget, EchelleWidget
@@ -46,6 +46,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     """
 
     def __init__(self, parent):
+        #ImageWidget.__init__(self, parent)
         Pointage.__init__(self)
         self.app = None        # pointeur vers la fenêtre principale
         self.zoom = None       # pointeur vers le widget de zoom
@@ -80,6 +81,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.nb_objets = None      # nombre d'objets suivis
         self.echelle_trace = None  # widget pour tracer l'échelle
         self.selRect = None        # un objet gérant la sélection par rectangle
+        self.lance_cature = False  # devient vrai quand on commence à pointer
+        self.sens_X = 1            # sens de l'axe des abscisses
+        self.sens_Y = 1            # sens de l'axe des ordonnées
         return
     
     def setApp(self, app):
@@ -206,20 +210,19 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 y = self.echelle_image.p2.y*ratioh
                 if not self.app.premier_chargement_fichier_mecavideo:
                     self.echelle_image.p2 = vecteur(x, y)
-                self.app.feedbackEchelle(
+                self.feedbackEchelle(
                     self.echelle_image.p1, self.echelle_image.p2)
             #self.app.premier_chargement_fichier_mecavideo = False
 
     def storePoint(self, point):
         if self.app.lance_capture == True:
-            ## obsolète : self.app.enregistre_dans_listePoints(point)
+            self.pointe(self.objet_courant, point, index=self.index)
             self.app.clic_sur_video_signal.emit()
             self.updateZoom(self.hotspot)
             self.update()
 
     def mouseReleaseEvent(self, event):
         if self.app.lance_capture == True:
-            #self.app.enregistre_dans_listePoints(point)
             self.pointe(self.objet_courant, event, index=self.index)
             self.objetSuivant()
             self.app.clic_sur_video_signal.emit()
@@ -281,19 +284,20 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             # draw points
             self.dbg.p(
                 5, "In videoWidget, paintEvent, self.data :%s" % self.data)
-            for date in self.data:
-                for obj in self.data[date]:
-                    color = int(obj)
-                    point = self.data[date][obj]
-                    if point:
-                        painter.setPen(QColor(self.couleurs[color]))
-                        painter.setFont(QFont("", 10))
-                        painter.translate(point.x, point.y)
-                        painter.drawLine(-2, 0, 2, 0)
-                        painter.drawLine(0, -2, 0, 2)
-                        painter.translate(-10, +10)
-                        painter.drawText(0, 0, str(color+1))
-                        painter.translate(-point.x + 10, -point.y - 10)
+            if self.data:
+                for date in self.data:
+                    for obj in self.data[date]:
+                        color = int(obj)
+                        point = self.data[date][obj]
+                        if point:
+                            painter.setPen(QColor(self.couleurs[color]))
+                            painter.setFont(QFont("", 10))
+                            painter.translate(point.x, point.y)
+                            painter.drawLine(-2, 0, 2, 0)
+                            painter.drawLine(0, -2, 0, 2)
+                            painter.translate(-10, +10)
+                            painter.drawText(0, 0, str(color+1))
+                            painter.translate(-point.x + 10, -point.y - 10)
 
             ############################################################
             # paint repere
@@ -304,13 +308,13 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                     round(self.origine.x), round(self.origine.y))
             except AttributeError:
                 pass
-            p1 = QPoint(round(self.app.sens_X * (-40)), 0)
-            p2 = QPoint(round(self.app.sens_X * (40)), 0)
-            p3 = QPoint(round(self.app.sens_X * (36)), 2)
-            p4 = QPoint(round(self.app.sens_X * (36)), -2)
+            p1 = QPoint(round(self.sens_X * (-40)), 0)
+            p2 = QPoint(round(self.sens_X * (40)), 0)
+            p3 = QPoint(round(self.sens_X * (36)), 2)
+            p4 = QPoint(round(self.sens_X * (36)), -2)
             painter.scale(1, 1)
             painter.drawPolyline(p1, p2, p3, p4, p2)
-            painter.rotate(self.app.sens_X * self.app.sens_Y * (-90))
+            painter.rotate(self.sens_X * self.sens_Y * (-90))
             painter.drawPolyline(p1, p2, p3, p4, p2)
             ############################################################
 
@@ -602,8 +606,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         """
         permet de mettre en place le nombre de point à acquérir
         @param departManuel vrai si on a fixé à la main la première image.
-        @param rouvre  : ne mets pas à jour self.premiere_image à partir
-          du slider.
+        @param rouvre  : ne mets pas à jour self.premiere_image_pointee 
+          à partir du slider.
         """
         self.dbg.p(1, "rentre dans 'debut_capture'")
         self.setFocus()
@@ -621,8 +625,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.tabWidget.setTabEnabled(2, True)
         self.tabWidget.setTabEnabled(1, True)
         self.arretAuto = False
-        if not rouvre : #si rouvre, self.premiere_imageest déjà définie
-            self.premiere_image = self.horizontalSlider.value()
+        if not rouvre :
+            # si rouvre, self.premiere_image_pointee est déjà définie
+            self.premiere_image_pointee = self.horizontalSlider.value()
         self.affiche_point_attendu(0)
         self.lance_capture = True
         self.app.fixeLesDimensions()
@@ -824,5 +829,173 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.Bouton_Echelle.setEnabled(1)
         self.Bouton_Echelle.setText("refaire l'échelle")
         self.Bouton_Echelle.setStyleSheet("background-color:orange;")
+        return
+
+    def rouvre(self, fichier):
+        """
+        Rouvre un fichier pymecavideo précédemment enregistré
+        """
+        self.dbg.p(1, "rentre dans 'rouvre'")
+        self.reinitialise_capture()
+        lignes = open(fichier, "r").readlines()
+
+        # réinitialisation des données de pointage
+        self.data    = None
+        self.suivis  = None
+        self.deltaT  = None
+        self.echelle = None
+        self.vide    = True
+
+        self.echelle_image = echelle()  # on réinitialise l'échelle
+        # on récupère les données importantes
+        dico_donnees = self.load_lignes_donnees(lignes)
+        self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
+        self.app.init_interface()
+        self.change_axe_ou_origine()
+
+        # puis on trace le segment entre les points cliqués pour l'échelle
+        # on réinitialise l'échelle.p1, self.echelle_image.p2)
+        self.feedbackEchelle(
+            self.echelle_image.p1, self.echelle_image.p2)
+        self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(
+            self.rotation)
+        self.framerate=round(self.framerate)
+        self.image_max=round(self.image_max)
+        self.ratio = self.largeurFilm / self.hauteurFilm
+        self.rouvert = True
+        self.premierResize = False
+
+
+
+        # on régénère self.listePoints et self.points
+        index = -1
+        for l in lignes:
+            if l[0] == "#":
+                pass
+            else:
+                index += 1
+                l = l.strip('\t\n')
+                d = l.split("\t")
+                n_suivis = (len(d) - 1) // 2
+                if not self.data:
+                    self.dimensionne(n_suivis, self.deltaT, self.image_max)
+                    print("GRRRRR", list(self.data.keys())[-1])
+                t = float(d[0].replace(",", "."))
+                obj = 1
+                for j in range(1, len(d), 2):
+                    x = -self.sens_X*round(float(d[j].replace(",", ".")) * self.echelle_image.pxParM())
+                    y = self.sens_Y*round((float(
+                        d[j + 1].replace(",", ".")) * self.echelle_image.pxParM()))
+                    x_ = self.origine.x- x
+                    y_ = self.origine.y- y
+
+                    pos = vecteur(x_,y_)
+                    print("GRRRR", l, index + self.premiere_image_pointee - 1, (index + self.premiere_image_pointee - 1)* self.deltaT)
+                    self.pointe(obj, pos, index = \
+                                index + self.premiere_image_pointee - 1)
+                    obj += 1
+        self.active_controle_image()
+        self.extract_image(1)
+        self.definit_controles_image()
+        self.affiche_echelle()  # on met à jour le widget d'échelle
+        derniere_image = self.listePoints[len(self.listePoints)-1][0]+1
+        self.horizontalSlider.setValue(derniere_image)
+        self.spinBox_image.setValue(derniere_image)
+        self.spinBox_chrono.setMaximum(derniere_image)
+        self.affiche_nb_points(self.nb_de_points)
+        self.enableDefaire(True)
+        self.enableRefaire(False)
+        self.affiche_image()  # on affiche l'image
+        self.mets_en_orange_echelle()
+        self.tableWidget.show()
+        self.recalculLesCoordonnees()
+        ##HACK oblige le redimensionnement pour mettre à jour l'image
+        self.resize(self.size()+QSize(1, 0))
+        self.resize(self.size()+QSize(-1, 0))
+        self.debut_capture(rouvre=True)
+
+        return
+    
+    def load_lignes_donnees(self, lignes):
+        """
+        Lit les lignes du fichier pymecavidéo de type commentaire
+        pour en déduire un dictionnaire de protpriéts utiles
+        Rappel : la structure de l'en-tête du fichier est
+#pymecavideo
+#video = {self.filename}
+#sens axe des X = {self.sens_X}
+#sens axe des Y = {self.sens_Y}
+#largeur video = {self.video.width()}
+#hauteur video = {self.video.height()}
+#rotation = {self.rotation}
+#origine de pointage = {self.video.origine}
+#index de depart = {self.premiere_image_pointee}
+#echelle {self.video.echelle_image.longueur_reelle_etalon} m pour {self.video.echelle_image.longueur_pixel_etalon()} pixel
+#echelle pointee en {self.video.echelle_image.p1 if self.video.echelle_faite else None} {self.video.echelle_image.p2 if self.video.echelle_faite else None}
+#intervalle de temps : {self.deltaT}
+#suivi de {self.nb_de_points} point(s)
+#{msg}
+#        """
+        self.dbg.p(1, "rentre dans 'load_lignes_donnees'")
+        en_tete = [l for l in lignes if l[0] == "#"]
+        dico_donnee={}
+        for l in en_tete:
+            if re.match("#echelle pointee en .*", l):
+                self.echelle_faite = l.split()[-1]!='None'
+                if self.echelle_faite:
+                    x = float(l.split()[3][1:-1])
+                    y = float(l.split()[4][:-1])
+                    self.echelle_image.p1 = vecteur(x, y)
+                    x = float(l.split()[5][1:-1])
+                    y = float(l.split()[6][:-1])
+                    self.echelle_image.p2 = vecteur(x, y)
+            m = re.match("#echelle (.*) m pour .* pixel.*", l)
+            if m:
+                self.echelle_image.longueur_reelle_etalon = float(m.group(1))
+            m = re.match("#(.*) = (.*)", l)
+            if m:
+                dico_donnee[m.group(1)] = m.group(2).strip()
+            m = re.match("#intervalle de temps : (.*)", l)
+            if m:
+                self.deltaT = float(m.group(1))
+            m = re.match("#suivi de (.*) point(s)", l)
+            if m:
+                self.nb_de_points = int(m.group(1))
+
+        self.filename = dico_donnee["video"]
+        self.sens_X = int(dico_donnee['sens axe des X'])
+        self.sens_Y = int(dico_donnee['sens axe des Y'])
+        largeur = int(dico_donnee['largeur video'])
+        hauteur = int(dico_donnee['hauteur video'])
+        self.rotation = dico_donnee['rotation'] in ("1", "True")
+        self.origine = vecteur(
+            dico_donnee['origine de pointage'].split()[-2][1:-1],
+            dico_donnee['origine de pointage'].split()[-1][:-1]
+        )
+        self.premier_chargement_fichier_mecavideo = True
+        self.premiere_image_pointee = int(dico_donnee['index de depart'])
+
+        self.calcul_deltaT(rouvre=True)
+        self.resize(QSize(largeur, hauteur))
+        ########redimensionne l'application TODO : ATTENTION
+        decalage_gauche = 220
+        decalage_haut = 130
+        self.app.setGeometry(self.pos().x(),self.pos().y()+37, self.width()+decalage_gauche, self.height()+decalage_haut)
+
+        self.init_cvReader()
+        return dico_donnee
+
+    def check_uncheck_direction_axes(self):
+        """
+        met à jour les axes selon les sens connus
+        """
+        if self.sens_X == -1:
+            self.checkBox_abscisses.setChecked(1)
+        else:
+            self.checkBox_abscisses.setChecked(0)
+        if self.sens_Y == -1:
+            self.checkBox_ordonnees.setChecked(1)
+        else:
+            self.checkBox_ordonnees.setChecked(0)
         return
 
