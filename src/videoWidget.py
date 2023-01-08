@@ -38,32 +38,50 @@ from suivi_auto import SelRectWidget
 
 import icon_rc
 
-class VideoWidget(ImageWidget):
+class VideoPointeeWidget(ImageWidget, Pointage):
+    """
+    Cette classe permet de gérer une séquence d'images extraites d'une vidéo
+    et les pointages qu'on peut réaliser à la souris ou automatiquement,
+    pour suivre les mouvements d'un ou plusieurs objets.
+    """
+
     def __init__(self, parent):
-        ImageWidget.__init__(self, parent)
+        Pointage.__init__(self)
         self.app = None        # pointeur vers la fenêtre principale
         self.zoom = None       # pointeur vers le widget de zoom
         self.hotspot = None    # vecteur (position de la souris)
-        self.points_ecran = {} # dictionnaire des pointages
-        self.cible_icon = ":/data/icones/curseur_cible.svg"        
-        pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
+        pix = QPixmap(":/data/icones/curseur_cible.svg").scaledToHeight(32, 32)
         self.cursor = QCursor(pix)
-        self.setCursor(self.cursor)
-        self.pos_zoom = vecteur(50, 50)
-        self.image_w = self.width()  # deux valeurs par défaut
-        self.image_h = self.height() # pas forcément pertinentes
+        self.setCursor(self.cursor)     # le curseur en forme de cible
+        self.pos_zoom = vecteur(50, 50) # point initialement grossi dans le zoom
+        self.image_w = self.width()     # deux valeurs par défaut
+        self.image_h = self.height()    # pas forcément pertinentes
         self.setMouseTracking(True)
         self.origine = vecteur(self.width()//2, self.height()//2)
         self.echelle_image = echelle()  # objet gérant l'échelle
-        # TODO
-        self.decal = vecteur(0, 0)  # if video is not 4:3, center video
-
-        self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray", "green", "red", "blue", "cyan", "magenta",
-                         "yellow", "gray", "green"]
-        self.tourne = False
-        self.premier_resize = True
+        self.decal = vecteur(0, 0)      # if video is not 4:3, center video
+        self.couleurs = [
+            "red", "blue", "cyan", "magenta", "yellow", "gray", "green"] *2
+        self.tourne = False    # au cas où on fait tourner les images
+        self.premier_resize = True # devient faux après redimensionnement
+        self.rotation = False  # permet de retourner une vidéo mal prise
+        self.image_max = None  # numéro de la dernière image de la vidéo
+        self.framerate = None  # nombre d'images par seconde
+        # dimensions natives des images de la vidéo
+        self.largeurFilm, self.hauteurFilm = None, None
+        self.index = None      # index de l'image courante
+        self.objet_courant = 1 # désignation de l'objet courant
+        self.a_une_image = False # indication quant à une image disponible
+        self.imageExtraite = None # référence de l'image courante
+        self.origine = None      # position de l'origine sur les images
+        self.lance_capture = False # un pointage est en cours
+        self.decal = vecteur(0,0)  # décalage des images
+        self.echelle_faite = False # vrai quand l'échelle est définie
+        self.nb_objets = None      # nombre d'objets suivis
+        self.echelle_trace = None  # widget pour tracer l'échelle
+        self.selRect = None        # un objet gérant la sélection par rectangle
         return
-
+    
     def setApp(self, app):
         """
         Connecte le videoWidget à sa fenêtre principale, et connecte
@@ -71,11 +89,12 @@ class VideoWidget(ImageWidget):
         pouvoir contrôler
         """
         self.app = app
-        self.dbg = app.dbg
-        self.horizontalSlider = app.horizontalSlider
-        self.spinBox_image = app.spinBox_image
-        self.spinBox_nb_de_points = app.spinBox_nb_de_points
-        self.spinBox_chrono = app.spinBox_chrono
+        attributes = [
+            "dbg", "horizontalSlider",
+            "spinBox_image", "spinBox_nb_de_points", "spinBox_chrono",
+        ]
+        for a in attributes:
+            setattr(self, a, getattr(app,a))
         self.Bouton_lance_capture = app.Bouton_lance_capture
         self.Bouton_Echelle = app.Bouton_Echelle
         self.tabWidget = app.tabWidget
@@ -118,15 +137,47 @@ class VideoWidget(ImageWidget):
         self.zoom.fait_crop(self.image, position)
         return
     
+    def cache_zoom(self):
+        return
+
+    def placeImage(self, im, ratio):
+        """
+        place une image dans le widget, en conservant le ratio de cette image
+        @param im une image
+        @param ratio le ratio à respecter
+        @return l'image, redimensionnée selon le ratio
+        """
+        self.image_w = min(self.width(), round(self.height() * ratio))
+        self.image_h = round(self.image_w / ratio)
+        self.setMouseTracking(True)
+        image = im.scaled(self.image_w, self.image_h)
+        self.app.imageAffichee = image # verrue nécessaire avant met_a_jour_crop
+        self.setImage(image)
+        self.updateZoom()
+        self.reinit_origine()
+        return image
+    
+    def reinit_origine(self):
+        """
+        Replace l'origine au centre de l'image
+        """
+        self.origine = vecteur(self.image_w//2, self.image_h//2)
+        return
+
     def reinit(self):
-        """
-        méthode appelée par reinitialise_capture de la fenêtre principale
-        """
+        self.updateZoom()
+        self.setMouseTracking(True)
         self.update()
         self.setCursor(Qt.ArrowCursor)
         self.setEnabled(1)
         self.reinit_origine()
-        
+        return
+
+    def maj(self, tourne=False):
+        if tourne:
+            self.tourne = True
+        return
+
     def resizeEvent(self, e):
         if self.premier_resize:  # Au premier resize, la taille est changée mais pas l'origine.
             self.premier_resize = False
@@ -159,19 +210,9 @@ class VideoWidget(ImageWidget):
                     self.echelle_image.p1, self.echelle_image.p2)
             #self.app.premier_chargement_fichier_mecavideo = False
 
-    def reinit(self):
-        self.updateZoom()
-        self.setMouseTracking(True)
-
-    def reinit_origine(self):
-        """
-        Replace l'origine au centre de l'image
-        """
-        self.origine = vecteur(self.image_w//2, self.image_h//2)
-
     def storePoint(self, point):
         if self.app.lance_capture == True:
-            self.app.enregistre_dans_listePoints(point)
+            ## obsolète : self.app.enregistre_dans_listePoints(point)
             self.app.clic_sur_video_signal.emit()
             self.updateZoom(self.hotspot)
             self.update()
@@ -188,7 +229,8 @@ class VideoWidget(ImageWidget):
 
     def objetSuivant(self):
         """
-        effectue une rotation ... passage à l'objet suivant pour le pointage.
+        passage à l'objet suivant pour le pointage.
+        revient au premier objet quand on a fait le dernier
         """
         self.objet_courant += 1
         if self.objet_courant >= len(self.suivis):
@@ -196,71 +238,20 @@ class VideoWidget(ImageWidget):
         return
 
     def enterEvent(self, event):
+        ### vérifier : cette méthode semble peu utile ???
         if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
             pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
             self.cursor = QCursor(pix)
             self.setCursor(self.cursor)
         else:
             self.setCursor(Qt.ArrowCursor)
-
-    def maj(self, tourne=False):
-        self.dbg.p(1, "rentre dans 'label_video.maj'")
-        
-        if tourne:
-            self.tourne = True
-
-
+        return
+    
     def mouseMoveEvent(self, event):
-        if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
+        if self.app.lance_capture == True and self.app.auto == False:
+            # ne se lance que si la capture manuelle est lancée
             self.hotspot = vecteur(event.x(), event.y())
             self.updateZoom(self.hotspot)
-
-    def cache_zoom(self):
-        pass
-
-    def placeImage(self, im, ratio):
-        """
-        place une image dans le widget, en conservant le ratio de cette image
-        @param im une image
-        @param ratio le ratio à respecter
-        @return l'image, redimensionnée selon le ratio
-        """
-        self.image_w = min(self.width(), round(self.height() * ratio))
-        self.image_h = round(self.image_w / ratio)
-        self.setMouseTracking(True)
-        image = im.scaled(self.image_w, self.image_h)
-        self.app.imageAffichee = image # verrue nécessaire avant met_a_jour_crop
-        self.setImage(image)
-        self.updateZoom()
-        self.reinit_origine()
-        return image
-    
-class VideoPointeeWidget(VideoWidget, Pointage):
-    """
-    Cette classe permet de gérer une séquence d'images extraites d'une vidéo
-    et les pointages qu'on peut réaliser à la souris ou automatiquement,
-    pour suivre les mouvements d'un ou plusieurs objets.
-    """
-
-    def __init__(self, parent):
-        VideoWidget.__init__(self, parent)
-        Pointage.__init__(self)
-        self.rotation = False  # permet de retourner une vidéo mal prise
-        self.image_max = None  # numéro de la dernière image de la vidéo
-        self.framerate = None  # nombre d'images par seconde
-        # dimensions natives des images de la vidéo
-        self.largeurFilm, self.hauteurFilm = None, None
-        self.index = None      # index de l'image courante
-        self.objet_courant = 1 # désignation de l'objet courant
-        self.a_une_image = False # indication quant à une image disponible
-        self.imageExtraite = None # référence de l'image courante
-        self.origine = None      # position de l'origine sur les images
-        self.lance_capture = False # un pointage est en cours
-        self.decal = vecteur(0,0)  # décalage des images
-        self.echelle_faite = False # vrai quand l'échelle est définie
-        self.nb_objets = None      # nombre d'objets suivis
-        self.echelle_trace = None  # widget pour tracer l'échelle
-        self.selRect = None        # un objet gérant la sélection par rectangle
         return
     
     def paintEvent(self, event):
