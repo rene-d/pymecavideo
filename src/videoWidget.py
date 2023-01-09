@@ -219,14 +219,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
     def storePoint(self, point):
         if self.lance_capture == True:
-            self.pointe(self.objet_courant, point, index=self.index)
+            self.pointe(self.objet_courant, point, index=self.index-1)
             self.app.clic_sur_video_signal.emit()
             self.updateZoom(self.hotspot)
             self.update()
 
     def mouseReleaseEvent(self, event):
         if self.lance_capture == True:
-            self.pointe(self.objet_courant, event, index=self.index)
+            self.pointe(self.objet_courant, event, index=self.index-1)
             self.objetSuivant()
             self.app.clic_sur_video_signal.emit()
             self.updateZoom(self.hotspot)
@@ -236,11 +236,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     def objetSuivant(self):
         """
         passage à l'objet suivant pour le pointage.
-        revient au premier objet quand on a fait le dernier
+        revient au premier objet quand on a fait le dernier, et
+        change d'image aussi
         """
         self.objet_courant += 1
         if self.objet_courant >= len(self.suivis):
             self.objet_courant = 1
+            if self.index < self.image_max:
+                self.index +=1
         return
 
     def enterEvent(self, event):
@@ -297,7 +300,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                             painter.drawLine(-2, 0, 2, 0)
                             painter.drawLine(0, -2, 0, 2)
                             painter.translate(-10, +10)
-                            painter.drawText(0, 0, str(color+1))
+                            painter.drawText(0, 0, str(color))
                             painter.translate(-point.x + 10, -point.y - 10)
 
             ############################################################
