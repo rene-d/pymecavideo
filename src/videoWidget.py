@@ -436,7 +436,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.trajectoire = {}
         self.calcul_deltaT()
         # on dimensionne les données pour les pointages
-        self.dimensionne(1, self.deltaT, self.image_max)
+        if self.nb_objets:
+            self.dimensionne(self.nb_objets, self.deltaT, self.image_max)
         self.active_controle_image()
         self.echelle_image = echelle()
         self.affiche_echelle()
@@ -631,6 +632,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.echelle_trace: self.echelle_trace.lower()
         self.nb_objets = self.spinBox_nb_de_points.value()
         self.affiche_nb_points(False)
+        self.dimensionne(self.nb_objets, self.deltaT, self.image_max)
         self.affiche_lance_capture(False)
         self.active_controle_image(False)
         self.tabWidget.setEnabled(1)

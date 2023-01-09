@@ -100,7 +100,7 @@ class Pointage(QObject):
             raise Exception("dans Pointage.pointe, la position est soit QMouseEvent, soit vecteur")
         if index is not None:
             date = index * self.deltaT
-        if date not in self.dates:
+        if date not in self.data:
             raise Exception(f"date incorrecte dans Pointage.pointe : {date}")
         self.data[date][objet] = position
         self.pileFaits.append((date, objet, position))
