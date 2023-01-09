@@ -221,7 +221,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                     self.echelle_image.p2 = vecteur(x, y)
                 self.feedbackEchelle(
                     self.echelle_image.p1, self.echelle_image.p2)
-            #self.app.premier_chargement_fichier_mecavideo = False
+        return
 
     def storePoint(self, point):
         if self.lance_capture == True:
@@ -333,10 +333,11 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
     def extract_image(self, index):
         """
-        extrait une image de la video à l'aide d'OpenCV et l'enregistre
-        @param video le nom du fichier video
-        @param index le numéro de l'image
-        @param force permet de forcer l'écriture d'une image
+        extrait une image de la video à l'aide d'OpenCV
+        @param index le numéro de l'image (commence à 1)
+
+        @return un boolen (ok), et l'image au format d'openCV ; l'image
+          au bon format pour Qt est dans self.imageExtraite
         """
         self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
         ok, image_opencv = self.cvReader.getImage(index, self.rotation)
@@ -825,7 +826,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             None,
             _translate("pymecavideo", "Définir léchelle", None),
             _translate("pymecavideo", "Quelle est la longueur en mètre de votre étalon sur l'image ?", None),
-            QLineEdit.Normal, "1.0")
+            QLineEdit.Normal,
+            f"{self.echelle_image.longueur_reelle_etalon:.3f}")
         if not ok:
             return
         try:
