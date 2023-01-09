@@ -1831,12 +1831,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     masse_objet = [
                         float(masse_objet_raw[0].replace(",", ".")), masse_objet_raw[1]]
                     if masse_objet[0] <= 0 or masse_objet[1] == False:
-                        self.mets_a_jour_widget_infos(_translate(
+                        self.affiche_barre_statut(_translate(
                             "pymecavideo", " Merci d'indiquer une masse valable", None))
                     self.masse_objet = float(masse_objet[0])
                 except Exception as err:
                     self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                    self.mets_a_jour_widget_infos(_translate(
+                    self.affiche_barre_statut(_translate(
                         "pymecavideo", " Merci d'indiquer une masse valable", None))
                     self.checkBox_Ec.setChecked(0)
         # initialise tout le tableau (nb de colonnes, unités etc.)
@@ -2057,13 +2057,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.affiche_grapheur()
         self.dessine_graphe()
 
-    def mets_a_jour_widget_infos(self, message):
+    def affiche_barre_statut(self, message):
         """
         On utilise la barre de status pour afficher les messages :
         permet de gagner de la place en envelant le message de statut
         @param message message à afficher
         """
-        self.dbg.p(1, "rentre dans 'mets_a_jour_widget_infos'")
+        self.dbg.p(1, "rentre dans 'affiche_barre_statut'")
         self.statusBar().showMessage(message)
 
     def openexample(self):

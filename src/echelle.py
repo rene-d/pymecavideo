@@ -158,7 +158,7 @@ class EchelleWidget(QWidget):
         epxParM = self.app.video.echelle_image.pxParM()
         self.app.video.affiche_echelle()
         # self.app.affiche_nb_points(True)
-        self.app.mets_a_jour_widget_infos(self.app.tr(
+        self.app.affiche_barre_statut(self.app.tr(
             u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
         self.app.video.mets_en_orange_echelle()
 
@@ -167,7 +167,7 @@ class EchelleWidget(QWidget):
         self.app.video.feedbackEchelle(self.p1, self.p2)
         self.app.video.change_axe_ou_origine()
         if not self.app.video.vide:  # si on a déjà pointé une position au moins
-            self.app.mets_a_jour_widget_infos(self.app.tr(
+            self.app.affiche_barre_statut(self.app.tr(
                 "Vous pouvez continuer votre acquisition"))
             self.app.affiche_nb_points(False)
             self.app.refait_echelle()

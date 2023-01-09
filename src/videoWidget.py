@@ -86,7 +86,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.auto = False          # devient vrai pour le pointage automatique
         self.sens_X = 1            # sens de l'axe des abscisses
         self.sens_Y = 1            # sens de l'axe des ordonnées
-        self.nb_clics = 1          # permet de garder le compte de pointages
 
         # connexion de signaux
         self.clic_sur_video_signal.connect(self.clic_sur_la_video)
@@ -342,7 +341,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
         ok, image_opencv = self.cvReader.getImage(index, self.rotation)
         if not ok:
-            self.mets_a_jour_widget_infos(
+            self.affiche_barre_statut(
                 _translate("pymecavideo", "Pymecavideo n'arrive pas à lire l'image", None))
             return False, None
         self.a_une_image = ok
@@ -503,7 +502,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app.menuE_xporter_vers.setEnabled(1)
         self.app.actionSaveData.setEnabled(1)
 
-        self.app.mets_a_jour_widget_infos(
+        self.app.affiche_barre_statut(
             _translate("pymecavideo", "Veuillez choisir une image (et définir l'échelle)", None))
         self.Bouton_Echelle.setEnabled(True)
         self.active_controle_image()
@@ -561,8 +560,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         affecte la ligne de statut et la ligne sous le zoom
         @param obj l'objet courant
         """
-        self.app.mets_a_jour_widget_infos(
-            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(obj+1))
+        self.app.affiche_barre_statut(
+            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(obj))
         return
 
     def clic_sur_la_video(self, liste_points=None, interactif=True):
@@ -576,18 +575,12 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.clic_sur_video_ajuste_ui(self.objet_courant)
         if self.index > self.image_max:
             self.lance_capture = False
-            self.mets_a_jour_widget_infos(_translate(
+            self.affiche_barre_statut(_translate(
                 "pymecavideo", "Vous avez atteint la fin de la vidéo", None))
             self.index = self.image_max
-        self.nb_clics += 1
-        if self.nb_clics == self.nb_objets:
-            self.nb_clics = 0
-            self.index += 1
-            self.affiche_image()
-
-            if self.refait_point :
-                #quand on refait 1 seul point faux.
-                self.fin_refait_point_depuis_tableau()
+        #if self.refait_point :
+        #    #quand on refait 1 seul point faux.
+        #    self.fin_refait_point_depuis_tableau()
         return
     
     def clic_sur_video_ajuste_ui(self, objet_courant):
@@ -648,7 +641,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if not rouvre :
             # si rouvre, self.premiere_image_pointee est déjà définie
             self.premiere_image_pointee = self.horizontalSlider.value()
-        self.affiche_point_attendu(0)
+        self.affiche_point_attendu(1)
         self.lance_capture = True
         self.app.fixeLesDimensions()
         self.setCursor(Qt.CrossCursor)
@@ -685,7 +678,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # automatic capture
         if self.checkBox_auto.isChecked():
             #self.auto = True
-            self.app.mets_a_jour_widget_infos(
+            self.app.affiche_barre_statut(
                 _translate("pymecavideo", "Pointage Automatique", None))
             reponse = QMessageBox.warning(None, "Capture Automatique",
                                           _translate("pymecavideo", """\
@@ -833,7 +826,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         try:
             reponse = float(reponse.replace(",", "."))
             if reponse <= 0:
-                self.app.mets_a_jour_widget_infos(_translate(
+                self.app.affiche_barre_statut(_translate(
                     "pymecavideo", " Merci d'indiquer une échelle valable", None))
             else:
                 self.echelle_image.etalonneReel(reponse)
@@ -841,7 +834,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.job.show()
                 self.change_axe_ou_origine()
         except ValueError as err:
-            self.mets_a_jour_widget_infos(_translate(
+            self.affiche_barre_statut(_translate(
                 "pymecavideo", " Merci d'indiquer une échelle valable", None))
             self.demande_echelle()
         return
