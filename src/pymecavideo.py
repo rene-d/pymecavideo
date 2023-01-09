@@ -420,7 +420,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     
 
     ############ les signaux spéciaux #####################
-    clic_sur_video_signal = pyqtSignal()
     change_axe_origine = pyqtSignal()
     selection_done = pyqtSignal()
     selection_motif_done = pyqtSignal()
@@ -449,7 +448,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.Bouton_Echelle.clicked.connect(self.video.demande_echelle)
         self.video.active_controle_image()
         self.Bouton_lance_capture.clicked.connect(self.video.debut_capture)
-        self.clic_sur_video_signal.connect(self.video.clic_sur_la_video)
         self.comboBox_referentiel.currentIndexChanged.connect(
             self.tracer_trajectoires)
         #self.comboBox_mode_tracer.currentIndexChanged.connect(

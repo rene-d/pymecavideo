@@ -87,8 +87,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.sens_X = 1            # sens de l'axe des abscisses
         self.sens_Y = 1            # sens de l'axe des ordonnées
         self.nb_clics = 1          # permet de garder le compte de pointages
+
+        # connexion de signaux
+        self.clic_sur_video_signal.connect(self.clic_sur_la_video)
         return
-    
+
+    # signaux
+    clic_sur_video_signal = pyqtSignal()
+
     def setApp(self, app):
         """
         Connecte le videoWidget à sa fenêtre principale, et connecte
@@ -220,7 +226,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     def storePoint(self, point):
         if self.lance_capture == True:
             self.pointe(self.objet_courant, point, index=self.index-1)
-            self.app.clic_sur_video_signal.emit()
+            self.clic_sur_video_signal.emit()
             self.updateZoom(self.hotspot)
             self.update()
 
@@ -228,7 +234,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.lance_capture == True:
             self.pointe(self.objet_courant, event, index=self.index-1)
             self.objetSuivant()
-            self.app.clic_sur_video_signal.emit()
+            self.clic_sur_video_signal.emit()
             self.updateZoom(self.hotspot)
             self.update()
         return
@@ -247,8 +253,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def enterEvent(self, event):
-        ### vérifier : cette méthode semble peu utile ???
-        if self.lance_capture == True and self.auto == False:  # ne se lance que si la capture est lancée
+        if self.lance_capture == True and self.auto == False:
+            # beau curseur seulment si la capture manuelle est lancée
             beauGrosCurseur(self)
         else:
             self.setCursor(Qt.ArrowCursor)
@@ -300,7 +306,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                             painter.drawLine(-2, 0, 2, 0)
                             painter.drawLine(0, -2, 0, 2)
                             painter.translate(-10, +10)
-                            painter.drawText(0, 0, str(color))
+                            painter.drawText(0, 0, str(obj))
                             painter.translate(-point.x + 10, -point.y - 10)
 
             ############################################################
@@ -422,7 +428,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.extract_image(1)
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
             self.cvReader.recupere_avi_infos(self.rotation)
-        # openCV renvoir quelques flottants, qu'il faut convertir en entiers
+        # openCV renvoie quelques flottants, qu'il faut convertir en entiers
         self.framerate = round(self.framerate)
         self.image_max = round(self.image_max)
         self.ratio = self.largeurFilm / self.hauteurFilm
@@ -550,7 +556,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     
     def affiche_point_attendu(self, obj):
         """
-        Renseigne sur le numéro du point attendu
+        Renseigne sur le numéro d'objet du point attendu
         affecte la ligne de statut et la ligne sous le zoom
         @param obj l'objet courant
         """
@@ -561,8 +567,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     def clic_sur_la_video(self, liste_points=None, interactif=True):
         self.dbg.p(1, "rentre dans 'clic_sur_video'")
         self.lance_capture = True
-        self.dbg.p(2, "self.objet_courant %s" % self.objet_courant)
-        self.affiche_point_attendu(self.objet_courant)
         if self.index <= self.image_max:
             # si on n'atteint pas encore la fin de la vidéo
             self.purge_refaire() # oublie les pointages à refaire
@@ -580,7 +584,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.index += 1
             self.affiche_image()
 
-            if self.refait_point : #quand on refait 1 seul point faux.
+            if self.refait_point :
+                #quand on refait 1 seul point faux.
                 self.fin_refait_point_depuis_tableau()
         return
     
@@ -591,6 +596,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         """
         self.dbg.p(1, "rentre dans 'clic_sur_video_ajuste_ui'")
         self.affiche_image()
+        self.affiche_point_attendu(self.objet_courant)
         self.enableDefaire(self.peut_defaire())
         self.enableRefaire(self.peut_refaire())
         return
