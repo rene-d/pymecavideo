@@ -26,6 +26,7 @@ from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor,
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
+from globdef import beauGrosCurseur
 import os.path
 
 
@@ -42,15 +43,7 @@ class SelRectWidget(QWidget):
         self.setGeometry(
             QRect(0, 0, self.app.video.width(), self.app.video.height()))
         self.setAutoFillBackground(False)
-
-        # prend un beau gros curseur rouge inmanquable
-        self.cible_icon = os.path.join(
-            self.app._dir("icones"), "curseur_cible.svg")
-        pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
-        self.cursor = QCursor(pix)
-        self.setCursor(self.cursor)
-
-        self.setMouseTracking(True)
+        beauGrosCurseur(self)
         return
 
     def finish(self, delete=False):

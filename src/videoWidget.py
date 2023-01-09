@@ -31,7 +31,7 @@ from vecteur import vecteur
 from echelle import echelle, Echelle_TraceWidget, EchelleWidget
 from image_widget import ImageWidget
 from pointage import Pointage
-from globdef import _translate
+from globdef import _translate, beauGrosCurseur
 from cadreur import openCvReader
 from toQimage import toQImage
 from suivi_auto import SelRectWidget
@@ -63,27 +63,30 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.decal = vecteur(0, 0)      # if video is not 4:3, center video
         self.couleurs = [
             "red", "blue", "cyan", "magenta", "yellow", "gray", "green"] *2
-        self.tourne = False    # au cas où on fait tourner les images
+        self.tourne = False        # au cas où on fait tourner les images
         self.premier_resize = True # devient faux après redimensionnement
-        self.rotation = False  # permet de retourner une vidéo mal prise
-        self.image_max = None  # numéro de la dernière image de la vidéo
-        self.framerate = None  # nombre d'images par seconde
+        self.rotation = False      # permet de retourner une vidéo mal prise
+        self.image_max = None      # numéro de la dernière image de la vidéo
+        self.framerate = None      # nombre d'images par seconde
         # dimensions natives des images de la vidéo
         self.largeurFilm, self.hauteurFilm = None, None
-        self.index = None      # index de l'image courante
-        self.objet_courant = 1 # désignation de l'objet courant
-        self.a_une_image = False # indication quant à une image disponible
-        self.imageExtraite = None # référence de l'image courante
-        self.origine = None      # position de l'origine sur les images
+        self.index = None          # index de l'image courante
+        self.objet_courant = 1     # désignation de l'objet courant
+        self.a_une_image = False   # indication quant à une image disponible
+        self.imageExtraite = None  # référence de l'image courante
+        self.origine = None        # position de l'origine sur les images
         self.lance_capture = False # un pointage est en cours
         self.decal = vecteur(0,0)  # décalage des images
         self.echelle_faite = False # vrai quand l'échelle est définie
         self.nb_objets = None      # nombre d'objets suivis
+        self.modifie = False       # permet de suivre les pointages manuels
         self.echelle_trace = None  # widget pour tracer l'échelle
         self.selRect = None        # un objet gérant la sélection par rectangle
         self.lance_cature = False  # devient vrai quand on commence à pointer
+        self.auto = False          # devient vrai pour le pointage automatique
         self.sens_X = 1            # sens de l'axe des abscisses
         self.sens_Y = 1            # sens de l'axe des ordonnées
+        self.nb_clics = 1          # permet de garder le compte de pointages
         return
     
     def setApp(self, app):
@@ -215,14 +218,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             #self.app.premier_chargement_fichier_mecavideo = False
 
     def storePoint(self, point):
-        if self.app.lance_capture == True:
+        if self.lance_capture == True:
             self.pointe(self.objet_courant, point, index=self.index)
             self.app.clic_sur_video_signal.emit()
             self.updateZoom(self.hotspot)
             self.update()
 
     def mouseReleaseEvent(self, event):
-        if self.app.lance_capture == True:
+        if self.lance_capture == True:
             self.pointe(self.objet_courant, event, index=self.index)
             self.objetSuivant()
             self.app.clic_sur_video_signal.emit()
@@ -242,16 +245,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
     def enterEvent(self, event):
         ### vérifier : cette méthode semble peu utile ???
-        if self.app.lance_capture == True and self.app.auto == False:  # ne se lance que si la capture est lancée
-            pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
-            self.cursor = QCursor(pix)
-            self.setCursor(self.cursor)
+        if self.lance_capture == True and self.auto == False:  # ne se lance que si la capture est lancée
+            beauGrosCurseur(self)
         else:
             self.setCursor(Qt.ArrowCursor)
         return
     
     def mouseMoveEvent(self, event):
-        if self.app.lance_capture == True and self.app.auto == False:
+        if self.lance_capture == True and self.auto == False:
             # ne se lance que si la capture manuelle est lancée
             self.hotspot = vecteur(event.x(), event.y())
             self.updateZoom(self.hotspot)
@@ -557,16 +558,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     def clic_sur_la_video(self, liste_points=None, interactif=True):
         self.dbg.p(1, "rentre dans 'clic_sur_video'")
         self.lance_capture = True
-        # on fait des marques pour les points déjà visités
         self.dbg.p(2, "self.objet_courant %s" % self.objet_courant)
         self.affiche_point_attendu(self.objet_courant)
-        if self.index <= self.image_max:  # si on n'atteint pas encore la fin de la vidéo
-            self.lance_capture = True
-            self.stock_coordonnees_image(
-                ligne=int((len(self.listePoints)-1)/self.nb_objets))
+        if self.index <= self.image_max:
+            # si on n'atteint pas encore la fin de la vidéo
+            self.purge_refaire() # oublie les pointages à refaire
             if interactif:
                 self.modifie = True
-            self.clic_sur_video_ajuste_ui(self.point_attendu)
+            self.clic_sur_video_ajuste_ui(self.objet_courant)
         if self.index > self.image_max:
             self.lance_capture = False
             self.mets_a_jour_widget_infos(_translate(
@@ -578,10 +577,21 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.index += 1
             self.affiche_image()
 
-            if self.refait_point : #quandon refait 1 seul point faux.
+            if self.refait_point : #quand on refait 1 seul point faux.
                 self.fin_refait_point_depuis_tableau()
         return
     
+    def clic_sur_video_ajuste_ui(self, objet_courant):
+        """
+        Ajuste l'interface utilisateur pour attendre un nouveau clic
+        @param point_attendu le numéro du point qui est à cliquer
+        """
+        self.dbg.p(1, "rentre dans 'clic_sur_video_ajuste_ui'")
+        self.affiche_image()
+        self.enableDefaire(self.peut_defaire())
+        self.enableRefaire(self.peut_refaire())
+        return
+
     def affiche_nb_points(self, active=False):
         """
         Met à jour l'afficheur de nombre de points à saisir

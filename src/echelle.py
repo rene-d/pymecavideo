@@ -20,14 +20,14 @@
 """
 
 from math import sqrt
+import os
 
 from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
-import os
-
+from globdef import beauGrosCurseur
 
 class echelle(QObject):
     def __init__(self, p1=vecteur(0, 0), p2=vecteur(0, 0)):
@@ -104,11 +104,7 @@ class EchelleWidget(QWidget):
         self.p1 = vecteur()
         self.p2 = vecteur()
         self.pos_echelle = vecteur()
-        self.cible_icon = os.path.join(
-            self.app._dir("icones"), "curseur_cible.svg")
-        pix = QPixmap(self.cible_icon).scaledToHeight(32, 32)
-        self.cursor = QCursor(pix)
-        self.setCursor(self.cursor)
+        beauGrosCurseur(self)
         self.cropX2 = None
         self.setMouseTracking(True)
         self.pressed = False

@@ -24,6 +24,7 @@ from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QMouseEvent
 
 from vecteur import vecteur
+from collections import deque
 
 class Pointage(QObject):
     """
@@ -50,6 +51,8 @@ class Pointage(QObject):
         self.deltaT  = None
         self.echelle = None
         self.vide    = True
+        self.pileFaits = deque()     # pile pour mémoriser les pointages faits
+        self.pileArefaire = deque()  # pile pour mémoriser les pointages défaits
         return
 
     def setEchelle(self, echelle):
@@ -100,9 +103,50 @@ class Pointage(QObject):
         if date not in self.dates:
             raise Exception(f"date incorrecte dans Pointage.pointe : {date}")
         self.data[date][objet] = position
+        self.pileFaits.append((date, objet, position))
         self.vide = False
         return
 
+    def peut_defaire(self):
+        """
+        @return vrai si on peut défaire un pointage
+        """
+        return len(self.pileFaits) > 0
+    
+    def defaire(self):
+        """
+        Permet de défaire les pointages faits précédemment
+        """
+        if len(self.pileFaits) > 0:
+            date, objet, position = self.pileFaits.pop()
+            self.pileArefaire.append((date, objet, position))
+            self.data[date][objet] = None
+        return
+
+    def purge_refaire(self):
+        """
+        oublie les pointages à refaire
+        """
+        self.pileArefaire = deque()
+        return
+
+    def peut_refaire(self):
+        """
+        @return vrai si on peut refaire un pointage
+        """
+        return len(self.pileArefaire) > 0
+    
+    def refaire(self):
+        """
+        Refait un pointage si possible
+        """
+        if len(self.pileArefaire) > 0:
+            date, objet, position = self.pileArefaire.pop()
+            data[date][objet] = position
+            self.pileFaits.append((date, objet, position))
+        return
+            
+        
     def position(self, objet, index=None, date=None, unite="px"):
         """
         ajoute un pointage aux données ; on peut soit préciser l'index

@@ -321,9 +321,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
         self.dictionnaire_grandeurs = {}
         self.rouvert = False  # positionné a vrai si on vien d'ouvrir un fichier mecavideo
-        self.auto = False
         self.motif = []
-        self.video.lance_capture = False
         # est Vraie si le fichier est odifié. permet de sauvegarder les changements
         self.modifie = False
         self.points = {}  # dictionnaire des points cliqués, par n d'image.
@@ -1739,22 +1737,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(3, "origine %s, ref %s" %
                    (str(self.trajectoire_widget.origine), str(ref)))
         self.trajectoire_widget.reDraw()
-
-    def clic_sur_video_ajuste_ui(self, point_attendu):
-        """
-        Ajuste l'interface utilisateur pour attendre un nouveau clic
-        @param point_attendu le numéro du point qui est à cliquer
-        """
-        self.dbg.p(1, "rentre dans 'clic_sur_video_ajuste_ui'")
-        self.video.lance_capture = True
-        if point_attendu == 1:  # pour une acquisition sur une nouvelle image
-            self.dbg.p(1, "self.nb_image_deja_analysees >= len(self.points) ? %s %s" % (
-                len(self.listePoints), self.nb_de_points-len(self.listePoints) % self.nb_de_points))
-            self.affiche_image()
-            self.tracer_trajectoires("absolu")
-        self.affiche_image()
-        self.enableDefaire(len(self.listePoints) > 0)
-        self.enableRefaire(self.listePoints.nextCount() > 0)
 
     def enregistre_dans_listePoints(self, point, index=None):
         """

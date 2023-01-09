@@ -1,7 +1,28 @@
 # -*- coding: utf-8 -*-
+"""
+    suivi_auto, a module for pymecavideo:
+      a program to track moving points in a video frameset
+      
+    Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    Copyright (C) 2023 Georges Khaznadar <georgesk@debian.org>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 from version import Version
 from PyQt5.QtCore import QStandardPaths
+from PyQt5.QtGui import QPixmap, QCursor
 from PyQt5.QtWidgets import QApplication
 
 import subprocess
@@ -170,3 +191,15 @@ def _translate(context, text, disambig):
     return QApplication.translate(context, text, disambig)
 
 
+def beauGrosCurseur(widget):
+    """
+    Définit un beau gros curseur rouge immanquable pour un widget
+    @param widget le widget affecté par le curseur
+    """
+    cible_icon = os.path.join(ICON_PATH, "curseur_cible.svg")
+    pix = QPixmap(cible_icon).scaledToHeight(32, 32)
+    cursor = QCursor(pix)
+    widget.setCursor(cursor)
+    widget.setMouseTracking(True)
+    return
+    
