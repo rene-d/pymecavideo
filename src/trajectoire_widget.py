@@ -288,16 +288,8 @@ class TrajectoireWidget(ImageWidget):
         self.painter.begin(self)
         self.painter.setRenderHint(QPainter.Antialiasing)
 
-        listePoints = []
-        listeParImage = []
-
-        for point in self.video.app.listePoints:
-            #    #TODO :si quelqu'un veut implémenter un slicing de l'objet listePointee...
-            listeParImage.append(point[2])
-            if len(listeParImage) % self.video.app.nb_de_points == 0:
-                listePoints.append(listeParImage)
-                listeParImage = []
-
+        listePoints = [[self.video.data[t][obj] for obj in self.video.suivis] \
+                       for t in self.video.data]
         for no,points in enumerate(listePoints):
             color = 0
             num_point=0
@@ -307,7 +299,7 @@ class TrajectoireWidget(ImageWidget):
                 else:
                     ptreferentiel = vecteur(0, 0)
                     
-                if type(point) != type(""):
+                if point:
                     if self.chrono == 2:
                         self.painter.setPen(Qt.black)
                     else :
@@ -348,17 +340,17 @@ class TrajectoireWidget(ImageWidget):
             # self.painter.translate(0,0)
             self.painter.translate(
                 round(self.origine_mvt.x), round(self.origine_mvt.y))
-            p1 = QPoint(round(self.video.app.sens_X * (-40)), 0)
-            p2 = QPoint(round(self.video.app.sens_X * (40)), 0)
-            p3 = QPoint(round(self.video.app.sens_X * (36)), 2)
-            p4 = QPoint(round(self.video.app.sens_X * (36)), -2)
+            p1 = QPoint(round(self.video.sens_X * (-40)), 0)
+            p2 = QPoint(round(self.video.sens_X * (40)), 0)
+            p3 = QPoint(round(self.video.sens_X * (36)), 2)
+            p4 = QPoint(round(self.video.sens_X * (36)), -2)
             self.painter.scale(1, 1)
             self.painter.drawPolyline(p1, p2, p3, p4, p2)
-            self.painter.rotate(self.video.app.sens_X *
-                                self.video.app.sens_Y * (-90))
+            self.painter.rotate(self.video.sens_X *
+                                self.video.sens_Y * (-90))
             self.painter.drawPolyline(p1, p2, p3, p4, p2)
-            self.painter.rotate(self.video.app.sens_X *
-                                self.video.app.sens_Y * (90))
+            self.painter.rotate(self.video.sens_X *
+                                self.video.sens_Y * (90))
             self.painter.translate(
                 round(-self.origine_mvt.x), round(-self.origine_mvt.y))
             self.painter.end()
@@ -374,8 +366,8 @@ class TrajectoireWidget(ImageWidget):
                     self.painter.setRenderHint(QPainter.Antialiasing)
                     self.painter.setPen(QColor(self.couleurs[i - 1]))
                     try:
-                        speed = vector_speed.norme * float(self.video.echelle_image.mParPx()) / (2 * self.video.app.deltaT) * float(self.video.app.checkBoxScale.currentText())
-                        self.video.app.checkBoxScale.setStyleSheet(
+                        speed = vector_speed.norme * float(self.video.echelle_image.mParPx()) / (2 * self.video.deltaT) * float(self.video.checkBoxScale.currentText())
+                        self.video.checkBoxScale.setStyleSheet(
                             "background-color:none")
                         path = QPainterPath()
                         path.moveTo(0, 0)
@@ -395,7 +387,7 @@ class TrajectoireWidget(ImageWidget):
 
                         path.moveTo(0, 0)
                     except ValueError:
-                        self.video.app.checkBoxScale.setStyleSheet(
+                        self.video.checkBoxScale.setStyleSheet(
                             "background-color: red")
                     self.painter.end()
                 else:

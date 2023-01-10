@@ -113,7 +113,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             "Bouton_lance_capture", "pushButton_rot_droite",
             "pushButton_rot_gauche", "pushButton_defait", "pushButton_refait",
             "pushButton_stopCalculs", "checkBox_Ec", "checkBox_Em",
-            "checkBox_Epp",
+            "checkBox_Epp", "checkBoxScale",
         ]
         for a in attributes:
             setattr(self, a, getattr(app,a))
