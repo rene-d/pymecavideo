@@ -1134,3 +1134,37 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         for point in self.pointsFound:
             self.video.storePoint(vecteur(point[0], point[1]))
 
+    def recalculLesCoordonnees(self):
+        """
+        permet de remplir le tableau des coordonnées à la demande. 
+        Se produit quand on ouvre un fichier mecavideo ou quand on 
+        redéfinit l'échelle
+        """
+        self.dbg.p(1, "Rentre dans recalculLesCoordonnees" )
+
+        nb_suivis = len(self.suivis)
+        for i,t in enumerate(self.data):
+            self.tableWidget.insertRow(i)
+            self.tableWidget.setItem(i, 0, QTableWidgetItem(str(t)))
+            for j, obj in enumerate(self.data[t]):
+                if self.data[t][obj]:
+                    p = self.pointEnMetre(self.data[t][obj])
+                    self.tableWidget.setItem(
+                        i, j*(nb_suivis)+1, QTableWidgetItem(str(p.x)))
+                    self.tableWidget.setItem(
+                        i, j*(nb_suivis) + 2, QTableWidgetItem(str(p.y)))
+        # esthétique : enleve la derniere ligne
+        self.tableWidget.removeRow(len(self.data))
+        return
+
+    def pointEnMetre(self, p):
+        """
+        renvoie un point, dont les coordonnées sont en mètre, dans un
+        référentiel "à l'endroit"
+        @param p un point en "coordonnées d'écran"
+        """
+        self.dbg.p(1, "rentre dans 'pointEnMetre'")
+        return vecteur(
+            self.sens_X * float(p.x - self.origine.x) * self.echelle_image.mParPx(),
+            self.sens_Y * float(self.origine.y - p.y) * self.echelle_image.mParPx())
+

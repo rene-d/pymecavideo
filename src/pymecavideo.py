@@ -695,15 +695,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.sens_Y = 1
         self.change_axe_origine.emit()
 
-    def pointEnMetre(self, p):
-        """
-        renvoie un point, dont les coordonnées sont en mètre, dans un
-        référentiel "à l\'endroit"
-        @param point un point en "coordonnées d\'écran"
-        """
-        self.dbg.p(1, "rentre dans 'pointEnMetre'")
-        return vecteur(self.sens_X * (float(p.x - self.video.origine.x) * self.video.echelle_image.mParPx()), self.sens_Y * float(self.video.origine.y - p.y) * self.video.echelle_image.mParPx())
-
     def presse_papier(self):
         """Sélectionne la totalité du tableau de coordonnées
         et l'exporte dans le presse-papier (l'exportation est implicitement
@@ -1848,27 +1839,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def calculeLesVitesses(self):
         """à partir des sets de points, renvoie les vitesses selon l'axe X, selon l'axe Y et les normes des vitesses"""
         self.vitesses = {}
-
-    def recalculLesCoordonnees(self):
-        """permet de remplir le tableau des coordonnées à la demande. Se produit quand on ouvre un fichier mecavideo ou quand on recommence l'échelle"""
-        self.dbg.p(1, "Rentre dans recalculLesCoordonnees" )
-        self.dbg.p(3, "Dans recalculLesCoordonnees, self.points {}".format(self.points) )
-        for i in range(len(self.points)):
-            self.tableWidget.insertRow(i)
-            self.tableWidget.setItem(
-                i, 0, QTableWidgetItem(self.points[i][0]))
-            for j in range(self.nb_de_points):
-                try:
-                    p = self.pointEnMetre(self.points[i][j+1])
-                    self.tableWidget.setItem(
-                        i, j*(self.nb_de_points)+1, QTableWidgetItem(str(p.x)))
-                    self.tableWidget.setItem(
-                        i, j*(self.nb_de_points) + 2, QTableWidgetItem(str(p.y)))
-                except Exception as err:
-                    self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                    pass  # si pas le bon nb de points cliqués
-        # esthétique : enleve la derniere ligne
-        self.tableWidget.removeRow(len(self.points))
 
     def closeEvent(self, event):
         """
