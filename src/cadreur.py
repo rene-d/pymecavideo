@@ -5,6 +5,7 @@
       a program to track moving points in a video frameset
       
     Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    Copyright (C) 2023 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -331,9 +332,7 @@ class openCvReader:
             print("could not retrieve informations from the video file.")
             print("assuming fps = 25, frame count = 10.")
             return 25, 10, 320, 200
-#        return fps, fcount
-        #print('cadreur', fps, fcount, int(largeur), int(hauteur))
-        return fps, fcount, int(largeur), int(hauteur)
+        return int(fps), int(fcount), int(largeur), int(hauteur)
 
     def __str__(self):
         return "<openCvReader instance: filename=%s, nextImage=%d>" % (self.filename, self.nextImage)

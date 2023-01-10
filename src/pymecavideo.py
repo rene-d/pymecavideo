@@ -470,12 +470,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_rot_droite.clicked.connect(self.tourne_droite)
         self.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
         self.change_axe_origine.connect(self.video.change_axe_ou_origine)
-        self.selection_done.connect(self.picture_detect)
-        self.selection_motif_done.connect(self.suiviDuMotif)
+        self.selection_done.connect(self.video.picture_detect)
+        self.selection_motif_done.connect(self.video.suiviDuMotif)
+        self.stopCalculs.connect(self.video.stopComputing)
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
         self.redimensionneSignal.connect(self.redimensionneFenetre)
-        self.stopCalculs.connect(self.stopComputing)
         self.pushButton_stopCalculs.clicked.connect(self.stopCalculs)
         self.updateProgressBar.connect(self.updatePB)
         self.exportCombo.currentIndexChanged.connect(self.export)
@@ -606,131 +606,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.radioButtonNearMouse.hide()
             self.radioButtonSpeedEveryWhere.hide()
             self.trajectoire_widget.reDraw()
-
-    def suiviDuMotif(self):
-        self.dbg.p(1, "rentre dans 'suiviDuMotif'")
-        if len(self.motif) == self.nb_de_points:
-            self.dbg.p(3, "selection des motifs finie")
-            self.selRect.finish(delete=True)
-            self.indexMotif = 0
-            self.pushButton_stopCalculs.setText("STOP")
-            self.pushButton_stopCalculs.setEnabled(1)
-            self.pushButton_stopCalculs.show()
-            self.video.setEnabled(0)
-            self.pileDeDetections = []
-            for i in range(self.video.index, int(self.video.image_max)+1):
-                for j in range(self.nb_de_points):
-                    self.pileDeDetections.append(i)
-            # programme le suivi du point suivant après un délai de 50 ms,
-            # pour laisser une chance aux évènement de l'interface graphique
-            # d'être traités en priorité
-            self.dbg.p(3, "self.pileDeDetections : %s" % self.pileDeDetections)
-            timer = QTimer.singleShot(50, self.detecteUnPoint)
-
-    # @time_it
-    def detecteUnPoint(self):
-        """
-        méthode (re)lancée pour les détections automatiques de points
-        traite une à une les données empilées dans self.pileDeDetections
-        et relance un signal si la pile n'est pas vide après chacun
-        des traitements.
-        """
-        self.dbg.p(1, "rentre dans 'detecteUnPoint'")
-        if self.pileDeDetections:
-            if len(self.pileDeDetections) % self.nb_de_points != 0:
-                self.indexMotif += 1
-            else:
-                self.indexMotif = 0
-            index_de_l_image= self.pileDeDetections.pop(0)
-            texteDuBouton = "STOP (%d)" % index_de_l_image
-            self.pushButton_stopCalculs.setText(texteDuBouton)
-            # TODO : principal point noir du calcul.
-            self.dbg.p(2, "On lance la detection avec : self.motif %s, self.indexMotif %s" % (
-                self.motif, self.indexMotif))
-            point = filter_picture(
-                self.motif, self.indexMotif, self.imageAffichee, self.pointsProbables)
-            self.pointsProbables[0] = point
-            self.video.storePoint(vecteur(point[0], point[1]))
-
-            # programme le suivi du point suivant après un délai de 5 ms,
-            # pour laisser une chance aux évènement de l'interface graphique
-            # d'être traités en priorité
-            timer = QTimer.singleShot(5, self.detecteUnPoint)
-        else:
-            self.stopCalculs.emit()
-
-    def storeMotif(self):
-        self.dbg.p(1, "rentre dans 'storeMotif'")
-        if len(self.motif) == self.nb_de_points:
-            self.dbg.p(3, "selection des motifs finie")
-            self.selRect.finish()
-            self.indexMotif = 0
-            self.pushButton_stopCalculs.setText("STOP")
-            self.pushButton_stopCalculs.setEnabled(1)
-            self.pushButton_stopCalculs.show()
-            self.video.setEnabled(0)
-            self.goCalcul = True
-            # TODO : tests avec les différents mode de threading
-            if self.methode_thread == 1:
-                self.monThread = MonThreadDeCalcul(
-                    self, self.motif[self.indexMotif], self.imageAffichee)
-                self.monThread.start()
-            elif self.methode_thread == 2:  # 1 thread par image
-                for i in range((self.video.image_max-self.premiere_image_pointee)*self.nb_de_points):
-                    self.liste_thread = [MonThreadDeCalcul2(
-                        self, self.image, self.motif[self.indexMotif], self.imageAffichee)]
-            elif self.methode_thread == 3:  # pour l'instant celle qui foncitonne le mieux
-                timer = QTimer.singleShot(5, self.detecteUnPoint)
-
-    def picture_detect(self):
-        """
-        Est lancée lors de la détection automatique des points. Gère l'ajout des thread de calcul.
-        self.motifs : tableau des motifs
-        """
-        self.dbg.p(1, "rentre dans 'picture_detect'")
-        self.dbg.p(3, "début 'picture_detect'" + str(self.indexMotif))
-        if self.video.index <= self.video.image_max:
-            self.pointsFound = []
-            if self.indexMotif <= len(self.motif) - 1:
-                self.dbg.p(1, "'picture_detect' : While")
-                self.pointTrouve = filter_picture(
-                    self.motif, self.indexMotif, self.imageAffichee, self.listePoints)
-                self.dbg.p(3, "Point Trouve dans mon Thread : " +
-                           str(self.pointTrouve))
-                self.onePointFind()
-                self.indexMotif += 1
-            else:
-                self.indexMotif = 0
-        if self.video.index == self.video.image_max:
-            if self.indexMotif == 0 and not self.goCalcul:  # dernier passage
-                self.stopCalculs.emit()
-            elif self.indexMotif == 0 and self.goCalcul:  # premier passage, premier calcul de la dernière image
-                self.goCalcul = False
-
-    def stopComputing(self):
-        self.dbg.p(1, "rentre dans 'stopComputing'")
-        self.pileDeDetections = []  # vide la liste des points à détecter encore
-        try:
-            if self.monThread:
-                self.monThread.stopped = True
-        except AttributeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
-        self.video.setEnabled(1)
-        self.pushButton_stopCalculs.setEnabled(0)
-        self.pushButton_stopCalculs.hide()
-        # rétablit les fonctions du spinbox et du slider pour gérer l'image
-        self.video.active_controle_image()
-        return
-
-    def onePointFind(self):
-        """est appelée quand un point a été trouvé lors de la détection automatique
-        self.pointFound : liste des points trouvés
-        """
-        self.dbg.p(1, "rentre dans 'onePointFind'")
-        self.pointsFound.append(self.pointTrouve)  # stock all points found
-        for point in self.pointsFound:
-            self.video.storePoint(vecteur(point[0], point[1]))
 
     def readStdout(self):
         self.dbg.p(1, "rentre dans 'readStdout'")
