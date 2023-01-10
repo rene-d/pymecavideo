@@ -78,7 +78,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.lance_capture = False # un pointage est en cours
         self.decal = vecteur(0,0)  # décalage des images
         self.echelle_faite = False # vrai quand l'échelle est définie
-        self.nb_objets = None      # nombre d'objets suivis
         self.modifie = False       # permet de suivre les pointages manuels
         self.echelle_trace = None  # widget pour tracer l'échelle
         self.selRect = None        # un objet gérant la sélection par rectangle
@@ -87,11 +86,13 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.sens_X = 1            # sens de l'axe des abscisses
         self.sens_Y = 1            # sens de l'axe des ordonnées
 
-        # connexion de signaux
+
+        # connexion des signaux
         self.clic_sur_video_signal.connect(self.clic_sur_la_video)
+
         return
 
-    # signaux
+    # signaux de la classe
     clic_sur_video_signal = pyqtSignal()
 
     def setApp(self, app):
@@ -101,33 +102,33 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         pouvoir contrôler
         """
         self.app = app
+        # réplication de certains attributs de la fenêtre principale
         attributes = [
             "dbg", "horizontalSlider",
             "spinBox_image", "spinBox_nb_de_points", "spinBox_chrono",
+            "Bouton_lance_capture", "Bouton_Echelle", "tabWidget",
+            "graphWidget", "tableWidget", "tab_traj", "comboBox_referentiel",
+            "pushButton_select_all_table", "pushButton_origine",
+            "checkBox_abscisses", "checkBox_ordonnees", "checkBox_auto",
+            "Bouton_lance_capture", "pushButton_rot_droite",
+            "pushButton_rot_gauche", "pushButton_defait", "pushButton_refait",
+            "pushButton_stopCalculs", "checkBox_Ec", "checkBox_Em",
+            "checkBox_Epp",
         ]
         for a in attributes:
             setattr(self, a, getattr(app,a))
-        self.Bouton_lance_capture = app.Bouton_lance_capture
-        self.Bouton_Echelle = app.Bouton_Echelle
-        self.tabWidget = app.tabWidget
-        self.graphWidget = app.graphWidget
-        self.tableWidget = app.tableWidget
-        self.tab_traj = app.tab_traj
-        self.comboBox_referentiel = app.comboBox_referentiel
-        self.pushButton_select_all_table = app.pushButton_select_all_table
-        self.pushButton_origine = app.pushButton_origine
-        self.checkBox_abscisses = app.checkBox_abscisses
-        self.checkBox_ordonnees = app.checkBox_ordonnees
-        self.checkBox_auto = app.checkBox_auto
-        self.Bouton_lance_capture = app.Bouton_lance_capture
-        self.pushButton_rot_droite = app.pushButton_rot_droite
-        self.pushButton_rot_gauche = app.pushButton_rot_gauche
-        self.pushButton_defait = app.pushButton_defait
-        self.pushButton_refait = app.pushButton_refait
-        self.pushButton_stopCalculs = app.pushButton_stopCalculs
-        self.checkBox_Ec = app.checkBox_Ec
-        self.checkBox_Em = app.checkBox_Em
-        self.checkBox_Epp = app.checkBox_Epp
+        # connexion de signaux de widgets
+        self.spinBox_nb_de_points.valueChanged.connect(self.redimensionne)
+        return
+    
+    def redimensionne(self):
+        """
+        redimensionne self.data (fonction de rappel connectée aux
+        changements de self.spinBox_nb_de_points
+        """
+        if self.image_max and self.deltaT:
+            self.dimensionne(
+                self.spinBox_nb_de_points.value(), self.deltaT, self.image_max)
         return
     
     def setZoom(self, zoom):
@@ -244,9 +245,12 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         revient au premier objet quand on a fait le dernier, et
         change d'image aussi
         """
-        self.objet_courant += 1
-        if self.objet_courant >= len(self.suivis):
-            self.objet_courant = 1
+        i = self.suivis.index(self.objet_courant)
+        if i < len(self.suivis) - 1 :
+            self.objet_courant = self.suivis[i+1]
+        else:
+            # on passe à l'image suivante, et on revient au premier objet
+            self.objet_courant = self.suivis[0]
             if self.index < self.image_max:
                 self.index +=1
         return
@@ -296,10 +300,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             if self.data:
                 for date in self.data:
                     for obj in self.data[date]:
-                        color = int(obj)
                         point = self.data[date][obj]
                         if point:
-                            painter.setPen(QColor(self.couleurs[color]))
+                            painter.setPen(QColor(self.couleurs[int(obj)-1]))
                             painter.setFont(QFont("", 10))
                             painter.translate(point.x, point.y)
                             painter.drawLine(-2, 0, 2, 0)
@@ -436,8 +439,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.trajectoire = {}
         self.calcul_deltaT()
         # on dimensionne les données pour les pointages
-        if self.nb_objets:
-            self.dimensionne(self.nb_objets, self.deltaT, self.image_max)
+        self.redimensionne()
         self.active_controle_image()
         self.echelle_image = echelle()
         self.affiche_echelle()
@@ -603,8 +605,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         """
         self.dbg.p(1, "rentre dans 'affiche_nb_points'")
         self.spinBox_nb_de_points.setEnabled(active)
-        if self.nb_objets:
-            self.spinBox_nb_de_points.setValue(self.nb_objets)
+        if self.data:
+            self.spinBox_nb_de_points.setValue(len(self.suivis))
         return
 
 
@@ -630,9 +632,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.setVisible(True)
         # nécessaire sinon, video n'est pas actif.
         if self.echelle_trace: self.echelle_trace.lower()
-        self.nb_objets = self.spinBox_nb_de_points.value()
-        self.affiche_nb_points(False)
-        self.dimensionne(self.nb_objets, self.deltaT, self.image_max)
         self.affiche_lance_capture(False)
         self.active_controle_image(False)
         self.tabWidget.setEnabled(1)
@@ -655,9 +654,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
         self.comboBox_referentiel.clear()
         self.comboBox_referentiel.insertItem(-1, "camera")
-        for i in range(self.nb_objets):
+        for obj in self.suivis:
             self.comboBox_referentiel.insertItem(-1, _translate(
-                "pymecavideo", "point N° {0}", None).format(i+1))
+                "pymecavideo", "point N° {0}", None).format(str(obj)))
 
         self.pushButton_origine.setEnabled(0)
         self.checkBox_abscisses.setEnabled(0)

@@ -349,7 +349,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.graphe_deja_choisi = None
         self.defixeLesDimensions()
         return
-    
+
     def init_interface(self, refait=0):
         self.dbg.p(1, "rentre dans 'init_interface'")
 
