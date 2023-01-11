@@ -194,12 +194,17 @@ class Pointage(QObject):
             return [self.data[t][objet]*mul for t in self.dates]
         return {t: self.data[t][objet]*mul for t in self.dates}
 
-    def __str__(self, sep =";", unite="px"):
+    def __str__(self):
+        return self.csv_string()
+
+    def csv_string(self, sep =";", unite="px", debut=1, origine=vecteur(0,0)):
         """
         renvoie self.data sous une forme acceptable (CSV)
         @param sep le séparateur de champ, point-virgule par défaut.
         @param unite l'unité du vecteur position : peut être "px" pour pixel
           (par défaut) ou "m" pour mètre
+        @param debut la première image qui a été pointée
+        @param origine un vecteur pour l'origine du repère ; (0,0) par défaut
         """
         if unite == "px":
             mul =1
@@ -214,12 +219,18 @@ class Pointage(QObject):
             en_tete.append(f"x{o}")
             en_tete.append(f"y{o}")
         result.append(sep.join(en_tete))
-        for t in self.data:
+        dates = list(self.data.keys())    # toutes les dates
+        dates_pointees = dates[debut-1:]  # dates qui commencent au début du pointage
+        dd = zip(dates, dates_pointees)   # zip des deux listes précédentes
+        for t, t_point in list(dd) :
+            # l'itération ne commence qu'à la première image pointée
+            # t est une date qui commence à zéro
+            # t_point commence au premier pointage
             ligne = [f"{t:.3f}"]
             for o in self.suivis:
-                if self.data[t][o] is not None:
-                    ligne.append(f"{self.data[t][o].x * mul:.3f}")
-                    ligne.append(f"{self.data[t][o].y * mul:.3f}")
+                if self.data[t_point][o] is not None:
+                    ligne.append(f"{self.sens_X   * (self.data[t_point][o].x - origine.x) * mul:.5f}")
+                    ligne.append(f"{- self.sens_Y * (self.data[t_point][o].y - origine.y) * mul:.5f}")
             result.append(sep.join(ligne))
         result.append("") # pour finir sur un saut de ligne
         return "\n".join(result)

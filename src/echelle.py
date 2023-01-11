@@ -83,7 +83,7 @@ class EchelleWidget(QWidget):
     Widget qui permet de définir l'échelles
 
     Paramètres du constructeur :
-    @param parent le widegt parent
+    @param parent le widget parent
     @param app pointeur vers l'application
 
     Propiétés

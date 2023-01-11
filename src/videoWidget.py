@@ -26,12 +26,13 @@ from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor,
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 import os, time, re
+import locale
 
 from vecteur import vecteur
 from echelle import echelle, Echelle_TraceWidget, EchelleWidget
 from image_widget import ImageWidget
 from pointage import Pointage
-from globdef import _translate, beauGrosCurseur
+from globdef import _translate, beauGrosCurseur, DOCUMENT_PATH
 from cadreur import openCvReader
 from toQimage import toQImage
 from suivi_auto import SelRectWidget
@@ -703,10 +704,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         if self.echelle_trace:
             self.echelle_trace.hide()
 
-        self.echelle_trace = Echelle_TraceWidget(
-            self, p1, p2)
+        self.echelle_trace = Echelle_TraceWidget(self, p1, p2)
         # on garde les valeurs pour le redimensionnement
-        self.dbg.p(2, "Points de l'echelle : p1 : %s, p2 : %s" % (p1, p2))
         self.echelle_trace.show()
         if self.echelle_faite:
             self.mets_en_orange_echelle()
@@ -861,6 +860,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.echelle_image = echelle()  # on réinitialise l'échelle
         # on récupère les données importantes
         dico_donnees = self.load_lignes_donnees(lignes)
+        print("GRRRR", self.echelle_image.p1, self.echelle_image.p2)
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
         self.app.init_interface()
         self.change_axe_ou_origine()
@@ -877,10 +877,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
 
 
-        # on régénère self.listePoints et self.points
+        # on régénère self.data
         index = -1
         for l in lignes:
-            if l[0] == "#":
+            if not l.strip() or l[0] == "#":
+                # on ne s'occupe ni des commentaires ni des lignes vides
                 pass
             else:
                 index += 1
@@ -892,13 +893,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 t = float(d[0].replace(",", "."))
                 obj = 1
                 for j in range(1, len(d), 2):
-                    x = -self.sens_X*round(float(d[j].replace(",", ".")) * self.echelle_image.pxParM())
-                    y = self.sens_Y*round((float(
+                    x = self.origine.x + self.sens_X * round(float(
+                        d[j].replace(",", ".")) * self.echelle_image.pxParM())
+                    y = self.origine.y - self.sens_Y * round((float(
                         d[j + 1].replace(",", ".")) * self.echelle_image.pxParM()))
-                    x_ = self.origine.x- x
-                    y_ = self.origine.y- y
-
-                    pos = vecteur(x_,y_)
+                    pos = vecteur(x,y)
                     self.pointe(obj, pos, index = \
                                 index + self.premiere_image_pointee - 1)
                     obj += 1
@@ -930,13 +929,13 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 #video = {self.filename}
 #sens axe des X = {self.sens_X}
 #sens axe des Y = {self.sens_Y}
-#largeur video = {self.video.width()}
-#hauteur video = {self.video.height()}
+#largeur video = {self.width()}
+#hauteur video = {self.height()}
 #rotation = {self.rotation}
-#origine de pointage = {self.video.origine}
+#origine de pointage = {self.origine}
 #index de depart = {self.premiere_image_pointee}
-#echelle {self.video.echelle_image.longueur_reelle_etalon} m pour {self.video.echelle_image.longueur_pixel_etalon()} pixel
-#echelle pointee en {self.video.echelle_image.p1 if self.video.echelle_faite else None} {self.video.echelle_image.p2 if self.video.echelle_faite else None}
+#echelle {self.echelle_image.longueur_reelle_etalon} m pour {self.echelle_image.longueur_pixel_etalon()} pixel
+#echelle pointee en {self.echelle_image.p1 if self.echelle_faite else None} {self.echelle_image.p2 if self.echelle_faite else None}
 #intervalle de temps : {self.deltaT}
 #suivi de {len(self.suivis)} point(s)
 #{msg}
@@ -948,12 +947,13 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             if re.match("#echelle pointee en .*", l):
                 self.echelle_faite = l.split()[-1]!='None'
                 if self.echelle_faite:
-                    x = float(l.split()[3][1:-1])
-                    y = float(l.split()[4][:-1])
-                    self.echelle_image.p1 = vecteur(x, y)
-                    x = float(l.split()[5][1:-1])
-                    y = float(l.split()[6][:-1])
-                    self.echelle_image.p2 = vecteur(x, y)
+                    x1 = float(l.split()[3][1:-1])
+                    y1 = float(l.split()[4][:-1])
+                    self.echelle_image.p1 = vecteur(x1, y1)
+                    x2 = float(l.split()[5][1:-1])
+                    y2 = float(l.split()[6][:-1])
+                    self.echelle_image.p2 = vecteur(x2, y2)
+                    print("GRRRR dans load_lignes_donnees", self.echelle_image.p1, self.echelle_image.p2)
             m = re.match("#echelle (.*) m pour .* pixel.*", l)
             if m:
                 self.echelle_image.longueur_reelle_etalon = float(m.group(1))
@@ -1137,7 +1137,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
     def recalculLesCoordonnees(self):
         """
         permet de remplir le tableau des coordonnées à la demande. 
-        Se produit quand on ouvre un fichier mecavideo ou quand on 
+        Se produit quand on ouvre un fichier pymecavideo ou quand on 
         redéfinit l'échelle
         """
         self.dbg.p(1, "Rentre dans recalculLesCoordonnees" )
@@ -1146,6 +1146,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         for i,t in enumerate(self.data):
             self.tableWidget.insertRow(i)
             self.tableWidget.setItem(i, 0, QTableWidgetItem(str(t)))
+            
             for j, obj in enumerate(self.data[t]):
                 if self.data[t][obj]:
                     p = self.pointEnMetre(self.data[t][obj])
@@ -1153,8 +1154,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         i, j*(nb_suivis)+1, QTableWidgetItem(str(p.x)))
                     self.tableWidget.setItem(
                         i, j*(nb_suivis) + 2, QTableWidgetItem(str(p.y)))
+            
         # esthétique : enleve la derniere ligne
-        self.tableWidget.removeRow(len(self.data))
+        #self.tableWidget.removeRow(len(self.data))
         return
 
     def pointEnMetre(self, p):
@@ -1167,4 +1169,64 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         return vecteur(
             self.sens_X * float(p.x - self.origine.x) * self.echelle_image.mParPx(),
             self.sens_Y * float(self.origine.y - p.y) * self.echelle_image.mParPx())
+
+    def enregistre_ui(self):
+        self.dbg.p(1, "rentre dans 'enregistre_ui'")
+        if not self.vide and  self.echelle_faite:
+            base_name = os.path.splitext(os.path.basename(self.filename))[0]
+            defaultName = os.path.join(DOCUMENT_PATH[0], base_name+'.mecavideo')
+            fichier = QFileDialog.getSaveFileName(
+                self,
+                _translate("pymecavideo", "Enregistrer le projet pymecavideo", None),
+                defaultName,
+                _translate("pymecavideo", "Projet pymecavideo (*.mecavideo)", None))
+            self.enregistre(fichier[0])
+        else :
+            QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Il manque les données, ou l'échelle", None), QMessageBox.Ok, QMessageBox.Ok)
+        return
+    
+    def enregistre(self, fichier):
+        """
+        Enregistre les données courantes dans un fichier,
+        à un format CSV, séparé par des tabulations
+        """
+        self.dbg.p(1, "rentre dans 'enregistre'")
+        sep_decimal = "."
+        if locale.getdefaultlocale()[0][0:2] == 'fr':
+            # en France, le séparateur décimal est la virgule
+            sep_decimal = ","
+        if not fichier:
+            return
+        with open(fichier, 'w') as outfile:
+            message = _translate(
+                "pymecavideo", "temps en seconde, positions en mètre", None)
+            outfile.write(self.entete_fichier(message))
+            self.echelle = self.echelle_image.pxParM()
+            donnees = self.csv_string(
+                sep = "\t", unite = "m",
+                debut = self.premiere_image_pointee,
+                origine = self.origine
+            ).replace(".",sep_decimal)
+            outfile.write(donnees)
+        self.modifie = False
+        return
+
+    def entete_fichier(self, msg=""):
+        self.dbg.p(1, "rentre dans 'entete_fichier'")
+        return f"""\
+#pymecavideo
+#video = {self.filename}
+#sens axe des X = {self.sens_X}
+#sens axe des Y = {self.sens_Y}
+#largeur video = {self.width()}
+#hauteur video = {self.height()}
+#rotation = {self.rotation}
+#origine de pointage = {self.origine}
+#index de depart = {self.premiere_image_pointee}
+#echelle {self.echelle_image.longueur_reelle_etalon} m pour {self.echelle_image.longueur_pixel_etalon()} pixel
+#echelle pointee en {self.echelle_image.p1 if self.echelle_faite else None} {self.echelle_image.p2 if self.echelle_faite else None}
+#intervalle de temps : {self.deltaT}
+#suivi de {len(self.suivis)} point(s)
+#{msg}
+#"""
 

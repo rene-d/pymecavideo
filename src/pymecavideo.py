@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys,os
+import sys,os, locale
 thisDir = os.path.dirname(__file__)
 sys.path.insert(0, thisDir)
 
@@ -12,7 +12,6 @@ from globdef import HOME_PATH, VIDEO_PATH, CONF_PATH, \
     _translate
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QVBoxLayout, QTableWidgetSelectionRange, QDialog, QAction, QPushButton
 import getopt
-import locale
 import traceback
 import time
 from aspectlayout import AspectLayout
@@ -441,7 +440,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.actionDefaire.triggered.connect(self.efface_point_precedent)
         self.actionRefaire.triggered.connect(self.refait_point_suivant)
         self.actionQuitter.triggered.connect(self.close)
-        self.actionSaveData.triggered.connect(self.enregistre_ui)
+        self.actionSaveData.triggered.connect(self.video.enregistre_ui)
         self.actionCopier_dans_le_presse_papier.triggered.connect(
             self.presse_papier)
         self.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
@@ -846,77 +845,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(1, "rentre dans 'showEvent'")
         self.redimensionneSignal.emit(0)
 
-    def entete_fichier(self, msg=""):
-        self.dbg.p(1, "rentre dans 'entete_fichier'")
-        return f"""\
-#pymecavideo
-#video = {self.filename}
-#sens axe des X = {self.sens_X}
-#sens axe des Y = {self.sens_Y}
-#largeur video = {self.video.width()}
-#hauteur video = {self.video.height()}
-#rotation = {self.rotation}
-#origine de pointage = {self.video.origine}
-#index de depart = {self.premiere_image_pointee}
-#echelle {self.video.echelle_image.longueur_reelle_etalon} m pour {self.video.echelle_image.longueur_pixel_etalon()} pixel
-#echelle pointee en {self.video.echelle_image.p1 if self.video.echelle_faite else None} {self.video.echelle_image.p2 if self.video.echelle_faite else None}
-#intervalle de temps : {self.deltaT}
-#suivi de {self.nb_de_points} point(s)
-#{msg}
-#"""
-
-    def enregistre(self, fichier):
-        self.dbg.p(1, "rentre dans 'enregistre'")
-        sep_decimal = "."
-        try:
-            if locale.getdefaultlocale()[0][0:2] == 'fr':
-                # en France, le séparateur décimal est la virgule
-                sep_decimal = ","
-        except TypeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
-        if fichier != "":
-            liste_des_cles = []
-            for key in self.points:
-                liste_des_cles.append(key)
-            ################## fin du fichier mecavideo ################
-            file = open(fichier, 'w')
-            try:
-                file.write(self.entete_fichier(_translate(
-                    "pymecavideo", "temps en seconde, positions en mètre", None)))
-                for cle in liste_des_cles:
-                    donnee = self.points[cle]
-                    t = float(donnee[0])
-                    a = ("\n%.2f\t" % t).replace(".", sep_decimal)
-                    for p in donnee[1:]:
-                        pm = self.pointEnMetre(p)
-                        a += ("%5f\t" % (pm.x)).replace(".", sep_decimal)
-                        a += ("%5f\t" % (pm.y)).replace(".", sep_decimal)
-                    file.write(a)
-            finally:
-                file.close()
-            ################# fin du fichier physique ################
-            self.modifie = False
-
-    def enregistre_ui(self):
-        self.dbg.p(1, "rentre dans 'enregistre_ui'")
-        if self.points != {} and  self.video.echelle_faite:
-            base_name = os.path.splitext(os.path.basename(self.filename))[0]
-            defaultName = os.path.join(DOCUMENT_PATH[0], base_name+'.mecavideo')
-            fichier = QFileDialog.getSaveFileName(self,
-                                              _translate(
-                                                  "pymecavideo", "Enregistrer le projet pymecavideo", None),
-                                              defaultName, _translate("pymecavideo", "Projet pymecavideo (*.mecavideo)", None))
-            try :
-                self.enregistre(fichier[0])
-            except Exception as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier", None).format(
-                        fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
-        else :
-            QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Il manque les ou l'échelle", None), QMessageBox.Ok, QMessageBox.Ok)
-        return
-    
     def cree_tableau(self):
         """
         Crée un tableau de coordonnées neuf dans l'onglet idoine.
