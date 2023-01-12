@@ -76,8 +76,8 @@ class SelRectWidget(QWidget):
 
     def mouseReleaseEvent(self, event):
         self.app.zoom = True
-        self.app.motif.append(self.getMotif())
-        self.app.selection_motif_done.emit()
+        self.app.video.motifs_auto.append(self.getMotif())
+        self.app.video.selection_motif_done.emit()
 
     def getMotif(self):
         """

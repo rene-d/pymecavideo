@@ -279,31 +279,30 @@ class openCvReader:
     def __nonzero__(self):
         return self.ok
 
-    def getImage(self, index, angle):
+    def getImage(self, index, angle=0, rgb=True):
         """
         récupère un array numpy
         @param index le numéro de l'image, commence à 1.
+        @param angle 0, 90, 18 ou -90 : rotation de l'image (0 par défaut)
+        @apame rgb (vrai par defaut) s'il est faux l'image est au format BGR
         @return le statut, l'image trouvée
         """
-        temps0 = time.time()
         if self.capture:
             if index != self.index_precedent+1:
+                # on ne force pas la position de lecture
+                # si on passe juste à l'image suivante
                 self.capture.set(cv2.CAP_PROP_POS_FRAMES, index-1)
-            try:
-                status, img = self.capture.read()
-                self.index_precedent = index
-            except cv2.error:
-                print("Erreur, image non décodée")
-                return False, None
-            except Exception as err:
-                print("Erreur :", err)
-                return False, None
+            status, img = self.capture.read()
+            self.index_precedent = index
             # convertit dans le bon format de couleurs
-            img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            if rgb:
+                return True, self.rotateImage(
+                    cv2.cvtColor(img, cv2.COLOR_BGR2RGB), angle)
+            else:
+                return True, self.rotateImage(
+                    img, angle)
         else:
             return False, None
-
-        return True, self.rotateImage(img2, angle)
 
     def rotateImage(self, img, angle):
         if angle == 90:

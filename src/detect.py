@@ -4,7 +4,7 @@
       this module implements the automatic detection of moving objects.
       
     Copyright (C) 2010 Jean-Baptiste Butet <ashashiwa@gmail.com>
-    Copyright (C) 2007-2018 Georges Khaznadar <georgesk.debian.org>
+    Copyright (C) 2007-2023 Georges Khaznadar <georgesk.debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import cv2
 import numpy as np
 
 from globdef import *
-
+from vecteur import vecteur
 
 import functools
 
@@ -49,45 +49,27 @@ def time_it(func):
 
 
 # @time_it
-def filter_picture(parts, num, image, points=None):
+def filter_picture(parts, num, cvReader, index, rotation, points=None):
     """
     Trouve la position d'une image partielle dans une image donnée
     @param parts une liste d'images partielles
-    @param num un index signalant le numéro du point à rechercher.
-    @param image l'image où on va chercher à trouver le motif partiel
+    @param num un index signalant le numéro de l'objet à rechercher.
+    @param cvReader est le lecteur qui donne accès aux images de la vidéo
+    @param index est le numéro de l'image à traiter
+    @param rotation est la rotation évnetuelle de l'image
     @param points liste de points près desquels il est plus vraisemblable
     de trouver le motif.
     @return les coordonnées d'un point, résultant du suivi automatique du
     motif partiel dans l'image.
     """
-    part = parts[num]
-
-    try:
-        if points:
-            point = points[num]
-    except IndexError:
-        point = None
-
-    if "QImage" in str(type(part)):
-        part = QImage2CVImage(part)
-
-    if type(image) == type("") and type(part) == type(""):
-        image = cv2.imread(image, 1)
-        part = cv2.imread(part, 1)
-        point = detect_part(part, image, point)
-        return (point[0]+part.shape[1]/2, point[1]+part.shape[0]/2)
-
-    elif "iplimage" in str(type(part)) and "iplimage" in str(type(image)):
-        point = detect_part(part, image, point)
-        return (point[0]+part.shape[1]/2, point[1]+part.shape[0]/2)
-
-    elif "QImage" in str(type(image)):
-        image = QImage2CVImage(image)
-        point = detect_part(part, image, point)  # TODO 130ms
-        return (point[0]+part.shape[1]/2, point[1]+part.shape[0]/2)
-
+    ok, image = cvReader.getImage(index, rotation, rgb=False)
+    part = QImage2CVImage(parts[num])
+    if points:
+        point = points[num]
     else:
-        return "Type Error"
+        point = None
+    point = detect_part(part, image, point)  # TODO 130ms
+    return (point[0]+part.shape[0]/2, point[1]+part.shape[1]/2)
 
 # @time_it
 
@@ -129,6 +111,7 @@ def detect_part(part, image, point=None):
     import numpy as np
     # méthode 1 :
     # cv2.TM_CCOEFF  Pour AMELIORER la vitesse, une possiblité est de réduire "image"
+    cv2.imshow("image", image); cv2.imshow("part", part);cv2.waitKey(0);cv2.destroyAllWindows()
     result = cv2.matchTemplate(image, part, cv2.TM_SQDIFF)
 
     ##########################################################
@@ -148,26 +131,18 @@ def detect_part(part, image, point=None):
     return minloc
 
 
-# @time_it
-# def QImage2CVImage_(img, dossierTemp):
-    # """ Convertit une QImage en une image CV
-    # """
-    #fichImg = os.path.join(dossierTemp + "image.png")
-    # img.save(fichImg) #100ms
-    #img_cv = cv2.imread(fichImg, 1)
-    # os.remove(fichImg)
-    # return img_cv
-
 
 def QImage2CVImage(incomingImage):
     '''  Converts a QImage into an opencv MAT format  '''
 
+    # conversion au format QImage.Format_RGB32 (0xRRGGBBff)
     incomingImage = incomingImage.convertToFormat(4)
 
     width = incomingImage.width()
     height = incomingImage.height()
 
     ptr = incomingImage.bits()
-    ptr.setsize(incomingImage.byteCount())
-    arr = np.array(ptr).reshape(height, width, 4)  # Copies the data
+    ptr.setsize(incomingImage.sizeInBytes())
+    arr = np.array(ptr).reshape(height, width, 4)[:,:,:3]
+    # on ne conserve pas l'opacité, donc le format devient RGB24 (0xRRGGBB)
     return arr

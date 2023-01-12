@@ -16,7 +16,6 @@ import traceback
 import time
 from aspectlayout import AspectLayout
 import functools
-from detect import filter_picture
 import numpy as np
 import math
 import tempfile
@@ -421,11 +420,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     ############ les signaux spéciaux #####################
     change_axe_origine = pyqtSignal()
     selection_done = pyqtSignal()
-    selection_motif_done = pyqtSignal()
     stopRedimensionnement = pyqtSignal()
     OKRedimensionnement = pyqtSignal()
     redimensionneSignal = pyqtSignal(bool)
-    stopCalculs = pyqtSignal()
     updateProgressBar = pyqtSignal()
     pythonsourceOK = pyqtSignal(list)
     #chrono_changed = pyqtSignal()
@@ -470,12 +467,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
         self.change_axe_origine.connect(self.video.change_axe_ou_origine)
         self.selection_done.connect(self.video.picture_detect)
-        self.selection_motif_done.connect(self.video.suiviDuMotif)
-        self.stopCalculs.connect(self.video.stopComputing)
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
         self.redimensionneSignal.connect(self.redimensionneFenetre)
-        self.pushButton_stopCalculs.clicked.connect(self.stopCalculs)
+        self.pushButton_stopCalculs.clicked.connect(self.video.stopCalculs)
         self.updateProgressBar.connect(self.updatePB)
         self.exportCombo.currentIndexChanged.connect(self.export)
         self.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
@@ -1722,23 +1717,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.clic_sur_video_ajuste_ui(0)
         self.tabWidget.setCurrentIndex(2)
 
-
-    def affiche_image_spinbox(self):
-        self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
-        if self.video.lance_capture:
-            if self.spinBox_image.value() < self.video.index:
-                # si le point est sur une image, on efface le point
-                if self.spinBox_image.value() == self.listePoints[len(self.listePoints)-1][0]:
-                    for i in range(self.nb_de_points):
-                        self.efface_point_precedent()
-            if self.spinBox_image.value() > self.video.index:
-                # on refait le point
-                if self.spinBox_image.value() <= self.listePoints[len(self.listePoints)-1][0]:
-                    for i in range(self.nb_de_points):
-                        #self.efface_point_precedent()
-                        self.refait_point_suivant()
-        self.video.index = self.spinBox_image.value()
-        self.video.affiche_image()
 
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")

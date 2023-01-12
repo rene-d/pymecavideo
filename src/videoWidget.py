@@ -36,6 +36,7 @@ from globdef import _translate, beauGrosCurseur, DOCUMENT_PATH
 from cadreur import openCvReader
 from toQimage import toQImage
 from suivi_auto import SelRectWidget
+from detect import filter_picture
 
 import icon_rc
 
@@ -87,14 +88,19 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.sens_X = 1            # sens de l'axe des abscisses
         self.sens_Y = 1            # sens de l'axe des ordonnées
         self.motifs_auto = []      # liste de motifs pour le suivi auto
+        self.pointsProbables = []  # liste de points proches de la détection ?
 
         # connexion des signaux
         self.clic_sur_video_signal.connect(self.clic_sur_la_video)
+        self.selection_motif_done.connect(self.suiviDuMotif)
+        self.stopCalculs.connect(self.stopComputing)
 
         return
 
     # signaux de la classe
     clic_sur_video_signal = pyqtSignal()
+    selection_motif_done = pyqtSignal()
+    stopCalculs = pyqtSignal()
 
     def setApp(self, app):
         """
@@ -393,7 +399,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 self.spinBox_image.setMaximum(int(self.image_max))
             self.horizontalSlider.valueChanged.connect(
                 self.app.affiche_image_slider_move)
-            self.spinBox_image.valueChanged.connect(self.app.affiche_image_spinbox)
+            self.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
         else:
             if self.horizontalSlider.receivers(self.horizontalSlider.valueChanged):
                 self.horizontalSlider.valueChanged.disconnect()
@@ -860,7 +866,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.echelle_image = echelle()  # on réinitialise l'échelle
         # on récupère les données importantes
         dico_donnees = self.load_lignes_donnees(lignes)
-        print("GRRRR", self.echelle_image.p1, self.echelle_image.p2)
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
         self.app.init_interface()
         self.change_axe_ou_origine()
@@ -953,7 +958,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     x2 = float(l.split()[5][1:-1])
                     y2 = float(l.split()[6][:-1])
                     self.echelle_image.p2 = vecteur(x2, y2)
-                    print("GRRRR dans load_lignes_donnees", self.echelle_image.p1, self.echelle_image.p2)
             m = re.match("#echelle (.*) m pour .* pixel.*", l)
             if m:
                 self.echelle_image.longueur_reelle_etalon = float(m.group(1))
@@ -1011,17 +1015,17 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def suiviDuMotif(self):
         self.dbg.p(1, "rentre dans 'suiviDuMotif'")
-        if len(self.motifs_auto) == self.nb_de_points:
+        if len(self.motifs_auto) == len(self.suivis):
             self.dbg.p(3, "selection des motifs finie")
             self.selRect.finish(delete=True)
             self.indexMotif = 0
             self.pushButton_stopCalculs.setText("STOP")
             self.pushButton_stopCalculs.setEnabled(1)
             self.pushButton_stopCalculs.show()
-            self.video.setEnabled(0)
+            self.setEnabled(0)
             self.pileDeDetections = []
-            for i in range(self.video.index, int(self.video.image_max)+1):
-                for j in range(self.nb_de_points):
+            for i in range(self.index, self.image_max+1):
+                for j in range(len(self.suivis)):
                     self.pileDeDetections.append(i)
             # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
@@ -1038,21 +1042,25 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         des traitements.
         """
         self.dbg.p(1, "rentre dans 'detecteUnPoint'")
+        print("GRRRR self.pileDeDetections =", self.pileDeDetections)
         if self.pileDeDetections:
-            if len(self.pileDeDetections) % self.nb_de_points != 0:
-                self.indexMotif += 1
-            else:
-                self.indexMotif = 0
+            # tant qu'il reste des points à détecter
             index_de_l_image= self.pileDeDetections.pop(0)
             texteDuBouton = "STOP (%d)" % index_de_l_image
             self.pushButton_stopCalculs.setText(texteDuBouton)
             # TODO : principal point noir du calcul.
-            self.dbg.p(2, "On lance la detection avec : self.motifs_auto %s, self.indexMotif %s" % (
-                self.motifs_auto, self.indexMotif))
+            for i in range(len(self.suivis)):
+                self.indexMotif = i
+                self.dbg.p(
+                    2,
+                    f"On lance la detection avec : self.motifs_auto {self.motifs_auto}, self.indexMotif {self.indexMotif}")
             point = filter_picture(
-                self.motifs_auto, self.indexMotif, self.imageAffichee, self.pointsProbables)
-            self.pointsProbables[0] = point
-            self.video.storePoint(vecteur(point[0], point[1]))
+                self.motifs_auto, self.indexMotif,
+                self.cvReader, self.index, self.rotation,
+                self.pointsProbables)
+            self.pointsProbables.append(point)
+            print("GRRRRR", point)
+            self.storePoint(vecteur(point[0], point[1]))
 
             # programme le suivi du point suivant après un délai de 5 ms,
             # pour laisser une chance aux évènement de l'interface graphique
@@ -1063,14 +1071,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def storeMotif(self):
         self.dbg.p(1, "rentre dans 'storeMotif'")
-        if len(self.motifs_auto) == self.nb_de_points:
+        if len(self.motifs_auto) == len(self.suivis):
             self.dbg.p(3, "selection des motifs finie")
             self.selRect.finish()
             self.indexMotif = 0
             self.pushButton_stopCalculs.setText("STOP")
             self.pushButton_stopCalculs.setEnabled(1)
             self.pushButton_stopCalculs.show()
-            self.video.setEnabled(0)
+            self.setEnabled(0)
             self.goCalcul = True
             # TODO : tests avec les différents mode de threading
             if self.methode_thread == 1:
@@ -1078,7 +1086,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     self, self.motifs_auto[self.indexMotif], self.imageAffichee)
                 self.monThread.start()
             elif self.methode_thread == 2:  # 1 thread par image
-                for i in range((self.video.image_max-self.premiere_image_pointee)*self.nb_de_points):
+                for i in range((self.image_max-self.premiere_image_pointee)*len(self.suivis)):
                     self.liste_thread = [MonThreadDeCalcul2(
                         self, self.image, self.motifs_auto[self.indexMotif], self.imageAffichee)]
             elif self.methode_thread == 3:  # pour l'instant celle qui foncitonne le mieux
@@ -1091,7 +1099,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         """
         self.dbg.p(1, "rentre dans 'picture_detect'")
         self.dbg.p(3, "début 'picture_detect'" + str(self.indexMotif))
-        if self.video.index <= self.video.image_max:
+        if self.index <= self.image_max:
             self.pointsFound = []
             if self.indexMotif <= len(self.motifs_auto) - 1:
                 self.dbg.p(1, "'picture_detect' : While")
@@ -1103,7 +1111,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.indexMotif += 1
             else:
                 self.indexMotif = 0
-        if self.video.index == self.video.image_max:
+        if self.index == self.image_max:
             if self.indexMotif == 0 and not self.goCalcul:  # dernier passage
                 self.stopCalculs.emit()
             elif self.indexMotif == 0 and self.goCalcul:  # premier passage, premier calcul de la dernière image
@@ -1112,17 +1120,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
     def stopComputing(self):
         self.dbg.p(1, "rentre dans 'stopComputing'")
         self.pileDeDetections = []  # vide la liste des points à détecter encore
-        try:
-            if self.monThread:
-                self.monThread.stopped = True
-        except AttributeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
-        self.video.setEnabled(1)
+        self.setEnabled(1)
         self.pushButton_stopCalculs.setEnabled(0)
         self.pushButton_stopCalculs.hide()
         # rétablit les fonctions du spinbox et du slider pour gérer l'image
-        self.video.active_controle_image()
+        self.active_controle_image()
         return
 
     def onePointFind(self):
@@ -1132,7 +1134,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.dbg.p(1, "rentre dans 'onePointFind'")
         self.pointsFound.append(self.pointTrouve)  # stock all points found
         for point in self.pointsFound:
-            self.video.storePoint(vecteur(point[0], point[1]))
+            self.storePoint(vecteur(point[0], point[1]))
 
     def recalculLesCoordonnees(self):
         """
@@ -1229,4 +1231,23 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 #suivi de {len(self.suivis)} point(s)
 #{msg}
 #"""
+
+    def affiche_image_spinbox(self):
+        self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
+        if self.lance_capture:
+            if self.spinBox_image.value() < self.index:
+                # si le point est sur une image, on efface le point
+                if self.spinBox_image.value() == self.listePoints[len(self.listePoints)-1][0]:
+                    for i in range(self.nb_de_points):
+                        self.efface_point_precedent()
+            if self.spinBox_image.value() > self.index:
+                # on refait le point
+                if self.spinBox_image.value() <= self.listePoints[len(self.listePoints)-1][0]:
+                    for i in range(self.nb_de_points):
+                        #self.efface_point_precedent()
+                        self.refait_point_suivant()
+        self.index = self.spinBox_image.value()
+        self.affiche_image()
+        return
+    
 
