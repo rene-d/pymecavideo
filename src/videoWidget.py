@@ -1061,6 +1061,10 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.pointsProbables.append(point)
             print("GRRRRR", point)
             self.storePoint(vecteur(point[0], point[1]))
+            # le point étant détecté, on passe à l'image suivante
+            if self.index < self.image_max:
+                self.index +=1
+                self.extract_image
 
             # programme le suivi du point suivant après un délai de 5 ms,
             # pour laisser une chance aux évènement de l'interface graphique
