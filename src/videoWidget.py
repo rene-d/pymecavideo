@@ -219,13 +219,12 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             if self.echelle_faite:
                 x = self.echelle_image.p1.x*ratiow
                 y = self.echelle_image.p1.y*ratioh
-                if not self.app.premier_chargement_fichier_mecavideo:
-                    self.echelle_image.p1 = vecteur(x, y)
+                self.echelle_image.p1 = vecteur(x, y)
 
                 x = self.echelle_image.p2.x*ratiow
                 y = self.echelle_image.p2.y*ratioh
-                if not self.app.premier_chargement_fichier_mecavideo:
-                    self.echelle_image.p2 = vecteur(x, y)
+                self.echelle_image.p2 = vecteur(x, y)
+                
                 self.feedbackEchelle(
                     self.echelle_image.p1, self.echelle_image.p2)
         return
@@ -694,7 +693,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             if self.selRect:
                 self.selRect.finish(delete=True)
             # in this widget, motif(s) are defined.
-            self.selRect = SelRectWidget(self, self.app)
+            self.selRect = SelRectWidget(self)
             self.selRect.show()
             # IMPORTANT : permet de gagner en fluidité de l'affichage
             # lors du pointage automatique.
@@ -1057,6 +1056,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             point = filter_picture(
                 self.motifs_auto, self.indexMotif,
                 self.cvReader, self.index, self.rotation,
+                self.image_w / self.largeurFilm,
                 self.pointsProbables)
             self.pointsProbables.append(point)
             print("GRRRRR", point)
@@ -1237,17 +1237,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         if self.lance_capture:
             if self.spinBox_image.value() < self.index:
                 # si le point est sur une image, on efface le point
-                if self.spinBox_image.value() == self.listePoints[len(self.listePoints)-1][0]:
-                    for i in range(self.nb_de_points):
+                if self.spinBox_image.value() == self.index:
+                    for i in range(len(self.suivis)):
                         self.efface_point_precedent()
             if self.spinBox_image.value() > self.index:
                 # on refait le point
-                if self.spinBox_image.value() <= self.listePoints[len(self.listePoints)-1][0]:
-                    for i in range(self.nb_de_points):
-                        #self.efface_point_precedent()
+                if self.spinBox_image.value() <= self.index:
+                    for i in range(len(self.suivis)):
                         self.refait_point_suivant()
         self.index = self.spinBox_image.value()
         self.affiche_image()
         return
-    
-

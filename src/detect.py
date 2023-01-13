@@ -49,27 +49,29 @@ def time_it(func):
 
 
 # @time_it
-def filter_picture(parts, num, cvReader, index, rotation, points=None):
+def filter_picture(parts, num, cvReader, index, rotation, echelle, points=None):
     """
     Trouve la position d'une image partielle dans une image donnée
-    @param parts une liste d'images partielles
+    @param parts une liste d'images partielles (au format d'openCV)
     @param num un index signalant le numéro de l'objet à rechercher.
     @param cvReader est le lecteur qui donne accès aux images de la vidéo
     @param index est le numéro de l'image à traiter
     @param rotation est la rotation évnetuelle de l'image
+    @param echelle est le ratio largeur d'image affichée / largeur du film
     @param points liste de points près desquels il est plus vraisemblable
     de trouver le motif.
-    @return les coordonnées d'un point, résultant du suivi automatique du
-    motif partiel dans l'image.
+    @return les coordonnées d'un point, dans les dimensions de l'image du
+      videowidget, résultant du suivi automatique du motif partiel dans l'image.
     """
     ok, image = cvReader.getImage(index, rotation, rgb=False)
-    part = QImage2CVImage(parts[num])
+    part = parts[num]
     if points:
         point = points[num]
     else:
         point = None
     point = detect_part(part, image, point)  # TODO 130ms
-    return (point[0]+part.shape[0]/2, point[1]+part.shape[1]/2)
+    return (echelle*(point[0]+part.shape[0]/2),
+            echelle*(point[1]+part.shape[1]/2))
 
 # @time_it
 
@@ -111,7 +113,6 @@ def detect_part(part, image, point=None):
     import numpy as np
     # méthode 1 :
     # cv2.TM_CCOEFF  Pour AMELIORER la vitesse, une possiblité est de réduire "image"
-    cv2.imshow("image", image); cv2.imshow("part", part);cv2.waitKey(0);cv2.destroyAllWindows()
     result = cv2.matchTemplate(image, part, cv2.TM_SQDIFF)
 
     ##########################################################
@@ -128,6 +129,7 @@ def detect_part(part, image, point=None):
 
     ########## ceci minimise les chances de trouver loin ###########
     m, M, minloc, maxloc = cv2.minMaxLoc(result)
+    print("GRRRR minloc, maxloc", minloc, maxloc)
     return minloc
 
 

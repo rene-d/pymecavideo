@@ -34,14 +34,17 @@ class SelRectWidget(QWidget):
     """
     Sert au retour visuel quand l'utilisateur doit sélectionner une
     zone rectangulaire pour le suivi automatique
+
+    paramètres du constructeur:
+    @param parent le widget parent, qui est un VideoWidget
     """
-    def __init__(self, parent, app):
+    def __init__(self, parent):
         """make a rectangle near point to be tracked"""
         QWidget.__init__(self, parent)
-        self.parent = parent
-        self.app = app
+        self.video = parent
+        self.echelle = parent.image_w/parent.largeurFilm
         self.setGeometry(
-            QRect(0, 0, self.app.video.width(), self.app.video.height()))
+            QRect(0, 0, self.video.image_w, self.video.image_h))
         self.setAutoFillBackground(False)
         beauGrosCurseur(self)
         return
@@ -71,27 +74,48 @@ class SelRectWidget(QWidget):
         if not self.hasMouseTracking():  # lancé lors de la sélection.
             self.x_2 = x
             self.y_2 = y
-        self.app.video.updateZoom(vecteur(x, y))
+        self.video.updateZoom(vecteur(x, y))
         self.update()
 
     def mouseReleaseEvent(self, event):
-        self.app.zoom = True
-        self.app.video.motifs_auto.append(self.getMotif())
-        self.app.video.selection_motif_done.emit()
+        self.video.motifs_auto.append(self.getMotif())
+        self.video.selection_motif_done.emit()
 
     def getMotif(self):
         """
         récupère le motif qui servira à la reconnaissance automatique
         sur les images successives.
-        @result une QImage représentant le motif.
+        @result une image au format openCV
         """
         x_depart = self.x_1 if self.x_1 < self.x_2 else self.x_2
         y_depart = self.y_1 if self.y_1 < self.y_2 else self.y_2
-        longueur = abs(self.x_2 - self.x_1)
+        largeur = abs(self.x_2 - self.x_1)
         hauteur = abs(self.y_2 - self.y_1)
 
-        rectangle = QRect(x_depart, y_depart, longueur, hauteur)
-        return self.app.imageAffichee.copy(rectangle)
+        # on a un rectangle délimité par un pointage sur le videoWidget
+        # qui a pu être redimensionné ; il faut en déduire un rectangle
+        # dans l'image vidéo originale
+        x, y, w, h = self.widget2filmRect(x_depart, y_depart, largeur, hauteur)
+        ok, image_opencv = self.video.cvReader.getImage(
+            self.video.index, self.video.rotation, rgb=False)
+        crop = image_opencv[y:y+h+1,x:x+w+1]
+        print("GRRRR x_depart, y_depart, largeur, hauteur", x_depart, y_depart, largeur, hauteur)
+        print("GRRRR, x, y, w, h", x, y, w, h)
+        import cv2; cv2.imshow("image", image_opencv); cv2.imshow("part", crop);cv2.waitKey(0);cv2.destroyAllWindows()
+        return crop
+
+    def widget2filmRect(self, x, y, w, h):
+        """
+        prend un rectangle spécifié dans le cadre du widget et le rend dans
+        le cadre des images du film
+        @param x abscisse dans le widget
+        @param y ordonnée dans le widget
+        @param w largeur dans le widget
+        @param h hauteur dans la widget
+        @return un quadruplet x, y, w, h dans le film
+        """
+        return round(x / self.echelle), round(y / self.echelle),\
+            round(w / self.echelle), round(h / self.echelle)
 
     def paintEvent(self, event):
         if not self.hasMouseTracking():
