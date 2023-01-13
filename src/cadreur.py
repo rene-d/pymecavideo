@@ -40,31 +40,31 @@ from itertools import cycle
 class Cadreur(QObject):
     """
     Un objet capable de recadrer une vidéo en suivant le déplacement
-    d'un point donné. La video de départ mesure 640x480
+    d'un point donné. 
+    Paramètres du constructeur :
+    @param obj le numéro de l'objet qui doit rester immobile
+    @param video le videoWidget où on a pointé les objets à suivre
+    @param titre le titre désiré pour la fenêtre
     """
 
-    def __init__(self, numpoint, app, titre=None):
-        """
-        Le constructeur.
-        @param numpoint le numéro du point qui doit rester immobile
-        @param app l'application Pymecavideo
-        @param titre le titre désiré pour la fenêtre
-        """
-        self.app = app
-        self.app.dbg.p(1, "In : Cadreur, __init__")
+    def __init__(self, obj, video, titre=None):
+        QObject.__init__(self)
+        self.video = video
         if titre == None:
-            self.titre = str(self.app.tr("Presser la touche ESC pour sortir"))
-
-        self.numpoint = numpoint
-        self.app = app
-
-        self.capture = cv2.VideoCapture(
-            str(self.app.filename.encode('utf8'), 'utf8'))
+            self.titre = str(self.tr("Presser la touche ESC pour sortir"))
+        self.obj = obj
+        # on s'intéresse à la trajectoire de l'objet servant de référentiel
+        self.trajectoire_obj = [video.data[t][obj] for t in video.dates
+                                if self.video.data[t][obj]]
+        # on fait la liste des index où l'objet a été pointé
+        self.index_obj = [i for i,t in enumerate(video.dates)
+                          if self.video.data[t][obj]]
+        self.capture = cv2.VideoCapture(self.video.filename)
         self.fps = self.capture.get(cv2.CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
-        self.app.dbg.p(2, "In : Video, self.numpoint %s" %
-                       (self.numpoint))
-        self.app.dbg.p(3, "In : Video, __init__, fps = %s and delay = %s" % (
+        self.video.dbg.p(2, "In : Video, self.obj %s" %
+                       (self.obj))
+        self.video.dbg.p(3, "In : Video, __init__, fps = %s and delay = %s" % (
             self.fps, self.delay))
 
         self.ralenti = 3
@@ -77,9 +77,9 @@ class Cadreur(QObject):
         à l'image effectivement trouvée dans le film, et la taille du film
         @return un triplet échelle, largeur, hauteur (de l'image dans le widget de de pymecavideo)
         """
-        m = self.app.imageExtraite.size()
-        echx = 1.0 * m.width() / self.app.video.width()
-        echy = 1.0 * m.height() / self.app.video.height()
+        m = self.video.imageExtraite.size()
+        echx = 1.0 * m.width() / self.video.width()
+        echy = 1.0 * m.height() / self.video.height()
         ech = max(echx, echy)
         return ech, int(m.width() / ech), int(m.height() / ech)
 
@@ -91,7 +91,7 @@ class Cadreur(QObject):
 
     def maxcadre(self):
         """
-        calcule le plus grand cadre qui peut suivre le point n° numpoint
+        calcule le plus grand cadre qui peut suivre le point n° obj
         sans déborder du cadre de la vidéo. Initialise self.rayons qui indique
         la taille de ce cadre, et self.decal qui est le décalage du point
         à suivre par rapport au centre du cadre.
@@ -100,13 +100,9 @@ class Cadreur(QObject):
 
         agauche = []
         dessus = []
-        for pp in self.app.points.values():
-            try:
-                agauche.append(pp[self.numpoint].x)
-                dessus.append(pp[self.numpoint].y)
-            except:
-                pass  # si il manque des points dans la dernière image)
-
+        for p in self.trajectoire_obj:
+            agauche.append(p.x)
+            dessus.append(p.y)
         adroite = [w - x - 1 for x in agauche]
         dessous = [h - y - 1 for y in dessus]
 
@@ -159,7 +155,8 @@ class RalentiWidget(QDialog):
         super().__init__()
         self.cadreur = parentObject
         self.ralenti = 1
-        self.images = cycle(self.cadreur.app.points.keys())
+        self.images   = cycle(self.cadreur.index_obj)
+        self.origines = cycle(self.cadreur.trajectoire_obj)
         self.delay = self.cadreur.delay
         self.ech, self.w, self.h = self.cadreur.echelleTaille()
         self.verticalLayout = QVBoxLayout(self)
@@ -230,25 +227,21 @@ class RalentiWidget(QDialog):
 
     def affiche_image(self):
         image_suivante = next(self.images)
-        try:
-            p = self.cadreur.app.points[image_suivante][self.cadreur.numpoint]
-            hautgauche = (p + self.cadreur.decal -
-                          self.cadreur.rayons) * self.ech
-            taille = self.cadreur.sz * self.ech
-            self.cadreur.capture.set(
-                cv2.CAP_PROP_POS_FRAMES, image_suivante + self.cadreur.app.premiere_image)
-            status, img = self.cadreur.capture.read()
-            img = self.cadreur.rotateImage(img, self.cadreur.app.rotation)
-            w, h = int(taille.x), int(taille.y)
-            x, y = int(hautgauche.x), int(hautgauche.y)
+        p              = next(self.origines) 
+        hautgauche = (p + self.cadreur.decal -
+                      self.cadreur.rayons) * self.ech
+        taille = self.cadreur.sz * self.ech
+        self.cadreur.capture.set(
+            cv2.CAP_PROP_POS_FRAMES, image_suivante)
+        status, img = self.cadreur.capture.read()
+        img = self.cadreur.rotateImage(img, self.cadreur.video.rotation)
+        w, h = int(taille.x), int(taille.y)
+        x, y = int(hautgauche.x), int(hautgauche.y)
 
-            # Crop from x, y, w, h -> 100, 200, 300, 400
-            crop_img = img[y:y+h, x:x+w]
-            # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
-            self.label_2.setPixmap(self.toQimage(crop_img))
-        except:
-            pass
-
+        crop_img = img[y:y+h, x:x+w]
+        # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
+        self.label_2.setPixmap(self.toQimage(crop_img))
+        return
 
 class openCvReader:
     """

@@ -988,8 +988,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         ref = self.comboBox_referentiel.currentText().split(" ")[-1]
         if len(ref) == 0 or ref == "camera":
             return
-        c = Cadreur(int(ref), self)
+        c = Cadreur(int(ref), self.video)
         c.montrefilm()
+        return
 
     def choix_onglets(self, newValue):
         """

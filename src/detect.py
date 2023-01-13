@@ -129,7 +129,6 @@ def detect_part(part, image, point=None):
 
     ########## ceci minimise les chances de trouver loin ###########
     m, M, minloc, maxloc = cv2.minMaxLoc(result)
-    print("GRRRR minloc, maxloc", minloc, maxloc)
     return minloc
 
 

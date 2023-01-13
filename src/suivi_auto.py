@@ -97,7 +97,7 @@ class SelRectWidget(QWidget):
         # on récupère la bonne image du film et on la découpe
         ok, image_opencv = self.video.cvReader.getImage(
             self.video.index, self.video.rotation, rgb=False)
-        return image_opencv[y:y+h+1,x:x+w+1]
+        return image_opencv[y:y+h,x:x+w]
 
     def paintEvent(self, event):
         if not self.hasMouseTracking():
