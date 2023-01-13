@@ -85,37 +85,19 @@ class SelRectWidget(QWidget):
         """
         récupère le motif qui servira à la reconnaissance automatique
         sur les images successives.
-        @result une image au format openCV
+        @result un morceau d'image au format openCV, directement tiré du film
         """
-        x_depart = self.x_1 if self.x_1 < self.x_2 else self.x_2
-        y_depart = self.y_1 if self.y_1 < self.y_2 else self.y_2
-        largeur = abs(self.x_2 - self.x_1)
-        hauteur = abs(self.y_2 - self.y_1)
-
         # on a un rectangle délimité par un pointage sur le videoWidget
         # qui a pu être redimensionné ; il faut en déduire un rectangle
-        # dans l'image vidéo originale
-        x, y, w, h = self.widget2filmRect(x_depart, y_depart, largeur, hauteur)
+        # dans l'image vidéo originale, d'où la division par self.echelle
+        x = round(min(self.x_1, self.x_2) / self.echelle)
+        y = round(min(self.y_1, self.y_2) / self.echelle)
+        w = round(abs(self.x_2 - self.x_1) / self.echelle)
+        h = round(abs(self.y_2 - self.y_1) / self.echelle)
+        # on récupère la bonne image du film et on la découpe
         ok, image_opencv = self.video.cvReader.getImage(
             self.video.index, self.video.rotation, rgb=False)
-        crop = image_opencv[y:y+h+1,x:x+w+1]
-        print("GRRRR x_depart, y_depart, largeur, hauteur", x_depart, y_depart, largeur, hauteur)
-        print("GRRRR, x, y, w, h", x, y, w, h)
-        import cv2; cv2.imshow("image", image_opencv); cv2.imshow("part", crop);cv2.waitKey(0);cv2.destroyAllWindows()
-        return crop
-
-    def widget2filmRect(self, x, y, w, h):
-        """
-        prend un rectangle spécifié dans le cadre du widget et le rend dans
-        le cadre des images du film
-        @param x abscisse dans le widget
-        @param y ordonnée dans le widget
-        @param w largeur dans le widget
-        @param h hauteur dans la widget
-        @return un quadruplet x, y, w, h dans le film
-        """
-        return round(x / self.echelle), round(y / self.echelle),\
-            round(w / self.echelle), round(h / self.echelle)
+        return image_opencv[y:y+h+1,x:x+w+1]
 
     def paintEvent(self, event):
         if not self.hasMouseTracking():

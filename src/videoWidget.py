@@ -1041,7 +1041,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         des traitements.
         """
         self.dbg.p(1, "rentre dans 'detecteUnPoint'")
-        print("GRRRR self.pileDeDetections =", self.pileDeDetections)
         if self.pileDeDetections:
             # tant qu'il reste des points à détecter
             index_de_l_image= self.pileDeDetections.pop(0)
@@ -1059,7 +1058,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.image_w / self.largeurFilm,
                 self.pointsProbables)
             self.pointsProbables.append(point)
-            print("GRRRRR", point)
             self.storePoint(vecteur(point[0], point[1]))
             # le point étant détecté, on passe à l'image suivante
             if self.index < self.image_max:
