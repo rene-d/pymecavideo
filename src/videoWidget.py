@@ -1051,29 +1051,33 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         """
         self.dbg.p(1, "rentre dans 'detecteUnPoint'")
         if self.pileDeDetections:
-            # tant qu'il reste des points à détecter
-            index_de_l_image= self.pileDeDetections.pop(0)
-            texteDuBouton = "STOP (%d)" % index_de_l_image
-            self.pushButton_stopCalculs.setText(texteDuBouton)
-            # TODO : principal point noir du calcul.
+            # on dépile un index de détections à faire et on met à jour
+            # le bouton de STOP
+            self.pushButton_stopCalculs.setText(
+                f"STOP ({self.pileDeDetections.pop(0)})")
+            ok, image = self.cvReader.getImage(
+                self.index, self.rotation, rgb=False)
+            # puis on boucle sur les objets à suivre et on
+            # détecte leurs positions
+            # Ça pourrait bien se faire dans des threads, en parallèle !!!
             for i in range(len(self.suivis)):
                 self.indexMotif = i
-                point = filter_picture(
-                    self.motifs_auto, self.indexMotif,
-                    self.cvReader, self.index, self.rotation,
-                    self.image_w / self.largeurFilm,
-                    self.pointsProbables.get(self.objet_courant, None))
+                part = self.motifs_auto[self.indexMotif]
+                zone_proche = self.pointsProbables.get(self.objet_courant, None)
+                echelle = self.image_w / self.largeurFilm
+                point = filter_picture(part, image, echelle, zone_proche)
                 self.pointsProbables[self.objet_courant] = point
                 self.storePoint(vecteur(point[0], point[1]))
                 # le point étant détecté, on passe à l'objet suivant
                 # et si nécessaire à l'image suivante
                 self.objetSuivant()
+            # le numéro d'image ayant changé, on la récupère à nouveau.
             self.extract_image
 
-            # programme le suivi du point suivant après un délai de 5 ms,
+            # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
-            timer = QTimer.singleShot(5, self.detecteUnPoint)
+            timer = QTimer.singleShot(50, self.detecteUnPoint)
         else:
             self.stopCalculs.emit()
 
