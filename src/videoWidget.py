@@ -125,7 +125,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         for a in attributes:
             setattr(self, a, getattr(app,a))
         # connexion de signaux de widgets
-        self.spinBox_nb_de_points.valueChanged.connect(self.redimensionne_data)
+        self.pinBox_nb_de_points.valueChanged.connect(self.redimensionne_data)
         return
     
     def redimensionne_data(self):
@@ -136,6 +136,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.image_max and self.deltaT:
             self.dimensionne(
                 self.spinBox_nb_de_points.value(), self.deltaT, self.image_max)
+            self.app.cree_tableau()
         return
     
     def setZoom(self, zoom):
