@@ -125,7 +125,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         for a in attributes:
             setattr(self, a, getattr(app,a))
         # connexion de signaux de widgets
-        self.pinBox_nb_de_points.valueChanged.connect(self.redimensionne_data)
+        self.spinBox_nb_de_points.valueChanged.connect(self.redimensionne_data)
         return
     
     def redimensionne_data(self):
@@ -136,8 +136,15 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.image_max and self.deltaT:
             self.dimensionne(
                 self.spinBox_nb_de_points.value(), self.deltaT, self.image_max)
-            self.app.cree_tableau()
+            self.app.cree_tableau(nb_obj = self.nb_obj)
         return
+
+    @property
+    def nb_obj(self):
+        """
+        @return le nombre d'objets suivis
+        """
+        return len(self.suivis)
     
     def setZoom(self, zoom):
         self.zoom = zoom
@@ -262,7 +269,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         change d'image aussi
         """
         i = self.suivis.index(self.objet_courant)
-        if i < len(self.suivis) - 1 :
+        if i < self.nb_obj - 1 :
             self.objet_courant = self.suivis[i+1]
         else:
             # on passe à l'image suivante, et on revient au premier objet
@@ -617,7 +624,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.dbg.p(1, "rentre dans 'affiche_nb_points'")
         self.spinBox_nb_de_points.setEnabled(active)
         if self.data:
-            self.spinBox_nb_de_points.setValue(len(self.suivis))
+            self.spinBox_nb_de_points.setValue(self.nb_obj)
         return
 
 
@@ -947,7 +954,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 #echelle {self.echelle_image.longueur_reelle_etalon} m pour {self.echelle_image.longueur_pixel_etalon()} pixel
 #echelle pointee en {self.echelle_image.p1 if self.echelle_faite else None} {self.echelle_image.p2 if self.echelle_faite else None}
 #intervalle de temps : {self.deltaT}
-#suivi de {len(self.suivis)} point(s)
+#suivi de {self.nb_obj} point(s)
 #{msg}
 #        """
         self.dbg.p(1, "rentre dans 'load_lignes_donnees'")
@@ -1020,7 +1027,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def suiviDuMotif(self):
         self.dbg.p(1, "rentre dans 'suiviDuMotif'")
-        if len(self.motifs_auto) == len(self.suivis):
+        if len(self.motifs_auto) == self.nb_obj:
             self.dbg.p(3, "selection des motifs finie")
             self.selRect.finish(delete=True)
             self.indexMotif = 0
@@ -1030,7 +1037,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.setEnabled(0)
             self.pileDeDetections = []
             for i in range(self.index, self.image_max+1):
-                for j in range(len(self.suivis)):
+                for j in range(self.nb_obj):
                     self.pileDeDetections.append(i)
             # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
@@ -1057,7 +1064,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             # puis on boucle sur les objets à suivre et on
             # détecte leurs positions
             # Ça pourrait bien se faire dans des threads, en parallèle !!!
-            for i in range(len(self.suivis)):
+            for i in range(self.nb_obj):
                 self.indexMotif = i
                 part = self.motifs_auto[self.indexMotif]
                 zone_proche = self.pointsProbables.get(self.objet_courant, None)
@@ -1080,7 +1087,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
     def storeMotif(self):
         self.dbg.p(1, "rentre dans 'storeMotif'")
-        if len(self.motifs_auto) == len(self.suivis):
+        if len(self.motifs_auto) == self.nb_obj:
             self.dbg.p(3, "selection des motifs finie")
             self.selRect.finish()
             self.indexMotif = 0
@@ -1095,7 +1102,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     self, self.motifs_auto[self.indexMotif], self.imageAffichee)
                 self.monThread.start()
             elif self.methode_thread == 2:  # 1 thread par image
-                for i in range((self.image_max-self.premiere_image_pointee)*len(self.suivis)):
+                for i in range((self.image_max-self.premiere_image_pointee)*self.nb_obj):
                     self.liste_thread = [MonThreadDeCalcul2(
                         self, self.image, self.motifs_auto[self.indexMotif], self.imageAffichee)]
             elif self.methode_thread == 3:  # pour l'instant celle qui foncitonne le mieux
@@ -1213,7 +1220,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 #echelle {self.echelle_image.longueur_reelle_etalon} m pour {self.echelle_image.longueur_pixel_etalon()} pixel
 #echelle pointee en {self.echelle_image.p1 if self.echelle_faite else None} {self.echelle_image.p2 if self.echelle_faite else None}
 #intervalle de temps : {self.deltaT}
-#suivi de {len(self.suivis)} point(s)
+#suivi de {self.nb_obj} point(s)
 #{msg}
 #"""
 
@@ -1223,12 +1230,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             if self.spinBox_image.value() < self.index:
                 # si le point est sur une image, on efface le point
                 if self.spinBox_image.value() == self.index:
-                    for i in range(len(self.suivis)):
+                    for i in range(self.nb_obj):
                         self.efface_point_precedent()
             if self.spinBox_image.value() > self.index:
                 # on refait le point
                 if self.spinBox_image.value() <= self.index:
-                    for i in range(len(self.suivis)):
+                    for i in range(self.nb_obj):
                         self.refait_point_suivant()
         self.index = self.spinBox_image.value()
         self.affiche_image()

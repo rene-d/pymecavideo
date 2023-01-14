@@ -845,15 +845,15 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Crée un tableau de coordonnées neuf dans l'onglet idoine.
         @param nb_obj le nombre d'objets suivis (1 par défaut)
         """
-        self.dbg.p(1, "rentre dans 'cree_tableau'")
         self.tableWidget.clear()
         self.tab_coord.setEnabled(1)
         self.tableWidget.setRowCount(1)
         colonnes_sup = self.checkBox_Ec.isChecked()+self.checkBox_Epp.isChecked() + \
             self.checkBox_Em.isChecked()
 
-        self.tableWidget.setColumnCount(
-            nb_obj * 2 + 2 + colonnes_sup*nb_obj) #ajout d'une colonne bouton
+        # 2 colonnes par objet, colonnes_sup colonnes par objet
+        # une pour la date, une pour refaire le pointage
+        self.tableWidget.setColumnCount(nb_obj * (2 + colonnes_sup) + 2)
 
         self.tableWidget.setDragEnabled(True)
         # on met des titres aux colonnes.
@@ -861,30 +861,26 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             0, QTableWidgetItem('t (s)'))
         self.tableWidget.setRowCount(len(self.video.data))
         for i in range(nb_obj):
-            if self.video.echelle_faite:
-                x = "X%d (m)" % (1 + i)
-                y = "Y%d (m)" % (1 + i)
-            else:
-                x = "X%d (px)" % (1 + i)
-                y = "Y%d (px)" % (1 + i)
-
+            unite = "m" if self.video.echelle_faite else "px"
             self.tableWidget.setHorizontalHeaderItem(
-                1 + (2+colonnes_sup) * i, QTableWidgetItem(x))
+                1 + (2+colonnes_sup) * i, QTableWidgetItem(
+                    f"X{i + 1} ({unite})"))
             self.tableWidget.setHorizontalHeaderItem(
-                2 + (2+colonnes_sup) * i, QTableWidgetItem(y))
+                2 + (2+colonnes_sup) * i, QTableWidgetItem(
+                f"Y{i + 1} ({unite})"))
             for j in range(colonnes_sup):
                 cptr = 0
                 if self.checkBox_Ec.isChecked():
                     self.tableWidget.setHorizontalHeaderItem(
-                        3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Ec%d (J)" % (1 + i)))
+                        3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"Ec{1 + i} (J)"))
                     cptr += 1
                 if self.checkBox_Epp.isChecked():
                     self.tableWidget.setHorizontalHeaderItem(
-                        3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Epp%d (J)" % (1 + i)))
+                        3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"Epp{1 + i} (J)"))
                     cptr += 1
                 if self.checkBox_Em.isChecked():
                     self.tableWidget.setHorizontalHeaderItem(
-                        3+cptr + (2+colonnes_sup)*i, QTableWidgetItem("Em%d (J)" % (1 + i)))
+                        3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"Em{1 + i} (J)"))
                     cptr += 1
         #dernier pour le bouton
         self.tableWidget.setHorizontalHeaderItem(
@@ -898,9 +894,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Se produit quand on ouvre un fichier pymecavideo ou quand on 
         redéfinit l'échelle
         """
-        nb_suivis = len(self.video.suivis)
+        nb_suivis = self.video.nb_obj
         for i,t in enumerate(self.video.dates):
-            self.tableWidget.setItem(i, 0, QTableWidgetItem(str(t)))
+            self.tableWidget.setItem(i, 0, QTableWidgetItem(f"{t:.3f}"))
             
             for j, obj in enumerate(self.video.suivis):
                 p = self.video.data[t][obj]
@@ -1633,13 +1629,14 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # masse de l'objet
         if self.checkBox_Ec.isChecked():
             if self.masse_objet == 0:
-                masse_objet_raw = QInputDialog.getText(None,
-                                                       _translate(
-                                                           "pymecavideo", "Masse de l'objet", None),
-                                                       _translate("pymecavideo",
-                                                                  "Quelle est la masse de l'objet ? (en kg)",
-                                                                  None),
-                                                       QLineEdit.Normal, u"1.0")
+                masse_objet_raw = QInputDialog.getText(
+                    None,
+                    _translate(
+                        "pymecavideo", "Masse de l'objet", None),
+                    _translate("pymecavideo",
+                               "Quelle est la masse de l'objet ? (en kg)",
+                               None),
+                    QLineEdit.Normal, u"1.0")
                 if masse_objet_raw[1] == False:
                     return None
                 try:
@@ -1655,11 +1652,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                         "pymecavideo", " Merci d'indiquer une masse valable", None))
                     self.checkBox_Ec.setChecked(0)
         # initialise tout le tableau (nb de colonnes, unités etc.)
-        self.cree_tableau()
+        self.cree_tableau(nb_obj = self.video.nb_obj)
         colonnes_sup = self.checkBox_Ec.isChecked() + \
             self.checkBox_Epp.isChecked() + \
             self.checkBox_Em.isChecked()
-        colonne_refait_points = len(self.video.suivis) * (2 + colonnes_sup) + 1
+        colonne_refait_points = self.video.nb_obj * (2 + colonnes_sup) + 1
         for ligne, t in enumerate(self.video.dates):
             # rentre le temps dans la première colonne
             self.tableWidget.setItem(
@@ -1669,37 +1666,38 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 if point:
                     pm = self.video.pointEnMetre(point)
                     self.tableWidget.setItem(
-                        ligne, i + 1, QTableWidgetItem(str(pm.x)))
+                        ligne, i + 1, QTableWidgetItem(f"{pm.x:.4g}"))
                     self.tableWidget.setItem(
-                        ligne, i + 2, QTableWidgetItem(str(pm.y)))
+                        ligne, i + 2, QTableWidgetItem(f"{pm.y:.4g}"))
                 i += 2+colonnes_sup
 
         # calculs des énergies
+        anciens_points = [None] * self.video.nb_obj
         for ligne, t  in enumerate(self.video.data):
-            i = 0
-            for point in [self.video.data[t][obj] for obj in self.video.suivis]:
-                ancienPoint = None
+            for obj in self.video.suivis:
+                i = int(obj) -1
+                point = self.video.data[t][obj]
                 v = None
                 if point:
                     pm = self.video.pointEnMetre(point)
-                    if ancienPoint != None:
-                        v = (pm - ancienPoint).norme / self.deltaT
-                    ancienPoint = pm
+                    if anciens_points[i] is not None:
+                        v = (pm - anciens_points[i]).norme / self.video.deltaT
+                    anciens_points[i] = pm
                     for j in range(colonnes_sup):
                         cptr = 0
-                        if self.checkBox_Ec.isChecked() and v:
+                        if self.checkBox_Ec.isChecked() and v is not None:
                             Ec = 0.5*self.masse_objet*v*v
                             self.tableWidget.setItem(
-                                ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Ec)))
+                                ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"{Ec:.4g}"))
                         cptr += 1
                         if self.checkBox_Epp.isChecked():
                             Epp = self.masse_objet*9.81*pm.y  # TODO faire varier g
                             self.tableWidget.setItem(
-                                ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Epp)))
+                                ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"{Epp:.4g}"))
                         cptr += 1
-                        if self.checkBox_Em.isChecked() and v:
+                        if self.checkBox_Em.isChecked() and v is not None:
                             self.tableWidget.setItem(
-                                ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(str(Ec+Epp)))
+                                ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"{Ec+Epp:.4g}"))
                         cptr += 1
                 i += 1
         ###Ajout d'un bouton pour refaire le point.
