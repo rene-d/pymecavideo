@@ -593,9 +593,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.affiche_barre_statut(_translate(
                 "pymecavideo", "Vous avez atteint la fin de la vidéo", None))
             self.index = self.image_max
-        #if self.refait_point :
-        #    #quand on refait 1 seul point faux.
-        #    self.fin_refait_point_depuis_tableau()
+        self.app.recalculLesCoordonnees()
         return
     
     def clic_sur_video_ajuste_ui(self, objet_courant):
@@ -791,8 +789,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.checkBox_Ec.setChecked(0)
         self.checkBox_Em.setChecked(0)
         self.checkBox_Epp.setChecked(0)
-        if self.tableWidget:
-            self.tableWidget.clear()
 
         # HACK : oblige le redimensionnement
         self.resize(self.size()+QSize(1, 0))
@@ -925,7 +921,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.affiche_image()  # on affiche l'image
         self.mets_en_orange_echelle()
         self.tableWidget.show()
-        self.recalculLesCoordonnees()
+        self.app.recalculLesCoordonnees()
         ##HACK oblige le redimensionnement pour mettre à jour l'image
         self.resize(self.size()+QSize(1, 0))
         self.resize(self.size()+QSize(-1, 0))
@@ -1137,6 +1133,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.pushButton_stopCalculs.hide()
         # rétablit les fonctions du spinbox et du slider pour gérer l'image
         self.active_controle_image()
+        self.app.recalculLesCoordonnees()
         return
 
     def onePointFind(self):
@@ -1147,31 +1144,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.pointsFound.append(self.pointTrouve)  # stock all points found
         for point in self.pointsFound:
             self.storePoint(vecteur(point[0], point[1]))
-
-    def recalculLesCoordonnees(self):
-        """
-        permet de remplir le tableau des coordonnées à la demande. 
-        Se produit quand on ouvre un fichier pymecavideo ou quand on 
-        redéfinit l'échelle
-        """
-        self.dbg.p(1, "Rentre dans recalculLesCoordonnees" )
-
-        nb_suivis = len(self.suivis)
-        for i,t in enumerate(self.data):
-            self.tableWidget.insertRow(i)
-            self.tableWidget.setItem(i, 0, QTableWidgetItem(str(t)))
-            
-            for j, obj in enumerate(self.data[t]):
-                if self.data[t][obj]:
-                    p = self.pointEnMetre(self.data[t][obj])
-                    self.tableWidget.setItem(
-                        i, j*(nb_suivis)+1, QTableWidgetItem(str(p.x)))
-                    self.tableWidget.setItem(
-                        i, j*(nb_suivis) + 2, QTableWidgetItem(str(p.y)))
-            
-        # esthétique : enleve la derniere ligne
-        #self.tableWidget.removeRow(len(self.data))
-        return
 
     def pointEnMetre(self, p):
         """
