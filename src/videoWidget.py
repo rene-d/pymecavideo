@@ -88,7 +88,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.sens_X = 1            # sens de l'axe des abscisses
         self.sens_Y = 1            # sens de l'axe des ordonnées
         self.motifs_auto = []      # liste de motifs pour le suivi auto
-        self.pointsProbables = []  # liste de points proches de la détection ?
+        self.pointsProbables = {}  # dictionnaire de points proches de la détection ?
 
         # connexion des signaux
         self.clic_sur_video_signal.connect(self.clic_sur_la_video)
@@ -125,10 +125,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         for a in attributes:
             setattr(self, a, getattr(app,a))
         # connexion de signaux de widgets
-        self.spinBox_nb_de_points.valueChanged.connect(self.redimensionne)
+        self.spinBox_nb_de_points.valueChanged.connect(self.redimensionne_data)
         return
     
-    def redimensionne(self):
+    def redimensionne_data(self):
         """
         redimensionne self.data (fonction de rappel connectée aux
         changements de self.spinBox_nb_de_points
@@ -191,6 +191,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.setCursor(Qt.ArrowCursor)
         self.setEnabled(1)
         self.reinit_origine()
+        self.pointsProbables = {}
+        self.motifs_auto = []
+        self.redimensionne_data()
         return
 
     def maj(self, tourne=False):
@@ -230,11 +233,17 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def storePoint(self, point):
+        """
+        enregistre un point, quand self.index et self.objet_courant
+        sont déjà bien réglés.
+        @param point la position à enregistrer
+        """
         if self.lance_capture == True:
             self.pointe(self.objet_courant, point, index=self.index-1)
             self.clic_sur_video_signal.emit()
             self.updateZoom(self.hotspot)
             self.update()
+        return
 
     def mouseReleaseEvent(self, event):
         if self.lance_capture == True:
@@ -442,7 +451,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.trajectoire = {}
         self.calcul_deltaT()
         # on dimensionne les données pour les pointages
-        self.redimensionne()
+        self.redimensionne_data()
         self.active_controle_image()
         self.echelle_image = echelle()
         self.affiche_echelle()
@@ -989,7 +998,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.cvReader.recupere_avi_infos(self.rotation)
         self.suivis = list(range(1, nb_suivis+1))
         self.spinBox_nb_de_points.setValue(nb_suivis)
-        self.redimensionne()
+        self.redimensionne_data()
         self.resize(QSize(largeur, hauteur))
         ########redimensionne l'application TODO : ATTENTION
         decalage_gauche = 220
@@ -1049,20 +1058,17 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             # TODO : principal point noir du calcul.
             for i in range(len(self.suivis)):
                 self.indexMotif = i
-                self.dbg.p(
-                    2,
-                    f"On lance la detection avec : self.motifs_auto {self.motifs_auto}, self.indexMotif {self.indexMotif}")
-            point = filter_picture(
-                self.motifs_auto, self.indexMotif,
-                self.cvReader, self.index, self.rotation,
-                self.image_w / self.largeurFilm,
-                self.pointsProbables)
-            self.pointsProbables.append(point)
-            self.storePoint(vecteur(point[0], point[1]))
-            # le point étant détecté, on passe à l'image suivante
-            if self.index < self.image_max:
-                self.index +=1
-                self.extract_image
+                point = filter_picture(
+                    self.motifs_auto, self.indexMotif,
+                    self.cvReader, self.index, self.rotation,
+                    self.image_w / self.largeurFilm,
+                    self.pointsProbables.get(self.objet_courant, None))
+                self.pointsProbables[self.objet_courant] = point
+                self.storePoint(vecteur(point[0], point[1]))
+                # le point étant détecté, on passe à l'objet suivant
+                # et si nécessaire à l'image suivante
+                self.objetSuivant()
+            self.extract_image
 
             # programme le suivi du point suivant après un délai de 5 ms,
             # pour laisser une chance aux évènement de l'interface graphique

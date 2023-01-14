@@ -49,7 +49,7 @@ def time_it(func):
 
 
 # @time_it
-def filter_picture(parts, num, cvReader, index, rotation, echelle, points=None):
+def filter_picture(parts, num, cvReader, index, rotation, echelle, zone_proche=None):
     """
     Trouve la position d'une image partielle dans une image donnée
     @param parts une liste d'images partielles (au format d'openCV)
@@ -58,18 +58,15 @@ def filter_picture(parts, num, cvReader, index, rotation, echelle, points=None):
     @param index est le numéro de l'image à traiter
     @param rotation est la rotation évnetuelle de l'image
     @param echelle est le ratio largeur d'image affichée / largeur du film
-    @param points liste de points près desquels il est plus vraisemblable
-    de trouver le motif.
+    @param zone_proche un vecteur près duquel pourrait bien se trouver
+      l'image recherchée ; peut être None, auquel cas on recherche dans
+      toute l'image
     @return les coordonnées d'un point, dans les dimensions de l'image du
       videowidget, résultant du suivi automatique du motif partiel dans l'image.
     """
     ok, image = cvReader.getImage(index, rotation, rgb=False)
     part = parts[num]
-    if points:
-        point = points[num]
-    else:
-        point = None
-    point = detect_part(part, image, point)  # TODO 130ms
+    point = detect_part(part, image, zone_proche)  # TODO 130ms
     return (echelle*(point[0]+part.shape[0]/2),
             echelle*(point[1]+part.shape[1]/2))
 
