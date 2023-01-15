@@ -81,7 +81,8 @@ class TrajectoireWidget(ImageWidget):
     def paintText(self, x, y, text,
                   color = Qt.white, bgcolor = Qt.lightGray,
                   fontsize = 12,
-                  fontfamily = None):
+                  fontfamily = None,
+                  center=False):
         """
         Trace un texte (self.painter doit être actif !)
         @param x abscisse
@@ -92,6 +93,7 @@ class TrajectoireWidget(ImageWidget):
           peut être None pour pas de fond
         @param fontsize taille de police (par défaut : 12)
         @param fontfamily famille de police (par défaut: None)
+        @param center (faux par défaut) centrage horizontal demandé
         """
         if fontfamily:
             font = QFont(fontfamily, fontsize, QFont.Bold)
@@ -103,12 +105,13 @@ class TrajectoireWidget(ImageWidget):
         text_width = font_metrics.width(text)
         text_height = fontsize
         self.painter.setPen(color)
+        offset_x = 0 if center == False else text_width // 2
         if bgcolor:
             self.painter.setBrush(bgcolor)
             self.painter.drawRect(
-                x-5, y-text_height-5,
+                x-5-offset_x, y-text_height-5,
                 text_width+10, text_height+10)
-        self.painter.drawText(x, y, text)
+        self.painter.drawText(x-offset_x, y, text)
         return
     
     def paintEvent(self, event):
@@ -164,10 +167,11 @@ class TrajectoireWidget(ImageWidget):
                     self.painter.drawLine(longueur+x1, y1-10, longueur+x1, y1+10)
                     text = "d = {0:.2e} m".format(self.video.echelle_image.longueur_reelle_etalon)
                     self.paintText(
-                        max(x1+round((longueur/2)-(text_width/2)), 0), y1+30,
+                        max(x1+round(longueur/2), 0), y1+30,
                         text,
                         color = Qt.black,
-                        bgcolor = None
+                        bgcolor = None,
+                        center = True
                     )
                 else : #échelle non faite
                     self.paintText(
