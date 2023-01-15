@@ -377,88 +377,86 @@ class PythonSource:
         if affiche_accel:
             calcule_accel = True
             calcule_vitesse = True
-        f = open(filepath, "w", encoding="UTF-8")
-        date = time.strftime("%d/%m/%y %H:%M")
-        f.write(f"#!/usr/bin/env python\n")
-        f.write(f"## Données exportées de Pymecavidéo\n## {date}\n")
-        f.write("\nimport numpy as np\nimport matplotlib.pyplot as plt\n")
-        f.write(f"\n# Intervalle de temps auto-détecté\ndt={app.deltaT}\n")
-        for i in range(app.nb_de_points):
-            f.write(f"\n# coordonnées du point numéro {i+1}\n")
-            ligne_x = f"x{i+1} = np.array(["
-            ligne_y = f"y{i+1} = np.array(["
-            for k in app.points.keys():
-                data = app.points[k]
-                for vect in data[1:]:
-                    vect = app.pointEnMetre(vect)
+        with open(filepath, "w", encoding="UTF-8") as f:
+            date = time.strftime("%d/%m/%y %H:%M")
+            f.write(f"#!/usr/bin/env python\n")
+            f.write(f"## Données exportées de Pymecavidéo\n## {date}\n")
+            f.write("\nimport numpy as np\nimport matplotlib.pyplot as plt\n")
+            f.write(f"\n# Intervalle de temps auto-détecté\ndt={app.video.deltaT}\n")
+            for obj in app.video.suivis:
+                f.write(f"\n# coordonnées du point numéro {obj}\n")
+                ligne_x = f"x{obj} = np.array(["
+                ligne_y = f"y{obj} = np.array(["
+                for t in app.video.dates:
+                    vect = app.video.pointEnMetre(app.video.data[t][obj])
                     ligne_x += f"{vect.x}, "
                     ligne_y += f"{vect.y}, "
-            ligne_x += "])\n"
-            ligne_y += "])\n"
-            f.write(ligne_x)
-            f.write(ligne_y)
-            f.write("""
-##############################################################
-# Le code auto-généré qui suit peut être effacé à volonté.   #
-##############################################################
-# Il n'est là qu'à titre d'exemple, et il n'est pas toujours #
-# approprié à l'usage des données que vous avez exportées.   #
-##############################################################
+                ligne_x += "])\n"
+                ligne_y += "])\n"
+                f.write(ligne_x)
+                f.write(ligne_y)
+                f.write("""
+    ##############################################################
+    # Le code auto-généré qui suit peut être effacé à volonté.   #
+    ##############################################################
+    # Il n'est là qu'à titre d'exemple, et il n'est pas toujours #
+    # approprié à l'usage des données que vous avez exportées.   #
+    ##############################################################
 
-## affichage des points
-plt.plot(x1,y1,'o',markersize= 3)
-plt.xlabel("x (en m)")
-plt.ylabel("y (en m)")
+    ## affichage des points
+    plt.plot(x1,y1,'o',markersize= 3)
+    plt.xlabel("x (en m)")
+    plt.ylabel("y (en m)")
 
-## calcul et affichage des vecteurs vitesses
+    ## calcul et affichage des vecteurs vitesses
 
 
 
-%s
-%s
+    %s
+    %s
 
-## calcul et affichage des vecteurs accélérations
+    ## calcul et affichage des vecteurs accélérations
 
-%s
-%s
+    %s
+    %s
 
-## présentation du diagramme interactif
-plt.grid()
-plt.show()
-""" % ("""
-Δt = 2*dt
-vx = np.array(np.zeros(len(x1)-2))
-vy = np.array(np.zeros(len(x1)-2))
-i=0
-for k in range(1,len(x1)-1):
-    Δx = (x1[k+1]-x1[k-1])
-    Δy = (y1[k+1]-y1[k-1])
-    vx[i] = Δx/Δt
-    vy[i] = Δy/Δt
-    i+=1""" if calcule_vitesse else """#####à compléter pour calculer les vitesses####
-    ##############
-    ##############""",
-                """
-#Pour afficher les vecteurs vitesses, décommentez le ligne suivante quand le code précédent est prêt.
-#plt.quiver(x1[1:-1], y1[1:-1], vx, vy, scale_units = 'xy', angles = 'xy', width = 0.003)
- """,
-                """
-ax = np.array(np.zeros(len(vx)-2))
-ay = np.array(np.zeros(len(vx)-2))
-i=0
-for k in range(1, len(vx)-1):
-    Δvx = (vx[k+1]-vx[k-1])
-    Δvy = (vy[k+1]-vy[k-1])
-    ax[i] = Δvx/Δt
-    ay[i] = Δvy/Δt
-    i+=1""" if calcule_accel else """#####à compléter pour calculer les vitesses####
-    ##############
-    ##############""",
-                """
-plt.title("Vecteurs accélérations") 
-plt.quiver(x1[2:-2], y1[2:-2], ax, ay, scale_units = 'xy', angles = 'xy', width = 0.003, color = 'r')""" if affiche_accel else ""))
-            f.close()
-
+    ## présentation du diagramme interactif
+    plt.grid()
+    plt.show()
+    """ % ("""
+    Δt = 2*dt
+    vx = np.array(np.zeros(len(x1)-2))
+    vy = np.array(np.zeros(len(x1)-2))
+    i=0
+    for k in range(1,len(x1)-1):
+        Δx = (x1[k+1]-x1[k-1])
+        Δy = (y1[k+1]-y1[k-1])
+        vx[i] = Δx/Δt
+        vy[i] = Δy/Δt
+        i+=1""" if calcule_vitesse else """#####à compléter pour calculer les vitesses####
+        ##############
+        ##############""",
+                    """
+    #Pour afficher les vecteurs vitesses, décommentez le ligne suivante quand le code précédent est prêt.
+    #plt.quiver(x1[1:-1], y1[1:-1], vx, vy, scale_units = 'xy', angles = 'xy', width = 0.003)
+     """,
+                    """
+    ax = np.array(np.zeros(len(vx)-2))
+    ay = np.array(np.zeros(len(vx)-2))
+    i=0
+    for k in range(1, len(vx)-1):
+        Δvx = (vx[k+1]-vx[k-1])
+        Δvy = (vy[k+1]-vy[k-1])
+        ax[i] = Δvx/Δt
+        ay[i] = Δvy/Δt
+        i+=1""" if calcule_accel else """#####à compléter pour calculer les vitesses####
+        ##############
+        ##############""",
+                    """
+    plt.title("Vecteurs accélérations") 
+    plt.quiver(x1[2:-2], y1[2:-2], ax, ay, scale_units = 'xy', angles = 'xy', width = 0.003, color = 'r')""" if affiche_accel else ""))
+        return
+    
 
 class CsvExportDialog(QDialog):
     """
@@ -793,13 +791,6 @@ class Export:
                 msg = EXPORT_MESSAGES[2]
                 QMessageBox.information(None, msg['titre'], msg['texte'].format(
                     filepath), QMessageBox.Ok, QMessageBox.Ok)
-            """
-            # on a retiré une clause try: qui empêche les messages d'erreur
-            except:
-                msg = EXPORT_MESSAGES[0]
-                QMessageBox.critical(None, msg['titre'], msg['texte'].format(
-                    filepath), QMessageBox.Ok, QMessageBox.Ok)
-            """
         if ouvre:
             self.ouvre_fichier(filepath)
         return
