@@ -1240,3 +1240,36 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.index = self.spinBox_image.value()
         self.affiche_image()
         return
+
+    def vecteursVitesse(self, echelle_vitesse):
+        """
+        Calcule les vecteurs vitesse affichables étant donné la collection
+        de points. Un vecteur vitesse a pour origine un point de la 
+        trajectoire, et sa direction, sa norme sont basées sur le point
+        précédent et le point suivant ; il faut donc au moins trois pointages
+        pour que le résultat ne soit pas vide.
+
+        @param echelle_vitesse le nombre de pixels pour 1 m/s
+        @return un dictionnaire objet => [(org, ext), ...] où org et ext
+          sont l'origine et l'extrémité d'un vecteur vitesse
+        """
+        result = {obj : [] for obj in self.suivis}
+        trajectoires = {obj: [self.data[t][obj] for t in self.dates if self.data[t][obj] is not None] for obj in self.suivis}
+        for obj in self.suivis:
+            precedent = trajectoires[obj][0]
+            suivant = None
+            for i in range(1, len(trajectoires[obj]) - 1):
+                # itération le long de la trajectoire, sauf
+                # sur les points extrêmes.
+                if suivant:
+                    point = suivant # le point est l'ancien suivant s'il existe
+                else:
+                    point = trajectoires[obj][i]
+                suivant = trajectoires[obj][i+1]
+                vitesse = (self.pointEnMetre(suivant) - self.pointEnMetre(precedent)) * (1 / self.deltaT / 2)
+                # attention, l'axe Y de l'écran est vers le bas !!
+                if self.sens_Y == 1: vitesse.miroirY()
+                result[obj].append ((point, point + (vitesse * echelle_vitesse)))
+                precedent = point # on conserve les coordonnées pour la suite
+        return result
+

@@ -450,6 +450,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             #self.tracer_courbe)
         self.tabWidget.currentChanged.connect(self.choix_onglets)
         self.checkBoxScale.currentIndexChanged.connect(self.enableSpeed)
+        self.checkBoxScale.currentTextChanged.connect(self.enableSpeed)
         self.checkBoxVectorSpeed.stateChanged.connect(self.enableSpeed)
         self.radioButtonSpeedEveryWhere.clicked.connect(self.enableSpeed)
         self.radioButtonNearMouse.clicked.connect(self.enableSpeed)
@@ -584,7 +585,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         on active le spinbox qui permet de choisir une échelle.
         Quand on ne veut plus, on peut cacher le spinbox.
         @param secondParam peu utile mais nécessaire : certains modes
-        de rappel de cette fonction ont un paramètre supplémentaire
+          de rappel de cette fonction ont un paramètre supplémentaire
         """
         self.dbg.p(1, "rentre dans 'enableSpeed'")
         if self.checkBoxVectorSpeed.isChecked():
@@ -594,12 +595,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.checkBoxScale.insertItem(0, "1")
             self.radioButtonNearMouse.show()
             self.radioButtonSpeedEveryWhere.show()
-            self.trajectoire_widget.reDraw()
+            self.trajectoire_widget.prepare_vecteurs_pour_paint()
+            self.trajectoire_widget.update()
         else:
             self.checkBoxScale.setEnabled(0)
             self.radioButtonNearMouse.hide()
             self.radioButtonSpeedEveryWhere.hide()
-            self.trajectoire_widget.reDraw()
+            self.trajectoire_widget.update()
 
     def readStdout(self):
         self.dbg.p(1, "rentre dans 'readStdout'")
@@ -1545,7 +1547,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.trajectoire_widget.origine = vecteur(0, 0)
         self.dbg.p(3, "origine %s, ref %s" %
                    (str(self.trajectoire_widget.origine), str(ref)))
-        self.trajectoire_widget.reDraw()
+        self.trajectoire_widget.prepare_vecteurs_pour_paint()
+        self.trajectoire_widget.update()
 
     def enregistre_dans_listePoints(self, point, index=None):
         """

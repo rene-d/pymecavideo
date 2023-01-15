@@ -26,6 +26,9 @@ vecteur.py implements some operations for 2D vectors, using tuples
 
 
 import math
+
+from PyQt5.QtCore import QPointF
+
 class vecteur:
     def __init__(self, x=0, y=0):
         self.precision = 4  # nb de  chiffres significatifs
@@ -43,6 +46,14 @@ class vecteur:
     def y(self):
         return self.value[1]
 
+    def miroirY(self):
+        """
+        change le signe de l'ordonnée ; utile comme l'axe y de l'écran
+        est dirigé vers le bas.
+        """
+        self.value = (self.value[0], - self.value[1])
+        return
+    
     def __getitem__(self, i):
         # print "Utilisation de vecteur.__getitem__ déconseillée"
         return self.value[i]
@@ -145,3 +156,9 @@ class vecteur:
 
     def homothetie(self, ratio):
         return vecteur(self.x*ratio, self.y*ratio)
+
+    def toQPointF(self):
+        """
+        transformation en QPointF
+        """
+        return QPointF(self.x, self.y)

@@ -56,92 +56,31 @@ class TrajectoireWidget(ImageWidget):
         self.app = app
         return
     
-    def reDraw(self):
-        """call when somthing change as repere, origine ..."""
-        self.giveCoordonatesToPaint()
-        # self.maj()
-        self.repaint()
-
     def maj(self):
         self.origine_mvt = self.video.origine
 
-    def giveCoordonatesToPaint(self):
-        self.speedToDraw = []
+    def prepare_vecteurs_pour_paint(self):
         if self.video.app.checkBoxVectorSpeed.isChecked():
-            for key in self.video.app.points.keys():
-                points = self.video.app.points[key]
-                for i in range(len(points)):
-                    wroteSpeed = False
-
-                    point = points[i]
-                    try:
-                        if self.referentiel != 0:
-                            ptreferentiel = points[int(self.referentiel)]
-
-                            try:
-                                ptreferentielAfter = self.video.app.points[key + 1][int(
-                                    self.referentiel)]
-                                ptreferentielBefore = self.video.app.points[key - 1][int(
-                                    self.referentiel)]
-                            except KeyError:  # last point -> can't compute speed
-                                break
-
-                        else:
-                            ptreferentiel = vecteur(0, 0)
-                            ptreferentielBefore = vecteur(0, 0)
-                            ptreferentielAfter = vecteur(0, 0)
-                    except IndexError:  # si pas le bon nb de points
-                        pass
-
-                    if type(point) != type(""):
-                        if self.video.app.radioButtonNearMouse.isChecked() and self.pos_souris != None:
-                            near = 20
-                            pos = self.pos_souris
-                            distance = QPoint(
-                                round(point.x + self.origine.x - ptreferentiel.x),
-                                round(point.y + self.origine.y - ptreferentiel.y)) - pos
-                            if distance.manhattanLength() < near:
-                                self.video.app.dbg.p(
-                                    2, "mouse near a point")
-                                wroteSpeed = True
-
-                        elif self.video.app.radioButtonSpeedEveryWhere.isChecked():
-                            wroteSpeed = True
-
-                        if wroteSpeed:
-                            keyMax = len(self.video.app.points.keys())
-                            # first and last point can't have speed.
-                            if key != 0 and key != keyMax - 1:
-                                # coordonnates of n-1 and n+1 point
-                                try:
-                                    tempsAfter = float(
-                                        self.video.app.points[key + 1][0])/self.video.app.deltaT  # en "delta_T"
-                                    tempsBefore = float(
-                                        self.video.app.points[key-1][0])/self.video.app.deltaT  # en "delta_T"
-                                    pointBefore = vecteur(
-                                        (self.video.app.points[key - 1][i].x + self.origine.x - ptreferentielBefore.x)/(tempsAfter-tempsBefore),
-                                        (self.video.app.points[key - 1][i].y + self.origine.y - ptreferentielBefore.y)/(tempsAfter-tempsBefore))
-
-                                    pointAfter = vecteur(
-                                        (self.video.app.points[key + 1][i].x + self.origine.x - ptreferentielAfter.x)/(tempsAfter-tempsBefore),
-                                        (self.video.app.points[key + 1][i].y + self.origine.y - ptreferentielAfter.y)/(tempsAfter-tempsBefore))
-
-                                    vector_speed = pointAfter - pointBefore
-
-                                    self.speedToDraw.append((vecteur(point.x + self.origine.x - ptreferentiel.x,
-                                                                    point.y + self.origine.y - ptreferentiel.y),
-                                                             vector_speed, i))
-                                except KeyError:  # last point -> can't compute speed
-                                    pass
-                                except IndexError:  # si pas le bon nb de points
-                                    pass
+            try:
+                echelle_vitesse = float(
+                    self.video.app.checkBoxScale.currentText())
+            except ValueError:
+                # rien ne se passe si on découvre pas un flottant
+                # pour l'échelle pixel par m/s
+                return
+            self.speedToDraw = self.video.vecteursVitesse(echelle_vitesse)
+            # tous les vecteurs de self.speedToDraw seront tracés
+            # si on le demande et que le tracé des vecteurs est actif
+            # ou encore, on ne dessinera les vecteurs que quand leur
+            # origine est proche de self.pos_souris (proximite = 20 px,
+            # et distance.manhattanLength() < proximite)
+        return
 
     def mouseMoveEvent(self, event):
         # Look if mouse is near a point
         self.pos_souris = event.pos()
         if self.video.app.radioButtonNearMouse.isChecked():
-            self.reDraw()
-
+            self.update()
         return
 
     def paintText(self, x, y, text,
@@ -289,7 +228,7 @@ class TrajectoireWidget(ImageWidget):
         self.painter.setRenderHint(QPainter.Antialiasing)
 
         listePoints = [[self.video.data[t][obj] for obj in self.video.suivis] \
-                       for t in self.video.data]
+                       for t in self.video.dates]
         for no,points in enumerate(listePoints):
             color = 0
             num_point=0
@@ -357,38 +296,19 @@ class TrajectoireWidget(ImageWidget):
 
         # paint speed vectors if asked
 
-        if self.speedToDraw != []:
-            for vector in self.speedToDraw:
-                p, vector_speed, i = vector
-                if vector_speed != QPoint():  # if speed is not null.
+        if self.speedToDraw != [] and \
+           self.video.app.checkBoxVectorSpeed.isChecked():
+            for obj in self.speedToDraw:
+                for (org, ext) in self.speedToDraw[obj]:
+                    if org == ext:  continue # si la vitesse est nulle
                     self.painter = QPainter()
                     self.painter.begin(self)
                     self.painter.setRenderHint(QPainter.Antialiasing)
-                    self.painter.setPen(QColor(self.couleurs[i - 1]))
-                    try:
-                        speed = vector_speed.norme * float(self.video.echelle_image.mParPx()) / (2 * self.video.deltaT) * float(self.video.checkBoxScale.currentText())
-                        self.video.checkBoxScale.setStyleSheet(
-                            "background-color:none")
-                        path = QPainterPath()
-                        path.moveTo(0, 0)
-                        path.lineTo(speed, 0)
-                        path.lineTo(QPointF(speed - 10, 0) + QPointF(0, 10))
-                        path.lineTo(speed - 8, 0)
-                        path.lineTo(QPointF(speed - 10, 0) + QPointF(0, -10))
-                        path.lineTo(speed, 0)
-
-                        angle = vector_speed.anglePolaire
-                        self.painter.translate(round(p.x), round(p.y))
-                        self.painter.rotate(degrees(angle))
-                        self.painter.drawPath(path)
-                        # VERIFIER COORDONÉES ICI
-                        self.painter.fillPath(
-                            path, QColor(self.couleurs[i - 1]))
-
-                        path.moveTo(0, 0)
-                    except ValueError:
-                        self.video.checkBoxScale.setStyleSheet(
-                            "background-color: red")
+                    self.painter.setPen(QColor(self.couleurs[int(obj) - 1]))
+                    self.painter.drawPolyline(
+                        org.toQPointF(),
+                        ext.toQPointF()
+                    )
                     self.painter.end()
                 else:
                     pass  # null speed
