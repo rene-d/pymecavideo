@@ -307,8 +307,15 @@ class TrajectoireWidget(ImageWidget):
                     self.painter.begin(self)
                     self.painter.setRenderHint(QPainter.Antialiasing)
                     self.painter.setPen(QColor(self.couleurs[int(obj) - 1]))
+                    vec = ext - org                # le vecteur de la flèche 
+                    ortho = vecteur(-vec.y, vec.x) # idem tourné de 90°
+                    p1 = ext - vec * 0.1 + ortho * 0.05
+                    p2 = p1 - ortho * 0.1
                     self.painter.drawPolyline(
                         org.toQPointF(),
+                        ext.toQPointF(),
+                        p1.toQPointF(),
+                        p2.toQPointF(),
                         ext.toQPointF()
                     )
                     self.painter.end()
