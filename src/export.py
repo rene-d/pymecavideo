@@ -2,6 +2,7 @@
     export.py is a module of pymecavideo.
     pymecavideo is a program to track moving points in a video frameset
     Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
+    Copyright (C) 2023 Georges Khaznadar <georgesk@debian.org>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -161,7 +162,7 @@ class FichierCSV:
 
     def __init__(self, app, filepath):
         """
-        Crée un fichier CSV et importe les données de pymecavideo
+        Crée un fichier CSV et exporte les données de pymecavideo
         """
         import csv
         d = CsvExportDialog(app)
@@ -334,21 +335,15 @@ class Calc():
         """
         # fait une ligne de titres
         titles = ["t (s)"]
-        for i in range(app.nb_de_points):
-            x = "X%d (m)" % (1 + i)
-            y = "Y%d (m)" % (1 + i)
-            titles.append(x)
-            titles.append(y)
+        for obj in app.video.suivis:
+            titles.append(f"X{obj} (m)")
+            titles.append(f"Y{obj} (m)")
         self.titres(titles)
         # fait les lignes de données
-        t = 0
-        dt = app.deltaT
-        for k in app.points.keys():
+        for t in app.video.dates:
             val = [t]
-            t += dt
-            data = app.points[k]
-            for vect in data[1:]:
-                vect = app.pointEnMetre(vect)
+            for obj in app.video.data[t]:
+                vect = app.video.pointEnMetre(app.video.data[t][obj])
                 val.append(vect.x)
                 val.append(vect.y)
             self.ligneValeurs(val)
@@ -793,20 +788,27 @@ class Export:
             filepath = fd.selectedFiles()[0]
             ouvre = fd.checkbox.isChecked()
             # self.enregistre_fichier(filepath)
-            try:
-                self.enregistre_fichier(filepath)
-                if INFO_OK:
-                    msg = EXPORT_MESSAGES[2]
-                    QMessageBox.information(None, msg['titre'], msg['texte'].format(
-                        filepath), QMessageBox.Ok, QMessageBox.Ok)
+            self.enregistre_fichier(filepath)
+            if INFO_OK:
+                msg = EXPORT_MESSAGES[2]
+                QMessageBox.information(None, msg['titre'], msg['texte'].format(
+                    filepath), QMessageBox.Ok, QMessageBox.Ok)
+            """
+            # on a retiré une clause try: qui empêche les messages d'erreur
             except:
                 msg = EXPORT_MESSAGES[0]
                 QMessageBox.critical(None, msg['titre'], msg['texte'].format(
                     filepath), QMessageBox.Ok, QMessageBox.Ok)
+            """
         if ouvre:
             self.ouvre_fichier(filepath)
+        return
 
     def enregistre_fichier(self, filepath):
+        """
+        Redirige vers la routine d'exportation qui est définie par
+        self.class_str
+        """
         dynamic_class = globals()[self.class_str]
         dynamic_class(self.app, filepath)
 
