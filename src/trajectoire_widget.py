@@ -150,9 +150,9 @@ class TrajectoireWidget(ImageWidget):
             y1 = 50 # marge en hauteur
             # Ecrit l'intervalle de temps
             if self.chrono == 1:  # rends plus lisible si le fond est foncé
-                text = f"Δt = {self.app.deltaT:.3f} s"
+                text = f"Δt = {self.video.deltaT:.3f} s"
                 self.paintText(self.width() - x1 - 100, y1, text)
-                text = f"t = {self.app.deltaT*(self.app.spinBox_chrono.value()-1):.3f} s"
+                text = f"t = {self.video.deltaT*(self.video.app.spinBox_chrono.value()-1):.3f} s"
                 self.paintText(self.width() - x1 - 100, 2 * y1, text)
             # dessine l'échelle
             if self.chrono == 2:  # chronogramme
@@ -188,17 +188,17 @@ class TrajectoireWidget(ImageWidget):
                 self.painter.setPen(pen)
                 if self.video.echelle_faite: 
                     self.painter.drawLine(
-                        round(self.video.app.echelle_trace.p1.x),
-                        round(self.video.app.echelle_trace.p1.y),
-                        round(self.video.app.echelle_trace.p2.x),
-                        round(self.video.app.echelle_trace.p2.y))
+                        round(self.video.echelle_trace.p1.x),
+                        round(self.video.echelle_trace.p1.y),
+                        round(self.video.echelle_trace.p2.x),
+                        round(self.video.echelle_trace.p2.y))
 
                     echelle = "d = {0:.2e} m".format(
                             self.video.echelle_image.longueur_reelle_etalon)
 
                     self.paintText(
-                        round(self.video.app.echelle_trace.p1.x),
-                        round((self.video.app.echelle_trace.p1.y + self.video.app.echelle_trace.p2.y)/2)+20,
+                        round(self.video.echelle_trace.p1.x),
+                        round((self.video.echelle_trace.p1.y + self.video.echelle_trace.p2.y)/2)+20,
                         echelle,
                         color = Qt.blue,
                         bgcolor = None,

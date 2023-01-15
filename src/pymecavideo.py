@@ -542,8 +542,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                        (photo_chrono))
             if photo_chrono == 'chronophotographie':  # on extrait le première image que l'on rajoute au widget
                 self.trajectoire_widget.chrono = 1  # 1 pour chronophotographie
-                ok, img = self.cvReader.getImage(
-                    self.chronoImg, self.rotation)
+                ok, img = self.video.cvReader.getImage(
+                    self.chronoImg, self.video.rotation)
                 self.imageChrono = toQImage(img).scaled(
                     self.video.width(), self.video.height(), Qt.KeepAspectRatio)
                 self.trajectoire_widget.setImage(
