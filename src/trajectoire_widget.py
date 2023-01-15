@@ -69,11 +69,6 @@ class TrajectoireWidget(ImageWidget):
                 # pour l'échelle pixel par m/s
                 return
             self.speedToDraw = self.video.vecteursVitesse(echelle_vitesse)
-            # tous les vecteurs de self.speedToDraw seront tracés
-            # si on le demande et que le tracé des vecteurs est actif
-            # ou encore, on ne dessinera les vecteurs que quand leur
-            # origine est proche de self.pos_souris (proximite = 20 px,
-            # et distance.manhattanLength() < proximite)
         return
 
     def mouseMoveEvent(self, event):
@@ -301,6 +296,13 @@ class TrajectoireWidget(ImageWidget):
             for obj in self.speedToDraw:
                 for (org, ext) in self.speedToDraw[obj]:
                     if org == ext:  continue # si la vitesse est nulle
+                    # on prend en considération éventuellement la distance
+                    # du pointeur de souris;
+                    # s'il est à plus de 20 pixels de l'origine du vecteur
+                    # on ne trace rien
+                    if self.video.app.radioButtonNearMouse.isChecked():
+                        ecart = vecteur(qPoint = self.pos_souris) - org
+                        if ecart.manhattanLength() > 20: continue
                     self.painter = QPainter()
                     self.painter.begin(self)
                     self.painter.setRenderHint(QPainter.Antialiasing)

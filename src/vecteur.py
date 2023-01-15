@@ -30,11 +30,27 @@ import math
 from PyQt5.QtCore import QPointF
 
 class vecteur:
-    def __init__(self, x=0, y=0):
+    """
+    une classe pour des vecteurs 2D ; les coordonnées sont flottantes, et
+    on peut accéder à celles-ci par les propriétés self.x et self.y
+
+    Paramètres du constructeur
+
+    @param x une abscisse, nulle par défaut
+    @param y une ordonnée, nulle par défaut
+    @param qPoint (None par défaut) ; si ce paramètre est d'un type
+      qui possède les méthodes .x() et .y(), il sert à créer le vecteur
+      de façon prioritaire.
+    """
+    def __init__(self, x=0, y=0, qPoint=None):
+        if qPoint:
+            self.value = (qPoint.x(), qPoint.y())
+            return
         self.precision = 4  # nb de  chiffres significatifs
         self.value = (self.signif(float(x), self.precision),
                       self.signif(float(y), self.precision))
-
+        return
+    
     def copy(self):
         return vecteur(self.x, self.y)
 
@@ -46,6 +62,12 @@ class vecteur:
     def y(self):
         return self.value[1]
 
+    def manhattanLength(self):
+        """
+        @return la longueur « de mahattan »
+        """
+        return abs(self.x) + abs(self.y)
+    
     def miroirY(self):
         """
         change le signe de l'ordonnée ; utile comme l'axe y de l'écran
