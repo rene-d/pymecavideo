@@ -1161,8 +1161,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         """
         self.dbg.p(1, "rentre dans 'pointEnMetre'")
         return vecteur(
-            self.sens_X * float(p.x - self.origine.x) * self.echelle_image.mParPx(),
-            self.sens_Y * float(self.origine.y - p.y) * self.echelle_image.mParPx())
+            self.sens_X * (p.x - self.origine.x) * self.echelle_image.mParPx(),
+            self.sens_Y * (self.origine.y - p.y) * self.echelle_image.mParPx())
 
     def enregistre_ui(self):
         self.dbg.p(1, "rentre dans 'enregistre_ui'")

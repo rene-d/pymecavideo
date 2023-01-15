@@ -626,13 +626,17 @@ class PythonNumpy:
 
     def __init__(self, app, filepath):
         import numpy as np
-        pts = app.points
-        t = [float(pts[i][0]) for i in pts.keys()]
-        x = [float(app.pointEnMetre(pts[i][1])[0]) for i in pts.keys()]
-        y = [float(app.pointEnMetre(pts[i][1])[1]) for i in pts.keys()]
-        np.save(filepath, (t, x, y))
+        t = [t for t in app.video.dates if app.video.data[t][app.video.suivis[0]] is not None]
+        export = [t]
+        x = {}
+        y = {}
+        for obj in app.video.suivis:
+            points = [app.video.pointEnMetre(app.video.data[t][obj]) for t in app.video.dates if app.video.data[t][obj] is not None]
+            export.append([p.x for p in points])
+            export.append([p.y for p in points])
+        np.save(filepath, export)
         QMessageBox.information(None, _translate("export_numpy", "Fichier Numpy sauvegardé"), _translate(
-            "export_numpy", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x,y = np.load("{}")""".format(os.path.basename(filepath))), QMessageBox.Ok, QMessageBox.Ok)
+            "export_numpy", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x1,y1 ... = np.load("{}")""".format(os.path.basename(filepath))), QMessageBox.Ok, QMessageBox.Ok)
 
 class NotebookExportDialog(QDialog):
     """
