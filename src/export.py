@@ -341,6 +341,7 @@ class Calc():
         self.titres(titles)
         # fait les lignes de données
         for t in app.video.dates:
+            if app.video.data[t][app.video.suivis[0]] is None : continue
             val = [t]
             for obj in app.video.data[t]:
                 vect = app.video.pointEnMetre(app.video.data[t][obj])
@@ -388,6 +389,7 @@ class PythonSource:
                 ligne_x = f"x{obj} = np.array(["
                 ligne_y = f"y{obj} = np.array(["
                 for t in app.video.dates:
+                    if app.video.data[t][obj] is None: continue
                     vect = app.video.pointEnMetre(app.video.data[t][obj])
                     ligne_x += f"{vect.x}, "
                     ligne_y += f"{vect.y}, "
@@ -707,17 +709,22 @@ class PythonNotebook :
     def __init__(self, app, filepath):
         import nbformat as nbf
         from template_ipynb import genere_notebook
-        pts = app.points
-        ligne_t = "np.array({})".format(list(float(pts[i][0]) for i in pts.keys()))
-        ligne_x = "np.array({})".format(list(app.pointEnMetre(pts[i][1])[0] for i in pts.keys()))
-        ligne_y = "np.array({})".format(list(app.pointEnMetre(pts[i][1])[1] for i in pts.keys()))
+        liste_t = [t for t in app.video.dates\
+                   if app.video.data[t][app.video.suivis[0]] is not None]
+        ligne_t = "np.array({})".format(liste_t)
+        points = {obj: [app.video.data[t][obj] for t in liste_t] \
+                  for obj in app.video.suivis[:1]}
+        liste_x = [p.x for p in points[1]] # 1 est ici egal à ap.video.suivis[0]
+        ligne_x = "np.array({})".format(liste_x)
+        liste_y = [p.y for p in points[1]] # 1 est ici egal à ap.video.suivis[0]
+        ligne_y = "np.array({})".format(liste_y)
         d = NotebookExportDialog(app)
         if d.exec_() == QDialog.Accepted:
             graphs = (d.checkBox_c.isChecked(), d.checkBox_v.isChecked(
             ), d.checkBox_v2.isChecked(), d.checkBox_a.isChecked(), d.checkBox_e.isChecked())
         nb = genere_notebook((ligne_t, ligne_x, ligne_y), graphs = graphs)
-        nbf.write(nb, filepath) 
-
+        nbf.write(nb, filepath)
+        return
 
 class SaveThenOpenFileDialog(QFileDialog):
     """
