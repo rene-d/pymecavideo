@@ -116,58 +116,6 @@ def time_it(func):
     return wrapper
 
 
-class MonThreadDeCalcul2(QThread):
-    """Thread permettant le calcul des points automatiquement. Version Qt. 20/04/2015 : focntionne mal sous windows"""
-
-    def __init__(self, parent, motif, image, tmpdir):
-        QThread.__init__(self)
-        self.parent = parent
-        self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
-        self.motif = motif
-        self.image = image
-        self.tmpdir = tmpdir
-        self.stopped = False
-
-    def run(self):
-        """
-        lance le thread.
-        stocke les coordonnées des points trouvés
-        Envoi un signal quand terminé.
-        """
-        while not self.stopped:
-            self.parent.picture_detect(self.tmpdir)
-        self.terminate
-
-    def stop(self):
-        self.stopped = True
-
-
-class MonThreadDeCalcul(QThread):
-    """Thread permettant le calcul des points automatiquement. Version Qt. 20/04/2015 : focntionne mal sous windows"""
-
-    def __init__(self, parent, motif, image, tmpdir):
-        QThread.__init__(self)
-        self.parent = parent
-        self.parent.dbg.p(1, "rentre dans 'monThreadDeCalcul'")
-        self.motif = motif
-        self.image = image
-        self.tmpdir = tmpdir
-        self.stopped = False
-
-    def run(self):
-        """
-        lance le thread.
-        stocke les coordonnées des points trouvés
-        Envoi un signal quand terminé.
-        """
-        while not self.stopped:
-            self.parent.picture_detect(self.tmpdir)
-        self.terminate
-
-    def stop(self):
-        self.stopped = True
-
-
 from Ui_pymecavideo_mini_layout import Ui_pymecavideo
 
 class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
@@ -721,6 +669,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.exportCombo.setCurrentIndex(0)
             self.affiche_tableau()
             Export(self, choix_export)
+        return
 
     def _dir(lequel=None, install=None):
         """renvoie les répertoires utiles.
@@ -847,6 +796,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Crée un tableau de coordonnées neuf dans l'onglet idoine.
         @param nb_obj le nombre d'objets suivis (1 par défaut)
         """
+        self.dbg.p(1, "rentre dans 'cree_tableau'")
         self.tableWidget.clear()
         self.tab_coord.setEnabled(1)
         self.tableWidget.setRowCount(1)
@@ -896,6 +846,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Se produit quand on ouvre un fichier pymecavideo ou quand on 
         redéfinit l'échelle
         """
+        self.dbg.p(1, "rentre dans 'recalculLesCoordonnees'")
         nb_suivis = self.video.nb_obj
         for i,t in enumerate(self.video.dates):
             self.tableWidget.setItem(i, 0, QTableWidgetItem(f"{t:.3f}"))
@@ -1007,7 +958,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.clic_sur_video_ajuste_ui(self.video.index)
 
     def montre_video(self):
-        self.dbg.p(1, "rentre dans 'videos'")
+        self.dbg.p(1, "rentre dans 'montre_video'")
         ref = self.comboBox_referentiel.currentText().split(" ")[-1]
         if len(ref) == 0 or ref == "camera":
             return
@@ -1479,8 +1430,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 plotItem.setTitle(titre)
                 self.graphWidget.setLabel('bottom', unite_x)
                 self.graphWidget.setLabel('left', unite_y)
-                # enlève si besoin les points non calculés
-                #X, Y = self.nettoyage_points(X, Y)
                 self.graphWidget.clear()
                 self.graphWidget.plot(X, Y, pen=pen, symbol=symbol)
                 self.graphWidget.autoRange()
@@ -1501,15 +1450,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
                         fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
-
-    def nettoyage_points(self, X_, Y_):
-        """permet de tenir compte des expressions "négatives" quand on va chercher des indices : python évalue correctement X[-1] alors qu'on ne le veut pas. Un passage dans self.traite_indices à mis certaines valeurs non calculées à False. Il suffit de les enlever dans X et Y"""
-        X_f, Y_f = [], []
-        for i in range(len(X_)):
-            if X_[i] != False and Y_[i] != False:
-                Y_f.append(Y_[i])
-                X_f.append(X_[i])
-        return X_f, Y_f
 
     def tracer_trajectoires(self, newValue):
         """
@@ -1716,6 +1656,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         return
 
     def refait_point_depuis_tableau(self, qpbn ):
+        self.dbg.p(1, "rentre dans 'refait_point_depuis_tableau'")
         self.refait_point=True
         numero_image = qpbn.toolTip().split(' ')[-1]
         self.index_de_l_image_actuelle = self.video.index
@@ -1761,10 +1702,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(1, "rentre dans 'affiche_image_slider_move'")
         self.spinBox_image.setValue(self.horizontalSlider.value())
         # self.enableRefaire(0)
-
-    def calculeLesVitesses(self):
-        """à partir des sets de points, renvoie les vitesses selon l'axe X, selon l'axe Y et les normes des vitesses"""
-        self.vitesses = {}
 
     def closeEvent(self, event):
         """

@@ -133,6 +133,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         redimensionne self.data (fonction de rappel connectée aux
         changements de self.spinBox_nb_de_points
         """
+        self.dbg.p(1, "rentre dans 'redimensionne_data'")
         if self.image_max and self.deltaT:
             self.dimensionne(
                 self.spinBox_nb_de_points.value(), self.deltaT, self.image_max)
@@ -160,6 +161,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @param position l'endroit où prendre l'image à agrandir ; si
           position == None (par défaut) ça signifie vecteur(50,50)
         """
+        self.dbg.p(1, "rentre dans 'updateZoom'")
         if position is None :
             position = vecteur(50,50)
         self.zoom.fait_crop(self.image, position)
@@ -175,6 +177,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @param ratio le ratio à respecter
         @return l'image, redimensionnée selon le ratio
         """
+        self.dbg.p(1, "rentre dans 'placeImage'")
         self.image_w = min(self.width(), round(self.height() * ratio))
         self.image_h = round(self.image_w / ratio)
         self.setMouseTracking(True)
@@ -193,6 +196,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def reinit(self):
+        self.dbg.p(1, "rentre dans 'reinit'")
         self.updateZoom()
         self.setMouseTracking(True)
         self.update()
@@ -210,6 +214,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def resizeEvent(self, e):
+        self.dbg.p(1, "rentre dans 'resizeEvent'")
         if self.premier_resize:  # Au premier resize, la taille est changée mais pas l'origine.
             self.premier_resize = False
             self.reinit_origine()
@@ -246,11 +251,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         sont déjà bien réglés.
         @param point la position à enregistrer
         """
+        self.dbg.p(1, "rentre dans 'storePoint'")
         if self.lance_capture == True:
             self.pointe(self.objet_courant, point, index=self.index-1)
             self.clic_sur_video_signal.emit()
-            self.updateZoom(self.hotspot)
-            self.update()
         return
 
     def mouseReleaseEvent(self, event):
@@ -407,6 +411,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
           widgets sont activés et leurs signaux valueChanged sont pris
           en compte ; sinon ils sont désactivés ainsi que les signaux
         """
+        self.dbg.p(1, "rentre dans 'active_controle_image'")
         if state:
             self.horizontalSlider.setMinimum(1)
             self.spinBox_image.setMinimum(1)
@@ -511,6 +516,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         Prépare une session de pointage, au niveau de la
         fenêtre principale, et met à jour les préférences
         """
+        self.dbg.p(1, "rentre dans 'init_capture'")
         self.app.prefs.lastVideo = self.filename
         self.app.prefs.videoDir = os.path.dirname(self.filename)
         self.app.prefs.save()
@@ -583,6 +589,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         affecte la ligne de statut et la ligne sous le zoom
         @param obj l'objet courant
         """
+        self.dbg.p(1, "rentre dans 'affiche_point_attendu'")
         self.app.affiche_barre_statut(
             _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(obj))
         return
@@ -601,7 +608,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.affiche_barre_statut(_translate(
                 "pymecavideo", "Vous avez atteint la fin de la vidéo", None))
             self.index = self.image_max
-        self.app.recalculLesCoordonnees()
+            self.app.recalculLesCoordonnees()
         return
     
     def clic_sur_video_ajuste_ui(self, objet_courant):
@@ -824,7 +831,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.dbg.p(1, "rentre dans 'enableRefaire, %s'" % (value))
         self.pushButton_refait.setEnabled(value)
         self.app.actionRefaire.setEnabled(value)
-
+        return
+    
     def demande_echelle(self):
         """
         demande l'échelle interactivement
@@ -1015,6 +1023,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         """
         met à jour les axes selon les sens connus
         """
+        self.dbg.p(1, "rentre dans 'check_uncheck_direction_axes'")
         if self.sens_X == -1:
             self.checkBox_abscisses.setChecked(1)
         else:
@@ -1075,38 +1084,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 # le point étant détecté, on passe à l'objet suivant
                 # et si nécessaire à l'image suivante
                 self.objetSuivant()
-            # le numéro d'image ayant changé, on la récupère à nouveau.
-            self.extract_image
-
             # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
             timer = QTimer.singleShot(50, self.detecteUnPoint)
         else:
             self.stopCalculs.emit()
-
-    def storeMotif(self):
-        self.dbg.p(1, "rentre dans 'storeMotif'")
-        if len(self.motifs_auto) == self.nb_obj:
-            self.dbg.p(3, "selection des motifs finie")
-            self.selRect.finish()
-            self.indexMotif = 0
-            self.pushButton_stopCalculs.setText("STOP")
-            self.pushButton_stopCalculs.setEnabled(1)
-            self.pushButton_stopCalculs.show()
-            self.setEnabled(0)
-            self.goCalcul = True
-            # TODO : tests avec les différents mode de threading
-            if self.methode_thread == 1:
-                self.monThread = MonThreadDeCalcul(
-                    self, self.motifs_auto[self.indexMotif], self.imageAffichee)
-                self.monThread.start()
-            elif self.methode_thread == 2:  # 1 thread par image
-                for i in range((self.image_max-self.premiere_image_pointee)*self.nb_obj):
-                    self.liste_thread = [MonThreadDeCalcul2(
-                        self, self.image, self.motifs_auto[self.indexMotif], self.imageAffichee)]
-            elif self.methode_thread == 3:  # pour l'instant celle qui foncitonne le mieux
-                timer = QTimer.singleShot(5, self.detecteUnPoint)
 
     def picture_detect(self):
         """
@@ -1123,7 +1106,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     self.motifs_auto, self.indexMotif, self.imageAffichee, self.listePoints)
                 self.dbg.p(3, "Point Trouve dans mon Thread : " +
                            str(self.pointTrouve))
-                self.onePointFind()
                 self.indexMotif += 1
             else:
                 self.indexMotif = 0
@@ -1141,17 +1123,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.pushButton_stopCalculs.hide()
         # rétablit les fonctions du spinbox et du slider pour gérer l'image
         self.active_controle_image()
-        self.app.recalculLesCoordonnees()
         return
-
-    def onePointFind(self):
-        """est appelée quand un point a été trouvé lors de la détection automatique
-        self.pointFound : liste des points trouvés
-        """
-        self.dbg.p(1, "rentre dans 'onePointFind'")
-        self.pointsFound.append(self.pointTrouve)  # stock all points found
-        for point in self.pointsFound:
-            self.storePoint(vecteur(point[0], point[1]))
 
     def pointEnMetre(self, p):
         """
@@ -1253,6 +1225,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         @return un dictionnaire objet => [(org, ext), ...] où org et ext
           sont l'origine et l'extrémité d'un vecteur vitesse
         """
+        self.dbg.p(1, "rentre dans 'vecteursVitesse'")
         result = {obj : [] for obj in self.suivis}
         trajectoires = {obj: [self.data[t][obj] for t in self.dates if self.data[t][obj] is not None] for obj in self.suivis}
         for obj in self.suivis:

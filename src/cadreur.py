@@ -257,8 +257,7 @@ class openCvReader:
         """
         self.filename = filename
         self.autoTest()
-        self.index_precedent = 0     # l'index de l'image précedemment servie
-        self.image_cachee = None     # un cache pour l'image servie juste avant
+        self.index_precedent = 0
         if self.ok:
             self.capture = cv2.VideoCapture(self.filename)
         return
@@ -283,9 +282,6 @@ class openCvReader:
         @return le statut, l'image trouvée
         """
         if self.capture:
-            if index == self.index_precedent and self.image_cachee is not None:
-                return True, self.image_cachee
-            print("GRRRR, image index =", index)
             if index != self.index_precedent+1:
                 # on ne force pas la position de lecture
                 # si on passe juste à l'image suivante
@@ -294,13 +290,11 @@ class openCvReader:
             self.index_precedent = index
             # convertit dans le bon format de couleurs
             if rgb:
-                self.image_cachee = self.rotateImage(
+                return True, self.rotateImage(
                     cv2.cvtColor(img, cv2.COLOR_BGR2RGB), angle)
-                return True, self.image_cachee
             else:
-                self.image_cachee = self.rotateImage(
+                return True, self.rotateImage(
                     img, angle)
-                return True, self.image_cachee
         else:
             return False, None
 
