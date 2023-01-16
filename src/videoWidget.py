@@ -1051,7 +1051,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
             self.dbg.p(3, "self.pileDeDetections : %s" % self.pileDeDetections)
-            timer = QTimer.singleShot(50, self.detecteUnPoint)
+            timer = QTimer.singleShot(5, self.detecteUnPoint)
 
     # @time_it
     def detecteUnPoint(self):
