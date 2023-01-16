@@ -258,6 +258,7 @@ class openCvReader:
         self.filename = filename
         self.autoTest()
         self.index_precedent = 0
+        self.cache = None # un cache pour l'image précédente
         if self.ok:
             self.capture = cv2.VideoCapture(self.filename)
         return
@@ -279,22 +280,23 @@ class openCvReader:
         @param index le numéro de l'image, commence à 1.
         @param angle 0, 90, 18 ou -90 : rotation de l'image (0 par défaut)
         @apame rgb (vrai par defaut) s'il est faux l'image est au format BGR
-        @return le statut, l'image trouvée
+        @return le statut, l'image trouvée au format d'openCV
         """
         if self.capture:
-            if index != self.index_precedent+1:
-                # on ne force pas la position de lecture
-                # si on passe juste à l'image suivante
-                self.capture.set(cv2.CAP_PROP_POS_FRAMES, index-1)
-            status, img = self.capture.read()
-            self.index_precedent = index
-            # convertit dans le bon format de couleurs
-            if rgb:
-                return True, self.rotateImage(
-                    cv2.cvtColor(img, cv2.COLOR_BGR2RGB), angle)
+            if self.cache is not None and index == self.index_precedent:
+                img = self.cache
             else:
-                return True, self.rotateImage(
-                    img, angle)
+                if index != self.index_precedent+1:
+                    # on ne force pas la position de lecture
+                    # si on passe juste à l'image suivante
+                    self.capture.set(cv2.CAP_PROP_POS_FRAMES, index-1)
+                _, img = self.capture.read()
+            # on cache l'image pour après
+            self.cache = img
+            # convertit dans le bon format de couleurs
+            if rgb: img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            self.index_precedent = index
+            return True, self.rotateImage(img, angle)
         else:
             return False, None
 
