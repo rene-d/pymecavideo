@@ -1046,8 +1046,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.setEnabled(0)
             self.pileDeDetections = []
             for i in range(self.index, self.image_max+1):
-                for j in range(self.nb_obj):
-                    self.pileDeDetections.append(i)
+                self.pileDeDetections.append(i)
             # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
@@ -1062,7 +1061,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         et relance un signal si la pile n'est pas vide après chacun
         des traitements.
         """
-        self.dbg.p(1, "rentre dans 'detecteUnPoint'")
+        self.dbg.p(1, f"rentre dans 'detecteUnPoint', pileDeDetection = {self.pileDeDetections}")
         if self.pileDeDetections:
             # on dépile un index de détections à faire et on met à jour
             # le bouton de STOP
