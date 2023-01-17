@@ -1469,18 +1469,20 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         self.dbg.p(1, "rentre dans 'tracer_trajectoires'")
         if newValue == "absolu":
-            ref = "camera"
+            ref = 0 # la caméra
             self.trajectoire_widget.origine_mvt = self.video.origine
             # mets à jour le comboBox referentiel :
             self.comboBox_referentiel.setCurrentIndex(
                 self.comboBox_referentiel.count()-1)
             self.comboBox_referentiel.update()
         else:
-            ref = self.comboBox_referentiel.currentText().split(" ")[-1]
+            choix_ref = self.comboBox_referentiel.currentText()
+            if choix_ref == "camera":
+                ref = 0
+            else:
+                ref = int(choix_ref.split(" ")[-1])
             self.trajectoire_widget.origine_mvt = self.video.origine
-        if len(ref) == 0:
-            return
-        if ref != "camera":
+        if ref != 0:
             self.button_video.setEnabled(1)
             self.trajectoire_widget.chrono = False
             bc = self.mediane_trajectoires(int(ref) - 1)
@@ -1489,14 +1491,15 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.trajectoire_widget.origine = origine
             self.trajectoire_widget.origine_mvt = origine
             self.trajectoire_widget.referentiel = ref
-        else:  # if camera, all tranlsations are disabled
+        else:  # si le référentiel est la caméra, aucune translation !
             self.trajectoire_widget.referentiel = 0
             self.trajectoire_widget.origine = vecteur(0, 0)
         self.dbg.p(3, "origine %s, ref %s" %
                    (str(self.trajectoire_widget.origine), str(ref)))
         self.trajectoire_widget.prepare_vecteurs_pour_paint()
         self.trajectoire_widget.update()
-
+        return
+    
     def enregistre_dans_listePoints(self, point, index=None):
         """
         enregistre un clic dans self.listePoints à la bonne place.

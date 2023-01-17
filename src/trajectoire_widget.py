@@ -226,47 +226,42 @@ class TrajectoireWidget(ImageWidget):
         self.painter.begin(self)
         self.painter.setRenderHint(QPainter.Antialiasing)
 
-        listePoints = [[self.video.data[t][obj] for obj in self.video.suivis] \
-                       for t in self.video.dates]
-        for no,points in enumerate(listePoints):
-            color = 0
-            num_point=0
-            for point in points:
-                if self.referentiel != 0:
-                    ptreferentiel = points[int(self.referentiel)-1]
-                else:
-                    ptreferentiel = vecteur(0, 0)
-                    
-                if point:
-                    if self.chrono == 2:
-                        self.painter.setPen(Qt.black)
-                    else :
-                        self.painter.setPen(QColor(self.couleurs[color]))
-                    self.painter.setFont(QFont("", 10))
-                    self.painter.translate(
-                        round(point.x + self.origine.x - ptreferentiel.x),
-                        round(point.y + self.origine.y - ptreferentiel.y))
+        # préparation de la fonction de rappel
+        data = self.video.data
+        def cb_point(i, t, j, obj, p, v):
+            """
+            fonction de rappel pour usage avec iteration_data du videoWidget
+            """
+            if self.referentiel != 0:
+                obj_reference = data[t][self.referentiel]
+            else:
+                obj_reference = vecteur(0, 0)
+            if p:
+                self.painter.setFont(QFont("", 10))
+                self.painter.translate(
+                    round(p.x + self.origine.x - obj_reference.x),
+                    round(p.y + self.origine.y - obj_reference.y))
+                if self.chrono == 2:
+                    self.painter.setPen(Qt.black)
+                    self.painter.drawLine(-4, 0, 4, 0)
+                    self.painter.drawLine(0, -4, 0, 4)
+                    self.painter.translate(-10, +10)
+                    decal = -25
+                    if p.x + decal < 0 : 
+                        decal = 5 
+                    self.painter.drawText(decal, 5, "M"+"'"*num_point+str(no))
+                else :
+                    self.painter.setPen(QColor(self.couleurs[j]))
+                    self.painter.drawLine(-2, 0, 2, 0)
+                    self.painter.drawLine(0, -2, 0, 2)
+                    self.painter.translate(-10, +10)
+                    self.painter.drawText(0, 0, str(j + 1))
+                self.painter.translate(
+                    round(-p.x - self.origine.x + obj_reference.x) + 10,
+                    round(-p.y - self.origine.y + obj_reference.y) - 10)
+            return
 
-                    if self.chrono == 2:
-                        self.painter.drawLine(-4, 0, 4, 0)
-                        self.painter.drawLine(0, -4, 0, 4)
-                        self.painter.translate(-10, +10)
-                        decal = -25
-                        if point.x + decal < 0 : 
-                            decal = 5 
-                        self.painter.drawText(decal, 5, "M"+"'"*num_point+str(no))
-                    else :
-                        self.painter.drawLine(-2, 0, 2, 0)
-                        self.painter.drawLine(0, -2, 0, 2)
-                        self.painter.translate(-10, +10)
-                        self.painter.drawText(0, 0, str(color + 1))
-                        
-                    self.painter.translate(
-                        round(-point.x - self.origine.x + ptreferentiel.x) + 10,
-                        round(-point.y - self.origine.y + ptreferentiel.y) - 10)
-                    color += 1
-                    num_point+=1
-                    
+        self.video.iteration_data(lambda i, t: None, cb_point)
         self.painter.end()
         ############################################################
         # paint repere
