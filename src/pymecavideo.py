@@ -848,19 +848,24 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         self.dbg.p(1, "rentre dans 'recalculLesCoordonnees'")
         nb_suivis = self.video.nb_obj
-        for i,t in enumerate(self.video.dates):
+
+        def cb_temps(i, t):
+            # marque la date dans la colonne de gauche
             self.tableWidget.setItem(i, 0, QTableWidgetItem(f"{t:.3f}"))
-            
-            for j, obj in enumerate(self.video.suivis):
-                p = self.video.data[t][obj]
-                if p:
-                    p = self.video.pointEnMetre(p)
-                    self.tableWidget.setItem(
-                        i, j*(nb_suivis)+1, QTableWidgetItem(str(p.x)))
-                    self.tableWidget.setItem(
-                        i, j*(nb_suivis) + 2, QTableWidgetItem(str(p.y)))
-        # esthétique : enleve la derniere ligne
-        #self.tableWidget.removeRow(len(self.data))
+            return
+
+        def cb_point(i, t, j, obj, p, v):
+            # marque les coordonnées x et y de chaque objet, deux colonnes
+            # par deux colonnes.
+            if p:
+                self.tableWidget.setItem(
+                    i, j*(nb_suivis)+1, QTableWidgetItem(str(p.x)))
+                self.tableWidget.setItem(
+                    i, j*(nb_suivis) + 2, QTableWidgetItem(str(p.y)))
+            return
+
+        # dans le tableau, l'unité est le mètre.
+        self.video.iteration_data(cb_temps, cb_point, unite = "m")
         return
 
     def barycentre_trajectoires(self, referentiel):
@@ -1555,7 +1560,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.pY[y] = [point]
 
     def affiche_tableau(self):
-        """lancée à chaque affichage du tableau, recalcule les coordonnées à afficher à partir des listes de points."""
+        """lancée à chaque affichage du tableau, recalcule les coordonnées à afficher à partir des listes de points.
+        À réécrire plus élégament, en utilisant self.video.iteration_data
+        et deux fonctions de rappel. !!!
+        """
         self.dbg.p(1, "rentre dans 'affiche_tableau'")
 
         # active ou désactive les checkbox énergies (n'ont un intérêt que si les échelles sont faites)

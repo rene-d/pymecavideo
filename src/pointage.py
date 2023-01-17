@@ -24,35 +24,44 @@ from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QMouseEvent
 
 from vecteur import vecteur
+from echelle import echelle
+
 from collections import deque
 
 class Pointage(QObject):
     """
     Une classe pour représenter les pointages : séquences éventuellement
     creuses, de quadruplets (date, désignation d'objet, vecteur)
-
-    self.data y est un dictionaire ordonné, qui a pour clés des dates 
-    croissantes ; chaque date renvoie  un dictionnaire de type
-    désignation d'objet => vecteur.
-
-    self.suivis est une liste limitative de désignations d'objets
-
-    self.deltaT est l'intervalle de temps entre deux images d'une vidéo
-
-    self.echelle est l'échelle en px par mètre
-
-    self.vide reste vrai tant qu'on n'a pas encore pointé ; modifié par
-      self.pointe(...)
     """
     def __init__(self):
         QObject.__init__(self)
-        self.data    = None
-        self.suivis  = None
-        self.deltaT  = None
-        self.echelle = None
-        self.vide    = True
-        self.pileFaits = deque()     # pile pour mémoriser les pointages faits
-        self.pileArefaire = deque()  # pile pour mémoriser les pointages défaits
+        self.init_pointage()
+        return
+
+    def init_pointage(self):
+        """
+        self.data y est un dictionaire ordonné, qui a pour clés des dates 
+        croissantes ; chaque date renvoie  un dictionnaire de type
+        désignation d'objet => vecteur.
+
+        self.suivis est une liste limitative de désignations d'objets
+
+        self.deltaT est l'intervalle de temps entre deux images d'une vidéo
+
+        self.echelle est l'échelle en px par mètre
+
+        self.vide reste vrai tant qu'on n'a pas encore pointé ; modifié par
+          self.pointe(...)
+        """
+        self.data    = None             # les données de pointage
+        self.suivis  = None             # la liste des objets mobiles suivis
+        self.deltaT  = None             # intervalle de temps entre deux images
+        self.echelle = None             # pixels par mètre
+        self.vide    = True             # pas encore de pointage ?
+        self.origine = None             # position de l'origine sur les images
+        self.echelle_image = echelle()  # objet gérant l'échelle
+        self.sens_X = 1                 # sens de l'axe des abscisses
+        self.sens_Y = 1                 # sens de l'axe des ordonnées
         return
 
     def setEchelle(self, echelle):
@@ -103,7 +112,6 @@ class Pointage(QObject):
         if date not in self.data:
             raise Exception(f"date incorrecte dans Pointage.pointe : {date}")
         self.data[date][objet] = position
-        self.pileFaits.append((date, objet, position))
         self.vide = False
         return
 
@@ -111,42 +119,23 @@ class Pointage(QObject):
         """
         @return vrai si on peut défaire un pointage
         """
-        return len(self.pileFaits) > 0
-    
-    def defaire(self):
-        """
-        Permet de défaire les pointages faits précédemment
-        """
-        if len(self.pileFaits) > 0:
-            date, objet, position = self.pileFaits.pop()
-            self.pileArefaire.append((date, objet, position))
-            self.data[date][objet] = None
-        return
-
-    def purge_refaire(self):
-        """
-        oublie les pointages à refaire
-        """
-        self.pileArefaire = deque()
-        return
+        return len(self.index_trajectoires()) > 0
 
     def peut_refaire(self):
         """
+        pas encore implémenté
         @return vrai si on peut refaire un pointage
         """
-        return len(self.pileArefaire) > 0
+        return False
     
-    def refaire(self):
+    def purge_refaire(self):
         """
-        Refait un pointage si possible
+        pas encore implémenté ; purge les données à refaire si
+        on vient de cliquer sur la vidéo pour un pointage
         """
-        if len(self.pileArefaire) > 0:
-            date, objet, position = self.pileArefaire.pop()
-            data[date][objet] = position
-            self.pileFaits.append((date, objet, position))
         return
-            
-        
+
+    
     def position(self, objet, index=None, date=None, unite="px"):
         """
         ajoute un pointage aux données ; on peut soit préciser l'index
@@ -174,26 +163,6 @@ class Pointage(QObject):
         else:
             raise Exception(f"dans Pointage.position, unité illégale {unite}")
         
-    def trajectoire(self, objet, mode="liste", unite = "px"):
-        """
-        @param objet la désignation d'un objet suivi ; couramment : un nombre
-        @param mode "liste" ou "dico" ("liste" par défaut)
-        @param unite l'unité du vecteur position : peut être "px" pour pixel
-          (par défaut) ou "m" pour mètre
-
-        @return une liste de vecteurs (ou None quand la position est inconnue)
-          les mode = "liste", sinon un dictionnaire date=>vecteur
-        """
-        if unite == "px":
-            mul =1
-        elif unite == "m":
-            mul = 1/self.echelle
-        else:
-            raise Exception(f"dans Pointage.trajectoire, unité illégale {unite}")
-        if mode == "liste":
-            return [self.data[t][objet]*mul for t in self.dates]
-        return {t: self.data[t][objet]*mul for t in self.dates}
-
     def __str__(self):
         return self.csv_string()
 
@@ -234,6 +203,93 @@ class Pointage(QObject):
             result.append(sep.join(ligne))
         result.append("") # pour finir sur un saut de ligne
         return "\n".join(result)
+    
+    def trajectoire(self, objet, mode="liste", unite = "px"):
+        """
+        @param objet la désignation d'un objet suivi ; couramment : un nombre
+        @param mode "liste" ou "dico" ("liste" par défaut)
+        @param unite l'unité du vecteur position : peut être "px" pour pixel
+          (par défaut) ou "m" pour mètre
+
+        @return une liste de vecteurs (ou None quand la position est inconnue)
+          les mode = "liste", sinon un dictionnaire date=>vecteur
+        """
+        if unite == "px":
+            mul =1
+        elif unite == "m":
+            mul = 1/self.echelle
+        else:
+            raise Exception(f"dans Pointage.trajectoire, unité illégale {unite}")
+        if mode == "liste":
+            return [self.data[t][objet]*mul for t in self.dates]
+        return {t: self.data[t][objet]*mul for t in self.dates}
+
+    def une_trajectoire(self, obj):
+        """
+        renvoie la séquence de positions d'un objet pointé (seulement là
+        où il a été pointé, ni avant, ni après)
+        @param obj un des objets mobiles pointés
+        @return une liste [instance de vecteur, ...]
+        """
+        return [self.data[t][obj] for t in self.dates if self.data[t][obj]]
+
+    def les_trajectoires(self):
+        """
+        renvoie un dictionnaire objet => trajectoire de l'objet
+        @return { objet: [instance de vecteur, ...], ...}
+        """
+        return {obj: self.une_trajectoire(obj) for obj in self.suivis}
+
+    def index_trajectoires(self, debut = 1):
+        """
+        renvoie la liste des numéros des images pointés au long des
+        trajectoire. N.B. : la première image d'un film est numérotée 1
+        @param debut permet de choisir le numéro de la toute première image
+          du film (1 par défaut)
+        """
+        return [i + debut for i,t in enumerate(self.dates)
+                if self.data[t][self.suivis[0]]]
+
+    def pointEnMetre(self, p):
+        """
+        renvoie un point, dont les coordonnées sont en mètre, dans un
+        référentiel "à l'endroit"
+        @param p un point en "coordonnées d'écran"
+        """
+        self.dbg.p(1, "rentre dans 'pointEnMetre'")
+        if p is None: return None
+        return vecteur(
+            self.sens_X * (p.x - self.origine.x) * self.echelle_image.mParPx(),
+            self.sens_Y * (self.origine.y - p.y) * self.echelle_image.mParPx())
+
+    def iteration_data(self, callback_t, callback_p, unite="px"):
+        """
+        Une routine d'itération généralisée qui permet de lancer une action
+        spécifique pour chaque date et une action pour chaque pointage.
+
+        @param callback_t une fonction de rappel dont les paramètres sont
+          i (index commençant à 0), t (la date)
+        @param callback_p, une fonction dont les paramètres sont i, t,
+          j (index d'objet commençant à 0), obj (un objet suivi) et 
+          p son pointage de type vecteur, v sa vitesse, de type vecteur
+        @param unite ("px", pour pixels, par défaut) si l'unité est "px",
+          les données brutes du pointage en pixels sont renvoyées ; si
+          l'unité est "m" alors les coordonnées du point sont en mètre
+        """
+        print("GRRR dans iteration_data")
+        for i,t in enumerate(self.dates):
+            callback_t(i,t)
+            precedent = None # point precedent
+            for j, obj in enumerate(self.suivis):
+                p = self.data[t][obj]
+                if unite == "m": p = self.pointEnMetre(p)
+                if precedent is not None:
+                    v = (p - precedent) * (1 / self.deltaT)
+                else:
+                    v = None
+                precedent = p
+                callback_p(i, t, j, obj, p, v)
+        return
     
 def test():
     """

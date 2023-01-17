@@ -29,7 +29,7 @@ import os, time, re
 import locale
 
 from vecteur import vecteur
-from echelle import echelle, Echelle_TraceWidget, EchelleWidget
+from echelle import Echelle_TraceWidget, EchelleWidget
 from image_widget import ImageWidget
 from pointage import Pointage
 from globdef import _translate, beauGrosCurseur, DOCUMENT_PATH
@@ -61,7 +61,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.image_h = self.height()    # pas forcément pertinentes
         self.setMouseTracking(True)
         self.origine = vecteur(self.width()//2, self.height()//2)
-        self.echelle_image = echelle()  # objet gérant l'échelle
         self.decal = vecteur(0, 0)      # if video is not 4:3, center video
         self.couleurs = [
             "red", "blue", "cyan", "magenta", "yellow", "gray", "green"] *2
@@ -76,7 +75,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.objet_courant = 1     # désignation de l'objet courant
         self.a_une_image = False   # indication quant à une image disponible
         self.imageExtraite = None  # référence de l'image courante
-        self.origine = None        # position de l'origine sur les images
         self.lance_capture = False # un pointage est en cours
         self.decal = vecteur(0,0)  # décalage des images
         self.echelle_faite = False # vrai quand l'échelle est définie
@@ -85,8 +83,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.selRect = None        # un objet gérant la sélection par rectangle
         self.lance_cature = False  # devient vrai quand on commence à pointer
         self.auto = False          # devient vrai pour le pointage automatique
-        self.sens_X = 1            # sens de l'axe des abscisses
-        self.sens_Y = 1            # sens de l'axe des ordonnées
         self.motifs_auto = []      # liste de motifs pour le suivi auto
         self.pointsProbables = {}  # dictionnaire de points proches de la détection ?
 
@@ -461,12 +457,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.cvReader.recupere_avi_infos(self.rotation)
         self.ratio = self.largeurFilm / self.hauteurFilm
         self.app.init_interface()
-        self.trajectoire = {}
         self.calcul_deltaT()
         # on dimensionne les données pour les pointages
         self.redimensionne_data()
         self.active_controle_image()
-        self.echelle_image = echelle()
         self.affiche_echelle()
         self.affiche_image()
         return
@@ -762,7 +756,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.Bouton_Echelle.setStyleSheet("background-color:None;")
         self.app.init_variables(tuple(), filename=self.filename)
         self.affiche_image()
-        self.echelle_image = echelle()
         self.affiche_echelle()
         self.active_controle_image()
         self.spinBox_image.setValue(1)
@@ -877,13 +870,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         lignes = open(fichier, "r").readlines()
 
         # réinitialisation des données de pointage
-        self.data    = None
-        self.suivis  = None
-        self.deltaT  = None
-        self.echelle = None
-        self.vide    = True
+        self.init_pointage()
 
-        self.echelle_image = echelle()  # on réinitialise l'échelle
         # on récupère les données importantes
         dico_donnees = self.load_lignes_donnees(lignes)
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
@@ -1124,17 +1112,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.active_controle_image()
         return
 
-    def pointEnMetre(self, p):
-        """
-        renvoie un point, dont les coordonnées sont en mètre, dans un
-        référentiel "à l'endroit"
-        @param p un point en "coordonnées d'écran"
-        """
-        self.dbg.p(1, "rentre dans 'pointEnMetre'")
-        return vecteur(
-            self.sens_X * (p.x - self.origine.x) * self.echelle_image.mParPx(),
-            self.sens_Y * (self.origine.y - p.y) * self.echelle_image.mParPx())
-
     def enregistre_ui(self):
         self.dbg.p(1, "rentre dans 'enregistre_ui'")
         if not self.vide and  self.echelle_faite:
@@ -1226,7 +1203,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         """
         self.dbg.p(1, "rentre dans 'vecteursVitesse'")
         result = {obj : [] for obj in self.suivis}
-        trajectoires = {obj: [self.data[t][obj] for t in self.dates if self.data[t][obj] is not None] for obj in self.suivis}
+        trajectoires = self.les_trajectoires()
         for obj in self.suivis:
             precedent = trajectoires[obj][0]
             suivant = None
@@ -1245,3 +1222,4 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 precedent = point # on conserve les coordonnées pour la suite
         return result
 
+    

@@ -54,11 +54,9 @@ class Cadreur(QObject):
             self.titre = str(self.tr("Presser la touche ESC pour sortir"))
         self.obj = obj
         # on s'intéresse à la trajectoire de l'objet servant de référentiel
-        self.trajectoire_obj = [video.data[t][obj] for t in video.dates
-                                if self.video.data[t][obj]]
-        # on fait la liste des index où l'objet a été pointé
-        self.index_obj = [i for i,t in enumerate(video.dates)
-                          if self.video.data[t][obj]]
+        self.trajectoire_obj = video.une_trajectoire(obj)
+        # on fait la liste des index où l'objet a été pointé (début à 0)
+        self.index_obj = video.index_trajectoires(debut = 0)
         self.capture = cv2.VideoCapture(self.video.filename)
         self.fps = self.capture.get(cv2.CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
