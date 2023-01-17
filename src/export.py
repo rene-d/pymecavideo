@@ -175,9 +175,6 @@ class FichierCSV:
                 csvwriter = csv.writer(csvfile, delimiter=_field,
                                        quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 if _header:
-                    #header = [tw.horizontalHeaderItem(
-                        #col).text() for col in range(tw.columnCount())]
-                    #modif pour gérer 'refaire le point'
                     header = [tw.horizontalHeaderItem(
                         col).text() for col in range(tw.columnCount()-1)]
                     csvwriter.writerow(header)
@@ -298,39 +295,11 @@ class Calc():
         self.doc = OpenDocumentSpreadsheet()
         self.table = Table(name="Pymecavideo {0}".format(
             time.strftime("%Y-%m-%d %Hh%Mm%Ss")))
-        self.importPymeca(app)
+        self.exportpymeca(app)
 
-    def titres(self, lesTitres=[]):
+    def exportpymeca(self, app):
         """
-        Ajoute une ligne de titres
-        @param les Titres une liste de chaînes
-        """
-        if not lesTitres:
-            return
-        tr = self.TableRow()
-        self.table.addElement(tr)
-        for t in lesTitres:
-            tc = self.TableCell()
-            tr.addElement(tc)
-            p = self.P(text=t)
-            tc.addElement(p)
-
-    def ligneValeurs(self, val=[]):
-        """
-        Ajoute une ligne de valeurs
-        @param val une liste de flottants
-        """
-        if not val:
-            return
-        tr = self.TableRow()
-        self.table.addElement(tr)
-        for v in val:
-            tc = self.TableCell(valuetype="float", value=str(v))
-            tr.addElement(tc)
-
-    def importPymeca(self, app):
-        """
-        importe les données de pymecavideo
+        exporte les données de pymecavideo
         @param app pointeur vers l'application
         """
         # fait une ligne de titres
@@ -338,22 +307,47 @@ class Calc():
         for obj in app.video.suivis:
             titles.append(f"X{obj} (m)")
             titles.append(f"Y{obj} (m)")
-        self.titres(titles)
-        # fait les lignes de données
-        for t in app.video.dates:
-            if app.video.data[t][app.video.suivis[0]] is None : continue
-            val = [t]
-            for obj in app.video.data[t]:
-                vect = app.video.pointEnMetre(app.video.data[t][obj])
-                val.append(vect.x)
-                val.append(vect.y)
-            self.ligneValeurs(val)
+        row = self.TableRow()
+        self.table.addElement(row)
+        for t in titles:
+            tc = self.TableCell()
+            row.addElement(tc)
+            para = self.P(text=t)
+            tc.addElement(para)
+
+
+        self.tr = []
+        def cb_temps(i,t):
+            """
+            fonction de rappel qui crée les lignes de tableur et
+            y inscrit la date, à gauche; construit self.tr la liste des
+            pointeurs vers les lignes du tableur
+            """
+            row = self.TableRow()
+            self.tr.append(row)
+            self.table.addElement(row)
+            row.addElement(
+                self.TableCell(valuetype="float", value=str(t)))
+            return
+        
+        def cb_point(i, t, j, obj, p, v):
+            """
+            fonction de rappel qui inscrit les coordonnées dans le tableur
+            """
+            self.tr[i].addElement(
+                self.TableCell(valuetype="float", value=str(p.x)))
+            self.tr[i].addElement(
+                self.TableCell(valuetype="float", value=str(p.y)))
+            return 
+
+        # écrit dans toutes les cases du tableur
+        app.video.iteration_data(cb_temps, cb_point, unite="m")
         # accroche la feuille au document tableur
         self.doc.spreadsheet.addElement(self.table)
         # écrit dans le fichier de sortie
         self.doc.save(self.outfile)
         self.outfile.close()
-
+        return
 
 class PythonSource:
     """
