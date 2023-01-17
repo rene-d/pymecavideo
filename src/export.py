@@ -692,17 +692,46 @@ class PythonNumpy:
 
     def __init__(self, app, filepath):
         import numpy as np
-        t = [t for t in app.video.dates if app.video.data[t][app.video.suivis[0]] is not None]
-        export = [t]
-        x = {}
-        y = {}
+
+        liste_temps = []
+        def cb_temps(i, t):
+            """
+            fonction de rappel pour chaque date
+            """
+            if app.video.data[t][app.video.suivis[0]] is not None:
+                liste_temps.append(t)
+            return
+        
+        x_objets = {o: [] for o in app.video.suivis}
+        y_objets = {o: [] for o in app.video.suivis}
+        def cb_points(i, t, j, obj, p, v):
+            """
+            fonction de rappel pour chaque point
+            """
+            if p is None: return
+            x_objets[obj].append(p.x)
+            y_objets[obj].append(p.y)
+            return
+
+        app.video.iteration_data(cb_temps, cb_points, unite = "m")
+        
+        export = [liste_temps]
         for obj in app.video.suivis:
-            points = [app.video.pointEnMetre(app.video.data[t][obj]) for t in app.video.dates if app.video.data[t][obj] is not None]
-            export.append([p.x for p in points])
-            export.append([p.y for p in points])
+            export.append(x_objets[obj])
+            export.append(y_objets[obj])
+
         np.save(filepath, export)
-        QMessageBox.information(None, _translate("export_numpy", "Fichier Numpy sauvegardé"), _translate(
-            "export_numpy", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport numpy as np\nt,x1,y1 ... = np.load("{}")""".format(os.path.basename(filepath))), QMessageBox.Ok, QMessageBox.Ok)
+        QMessageBox.information(
+            None,
+            _translate("export_numpy", "Fichier Numpy sauvegardé"),
+            _translate("export_numpy",
+                       """Pour ouvrir ce fichier depuis Python, taper :
+
+import numpy as np\nt,x1,y1 ... = np.load("{}")""".format(
+    os.path.basename(filepath))),
+            QMessageBox.Ok,
+            QMessageBox.Ok)
+        return
 
 class NotebookExportDialog(QDialog):
     """
