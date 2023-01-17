@@ -267,27 +267,55 @@ class Pointage(QObject):
         Une routine d'itération généralisée qui permet de lancer une action
         spécifique pour chaque date et une action pour chaque pointage.
 
-        @param callback_t une fonction de rappel dont les paramètres sont
-          i (index commençant à 0), t (la date)
-        @param callback_p, une fonction dont les paramètres sont i, t,
-          j (index d'objet commençant à 0), obj (un objet suivi) et 
-          p son pointage de type vecteur, v sa vitesse, de type vecteur
+        @param callback_t est None, ou une fonction de rappel dont les 
+          paramètres sont i (index commençant à 0), t (la date) ;
+          cette fonction de rappel prend soin des « lignes » de données
+        @param callback_p est None, ou une fonction de rappel dont les
+          paramètres sont i, t, j (index d'objet commençant à 0), 
+          obj (un objet suivi) et p son pointage de type vecteur, 
+          v sa vitesse, de type vecteur ; cette fonction de rappel
+          prend soin de chacune des « cases » de données
         @param unite ("px", pour pixels, par défaut) si l'unité est "px",
           les données brutes du pointage en pixels sont renvoyées ; si
           l'unité est "m" alors les coordonnées du point sont en mètre
         """
-        precedents = [None] * self.nb_obj # les points precedents
+        precedents = [None] * self.nb_obj # points precedents, un par objet
         for i,t in enumerate(self.dates):
-            callback_t(i,t)
+            if callback_t is not None:
+                callback_t(i,t)
             for j, obj in enumerate(self.suivis):
-                p = self.data[t][obj]
-                if unite == "m": p = self.pointEnMetre(p)
-                if precedents[j] is not None:
-                    v = (p - precedents[j]) * (1 / self.deltaT)
-                else:
-                    v = None
-                precedents[j] = p
-                callback_p(i, t, j, obj, p, v)
+                if callback_p is not None:
+                    p = self.data[t][obj]
+                    if unite == "m": p = self.pointEnMetre(p)
+                    if precedents[j] is not None:
+                        v = (p - precedents[j]) * (1 / self.deltaT)
+                    else:
+                        v = None
+                    precedents[j] = p
+                    callback_p(i, t, j, obj, p, v)
+        return
+
+    def iteration_objet(self, cb_o, cb_p, unite = "px"):
+        """
+        Permet de lancer une itération pour chacun des objets suivis
+        @param cb_o une fonction de rappel, utilisée itérativement pour
+          chaque objet. Les paramètres de cette fonction sont :
+          i : un index d'objet débutant à 0, obj : un objet suivi
+        @param cb_p une fonction de rappel, utilisée pour chacun des points
+          du pointage. Les paramètres de cette fonction sont :
+          i : un index d'objet débutant à 0, obj : un objet suivi, 
+          p : un pointage (de type vecteur)
+        @param unite ("px", pour pixels, par défaut) si l'unité est "px",
+          les données brutes du pointage en pixels sont renvoyées ; si
+          l'unité est "m" alors les coordonnées du point sont en mètre
+        """
+        for i, o in enumerate(self.suivis):
+            cb_o(i, o)
+            for t in self.dates:
+                p = self.data[t][o]
+                if unite == "m":
+                    p = self.pointEnMetre(p)
+                cb_p(i, o, p)
         return
     
 def test():

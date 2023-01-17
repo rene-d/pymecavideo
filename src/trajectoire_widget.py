@@ -261,7 +261,7 @@ class TrajectoireWidget(ImageWidget):
                     round(-p.y - self.origine.y + obj_reference.y) - 10)
             return
 
-        self.video.iteration_data(lambda i, t: None, cb_point)
+        self.video.iteration_data(None, cb_point)
         self.painter.end()
         ############################################################
         # paint repere

@@ -354,6 +354,100 @@ class PythonSource:
     Exporte les données dans un fichier Python(source)
     """
 
+    # lignes de code en tête du programme Python
+    en_tete = """\
+#!/usr/bin/env python3
+## Données exportées de Pymecavidéo
+## {date}
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Intervalle de temps auto-détecté
+dt={deltaT}
+"""
+    
+    # lignes de code a écrire dans tous les cas, après l'en-tête
+    code = """
+
+    ##############################################################
+    # Le code auto-généré qui suit peut être effacé à volonté.   #
+    ##############################################################
+    # Il n'est là qu'à titre d'exemple, et il n'est pas toujours #
+    # approprié à l'usage des données que vous avez exportées.   #
+    ##############################################################
+
+    ## affichage des points
+    plt.plot(x1,y1,'o',markersize= 3)
+    plt.xlabel("x (en m)")
+    plt.ylabel("y (en m)")
+
+    ## calcul et affichage des vecteurs vitesses
+
+
+
+    {cv}
+    {vv}
+
+    ## calcul et affichage des vecteurs accélérations
+
+    {ca}
+    {va}
+
+    ## présentation du diagramme interactif
+    plt.grid()
+    plt.show()
+    """
+
+    # lignes de code si on veut calculer les vitesses
+    cv1 = """
+    Δt = 2*dt
+    vx = np.array(np.zeros(len(x1)-2))
+    vy = np.array(np.zeros(len(x1)-2))
+    i=0
+    for k in range(1,len(x1)-1):
+        Δx = (x1[k+1]-x1[k-1])
+        Δy = (y1[k+1]-y1[k-1])
+        vx[i] = Δx/Δt
+        vy[i] = Δy/Δt
+        i+=1
+"""
+
+    # lignes de code si on ne veut pas calculer la vitesse
+    cv0 = """
+##### à compléter pour calculer les vitesses ####
+        ##############
+        ##############
+"""
+    # lignes de code activables éventuellement dans l'éditeur, afin
+    # de tracer les vecteurs vitesse
+    vv = """
+    #Pour afficher les vecteurs vitesses, décommentez la ligne suivante quand le code précédent est prêt.
+    #plt.quiver(x1[1:-1], y1[1:-1], vx, vy, scale_units = 'xy', angles = 'xy', width = 0.003)
+     """
+
+    # lignes de code si on veut calculer l'accélération
+    ca1 = """
+    ax = np.array(np.zeros(len(vx)-2))
+    ay = np.array(np.zeros(len(vx)-2))
+    i=0
+    for k in range(1, len(vx)-1):
+        Δvx = (vx[k+1]-vx[k-1])
+        Δvy = (vy[k+1]-vy[k-1])
+        ax[i] = Δvx/Δt
+        ay[i] = Δvy/Δt
+        i+=1"""
+
+    # lignes de code si on ne veut pas calculer l'accélération
+    ca0 = """#####à compléter pour calculer les vitesses####
+        ##############
+        ##############"""
+
+    # lignes de code si on veut voir les vecteurs accélération
+    va = """
+    plt.title("Vecteurs accélérations") 
+    plt.quiver(x1[2:-2], y1[2:-2], ax, ay, scale_units = 'xy', angles = 'xy', width = 0.003, color = 'r')
+"""
+    
     def __init__(self, app, filepath):
         # traitement du scénario des vitesses/accélrations :
         # si seule la vitesse est cochée, on calcule et affiche les vitesses
@@ -374,83 +468,59 @@ class PythonSource:
             calcule_vitesse = True
         with open(filepath, "w", encoding="UTF-8") as f:
             date = time.strftime("%d/%m/%y %H:%M")
-            f.write(f"#!/usr/bin/env python\n")
-            f.write(f"## Données exportées de Pymecavidéo\n## {date}\n")
-            f.write("\nimport numpy as np\nimport matplotlib.pyplot as plt\n")
-            f.write(f"\n# Intervalle de temps auto-détecté\ndt={app.video.deltaT}\n")
-            for obj in app.video.suivis:
-                f.write(f"\n# coordonnées du point numéro {obj}\n")
-                ligne_x = f"x{obj} = np.array(["
-                ligne_y = f"y{obj} = np.array(["
-                for t in app.video.dates:
-                    if app.video.data[t][obj] is None: continue
-                    vect = app.video.pointEnMetre(app.video.data[t][obj])
-                    ligne_x += f"{vect.x}, "
-                    ligne_y += f"{vect.y}, "
-                ligne_x += "])\n"
-                ligne_y += "])\n"
-                f.write(ligne_x)
-                f.write(ligne_y)
-                f.write("""
-    ##############################################################
-    # Le code auto-généré qui suit peut être effacé à volonté.   #
-    ##############################################################
-    # Il n'est là qu'à titre d'exemple, et il n'est pas toujours #
-    # approprié à l'usage des données que vous avez exportées.   #
-    ##############################################################
+            f.write(self.en_tete.format(date=date, deltaT=app.video.deltaT))
 
-    ## affichage des points
-    plt.plot(x1,y1,'o',markersize= 3)
-    plt.xlabel("x (en m)")
-    plt.ylabel("y (en m)")
+            commentaires = []
+            lignes_x     = []
+            lignes_y     = []
 
-    ## calcul et affichage des vecteurs vitesses
+            def cb_objet(i, obj):
+                """
+                fonction de rappel pour chacun des objets; modifie les listes
+                commentaires, lignes_x et lignes_y
+                @param i index de l'objet, commençant à 0
+                @param obj un objet suivi
+                """
+                commentaires.append(f"""\
+
+# coordonnées du point numéro {obj}
+
+""")
+                lignes_x.append(f"x{obj} = np.array([")
+                lignes_y.append(f"y{obj} = np.array([")
+                return
 
 
+            def cb_point(i, obj, p):
+                """
+                fonction de rappel pour les points pointés appartenant à un
+                objet
+                @param i l'index de l'objet, commençant à 0
+                @param obj l'objet suivi
+                @param p un pointage (de type vecteur)
+                """
+                if p is not None:
+                    lignes_x[i] += f"{p.x}, "
+                    lignes_y[i] += f"{p.y}, "
+                return
 
-    %s
-    %s
+            # on crée les commentaires et les lignes de déclaration de
+            # tableaux de nombres
+            app.video.iteration_objet(cb_objet, cb_point, unite="m")
+            
+            # On termine les lignes de déclaration des tableaux de nombres
+            lignes_x = [l + "])\n" for l in lignes_x]
+            lignes_y = [l + "])\n" for l in lignes_y]
 
-    ## calcul et affichage des vecteurs accélérations
 
-    %s
-    %s
-
-    ## présentation du diagramme interactif
-    plt.grid()
-    plt.show()
-    """ % ("""
-    Δt = 2*dt
-    vx = np.array(np.zeros(len(x1)-2))
-    vy = np.array(np.zeros(len(x1)-2))
-    i=0
-    for k in range(1,len(x1)-1):
-        Δx = (x1[k+1]-x1[k-1])
-        Δy = (y1[k+1]-y1[k-1])
-        vx[i] = Δx/Δt
-        vy[i] = Δy/Δt
-        i+=1""" if calcule_vitesse else """#####à compléter pour calculer les vitesses####
-        ##############
-        ##############""",
-                    """
-    #Pour afficher les vecteurs vitesses, décommentez le ligne suivante quand le code précédent est prêt.
-    #plt.quiver(x1[1:-1], y1[1:-1], vx, vy, scale_units = 'xy', angles = 'xy', width = 0.003)
-     """,
-                    """
-    ax = np.array(np.zeros(len(vx)-2))
-    ay = np.array(np.zeros(len(vx)-2))
-    i=0
-    for k in range(1, len(vx)-1):
-        Δvx = (vx[k+1]-vx[k-1])
-        Δvy = (vy[k+1]-vy[k-1])
-        ax[i] = Δvx/Δt
-        ay[i] = Δvy/Δt
-        i+=1""" if calcule_accel else """#####à compléter pour calculer les vitesses####
-        ##############
-        ##############""",
-                    """
-    plt.title("Vecteurs accélérations") 
-    plt.quiver(x1[2:-2], y1[2:-2], ax, ay, scale_units = 'xy', angles = 'xy', width = 0.003, color = 'r')""" if affiche_accel else ""))
+            for c, lx, ly in zip(commentaires, lignes_x, lignes_y):
+                f.write(c); f.write(lx); f.write(ly)
+            f.write(self.code.format(
+                cv = self.cv1 if calcule_vitesse else self.cv0,
+                vv = self.vv,
+                ca = self.ca1 if calcule_accel else self.ca0,
+                va = self.va if affiche_accel else "",
+            ))
         return
     
 
