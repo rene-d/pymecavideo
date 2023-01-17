@@ -133,7 +133,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.image_max and self.deltaT:
             self.dimensionne(
                 self.spinBox_nb_de_points.value(), self.deltaT, self.image_max)
-            self.app.cree_tableau(nb_obj = self.nb_obj)
+            self.app.cree_tableau(nb_suivis = self.nb_obj)
         return
 
     @property

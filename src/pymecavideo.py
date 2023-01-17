@@ -791,28 +791,30 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(1, "rentre dans 'showEvent'")
         self.redimensionneSignal.emit(0)
 
-    def cree_tableau(self, nb_obj=1):
+    def cree_tableau(self, nb_suivis=1):
         """
         Crée un tableau de coordonnées neuf dans l'onglet idoine.
-        @param nb_obj le nombre d'objets suivis (1 par défaut)
+        @param nb_suivis le nombre d'objets suivis (1 par défaut)
         """
         self.dbg.p(1, "rentre dans 'cree_tableau'")
         self.tableWidget.clear()
         self.tab_coord.setEnabled(1)
         self.tableWidget.setRowCount(1)
-        colonnes_sup = self.checkBox_Ec.isChecked()+self.checkBox_Epp.isChecked() + \
+        #le compte de colonnes supplémentaires pour chaque objet
+        colonnes_sup = self.checkBox_Ec.isChecked() + \
+            self.checkBox_Epp.isChecked() + \
             self.checkBox_Em.isChecked()
 
         # 2 colonnes par objet, colonnes_sup colonnes par objet
         # une pour la date, une pour refaire le pointage
-        self.tableWidget.setColumnCount(nb_obj * (2 + colonnes_sup) + 2)
+        self.tableWidget.setColumnCount(nb_suivis * (2 + colonnes_sup) + 2)
 
         self.tableWidget.setDragEnabled(True)
         # on met des titres aux colonnes.
         self.tableWidget.setHorizontalHeaderItem(
             0, QTableWidgetItem('t (s)'))
         self.tableWidget.setRowCount(len(self.video.data))
-        for i in range(nb_obj):
+        for i in range(nb_suivis):
             unite = "m" if self.video.echelle_faite else "px"
             self.tableWidget.setHorizontalHeaderItem(
                 1 + (2+colonnes_sup) * i, QTableWidgetItem(
@@ -836,7 +838,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     cptr += 1
         #dernier pour le bouton
         self.tableWidget.setHorizontalHeaderItem(
-            nb_obj * 2 + 1 + colonnes_sup*nb_obj,
+            nb_suivis * 2 + 1 + colonnes_sup*nb_suivis,
             QTableWidgetItem("Refaire le point"))
         return
 
@@ -1559,108 +1561,139 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             else:
                 self.pY[y] = [point]
 
+        return
+
+    def masse(self, obj):
+        """
+        Renseigne la masse d'un objet. L'implémentation est actuellement
+        incomplète : une seule masse est autorisée, pour tous les objets
+        donc on ne tient pas compte du paramètre obj
+        @param obj un objet suivi
+        @return la masse de cet objet
+        """
+        if self.masse_objet == 0:
+            masse_objet_raw = QInputDialog.getText(
+                None,
+                _translate(
+                    "pymecavideo", "Masse de l'objet", None),
+                _translate("pymecavideo",
+                           "Quelle est la masse de l'objet ? (en kg)",
+                           None),
+                QLineEdit.Normal, u"1.0")
+            if masse_objet_raw[1] == False:
+                return None
+            try:
+                masse_objet = [
+                    float(masse_objet_raw[0].replace(",", ".")), masse_objet_raw[1]]
+                if masse_objet[0] <= 0 or masse_objet[1] == False:
+                    self.affiche_barre_statut(_translate(
+                        "pymecavideo", " Merci d'indiquer une masse valable", None))
+                self.masse_objet = float(masse_objet[0])
+            except Exception as err:
+                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
+                self.affiche_barre_statut(_translate(
+                    "pymecavideo", " Merci d'indiquer une masse valable", None))
+        m = self.masse_objet
+        return m
+
+    def bouton_refaire(self, ligne):
+        """
+        Crée un bouton servant à refaire un pointage, pour la donnée
+        affichée dans une ligne du tableau
+        @param ligne une ligne du tableau (indexée à partir de 0)
+        @return un bouton
+        """
+        b = QPushButton()
+        b.setIcon(QIcon(":/data/icones/curseur_cible.svg"))
+        b.setToolTip("refaire le pointage\n de l'image %s"%(ligne+1))
+        b.setFlat(True)
+        b.clicked.connect( lambda state, widget: self.refait_point_depuis_tableau( b ))
+        return b
+    
     def affiche_tableau(self):
-        """lancée à chaque affichage du tableau, recalcule les coordonnées à afficher à partir des listes de points.
-        À réécrire plus élégament, en utilisant self.video.iteration_data
-        et deux fonctions de rappel. !!!
+        """
+        lancée à chaque affichage du tableau, recalcule les coordonnées
+        à afficher à partir des listes de points.
         """
         self.dbg.p(1, "rentre dans 'affiche_tableau'")
 
-        # active ou désactive les checkbox énergies (n'ont un intérêt que si les échelles sont faites)
+        # active ou désactive les checkbox énergies
+        # (n'ont un intérêt que si l'échelle est déterminée)
         if self.video.echelle_faite:
             self.checkBox_Ec.setEnabled(1)
             self.checkBox_Epp.setEnabled(1)
             if self.checkBox_Ec.isChecked() and self.checkBox_Epp.isChecked():
                 self.checkBox_Em.setEnabled(1)
+            else:
+                # s'il manque Ec ou Epp on décoche Em
+                self.checkBox_Em.setChecked(False)
         else:
             self.checkBox_Ec.setEnabled(0)
             self.checkBox_Em.setEnabled(0)
             self.checkBox_Epp.setEnabled(0)
 
-        # masse de l'objet
+        # masse de l'objet ATTENTION : QUID SI PLUSIEURS OBJETS ?
         if self.checkBox_Ec.isChecked():
-            if self.masse_objet == 0:
-                masse_objet_raw = QInputDialog.getText(
-                    None,
-                    _translate(
-                        "pymecavideo", "Masse de l'objet", None),
-                    _translate("pymecavideo",
-                               "Quelle est la masse de l'objet ? (en kg)",
-                               None),
-                    QLineEdit.Normal, u"1.0")
-                if masse_objet_raw[1] == False:
-                    return None
-                try:
-                    masse_objet = [
-                        float(masse_objet_raw[0].replace(",", ".")), masse_objet_raw[1]]
-                    if masse_objet[0] <= 0 or masse_objet[1] == False:
-                        self.affiche_barre_statut(_translate(
-                            "pymecavideo", " Merci d'indiquer une masse valable", None))
-                    self.masse_objet = float(masse_objet[0])
-                except Exception as err:
-                    self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                    self.affiche_barre_statut(_translate(
-                        "pymecavideo", " Merci d'indiquer une masse valable", None))
-                    self.checkBox_Ec.setChecked(0)
+            self.masse_objet = self.masse(1)
+            self.checkBox_Ec.setChecked(self.masse_objet != 0)
         # initialise tout le tableau (nb de colonnes, unités etc.)
-        self.cree_tableau(nb_obj = self.video.nb_obj)
+        self.cree_tableau(nb_suivis = self.video.nb_obj)
+        # le compte de colonnes supplémentaires pour chaque objet
         colonnes_sup = self.checkBox_Ec.isChecked() + \
             self.checkBox_Epp.isChecked() + \
             self.checkBox_Em.isChecked()
+        # le numéro de la dernière colonne où on peut refaire les points
         colonne_refait_points = self.video.nb_obj * (2 + colonnes_sup) + 1
-        for ligne, t in enumerate(self.video.dates):
-            # rentre le temps dans la première colonne
-            self.tableWidget.setItem(
-                ligne, 0, QTableWidgetItem(f"{t:.3f}"))
-            i = 0
-            for point in [self.video.data[t][obj] for obj in self.video.suivis]:
-                if point:
-                    pm = self.video.pointEnMetre(point)
+
+        def cb_temps(i, t):
+            # marque la date dans la colonne de gauche
+            self.tableWidget.setItem(i, 0, QTableWidgetItem(f"{t:.3f}"))
+            return
+
+        def cb_point(i, t, j, obj, p, v):
+            # marque les coordonnées x et y de chaque objet, deux colonnes
+            # suivies par des colonnes supplémentaires (Ec, Epp, Em), et après
+            # avoir épuisé le compte d'objets, un colonne pour permettre de
+            # refaire le pointage
+            col = 1 + (2 + colonnes_sup) * j
+            if p:
+                self.tableWidget.setItem(
+                    i, col, QTableWidgetItem(f"{p.x:.4g}"))
+                col += 1
+                self.tableWidget.setItem(
+                    i, col, QTableWidgetItem(f"{p.y:.4g}"))
+                col+= 1
+                if colonnes_sup:
+                    m = self.masse(obj)
+                # Énergie cinétique si nécessaire
+                if self.checkBox_Ec.isChecked():
+                    if v is not None:
+                        Ec = 0.5 * m * v.norme ** 2
+                        self.tableWidget.setItem(
+                            i, col, QTableWidgetItem(f"{Ec:.4g}"))
+                    col += 1
+                # Énergie potentielle de pesanteur si nécessaire
+                if self.checkBox_Epp.isChecked():
+                    Epp = m * 9.81 * p.y  # TODO faire varier g
                     self.tableWidget.setItem(
-                        ligne, i + 1, QTableWidgetItem(f"{pm.x:.4g}"))
-                    self.tableWidget.setItem(
-                        ligne, i + 2, QTableWidgetItem(f"{pm.y:.4g}"))
-                i += 2+colonnes_sup
-
-        # calculs des énergies
-        anciens_points = [None] * self.video.nb_obj
-        for ligne, t  in enumerate(self.video.data):
-            for obj in self.video.suivis:
-                i = int(obj) -1
-                point = self.video.data[t][obj]
-                v = None
-                if point:
-                    pm = self.video.pointEnMetre(point)
-                    if anciens_points[i] is not None:
-                        v = (pm - anciens_points[i]).norme / self.video.deltaT
-                    anciens_points[i] = pm
-                    for j in range(colonnes_sup):
-                        cptr = 0
-                        if self.checkBox_Ec.isChecked() and v is not None:
-                            Ec = 0.5*self.masse_objet*v*v
-                            self.tableWidget.setItem(
-                                ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"{Ec:.4g}"))
-                        cptr += 1
-                        if self.checkBox_Epp.isChecked():
-                            Epp = self.masse_objet*9.81*pm.y  # TODO faire varier g
-                            self.tableWidget.setItem(
-                                ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"{Epp:.4g}"))
-                        cptr += 1
-                        if self.checkBox_Em.isChecked() and v is not None:
-                            self.tableWidget.setItem(
-                                ligne, 3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"{Ec+Epp:.4g}"))
-                        cptr += 1
-                i += 1
-        ###Ajout d'un bouton pour refaire le point.
-
-            qpushbutton = QPushButton()
-            qpushbutton.setIcon(QIcon(":/data/icones/curseur_cible.svg"))
-            qpushbutton.setToolTip("refaire le pointage\n de l'image %s"%(ligne+1))
-            qpushbutton.setFlat(True)
-            qpushbutton.clicked.connect( lambda checked, b=qpushbutton: self.refait_point_depuis_tableau( b ))
-
+                        i, col, QTableWidgetItem(f"{Epp:.4g}"))
+                    col += 1
+                # Énergie mécanique si nécessaire
+                if self.checkBox_Em.isChecked():
+                    if v is not None:
+                        self.tableWidget.setItem(
+                            i, col, QTableWidgetItem(f"{Ec+Epp:.4g}"))
+                    col += 1
+            # dernière colonne : un bouton pour refaire le pointage
+            # existe même en l'absence de pointage
+            derniere = self.video.nb_obj * (2 + colonnes_sup) +1
             self.tableWidget.setCellWidget(
-                ligne, colonne_refait_points, qpushbutton)
+                i, derniere, self.bouton_refaire(i))
+            return
+        
+        self.video.iteration_data(
+            cb_temps, cb_point,
+            unite = "m" if self.video.echelle_faite else "px")
         return
 
     def refait_point_depuis_tableau(self, qpbn ):

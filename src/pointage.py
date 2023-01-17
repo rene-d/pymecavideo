@@ -276,18 +276,17 @@ class Pointage(QObject):
           les données brutes du pointage en pixels sont renvoyées ; si
           l'unité est "m" alors les coordonnées du point sont en mètre
         """
-        print("GRRR dans iteration_data")
+        precedents = [None] * self.nb_obj # les points precedents
         for i,t in enumerate(self.dates):
             callback_t(i,t)
-            precedent = None # point precedent
             for j, obj in enumerate(self.suivis):
                 p = self.data[t][obj]
                 if unite == "m": p = self.pointEnMetre(p)
-                if precedent is not None:
-                    v = (p - precedent) * (1 / self.deltaT)
+                if precedents[j] is not None:
+                    v = (p - precedents[j]) * (1 / self.deltaT)
                 else:
                     v = None
-                precedent = p
+                precedents[j] = p
                 callback_p(i, t, j, obj, p, v)
         return
     
