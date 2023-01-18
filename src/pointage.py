@@ -325,6 +325,16 @@ class Pointage(QObject):
         """
         return [t for t in self.dates
                 if self.data[t][self.suivis[0]] is not None]
+
+    def liste_pointages(self, obj=None):
+        """
+        renvoie la liste des pointages pour un objet
+        @param obj désigne l'objet choisi; si obj est None, 
+          c'est le premier des objets
+        """
+        if obj is None: obj = self.suivis[0]
+        return [self.data[t][obj] for t in self.dates
+                if self.data[t][obj] is not None]
     
 def test():
     """

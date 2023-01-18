@@ -791,19 +791,15 @@ class NotebookExportDialog(QDialog):
 class PythonNotebook :
     """
     Exporte les données dans un fichier Notebook Jupyterlab
+    Attention : seul le premier objet est exporté !
     """
     def __init__(self, app, filepath):
         import nbformat as nbf
         from template_ipynb import genere_notebook
-        liste_t = [t for t in app.video.dates\
-                   if app.video.data[t][app.video.suivis[0]] is not None]
-        ligne_t = "np.array({})".format(liste_t)
-        points = {obj: [app.video.data[t][obj] for t in liste_t] \
-                  for obj in app.video.suivis[:1]}
-        liste_x = [p.x for p in points[1]] # 1 est ici egal à ap.video.suivis[0]
-        ligne_x = "np.array({})".format(liste_x)
-        liste_y = [p.y for p in points[1]] # 1 est ici egal à ap.video.suivis[0]
-        ligne_y = "np.array({})".format(liste_y)
+        ligne_t = "np.array({})".format(app.video.liste_t_pointes())
+        points = app.video.liste_pointages()
+        ligne_x = "np.array({})".format([p.x for p in points])
+        ligne_y = "np.array({})".format([p.y for p in points])
         d = NotebookExportDialog(app)
         if d.exec_() == QDialog.Accepted:
             graphs = (d.checkBox_c.isChecked(), d.checkBox_v.isChecked(
