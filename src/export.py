@@ -693,14 +693,7 @@ class PythonNumpy:
     def __init__(self, app, filepath):
         import numpy as np
 
-        liste_temps = []
-        def cb_temps(i, t):
-            """
-            fonction de rappel pour chaque date
-            """
-            if app.video.data[t][app.video.suivis[0]] is not None:
-                liste_temps.append(t)
-            return
+        liste_temps = app.video.liste_t_pointes()
         
         x_objets = {o: [] for o in app.video.suivis}
         y_objets = {o: [] for o in app.video.suivis}
@@ -713,7 +706,7 @@ class PythonNumpy:
             y_objets[obj].append(p.y)
             return
 
-        app.video.iteration_data(cb_temps, cb_points, unite = "m")
+        app.video.iteration_data(None, cb_points, unite = "m")
         
         export = [liste_temps]
         for obj in app.video.suivis:

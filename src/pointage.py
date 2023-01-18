@@ -317,6 +317,14 @@ class Pointage(QObject):
                     p = self.pointEnMetre(p)
                 cb_p(i, o, p)
         return
+
+    def liste_t_pointes(self):
+        """
+        renvoie la liste des dates où on a pointé des positions
+        @return une liste [float, ...]
+        """
+        return [t for t in self.dates
+                if self.data[t][self.suivis[0]] is not None]
     
 def test():
     """
