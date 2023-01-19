@@ -32,6 +32,8 @@ from preferences import Preferences
 from cadreur import Cadreur, openCvReader
 from choix_origine import ChoixOrigineWidget
 from trajectoire_widget import TrajectoireWidget
+from grandeurs import grandeurs
+
 from glob import glob
 import pyqtgraph as pg
 import pyqtgraph.exporters
@@ -265,7 +267,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.premier_chargement_fichier_mecavideo = False #gere l'origine au premier chargement
         self.dictionnairePlotWidget = {}
         # contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
-        self.dictionnaire_grandeurs = {}
+        self.locals = {} # dictionnaire de variables locales, pour eval
         self.rouvert = False  # positionné a vrai si on vien d'ouvrir un fichier mecavideo
         self.motif = []
         # est Vraie si le fichier est odifié. permet de sauvegarder les changements
@@ -991,304 +993,62 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def affiche_grapheur(self, MAJ=True):
         self.dbg.p(1, "rentre dans 'affiche_grapheur'")
-        # PARTIE OBSOLETE PERMETTANT DE RENVOYER DES ERREURS PYTHON D'UNE ÉVENTUELLE RENTRÉE MANUELLE DES EXPRESSIONS DES VITESSES ETC.
-        # A GARDER
-        # entete ="""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-        # <html><head><meta name="qrichtext" content="1" /><style type="text/css">
-        # p, li { white-space: pre-wrap; }
-        # </style></head><body style=" font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;" bgcolor="#808080"> """
+        deltaT = self.video.deltaT
+        m = float(self.lineEdit_m.text().replace(',', '.'))
+        g = float(self.lineEdit_g.text().replace(',', '.'))
 
-        #erreurs_python1 = """<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">"""
-        #erreurs_python2 = """</p>"""
-        #footer = """</body></html>"""
-        erreur_indices = ""
-        erreurs_python = []
-        ##################
+        # initialisation de self.locals avec des listes vides
+        for obj in self.video.suivis:
+            for gr in grandeurs:
+                self.locals[gr+str(obj)] = []
 
-        # LE CODE SUIVANT PEUT ÊTRE REFACTORISÉ. IL UTILISE UN SYSTÈME DYNAMIQUE PERMETTANT DE PROPOSER DES EXPRESSIONS MANUELLES. JANVIER 2020
-        for i in range(self.nb_de_points):
-            self.dictionnaire_grandeurs["X"+str(i+1)] = []
-            self.dictionnaire_grandeurs["Y"+str(i+1)] = []
-            self.dictionnaire_grandeurs["V"+str(i+1)] = []
-            # doit s'appeler xprime pour que ça soit orthonal à V pour les replaces.
-            self.dictionnaire_grandeurs["xprime"+str(i+1)] = []
-            # doit s'appeler yprime pour que ça soit orthonal à V pour les replaces.
-            self.dictionnaire_grandeurs["yprime"+str(i+1)] = []
-            self.dictionnaire_grandeurs["Ec"+str(i+1)] = []
-            self.dictionnaire_grandeurs["Epp"+str(i+1)] = []
-            self.dictionnaire_grandeurs["Em"+str(i+1)] = []
-            self.dictionnaire_grandeurs["A"+str(i+1)] = []
-            # doit s'appeler xprime pour que ça soit orthonal à V pour les replaces.
-            self.dictionnaire_grandeurs["vabsprime"+str(i+1)] = []
-            # doit s'appeler yprime pour que ça soit orthonal à V pour les replaces.
-            self.dictionnaire_grandeurs["vordprime"+str(i+1)] = []
+        # remplissage des self.locals pour les positions,
+        # les vitesses, Ec et Epp
+        def cb_points(i, t, j, obj, p, v):
+            """
+            fonction de rappel pour une itération sur les dates
+            """
+            self.locals["X"+str(obj)].append(p.x if p else None)
+            self.locals["Y"+str(obj)].append(p.y if p else None)
+            self.locals["Vx"+str(obj)].append(v.x if v else None)
+            self.locals["Vy"+str(obj)].append(v.y if v else None)
+            self.locals["V"+str(obj)].append(v.norme if v else None)
+            self.locals["Ec"+str(obj)].append(
+                0.5 * m * v.norme ** 2 if v else None)
+            self.locals["Epp"+str(obj)].append(
+                self.video.sens_Y * m * g * p.y if p else None)
+            return
+        self.video.iteration_data(None, cb_points, unite="m")
 
-        deltaT = self.deltaT
-        for ligne in self.points.keys():
-            i = 0
-            for point in self.points[ligne][1:]:
-                pm = self.video.pointEnMetre(point)
-                self.dictionnaire_grandeurs["X"+str(i+1)].append(pm.x)
-                self.dictionnaire_grandeurs["Y"+str(i+1)].append(pm.y)
-                i += 1
-        for i in range(self.nb_de_points):
-            for n in range(len(self.points.keys())):
-                grandeurX = "self.dictionnaire_grandeurs['X"+str(i+1)+"']"
-                grandeurY = "self.dictionnaire_grandeurs['Y"+str(i+1)+"']"
-                grandeurVx = "self.dictionnaire_grandeurs['xprime"+str(
-                    i+1)+"']"
-                grandeurVy = "self.dictionnaire_grandeurs['yprime"+str(
-                    i+1)+"']"
-                grandeurV = "self.dictionnaire_grandeurs['V"+str(i+1)+"']"
-                grandeurAx = "self.dictionnaire_grandeurs['vabsprime"+str(
-                    i+1)+"']"
-                grandeurAy = "self.dictionnaire_grandeurs['vordprime"+str(
-                    i+1)+"']"
-                grandeurA = "self.dictionnaire_grandeurs['A"+str(i+1)+"']"
-
-                grandeurEc = "self.dictionnaire_grandeurs['Ec"+str(i+1)+"']"
-                grandeurEpp = "self.dictionnaire_grandeurs['Epp"+str(i+1)+"']"
-                grandeurEm = "self.dictionnaire_grandeurs['Em"+str(i+1)+"']"
-
-
-                m = float(self.lineEdit_m.text().replace(',', '.'))
-                g = float(self.lineEdit_g.text().replace(',', '.'))
-
-
-                expression_Vx = '(X[n+1]-X[n-1])/(2*deltaT)'
-                expression_Vy = '(Y[n+1]-Y[n-1])/(2*deltaT)'
-                expression_V = 'math.sqrt(Vx[n]**2+Vy[n]**2)'
-                expression_Ec = '0.5*m*V[n]**2'
-                expression_Epp = 'm*g*Y[n]' if self.sens_Y == 1 else '-m*g*Y[n]'
-                expression_Em = 'Epp[n]+Ec[n]'
-                expression_Ax = '(Vx[n+1]-Vx[n-1])/(2*deltaT)'
-                expression_Ay = '(Vy[n+1]-Vy[n-1])/(2*deltaT)'
-                expression_A = 'math.sqrt(Ax[n]**2+Ay[n]**2)'
-
-                expression_Vx = expression_Vx.replace('X', grandeurX)
-
-                expression_Vy = expression_Vy.replace('Y', grandeurY)
-
-                expression_V = expression_V.replace('Vx', grandeurVx).replace(
-                    'Vy', grandeurVy)
-
-                expression_Ax = expression_Ax.replace('Vx', grandeurVx)
-
-                expression_Ay = expression_Ay.replace('Vy', grandeurVy)
-
-                expression_A = expression_A.replace('Ax', grandeurAx).replace(
-                    'Ay', grandeurAy)
-
-                expression_Ec = expression_Ec.replace('V', grandeurV)
-
-                expression_Epp = expression_Epp.replace('Y', grandeurY)
-
-                expression_Em = expression_Em.replace('Ec', grandeurEc).replace('Epp', grandeurEpp)
-
-                ###si un jour besoin :
-                #expression_Em = expression_Em.replace('X', grandeurX).replace('Y', grandeurY).replace('Vx', grandeurVx).replace(
-                    ##'Vy', grandeurVy).replace('V', grandeurV).replace('Ec', grandeurEc).replace('Epp', grandeurEpp).replace('Em', grandeurEm)
-
-
-                # CETTE PARTIE PERMET DE RENTRER MANUELLEMENT DES EXPRESSIONS.
-                #expression_Vx = self.lineEdit_vx.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #expression_Vy = self.lineEdit_vy.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #expression_V = self.lineEdit_v.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #expression_Ec = self.lineEdit_Ec.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #expression_Epp = self.lineEdit_Epp.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-                #expression_Em = self.lineEdit_Em.text().replace('X',grandeurX ).replace('Y',grandeurY ).replace('Vx',grandeurVx ).replace('Vy',grandeurVy ).replace('V',grandeurV ).replace('Ec',grandeurEc ).replace('Epp',grandeurEpp ).replace('Em',grandeurEm )
-
-                # il faut traiter le cas particulier des indices négatifs : par défaut, si python évalue 'n-1' avec n qui vaut 0, il renvoie un résultat tout de même... ce qui fausse les calculs de vitesse.
-                expression_Vx, err1 = self.traite_indices(
-                    expression_Vx, i, n, 'Vx')
-                expression_Vy, err2 = self.traite_indices(
-                    expression_Vy, i, n, 'Vy')
-                expression_V, err3 = self.traite_indices(
-                    expression_V, i, n, 'V')
-
-                expression_Ec, err4 = self.traite_indices(
-                    expression_Ec, i, n, 'Ec')
-                expression_Epp, err5 = self.traite_indices(
-                    expression_Epp, i, n, 'Epp')
-                expression_Em, err6 = self.traite_indices(
-                    expression_Em, i, n, 'Em')
-
-                expression_Ax, err7 = self.traite_indices(
-                    expression_Ax, i, n, 'Ax')
-                expression_Ay, err8 = self.traite_indices(
-                    expression_Ay, i, n, 'Ay')
-                expression_A, err9 = self.traite_indices(
-                    expression_A, i, n, 'A')
-
-                erreur_indices += err1+err2+err3+err4+err5+err6+err7+err8+err9
-                if expression_Vx != '':
-                    try:
-                        self.dictionnaire_grandeurs["xprime" +
-                                                    str(i+1)].append(eval(expression_Vx))
-                    except IndexError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreur_indices += "la vitesse en X du point %s, n'a pas pu être calculée à la position %s<br>" % (
-                            i+1, n)
-                        self.dictionnaire_grandeurs["xprime" +
-                                                    str(i+1)].append(float('NaN'))
-                    except Exception as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée ! <br> """ % (str(expression_Vx.replace(
-                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
-                        # erreurs_python_+=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)
-                if expression_Vy != '':
-                    try:
-                        self.dictionnaire_grandeurs["yprime" +
-                                                    str(i+1)].append(eval(expression_Vy))
-                    except IndexError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreur_indices += "la vitesse en Y du point %s, n'a pas pu être calculée à la position %s<br>" % (
-                            i+1, n)
-                        self.dictionnaire_grandeurs["yprime" +
-                                                    str(i+1)].append(float('NaN'))
-                    except Exception as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Vy.replace(
-                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
-                        # erreurs_python_+=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)
-                if expression_V != '':
-                    try:
-
-                        self.dictionnaire_grandeurs["V" +
-                                                    str(i+1)].append(eval(expression_V))
-                    except IndexError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreur_indices += "la vitesse du point %s, n'a pas pu être calculée à la position %s<br>" % (
-                            i+1, n)
-                        self.dictionnaire_grandeurs["V"+str(i+1)].append(float('NaN'))
-                    except Exception as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br>""" % (str(expression_V.replace(
-                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
-                        #erreurs_python_ +=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)
-
-
-
-                if expression_Ec != '':
-                    try:
-                        self.dictionnaire_grandeurs["Ec" +
-                                                    str(i+1)].append(eval(expression_Ec))
-                    except IndexError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreur_indices += "l'énergie Cinétique du point %s, n'a pas pu être calculée à la position %s<br>" % (
-                            i+1, n)
-                        self.dictionnaire_grandeurs["Ec" +
-                                                    str(i+1)].append(float('NaN'))
-                    except Exception as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !<br> """ % (str(expression_Ec.replace(
-                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
-                        # erreurs_python_+=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)
-                if expression_Epp != '':
-                    try:
-                        self.dictionnaire_grandeurs["Epp" +
-                                                    str(i+1)].append(eval(expression_Epp))
-                    except IndexError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreur_indices += "l'énergie cinétique du point %s, n'a pas pu être calculée à la position %s<br>" % (
-                            i+1, n)
-                        self.dictionnaire_grandeurs["Epp" +
-                                                    str(i+1)].append(float('NaN'))
-                    except Exception as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Epp.replace(
-                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
-                        #erreurs_python_ +=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)
-
-                if expression_Em != '':
-                    try:
-                        self.dictionnaire_grandeurs["Em" +
-                                                    str(i+1)].append(eval(expression_Em))
-                    except IndexError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreur_indices += "l'énergie mécanique du point %s, n'a pas pu être calculée à la position %s<br>" % (
-                            i+1, n)
-                        self.dictionnaire_grandeurs["Em" +
-                                                    str(i+1)].append(float('NaN'))
-                    except SyntaxError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Em.replace(
-                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('xprime', 'Vx').replace('yprime', 'Vy')))
-                        #erreurs_python_ +=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)
-
-
-        #une fois que les vitesses ont été calculées :
-        for i in range(self.nb_de_points):
-            for n in range(len(self.points.keys())):
-
-                if expression_Ax != '':
-                    try:
-                        self.dictionnaire_grandeurs["vabsprime" +
-                                                    str(i+1)].append(eval(expression_Ax))
-                    except IndexError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreur_indices += "l'accélération en X du point %s, n'a pas pu être calculée à la position %s<br>" % (
-                            i+1, n)
-                        self.dictionnaire_grandeurs["vabsprime" +
-                                                    str(i+1)].append(float('NaN'))
-                    except Exception as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée ! <br> """ % (str(expression_Ax.replace(
-                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
-                        # erreurs_python_+=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)
-                if expression_Ay != '':
-                    try:
-                        self.dictionnaire_grandeurs["vordprime" +
-                                                    str(i+1)].append(eval(expression_Ay))
-                    except IndexError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreur_indices += "l'accélération en Y du point %s, n'a pas pu être calculée à la position %s<br>" % (
-                            i+1, n)
-                        self.dictionnaire_grandeurs["vordprime" +
-                                                    str(i+1)].append(float('NaN'))
-                    except Exception as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br> """ % (str(expression_Ay.replace(
-                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
-                        # erreurs_python_+=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)
-                if expression_A != '':
-                    try:
-                        self.dictionnaire_grandeurs["A" +
-                                                    str(i+1)].append(eval(expression_A))
-                    except IndexError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreur_indices += "l'accélération du point %s, n'a pas pu être calculée à la position %s<br>" % (
-                            i+1, n)
-                        self.dictionnaire_grandeurs["A"+str(i+1)].append(float('NaN'))
-                    except Exception as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        erreurs_python_ = """l'expression python '%s' ne peut pas être évaluée !  <br>""" % (str(expression_V.replace(
-                            "self.dictionnaire_grandeurs['", "").replace("']", '').replace('vabsprime', 'Ax').replace('vordprime', 'Ay')))
-                        #erreurs_python_ +=traceback.format_exc()
-                        erreurs_python.append(erreurs_python_)
-
-        self.dbg.p(3, "erreurs a la fin : %s" % erreur_indices)
-        self.dbg.p(3, "erreurs python : %s" % erreurs_python)
-        #text_textedit = entete + '<p>' + erreur_indices + '</p>'
-        text_textedit = ""
-        if len(erreurs_python) > 0:
-            for item in erreurs_python:
-                if not item in text_textedit:
-                    #text_textedit += erreurs_python1
-                    text_textedit += item
-                    #text_textedit += erreurs_python2
-        else:
-            text_textedit += "Pour les points où c'était possible, les expressions python rentrées ont été calculées avec succès !"
-        self.dbg.p(3, "dixtionnaires_grandeurs : %s" % self.dictionnaire_grandeurs)
-
+        # on complète le remplissage de self.locals
+        for obj in self.video.suivis:
+            # énergie mécanique
+            self.locals["Em"+str(obj)] = \
+                [ec + epp if ec is not None and epp is not None else None
+                 for ec, epp in zip (
+                    self.locals["Ec"+str(obj)],
+                    self.locals["Epp"+str(obj)])]
+            # accélération Ax
+            liste0 = self.locals["Vx"+str(obj)][1:-1] # commence à l'index 1
+            liste1 = self.locals["Vx"+str(obj)][2:]   # commence à l'index 2
+            self.locals["Ax"+str(obj)] = [None, None] + \
+                [(v1 - v0) / deltaT if v1 is not None and v0 is not None else None
+                 for v1, v0 in zip(liste1, liste0)]
+            # accélération Ay
+            liste0 = self.locals["Vy"+str(obj)][1:-1] # commence à l'index 1
+            liste1 = self.locals["Vy"+str(obj)][2:]   # commence à l'index 2
+            self.locals["Ay"+str(obj)] = [None, None] + \
+                [(v1 - v0) / deltaT  if v1 is not None and v0 is not None else None
+                 for v1, v0 in zip(liste1, liste0)]
+            # module de l'accélération A
+            self.locals["A"+str(obj)] = \
+                [vecteur(ax, ay).norme if ax is not None else None
+                 for ax, ay in zip(
+                    self.locals["Ax"+str(obj)],
+                    self.locals["Ay"+str(obj)]
+                )]
+        return
+        
     def MAJ_combox_box_grapheur(self):
         if self.graphe_deja_choisi is None : #premier choix de graphe
             self.comboBox_X.clear()
@@ -1299,8 +1059,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                                         _translate("pymecavideo", "Choisir ...", None))
             self.comboBox_X.addItem('t')
             self.comboBox_Y.addItem('t')
-            for grandeur in self.dictionnaire_grandeurs.keys():
-                if self.dictionnaire_grandeurs[grandeur] != []:
+            for grandeur in self.locals.keys():
+                if self.locals[grandeur] != []:
                     numero = ''.join(
                         [grandeur[-2] if grandeur[-2].isdigit() else "", grandeur[-1]])
                     if 'prime' in grandeur :
@@ -1322,31 +1082,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         #else : #il y a déjà eu un choix de graphe
             #self.comboBox_X.setItem(self.graphe_deja_choisi[1])
             #self.comboBox_Y.setItem(self.graphe_deja_choisi[0])
-
-    def traite_indices(self, expression, i, n, grandeur):
-        """cette fonction traite les indices négatifs afin que python, justement... ne les traite pas"""
-        self.dbg.p(1, "rentre dans 'traite_indices'")
-        # vérification de la présence d'une expression entre []
-        erreur = ""
-        expr = ""
-        start = False
-        liste_expressions_entre_crochets = []
-        for c in expression:
-            if start:
-                expr += c
-            if c == '[':
-                start = True
-            elif c == ']':
-                start = False
-                liste_expressions_entre_crochets.append(expr[:-1])
-                expr = ""
-        for expr_a_tester in liste_expressions_entre_crochets:
-            if 'n' in expr_a_tester:
-                if eval(expr_a_tester) < 0:
-                    erreur += "la variable %s du point %s, n'a pas pu être calculée à la position %s<br>" % (
-                        grandeur, i+1, n)
-                    return "float('NaN')", erreur
-        return expression, erreur
 
     def dessine_graphe_avant(self):
         if self.graphe_deja_choisi is not None :
@@ -1370,26 +1105,25 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             ordonnee = self.comboBox_Y.currentText().strip('|')
         # Définition des paramètres 'pen' et 'symbol' pour pyqtgraph
         pen, symbol = styles[style]['pen'], styles[style]['symbol']
-        grandeurX = abscisse.replace(
-            'Vx', 'xprime').replace('Vy', 'yprime').replace('Ax', 'vabsprime').replace('Ay', 'vordprime')
-        grandeurY = ordonnee.replace(
-            'Vx', 'xprime').replace('Vy', 'yprime').replace('Ax', 'vabsprime').replace('Ay', 'vordprime')
+        grandeurX = abscisse
+        grandeurY = ordonnee
+        # rien à faire si le choix des axes est indéfini
+        if grandeurX == "Choisir ..." or grandeurY == "Choisir ...": return
+
         if grandeurX == 't':
-            X = [i*self.deltaT for i in range(len(self.points))]
+            X = self.video.dates
         elif grandeurX != "Choisir ...":
-            try:
-                X = self.dictionnaire_grandeurs[grandeurX]
-            except Exception as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                pass
+            X = self.locals[grandeurX]
         if grandeurY == 't':
-            Y = [i*self.deltaT for i in range(len(self.points))]
+            Y = self.video.dates
         elif grandeurY != "Choisir ...":
-            try:
-                Y = self.dictionnaire_grandeurs[grandeurY]
-            except Exception as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                pass
+            Y = self.locals[grandeurY]
+        # on retire toutes les parties non définies
+        # zip (*[liste de tuples]) permet de "dézipper"
+        X, Y = zip(*[(x, y) for x,y in zip(X, Y) if x is not None and y is not None])
+        X = list(X)
+        Y = list(Y)
+        
         if X != [] and Y != []:
             pg.setConfigOption('background', 'w')
             pg.setConfigOption('foreground', 'k')
@@ -1417,7 +1151,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             else:
                 unite_y = ordonnee+'(m)'
 
-            if not hasattr(self, 'graphWidget'):  # premier tour
+            if not self.graphWidget:  # premier tour
                 self.graphWidget = pg.PlotWidget(
                     title=titre, parent=self.widget_graph)
                 self.graphWidget.setMenuEnabled(False)
@@ -1442,7 +1176,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.graphWidget.autoRange()
                 self.graphWidget.show()
             self.graphe_deja_choisi = (ordonnee, abscisse)
-
+        return
+    
     def enregistre_graphe(self):
         if hasattr (self, 'pg_exporter'):
             base_name = os.path.splitext(os.path.basename(self.filename))[0]
@@ -1451,12 +1186,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                                               _translate(
                                                   "pymecavideo", "Enregistrer le graphique", None),
                                               defaultName, _translate("pymecavideo", "fichiers images(*.png)", None))
-            try :
-                self.pg_exporter.export(fichier[0])
-            except Exception as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
-                        fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
+            self.pg_exporter.export(fichier[0])
 
     def tracer_trajectoires(self, newValue):
         """
@@ -1585,17 +1315,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 QLineEdit.Normal, u"1.0")
             if masse_objet_raw[1] == False:
                 return None
-            try:
-                masse_objet = [
-                    float(masse_objet_raw[0].replace(",", ".")), masse_objet_raw[1]]
-                if masse_objet[0] <= 0 or masse_objet[1] == False:
-                    self.affiche_barre_statut(_translate(
-                        "pymecavideo", " Merci d'indiquer une masse valable", None))
-                self.masse_objet = float(masse_objet[0])
-            except Exception as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
+            masse_objet = [
+                float(masse_objet_raw[0].replace(",", ".")), masse_objet_raw[1]]
+            if masse_objet[0] <= 0 or masse_objet[1] == False:
                 self.affiche_barre_statut(_translate(
                     "pymecavideo", " Merci d'indiquer une masse valable", None))
+            self.masse_objet = float(masse_objet[0])
         m = self.masse_objet
         return m
 
