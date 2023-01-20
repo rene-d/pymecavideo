@@ -33,8 +33,15 @@ class echelle(QObject):
     def __init__(self, p1=vecteur(0, 0), p2=vecteur(0, 0)):
         self.p1, self.p2 = p1, p2
         self.longueur_reelle_etalon = 1
-        self.estdefinie = False
+        # si les deux points sont distincts, l'échelle est faite
+        return
 
+    def __bool__(self):
+        """
+        @return vrai si l'échelle a été faite
+        """
+        return self.p1 != self.p2
+    
     def __str__(self):
         return "echelle(%s,%s,%s m)" % (self.p1, self.p2, self.longueur_reelle_etalon)
 
@@ -93,13 +100,13 @@ class EchelleWidget(QWidget):
     """
     def __init__(self, parent, app):
         QWidget.__init__(self, parent)
-        self.parent = parent
+        self.video = parent
         self.app = app
         self.image=None
         self.setGeometry(
-            QRect(0, 0, self.parent.width(), self.parent.height()))
-        self.largeur = self.parent.width()
-        self.hauteur = self.parent.height()
+            QRect(0, 0, self.video.width(), self.video.height()))
+        self.largeur = self.video.width()
+        self.hauteur = self.video.height()
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
@@ -118,6 +125,7 @@ class EchelleWidget(QWidget):
             del self.app.echelle_trace
         except AttributeError:
             pass
+        return
 
     def mousePressEvent(self, event):
         if event.button() != 1:
@@ -138,7 +146,7 @@ class EchelleWidget(QWidget):
 
     def mouseMoveEvent(self, event):
         if (event.x() > 0 and event.x() < self.largeur) and (event.y() > 0 and event.y() < self.hauteur):
-            self.app.video.updateZoom(vecteur(event.x(), event.y()))
+            self.video.updateZoom(vecteur(event.x(), event.y()))
 
         if self.pressed:
             self.p2 = vecteur(event.x(), event.y())
@@ -147,42 +155,37 @@ class EchelleWidget(QWidget):
     def mouseReleaseEvent(self, event):
         if event.button() == 1 and self.p1.x >= 0:
             self.p2 = vecteur(event.x(), event.y())
-        self.app.video.updateZoom()
-        self.parent.index_du_point = 0
+        self.video.updateZoom()
+        self.video.index_du_point = 0
 
-        self.app.video.echelle_image.p1 = self.p1.copy()
-        self.app.video.echelle_image.p2 = self.p2.copy()
+        self.video.echelle_image.p1 = self.p1.copy()
+        self.video.echelle_image.p2 = self.p2.copy()
 
-        #self.app.p1 = self.p1.copy()
-        #self.app.p2 = self.p2.copy()
-        epxParM = self.app.video.echelle_image.pxParM()
-        self.app.video.affiche_echelle()
+        epxParM = self.video.echelle_image.pxParM()
+        self.video.affiche_echelle()
         # self.app.affiche_nb_points(True)
         self.app.affiche_barre_statut(self.app.tr(
             u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
-        self.app.video.mets_en_orange_echelle()
+        self.video.mets_en_orange_echelle()
 
-        # self.app.affiche_lance_capture(False)
-
-        self.app.video.feedbackEchelle(self.p1, self.p2)
-        self.app.video.change_axe_ou_origine()
-        if not self.app.video.vide:  # si on a déjà pointé une position au moins
+        self.video.feedbackEchelle(self.p1, self.p2)
+        self.app.fixeLesDimensions()
+        self.video.change_axe_ou_origine()
+        if self.video.data:  # si on a déjà pointé une position au moins
             self.app.affiche_barre_statut(self.app.tr(
                 "Vous pouvez continuer votre acquisition"))
-            self.app.affiche_nb_points(False)
             self.app.refait_echelle()
 
-        self.app.video.echelle_faite = True
         self.close()
 
 
 class Echelle_TraceWidget(QWidget):
     def __init__(self, parent, p1, p2):
         QWidget.__init__(self, parent)
-        self.parent = parent
+        self.video = parent
         self.image = None
         self.setGeometry(
-            QRect(0, 0, self.parent.width(), self.parent.height()))
+            QRect(0, 0, self.video.width(), self.video.height()))
         self.setAutoFillBackground(False)
         self.p1 = p1
         self.p2 = p2
@@ -196,7 +199,7 @@ class Echelle_TraceWidget(QWidget):
 
     def maj(self):
         self.setGeometry(
-            QRect(0, 0, self.parent.width(), self.parent.height()))
+            QRect(0, 0, self.video.width(), self.video.height()))
 
     def paintEvent(self, event):
         painter = QPainter()

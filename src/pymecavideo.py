@@ -132,6 +132,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         QMainWindow.__init__(self, parent)
         Ui_pymecavideo.__init__(self)
         QWidget.__init__(self, parent)
+        self.min_version = "7.3.0-1" # version minimale du fichier de conf.
         self.hauteur = 1
         self.largeur = 0
         self.ratio = 4/3
@@ -140,6 +141,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         self.pointsProbables = [None]
         self.methode_thread = 3  # définit la methode de calcul à utiliser pour la détection auto. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
+        self.dictionnairePlotWidget = {}
 
         # Mode plein écran
         self.plein_ecran = False
@@ -176,13 +178,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.graphWidget = None
 
         self.platform = platform.system()
-        self.prefs = Preferences(self)
-        if len(self.args) > 0:
-            # le premier argument éventuel est le nom d'une vidéo
-            self.prefs.lastVideo = args[0]
 
-        # intialise les répertoires
+        # initialise les répertoires
         self._dir()
+
+        # lecture du fichier de préférences
+        self.apply_preferences()
 
         # variables à initialiser
         # disable UI at beginning
@@ -209,16 +210,48 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 lambda checked, index=key: self.export(index))
             self.menuE_xporter_vers.addAction(action)
 
-        self.init_variables(opts, self.prefs.lastVideo)
+        self.init_variables(opts, self.prefs.defaults['lastVideo'])
         self.init_interface()
         # connections internes
         self.ui_connections()
 
-        # chargement d'un éventuel premier fichier
-        self.splashVideo()
-
         # prise en compte d'options de la ligne de commande
         self.traiteOptions()
+        return
+
+    def apply_preferences(self, rouvre = False):
+        """
+        Récupère les préférences sauvegardées, et en applique les données
+        ici on s'occupe de ce qui se gère facilement au niveau de la
+        fenêtre principale
+        @param rouvre est vrai quand on ouvre un fichier pymecavideo ; 
+          il est faux par défaut
+        """
+        self.prefs = Preferences(self)
+        m = re.match(r"pymecavideo (.*)",
+                     self.prefs.config["DEFAULT"]["version"])
+        if m:
+            version = m.group(1)
+        else:
+            version = "0"
+        if version < self.min_version:
+            QMessageBox.information(
+                self,
+                _translate("pymecavideo", "Configuration trop ancienne", None),
+                _translate("pymecavideo", "La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte", None).format(version = version, min_version = self.min_version))
+            return
+        # le fichier de configuration a la bonne version, on applique ses
+        # données
+        d = self.prefs.config["DEFAULT"]
+        self.dbg = Dbg(d.getint("niveaudbg"))
+        taille = self.prefs.config.getvecteur("DEFAULT", "taille")
+        rect = self.geometry()
+        self.setGeometry(rect.x(), rect.y(), int(taille.x), int(taille.y))
+        self.radioButtonNearMouse.setChecked(d["proximite"] == "True")
+        # on passe la main au videowidget pour appliquer le reste
+        # des données du fichier de préférences
+        self.video.setApp(self)
+        self.video.apply_preferences(rouvre = rouvre)
         return
 
     def hasHeightForWidth(self):
@@ -242,30 +275,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.showNormal()
         self.plein_ecran = not (self.plein_ecran)
 
-    def splashVideo(self):
-        self.dbg.p(1, "rentre dans 'splashVideo'")
-        if not self.filename:
-            return
-        if os.path.isfile(self.filename):
-            self.video.openTheFile(self.filename)
-        elif os.path.isfile(self.prefs.lastVideo):
-            try:
-                self.video.openTheFile(self.prefs.lastVideo)
-            except Exception as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                pass
-        # prévoit un reinitialise_capture
-        timer = QTimer.singleShot(50, self.video.reinitialise_capture)
-        return
-
-    def init_variables(self, opts, filename=u""):
+    def init_variables(self, opts, filename=""):
         self.dbg.p(1, "rentre dans 'init_variables'")
         self.logiciel_acquisition = False
         self.index_max = 1
         self.repere = 0
         self.masse_objet = 0
         self.premier_chargement_fichier_mecavideo = False #gere l'origine au premier chargement
-        self.dictionnairePlotWidget = {}
         # contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
         self.locals = {} # dictionnaire de variables locales, pour eval
         self.rouvert = False  # positionné a vrai si on vien d'ouvrir un fichier mecavideo
@@ -290,7 +306,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.opts = opts
         self.stdout_file = os.path.join(CONF_PATH, "stdout")
         self.exitDecode = False
-        self.video.echelle_faite = False
         self.resizing = False
         self.stopRedimensionne = False
         self.refait_point = False
@@ -302,7 +317,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(1, "rentre dans 'init_interface'")
 
         self.tabWidget.setEnabled(1)
-        if len(self.points) == 0:
+        if not self.video.data or len(self.video.data) == 0:
             self.tabWidget.setTabEnabled(3, False)
             self.tabWidget.setTabEnabled(2, False)
             self.tabWidget.setTabEnabled(1, False)
@@ -316,8 +331,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # initialisation de self.trajectoire_widget
         self.trajectoire_widget.chrono = False
 
-        self.update()
-        self.video.setApp(self) # !!! ne devrait intervenir qu'une seule fois !!!
         self.video.active_controle_image(False)
         self.echelleEdit.setEnabled(0)
         self.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
@@ -325,18 +338,20 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             "pymecavideo", "Définir l'échelle", None))
         self.Bouton_Echelle.setStyleSheet("background-color:None;")
 
+        self.update()
+
         # on essaie d'afficher l'échelle, si possible
         self.video.affiche_echelle()
         self.tab_traj.setEnabled(0)
         self.actionSaveData.setEnabled(0)
         self.actionCopier_dans_le_presse_papier.setEnabled(0)
         self.spinBox_image.setEnabled(0)
-        self.video.affiche_lance_capture(False)
+        self.video.affiche_lance_capture(True)
         if not refait:
             self.horizontalSlider.setValue(1)
 
-        self.video.affiche_nb_points(False)
-        self.Bouton_Echelle.setEnabled(False)
+        self.video.affiche_nb_points(True)
+        self.Bouton_Echelle.setEnabled(True)
         self.checkBoxScale.setDuplicatesEnabled(False)
         self.radioButtonNearMouse.hide()
         self.radioButtonSpeedEveryWhere.hide()
@@ -348,7 +363,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.pushButton_rot_droite.setEnabled(1)
             self.pushButton_rot_gauche.setEnabled(1)
 
-        self.video.setApp(self)
         self.video.setZoom(self.zoom_zone)
         self.tabWidget.setCurrentIndex(0)  # montre l'onglet video
         self.pushButton_stopCalculs.setEnabled(0)
@@ -716,6 +730,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             _translate("pymecavideo", "Projet Pymecavideo (*.mecavideo)", None))
         if fichier != "":
             self.video.rouvre(fichier)
+        return
 
     def redimensionneFenetre(self, tourne=False, old=None):
         self.dbg.p(1, "rentre dans 'redimensionneFenetre'")
@@ -817,7 +832,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             0, QTableWidgetItem('t (s)'))
         self.tableWidget.setRowCount(len(self.video.data))
         for i in range(nb_suivis):
-            unite = "m" if self.video.echelle_faite else "px"
+            unite = "m" if self.video.echelle_image \
+                else "px"
             self.tableWidget.setHorizontalHeaderItem(
                 1 + (2+colonnes_sup) * i, QTableWidgetItem(
                     f"X{i + 1} ({unite})"))
@@ -1198,9 +1214,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         """
         self.dbg.p(1, "rentre dans 'tracer_trajectoires'")
+        self.trajectoire_widget.origine_mvt = self.video.origine
         if newValue == "absolu":
             ref = 0 # la caméra
-            self.trajectoire_widget.origine_mvt = self.video.origine
             # mets à jour le comboBox referentiel :
             self.comboBox_referentiel.setCurrentIndex(
                 self.comboBox_referentiel.count()-1)
@@ -1211,7 +1227,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 ref = 0
             else:
                 ref = int(choix_ref.split(" ")[-1])
-            self.trajectoire_widget.origine_mvt = self.video.origine
         if ref != 0:
             self.button_video.setEnabled(1)
             self.trajectoire_widget.chrono = False
@@ -1347,7 +1362,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         # active ou désactive les checkbox énergies
         # (n'ont un intérêt que si l'échelle est déterminée)
-        if self.video.echelle_faite:
+        if self.video.echelle:
             self.checkBox_Ec.setEnabled(1)
             self.checkBox_Epp.setEnabled(1)
             if self.checkBox_Ec.isChecked() and self.checkBox_Epp.isChecked():
@@ -1421,7 +1436,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         
         self.video.iteration_data(
             cb_temps, cb_point,
-            unite = "m" if self.video.echelle_faite else "px")
+            unite = "m" if self.video.echelle_image else "px")
         return
 
     def refait_point_depuis_tableau(self, qpbn ):

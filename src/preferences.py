@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import os.path
-import os
-import pickle
 licence = """
     preferences is a a file of the project pymecavideo:
     a program to track moving points in a video frameset
@@ -23,52 +20,84 @@ licence = """
 """
 
 # from Ui_preferences import Ui_Dialog
+from PyQt5.QtCore import QObject
+from PyQt5.QtWidgets import QMessageBox
 
+import os, re, configparser
 
-class Preferences:
+from version import Version
+from vecteur import vecteur
+
+class MonConfigParser(configparser.ConfigParser):
+    """
+    Analiseur de fichier de configuration qui sait triter les vecteurs
+    """
+    def __init__(self):
+        configparser.ConfigParser. __init__(self)
+        return
+
+    def getvecteur(self, section, option):
+        """
+        @param section la section où on cherche
+        @param option l'option que l'on cherche
+        @return la valeur sous forme de vecteur en cas de réussite
+          sinon par défaut, vecteur(0,0)
+        """
+        floatre = r"[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?"
+        m = re.match(f"\\(({floatre}),[ ]?({floatre})\\)", self[section][option])
+        if m:
+            return vecteur(float(m.group(1)), float(m.group(5)))
+        else:
+            return vecteur(0,0)
+    
+class Preferences (QObject):
     def __init__(self, parent):
-
+        QObject.__init__(self)
+        
         self.app = parent
         self.app.dbg.p(3, "In : Preferences, preferences.py")
 
         self.conffile = os.path.join(self.app._dir("conf"), "pymecavideo.conf")
+        self.config = MonConfigParser()
+
         # ajuste les valeurs par défaut
-        self.proximite = False
-        self.lastVideo = ""
-        self.videoDir = os.getcwd()
-        self.niveauDbg = 0  # niveau d'importance des messages de débogage
+        d = self.defaults = self.config['DEFAULT']
+        d['version']   = f"pymecavideo {Version}"
+        d['proximite'] = "False"     # vecteurs tracés près du curseur
+        d['lastVideo'] = ""          # vidéo consultée précédement
+        d['videoDir']  = os.getcwd() # répertoire pour les vidéos
+        d['niveauDbg'] = "0"         # niveau des messages de débogage
+        d['sens_X']    = "1"         # sens dee abscisses
+        d['sens_Y']    = "1"         # sens dee ordonnées
+        d['taille'] = "(640,480)"    # dimension de la fenêtre principale
+        d['rotation']  = "0"         # rotation de l'image
+        d['origine'] = "(320,240)"   # origine pour les pointages
+        d['index_depart'] = "1"      # première image pointée
+        d['etalon_m'] = "1.00"       # longueur de l'étalon en mètre
+        d['etalon_px'] = "100"       # longueur de l'étalon en pixel
+        d['etalon_org'] = "None"     # point 1 de l'étalon sur l'image
+        d['etalon_ext'] = "None"     # point 2 de l'étalon sur l'image
+        d['deltaT'] = "0.040"        # intervalle de temps entre deux images
+        d['nb_obj'] = "1"            # nombre d'objets suivis
         # récupère les valeurs enregistrées
         self.load()
-
-    def __str__(self):
-        """
-        Renvoie une chaîne représentant les préférences, lisible par un humain
-        """
-        result = self.app.tr(
-            "Proximite de la souris {0}").format(self.proximite)
-        result += self.app.tr("; derniere video {0}").format(self.lastVideo)
-        result += self.app.tr("; videoDir {0}").format(self.videoDir)
-        return "%s" % result
+        return
 
     def save(self):
         """
         Sauvegarde des préférences dans le fichier de configuration.
         """
-        f = open(self.conffile, "wb")
-        self.app.dbg.p(6, "sauvegarde des preferences dans  %s" %
-                       self.conffile)
-        self.app.dbg.p(6, "%s" % self)
-        pickle.dump((self.proximite, self.lastVideo, self.videoDir), f)
-        f.close()
+        with open(self.conffile, "w") as outfile:
+            self.config.write(outfile)
+        return
 
     def load(self):
         if os.path.exists(self.conffile):
             try:
-                f = open(self.conffile, "rb")
-                (self.proximite, self.lastVideo, self.videoDir) = pickle.load(f)
-                f.close()
-            except:
-                self.app.dbg.p(2, "erreur en lisant %s" % self.conffile)
-                self.app.dbg.p(
-                    2, "effacement du répertoire temporaire de pymecavideo")
-                pass
+                self.config.read(self.conffile)
+            except UnicodeDecodeError:
+                QMessageBox.information(
+                    self.app,
+                    self.tr("Erreur de lecture de la configuration"),
+                    self.tr("Peut-être un ancien format de fichier de configuration ? On recommence avec une configuration neuve."))
+        return

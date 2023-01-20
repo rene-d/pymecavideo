@@ -50,20 +50,24 @@ class Pointage(QObject):
 
         self.echelle est l'échelle en px par mètre
 
-        self.vide reste vrai tant qu'on n'a pas encore pointé ; modifié par
-          self.pointe(...)
         """
         self.data    = None             # les données de pointage
         self.suivis  = None             # la liste des objets mobiles suivis
         self.deltaT  = None             # intervalle de temps entre deux images
         self.echelle = None             # pixels par mètre
-        self.vide    = True             # pas encore de pointage ?
         self.origine = None             # position de l'origine sur les images
         self.echelle_image = echelle()  # objet gérant l'échelle
         self.sens_X = 1                 # sens de l'axe des abscisses
         self.sens_Y = 1                 # sens de l'axe des ordonnées
         return
 
+    def clearEchelle(self):
+        """
+        oublie la valeur de self.echelle_image
+        """
+        self.echelle_image = echelle()
+        return
+    
     def setEchelle(self, echelle):
         self.echelle = echelle
         return
@@ -80,7 +84,6 @@ class Pointage(QObject):
         self.deltaT = deltaT
         self.dates = [deltaT * i for i in range(n_images)]
         self.data = {}
-        self.vide = True
         for index in range(n_images):
             # crée une structure avec pour chaque date, un dictionnaire
             # désignation d'objet => vecteur ; les vecteurs sont initialement
@@ -112,7 +115,6 @@ class Pointage(QObject):
         if date not in self.data:
             raise Exception(f"date incorrecte dans Pointage.pointe : {date}")
         self.data[date][objet] = position
-        self.vide = False
         return
 
     def peut_defaire(self):
@@ -166,6 +168,25 @@ class Pointage(QObject):
     def __str__(self):
         return self.csv_string()
 
+    def __bool__(self):
+        """
+        @return faux si toutes les pointages sont None
+        """
+        for t in self.dates:
+            if self.data[t][self.suivis[0]] is not None:
+                return True
+        return False
+            
+    def premiere_image(self):
+        """
+        donne le numéro de la première image pointée (1 au minimum),
+        ou non si aucun pointage n'est fait
+        """
+        for i, t in enumerate(self.data):
+            if self.data[t][self.suivis[0]] is not None:
+                return i + 1
+        return None
+    
     def csv_string(self, sep =";", unite="px", debut=1, origine=vecteur(0,0)):
         """
         renvoie self.data sous une forme acceptable (CSV)
@@ -178,7 +199,7 @@ class Pointage(QObject):
         if unite == "px":
             mul =1
         elif unite == "m":
-            mul = 1/self.echelle
+            mul = self.echelle_image.mParPx()
         else:
             raise Exception(f"dans Pointage.trajectoire, unité illégale {unite}")
 
@@ -198,8 +219,8 @@ class Pointage(QObject):
             ligne = [f"{t:.3f}"]
             for o in self.suivis:
                 if self.data[t_point][o] is not None:
-                    ligne.append(f"{self.sens_X   * (self.data[t_point][o].x - origine.x) * mul:.5f}")
-                    ligne.append(f"{- self.sens_Y * (self.data[t_point][o].y - origine.y) * mul:.5f}")
+                    ligne.append(f"{self.sens_X   * (self.data[t_point][o].x - origine.x) * mul:4g}")
+                    ligne.append(f"{- self.sens_Y * (self.data[t_point][o].y - origine.y) * mul:4g}")
             result.append(sep.join(ligne))
         result.append("") # pour finir sur un saut de ligne
         return "\n".join(result)
@@ -287,7 +308,7 @@ class Pointage(QObject):
                 if callback_p is not None:
                     p = self.data[t][obj]
                     if unite == "m": p = self.pointEnMetre(p)
-                    if precedents[j] is not None:
+                    if p is not None and precedents[j] is not None:
                         v = (p - precedents[j]) * (1 / self.deltaT)
                     else:
                         v = None
