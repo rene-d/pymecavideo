@@ -1497,6 +1497,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             plotwidget.parentWidget().close()
             plotwidget.close()
             del plotwidget
+        d = self.prefs.config["DEFAULT"]
+        d["taille"] = f"({self.size().width()},{self.size().height()})"
+        self.prefs.save()
+        return
 
     def verifie_donnees_sauvegardees(self):
         self.dbg.p(1, "rentre dans 'verifie_donnees_sauvegardees'")
