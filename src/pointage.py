@@ -52,6 +52,7 @@ class Pointage(QObject):
 
         """
         self.data    = None             # les données de pointage
+        self.dates   = None             # liste des index temporels
         self.suivis  = None             # la liste des objets mobiles suivis
         self.deltaT  = None             # intervalle de temps entre deux images
         self.echelle = None             # pixels par mètre
@@ -172,6 +173,8 @@ class Pointage(QObject):
         """
         @return faux si toutes les pointages sont None
         """
+        if self.dates is None:
+            return False
         for t in self.dates:
             if self.data[t][self.suivis[0]] is not None:
                 return True

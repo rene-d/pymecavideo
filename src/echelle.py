@@ -53,7 +53,7 @@ class echelle(QObject):
         Vrai si l'échelle n'est pas définie, c'est à dire si
         p1 et p2 sont confondus.
         """
-        return (self.p1 - self.p2).norme == 0
+        return not self
 
     def mParPx(self):
         """renvoie le nombre de mètre par pixel"""
@@ -170,7 +170,7 @@ class EchelleWidget(QWidget):
 
         self.video.feedbackEchelle(self.p1, self.p2)
         self.app.fixeLesDimensions()
-        self.video.change_axe_ou_origine()
+        self.video.egalise_origine()
         if self.video.data:  # si on a déjà pointé une position au moins
             self.app.affiche_barre_statut(self.app.tr(
                 "Vous pouvez continuer votre acquisition"))

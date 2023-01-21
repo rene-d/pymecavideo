@@ -227,7 +227,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         @param rouvre est vrai quand on ouvre un fichier pymecavideo ; 
           il est faux par défaut
         """
-        self.prefs = Preferences(self)
+        # on relit les préférences du fichier de configuration, sauf en cas
+        # de réouverture d'un fichier pymecavideo, qui contient les préférences
+        if not rouvre:
+            self.prefs = Preferences(self)
+            
         m = re.match(r"pymecavideo (.*)",
                      self.prefs.config["DEFAULT"]["version"])
         if m:
@@ -316,62 +320,58 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def init_interface(self, refait=0):
         self.dbg.p(1, "rentre dans 'init_interface'")
 
+        # activation des boutons de rotation (ou pas)
+        self.pushButton_rot_droite.setEnabled(self.video.a_une_image)
+        self.pushButton_rot_gauche.setEnabled(self.video.a_une_image)
+        
+        # activation des onglets (ou pas), l'onglet 0 passe devant
         self.tabWidget.setEnabled(1)
-        if not self.video.data or len(self.video.data) == 0:
-            self.tabWidget.setTabEnabled(3, False)
-            self.tabWidget.setTabEnabled(2, False)
-            self.tabWidget.setTabEnabled(1, False)
-        else:  # quand on ouvre un fichier via la ligne de commande
-            self.tabWidget.setTabEnabled(3, True)
-            self.tabWidget.setTabEnabled(2, True)
-            self.tabWidget.setTabEnabled(1, True)
-        if not self.video.a_une_image:
-            self.tabWidget.setTabEnabled(0, False)
+        self.tabWidget.setCurrentIndex(0)  # montre l'onglet video
+        self.tabWidget.setTabEnabled(0, self.video.a_une_image)
+        grain_a_moudre = bool(self.video)
+        for tab in (1, 2, 3):
+            self.tabWidget.setTabEnabled(tab, grain_a_moudre)
         self.actionExemples.setEnabled(1)
+
+        # activation de certaines actions (ou pas)
+        self.actionSaveData.setEnabled(grain_a_moudre)
+        self.actionCopier_dans_le_presse_papier.setEnabled(grain_a_moudre)
+        self.spinBox_image.setEnabled(grain_a_moudre)
+        
         # initialisation de self.trajectoire_widget
         self.trajectoire_widget.chrono = False
 
         self.video.active_controle_image(False)
-        self.echelleEdit.setEnabled(0)
-        self.echelleEdit.setText(_translate("pymecavideo", "indéf", None))
-        self.Bouton_Echelle.setText(_translate(
-            "pymecavideo", "Définir l'échelle", None))
+        self.echelleEdit.setEnabled(False)
+
+        # marque "indéf." dans l'afficheur d'échelle à gauche
+        self.video.affiche_echelle()
+
+        # met à jour du bouton pour définir l'échelle
+        self.Bouton_Echelle.setEnabled(True)
         self.Bouton_Echelle.setStyleSheet("background-color:None;")
 
-        self.update()
-
-        # on essaie d'afficher l'échelle, si possible
-        self.video.affiche_echelle()
-        self.tab_traj.setEnabled(0)
-        self.actionSaveData.setEnabled(0)
-        self.actionCopier_dans_le_presse_papier.setEnabled(0)
-        self.spinBox_image.setEnabled(0)
-        self.video.affiche_lance_capture(True)
+        self.video.Bouton_lance_capture.setEnabled(True)
+        
         if not refait:
             self.horizontalSlider.setValue(1)
 
+        # active l'affichage du nombre d'objets suivis
         self.video.affiche_nb_points(True)
-        self.Bouton_Echelle.setEnabled(True)
-        self.checkBoxScale.setDuplicatesEnabled(False)
+
+        # cache les boutons radio pour les vecteurs vitesse sur la trajectoire
         self.radioButtonNearMouse.hide()
         self.radioButtonSpeedEveryWhere.hide()
 
-        if not self.video.a_une_image:
-            self.pushButton_rot_droite.setEnabled(0)
-            self.pushButton_rot_gauche.setEnabled(0)
-        else:
-            self.pushButton_rot_droite.setEnabled(1)
-            self.pushButton_rot_gauche.setEnabled(1)
-
-        self.video.setZoom(self.zoom_zone)
-        self.tabWidget.setCurrentIndex(0)  # montre l'onglet video
-        self.pushButton_stopCalculs.setEnabled(0)
+        # désactive et cache le bouton pour l'arrêt du pointage automatique
+        self.pushButton_stopCalculs.setEnabled(False)
         self.pushButton_stopCalculs.hide()
-        self.button_video.setEnabled(0)
-        self.checkBox_Ec.setChecked(0)
-        self.checkBox_Em.setChecked(0)
-        self.checkBox_Epp.setChecked(0)
-        self.trajectoire_widget.video = self.video
+
+        # désactivations diverses
+        self.button_video.setEnabled(False)
+        self.checkBox_Ec.setChecked(False)
+        self.checkBox_Em.setChecked(False)
+        self.checkBox_Epp.setChecked(False)
 
         # inactive le spinner pour les incréments de plus d'une image
         # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
@@ -430,7 +430,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
         self.pushButton_rot_droite.clicked.connect(self.tourne_droite)
         self.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
-        self.change_axe_origine.connect(self.video.change_axe_ou_origine)
+        self.change_axe_origine.connect(self.video.egalise_origine)
         self.selection_done.connect(self.video.picture_detect)
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
@@ -1223,7 +1223,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.comboBox_referentiel.update()
         else:
             choix_ref = self.comboBox_referentiel.currentText()
-            if choix_ref == "camera":
+            # on évite le cas où le combobox a été vidé, entre deux sessions 
+            if choix_ref == "":
+                return
+            elif choix_ref == "camera":
                 ref = 0
             else:
                 ref = int(choix_ref.split(" ")[-1])

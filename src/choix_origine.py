@@ -53,5 +53,5 @@ class ChoixOrigineWidget(QWidget):
         self.app.video.origine = vecteur(event.x() + 1, event.y() + 1)
         self.app.video.updateZoom()
 
-        self.app.video.change_axe_ou_origine()
+        self.app.video.egalise_origine()
         self.close()

@@ -121,6 +121,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         ]
         for a in attributes:
             setattr(self, a, getattr(app,a))
+        # attache la zone de zoom
+        self.zoom = app.zoom_zone
+        
         # connexion de signaux de widgets
         self.spinBox_nb_de_points.valueChanged.connect(self.redimensionne_data)
         return
@@ -143,10 +146,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @return le nombre d'objets suivis
         """
         return len(self.suivis)
-    
-    def setZoom(self, zoom):
-        self.zoom = zoom
-        return
     
     def clear(self):
         self.image = None
@@ -557,7 +556,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if goOn:  # le fichier vidéo est OK, et son format est reconnu
             self.init_image()
             self.init_capture()
-            self.change_axe_ou_origine()
+            self.egalise_origine()
         else:
             QMessageBox.warning(
                 None,
@@ -567,13 +566,13 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 QMessageBox.Ok, QMessageBox.Ok)
         return
     
-    def change_axe_ou_origine(self, origine=None):
-        """mets à jour le tableau de données"""
-        self.dbg.p(1, "rentre dans 'change_axe_ou_origine'")
-        self.dbg.p(3, "valeur de l'origine en argument %s"%(origine))
+    def egalise_origine(self):
+        """
+        harmonise l'origine : recopie celle de la vidéo vers le
+        widget des trajectoires et redessine les deux.
+        """
+        self.dbg.p(1, "rentre dans 'egalise_origine'")
         # repaint axes and define origine
-        if origine is not None:
-            self.origine = origine
         self.app.trajectoire_widget.origine_mvt = self.origine
         self.app.trajectoire_widget.update()
         self.update()
@@ -631,14 +630,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
 
-    def affiche_lance_capture(self, active=False):
-        """
-        Met à jour l'affichage du bouton pour lancer la capture
-        @param active vrai si le bouton doit être activé
-        """
-        self.Bouton_lance_capture.setEnabled(active)
-        return
-
     def debut_capture(self, departManuel=True, rouvre=False):
         """
         permet de mettre en place le nombre de point à acquérir
@@ -659,7 +650,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.tabWidget.setTabEnabled(2, True)
         self.tabWidget.setTabEnabled(1, True)
         self.arretAuto = False
-        self.affiche_lance_capture(True)
+        self.Bouton_lance_capture.setEnabled(True)
         if not rouvre :
             # si rouvre, self.premiere_image_pointee est déjà définie
             # 
@@ -850,7 +841,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.echelle_image.etalonneReel(reponse)
                 self.job = EchelleWidget(self, self.app)
                 self.job.show()
-                self.change_axe_ou_origine()
+                self.egalise_origine()
         except ValueError as err:
             self.affiche_barre_statut(_translate(
                 "pymecavideo", " Merci d'indiquer une échelle valable", None))
@@ -879,12 +870,15 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         lignes_config = ["[DEFAULT]\n"] + [re.sub("^# ", "", l) for l in lignes_config]
         self.prefs.config.read_string("".join(lignes_config))
         self.app.apply_preferences(rouvre=True)
+
+        # on remet l'interface bien d'équerre
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
         self.app.init_interface()
-        self.change_axe_ou_origine()
+        self.egalise_origine()
 
         # puis on trace le segment entre les points cliqués pour l'échelle
         # on réinitialise l'échelle.p1, self.echelle_image.p2)
+        print("GRRRR", self.origine)
         self.feedbackEchelle(
             self.echelle_image.p1, self.echelle_image.p2)
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(
