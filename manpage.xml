@@ -50,7 +50,7 @@ and docbook-xsl in your Build-Depends control field.
       &dhemail;
     </address>
     <copyright>
-      <year>2007-2012</year>
+      <year>2007-2023</year>
       <holder>&dhusername;</holder>
     </copyright>
     &dhdate;
@@ -73,24 +73,12 @@ and docbook-xsl in your Build-Depends control field.
 
       <arg choice="opt">
         <group choice="req">
-          <arg choice="plain"><option>-f</option></arg>
-          <arg choice="plain"><option>--fichier_pymecavideo=</option></arg>
-        </group>
-        <replaceable class="option">file</replaceable>
-      </arg>
-      <arg choice="opt">
-        <group choice="req">
-          <arg choice="plain"><option>--maxi</option></arg>
-        </group>
-      </arg>
-      <arg choice="opt">
-        <group choice="req">
           <arg choice="plain"><option>-d</option></arg>
           <arg choice="plain"><option>--debug=</option></arg>
         </group>
         <replaceable class="option">verbosity (level from 1 to 3)</replaceable>
       </arg>
-      <arg><option><replaceable>nomDeFichier.{avi|mpg|...}</replaceable></option></arg>
+      <arg><option><replaceable>file.{avi|mpg|...} | file.mecavideo</replaceable></option></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   <refsect1>
@@ -111,20 +99,6 @@ software.
            variablelist.term.break.after parameters to
            control the term elements. -->
       <varlistentry>
-        <term><option>-f <replaceable>file</replaceable></option></term>
-        <term><option>--fichier_pymecavideo=<replaceable>file</replaceable></option></term>
-        <listitem>
-          <para>Declares a previous snapshot file made by pymecavideo. Allows to continue 
-	  just after the snapshot point.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term><option>--maxi</option></term>
-        <listitem>
-          <para>Use the bigger user interface.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
         <term><option>-d <replaceable>level</replaceable></option></term>
         <term><option>--debug=<replaceable>level</replaceable></option></term>
         <listitem>
@@ -142,7 +116,14 @@ software.
         <term><option><replaceable>filename.{avi|mpg|...}</replaceable></option>
         </term>
         <listitem>
-          <para>Defines sone video file to begin with (optional).</para>
+          <para>Optional parameter: defines some video file to begin with. Or...</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option><replaceable>filename.mecavideo</replaceable></option>
+        </term>
+        <listitem>
+          <para>Optional parameter: allows one to reopen a file saved by pymecavideo previously.</para>
         </listitem>
       </varlistentry>
     </variablelist>

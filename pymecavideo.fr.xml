@@ -52,7 +52,7 @@ and docbook-xsl in your Build-Depends control field.
       &dhemail;
     </address>
     <copyright>
-      <year>2007-2012</year>
+      <year>2007-2023</year>
       <holder>&dhusername;</holder>
     </copyright>
     &dhdate;
@@ -75,24 +75,12 @@ and docbook-xsl in your Build-Depends control field.
 
       <arg choice="opt">
         <group choice="req">
-          <arg choice="plain"><option>-f</option></arg>
-          <arg choice="plain"><option>--fichier_pymecavideo=</option></arg>
-        </group>
-        <replaceable class="option">fichier</replaceable>
-      </arg>
-      <arg choice="opt">
-        <group choice="req">
-          <arg choice="plain"><option>--maxi</option></arg>
-        </group>
-      </arg>
-      <arg choice="opt">
-        <group choice="req">
           <arg choice="plain"><option>-d</option></arg>
           <arg choice="plain"><option>--debug=</option></arg>
         </group>
         <replaceable class="option">verbosité (niveau de 1 à 3)</replaceable>
       </arg>
-      <arg><option><replaceable>nomDeFichier.{avi|mpg|...}</replaceable></option></arg>
+      <arg><option><replaceable>fichier.{avi|mpg|...} | fichier.mecavideo</replaceable></option></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   <refsect1>
@@ -119,20 +107,6 @@ and docbook-xsl in your Build-Depends control field.
            variablelist.term.break.after parameters to
            control the term elements. -->
       <varlistentry>
-        <term><option>-f <replaceable>fichier</replaceable></option></term>
-        <term><option>--fichier_pymecavideo=<replaceable>fichier</replaceable></option></term>
-        <listitem>
-          <para>Déclare un ancien fichier pymecavideo où une sauvegarde de session a été faite. Permet
-	  de recommencer au point où on en était arrivé.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term><option>--maxi</option></term>
-        <listitem>
-          <para>Utilise l'interface utilisateur de plus grande taille.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
         <term><option>-d <replaceable>niveau</replaceable></option></term>
         <term><option>--debug=<replaceable>niveau</replaceable></option></term>
         <listitem>
@@ -147,10 +121,23 @@ and docbook-xsl in your Build-Depends control field.
 
     <variablelist>
       <varlistentry>
-        <term><option><replaceable>nomDeFichier.{avi|mpg|...}</replaceable></option>
+        <term><option><replaceable>fichier.{avi|mpg|...}</replaceable></option>
         </term>
         <listitem>
-          <para>Définit une vidéo pour la charger au début (optionnellement).</para>
+          <para>
+	    Paramètre optionnel : définit une vidéo à charger au début. 
+	    Ou encore ...
+	  </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option><replaceable>fichier.mecavideo</replaceable></option>
+        </term>
+        <listitem>
+          <para>
+	    Paramètre optionnel : permet la réouverture d'un fichier
+	    enregistré par pymecavideo.
+	  </para>
         </listitem>
       </varlistentry>
     </variablelist>
