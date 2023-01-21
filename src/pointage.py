@@ -183,9 +183,19 @@ class Pointage(QObject):
     def premiere_image(self):
         """
         donne le numéro de la première image pointée (1 au minimum),
-        ou non si aucun pointage n'est fait
+        ou None si aucun pointage n'est fait
         """
-        for i, t in enumerate(self.data):
+        for i, t in enumerate(self.dates):
+            if self.data[t][self.suivis[0]] is not None:
+                return i + 1
+        return None
+    
+    def derniere_image(self):
+        """
+        donne le numéro de la dernière image pointée (on compte à partir de 1),
+        ou None si aucun pointage n'est fait
+        """
+        for i, t in zip(list(range(len(self.dates))[::-1]), self.dates[::-1]):
             if self.data[t][self.suivis[0]] is not None:
                 return i + 1
         return None

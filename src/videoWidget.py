@@ -878,7 +878,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
         # puis on trace le segment entre les points cliqués pour l'échelle
         # on réinitialise l'échelle.p1, self.echelle_image.p2)
-        print("GRRRR", self.origine)
         self.feedbackEchelle(
             self.echelle_image.p1, self.echelle_image.p2)
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(
@@ -920,7 +919,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.tableWidget.show()
         self.app.recalculLesCoordonnees()
         self.debut_capture(rouvre=True)
-
+        # affiche la dernière image pointée
+        der = self.derniere_image()
+        if der is not None: self.extract_image(der)
         return
 
     def check_uncheck_direction_axes(self):
@@ -1166,7 +1167,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         d = self.prefs.config["DEFAULT"]
         self.filename = d["lastvideo"]
         if os.path.isfile(self.filename):
-            self.openTheFile(self.prefs.defaults['lastVideo'])
+            self.openTheFile(self.filename)
         else:
             # si le fichier video n'existe pas, inutile d'aller plus
             # loin dans la restauration des données !

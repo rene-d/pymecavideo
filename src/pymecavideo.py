@@ -23,6 +23,7 @@ import platform
 import threading
 from export import Export, EXPORT_FORMATS
 import re
+import magic
 from toQimage import toQImage
 from dialogencode import QMessageBoxEncode
 from version import Version
@@ -215,8 +216,33 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # connections internes
         self.ui_connections()
 
-        # prise en compte d'options de la ligne de commande
-        self.traiteOptions()
+        self.traite_arg()
+        return
+
+    def traite_arg(self):
+        """
+        traite les arguments donnés à l'application. Trouve le type de fichier
+        et selon le cas, ouvre ou "rouvre" son contenu
+        """
+        if len(self.args) > 0:
+            filename = self.args[0]
+            mime = magic.Magic(mime=True)
+            mt = mime.from_file(filename)
+            OK = False
+            if mt.startswith("video/"):
+                OK = True
+                self.video.openTheFile(filename)
+            elif mt == "text/plain":
+                signature = open(filename).read(24)
+                if signature.startswith("# version = pymecavideo"):
+                    OK = True
+                    self.video.rouvre(filename)
+            if not OK:
+                QMessageBox.information(
+                    self,
+                    _translate("pymecavideo", "Argument non pris en compte", None),
+                    _translate("pymecavideo", "Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.", None).format(filename=filename))
+                
         return
 
     def apply_preferences(self, rouvre = False):
@@ -1652,32 +1678,23 @@ Merci de bien vouloir le renommer avant de continuer""", None),
                 QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
         return
     
-    def traiteOptions(self):
-        self.dbg.p(1, "rentre dans 'traiteOptions'")
-        for opt, val in self.opts:
-            if opt in ['-f', '--fichier_mecavideo']:
-                if os.path.isfile(val) and (os.path.splitext(val)[1] == ".csv" or  os.path.splitext(val)[1] == ".mecavideo"):
-                    try:
-                        self.rouvre(val)
-                    except AttributeError as err:
-                        self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                        self.dbg.p(
-                            1, "Issue in rouvre for this file : attributeerror")
-                if os.path.isfile(val) and os.path.splitext(val)[1] == ".avi":
-                    self.video.openTheFile(val)
-
 
 def usage():
-    print(
-        "Usage : pymecavideo [-f fichier | --fichier_pymecavideo=fichier] [--maxi] [-d | --debug=verbosityLevel(1-3)] [nom_de_fichier_video.avi]")
+    print("""\
+Usage : pymecavideo [-d (1-3)| --debug=(1-3)] [video | mecavideo]
+   lance pymecavideo, une application d'analyse des mouvements
+   option facultative : -d ou --debug= débogage +- verbeux (entre 1 et 3)
+   argument facultatif : fichier video standard ou fichier mecavideo
+
+   les fichiers mecavideo sont créés par l'application pymecavideo""")
+    return
 
 
 def run():
     global app
     args = sys.argv[1:]
     try:
-        opts, args = getopt.getopt(
-            args, "f:d:", ["fichier_mecavideo=", "debug="])
+        opts, args = getopt.getopt(args, "d:", ["debug="])
     except getopt.GetoptError as err:
         self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
         usage()
