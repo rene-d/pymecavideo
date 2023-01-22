@@ -1218,46 +1218,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.trajectoire_widget.update()
         return
     
-    def stock_coordonnees_image(self, ligne,  interactif=True, index_image=False):
-        """
-        place les données dans le tableau, rempli les dictionnaires de pixels
-        @param ligne le numérode la ligne où placer les données (commence à 0)
-        @param interactif vrai s'il faut rafraîchir tout de suite l'interface utilisateur.
-        """
-        self.dbg.p(1, "rentre dans 'stock_coordonnees_image'")
-        if index_image == False:
-            # l'index est sur la dernière image traitée
-            index_image = self.listePoints[-1][0]
-        else :
-            index_image = self.video.index-1
-        t = "%4f" % ((index_image - self.premiere_image_pointee) * self.deltaT)
-
-        self.dbg.p(2, "dans 'stock_coordonnees_image', index_image = %s"%(index_image))
-
-
-        # construction de l'ensemble des points pour l'image actuelle
-        listePointsCliquesParImage = []
-        for point in self.listePoints:
-            if point[0] == index_image:
-                listePointsCliquesParImage.append(point[2])
-        self.points[ligne] = [t] + listePointsCliquesParImage
-
-        # Pour chaque point dans liste_points, insère les valeur dans la ligne
-        for point in listePointsCliquesParImage:
-            # ajoute les coordonnées "en pixel" des points dans des dictionnaires de coordonnées
-            x = point.x
-            y = point.y
-            if x in self.pX.keys():
-                self.pX[x].append(point)
-            else:
-                self.pX[x] = [point]
-            if y in self.pY.keys():
-                self.pY[y].append(point)
-            else:
-                self.pY[y] = [point]
-
-        return
-
     def masse(self, obj):
         """
         Renseigne la masse d'un objet. L'implémentation est actuellement

@@ -1221,16 +1221,3 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.clic_sur_video_ajuste_ui(numero_image)
         return
 
-    def fin_refait_point_depuis_tableau(self):
-        self.dbg.p(1, "rentre dans 'fin_refait_point_depuis_tableau'")
-        self.refait_point = False
-
-        #####remplacement de la valeur de self.points pour la ligne correspondante
-        self.stock_coordonnees_image(self.video.index-self.premiere_image_pointee-1, index_image=True)
-
-        self.video.index = self.index_de_l_image_actuelle
-        self.index_de_l_image_actuelle = None
-        self.clic_sur_video_ajuste_ui(0)
-        self.tabWidget.setCurrentIndex(2)
-
-
