@@ -1334,11 +1334,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                         self.tableWidget.setItem(
                             i, col, QTableWidgetItem(f"{Ec+Epp:.4g}"))
                     col += 1
-            # dernière colonne : un bouton pour refaire le pointage
-            # existe même en l'absence de pointage
-            derniere = self.video.nb_obj * (2 + colonnes_sup) +1
-            self.tableWidget.setCellWidget(
-                i, derniere, self.bouton_refaire(i))
+                # dernière colonne : un bouton pour refaire le pointage
+                # n'existe que s'il y a eu un pointage
+                derniere = self.video.nb_obj * (2 + colonnes_sup) +1
+                self.tableWidget.setCellWidget(
+                    i, derniere, self.bouton_refaire(i))
             return
         
         self.video.iteration_data(
