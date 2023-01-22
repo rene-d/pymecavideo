@@ -455,7 +455,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_rot_droite.clicked.connect(self.tourne_droite)
         self.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
         self.change_axe_origine.connect(self.video.egalise_origine)
-        self.selection_done.connect(self.video.picture_detect)
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
         self.redimensionneSignal.connect(self.redimensionneFenetre)

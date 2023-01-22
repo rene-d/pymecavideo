@@ -180,7 +180,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.echelle = self.image_w / self.largeurFilm
         self.setMouseTracking(True)
         image = im.scaled(self.image_w, self.image_h)
-        self.app.imageAffichee = image # verrue nécessaire avant met_a_jour_crop
         self.setImage(image)
         self.updateZoom()
         self.reinit_origine()
@@ -996,30 +995,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             timer = QTimer.singleShot(50, self.detecteUnPoint)
         else:
             self.stopCalculs.emit()
-
-    def picture_detect(self):
-        """
-        Est lancée lors de la détection automatique des points. Gère l'ajout des thread de calcul.
-        self.motifs_autos : tableau des motifs
-        """
-        self.dbg.p(1, "rentre dans 'picture_detect'")
-        self.dbg.p(3, "début 'picture_detect'" + str(self.indexMotif))
-        if self.index <= self.image_max:
-            self.pointsFound = []
-            if self.indexMotif <= len(self.motifs_auto) - 1:
-                self.dbg.p(1, "'picture_detect' : While")
-                self.pointTrouve = filter_picture(
-                    self.motifs_auto, self.indexMotif, self.imageAffichee, self.listePoints)
-                self.dbg.p(3, "Point Trouve dans mon Thread : " +
-                           str(self.pointTrouve))
-                self.indexMotif += 1
-            else:
-                self.indexMotif = 0
-        if self.index == self.image_max:
-            if self.indexMotif == 0 and not self.goCalcul:  # dernier passage
-                self.stopCalculs.emit()
-            elif self.indexMotif == 0 and self.goCalcul:  # premier passage, premier calcul de la dernière image
-                self.goCalcul = False
 
     def stopComputing(self):
         self.dbg.p(1, "rentre dans 'stopComputing'")
