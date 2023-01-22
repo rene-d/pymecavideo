@@ -33,7 +33,7 @@ from vecteur import vecteur
 from echelle import Echelle_TraceWidget, EchelleWidget
 from image_widget import ImageWidget
 from pointage import Pointage
-from globdef import _translate, beauGrosCurseur, DOCUMENT_PATH
+from globdef import _translate, beauGrosCurseur, DOCUMENT_PATH, inhibe
 from cadreur import openCvReader
 from toQimage import toQImage
 from suivi_auto import SelRectWidget
@@ -87,11 +87,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.motifs_auto = []      # liste de motifs pour le suivi auto
         self.pointsProbables = {}  # dictionnaire de points proches de la détection ?
 
-        # connexion des signaux
-        self.clic_sur_video_signal.connect(self.clic_sur_la_video)
-        self.selection_motif_done.connect(self.suiviDuMotif)
-        self.stopCalculs.connect(self.stopComputing)
-
         return
 
     # signaux de la classe
@@ -125,7 +120,13 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.zoom = app.zoom_zone
         
         # connexion de signaux de widgets
+        self.clic_sur_video_signal.connect(self.clic_sur_la_video)
+        self.selection_motif_done.connect(self.suiviDuMotif)
+        self.stopCalculs.connect(self.stopComputing)
+        self.pushButton_defait.clicked.connect(self.efface_point_precedent)
+        self.pushButton_refait.clicked.connect(self.refait_point_suivant)
         self.spinBox_nb_de_points.valueChanged.connect(self.redimensionne_data)
+
         return
     
     def redimensionne_data(self):
@@ -907,21 +908,23 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                         index = i + self.premiere_image_pointee - 1)
                 
         self.active_controle_image()
-        self.extract_image(1) # peut-être plutôt la dernière image pointée ?
-        self.affiche_echelle()  # on met à jour le widget d'échelle
-        self.horizontalSlider.setValue(self.image_max)
-        self.spinBox_image.setValue(self.image_max)
-        self.spinBox_chrono.setMaximum(self.image_max)
-        self.enableDefaire(False)
-        self.enableRefaire(False)
+        # affiche la dernière image pointée
+        der = self.derniere_image()
+        if der is not None:
+            self.extract_image(der)
+            self.horizontalSlider.setValue(der)
+            self.spinBox_image.setValue(der)
+            self.spinBox_chrono.setMaximum(der)
+        else:
+            self.extract_image(1)
         self.affiche_image()  # on affiche l'image
+        self.affiche_echelle()  # on met à jour le widget d'échelle
         self.mets_en_orange_echelle()
+        self.enableDefaire(True)
+        self.enableRefaire(False)
         self.tableWidget.show()
         self.app.recalculLesCoordonnees()
         self.debut_capture(rouvre=True)
-        # affiche la dernière image pointée
-        der = self.derniere_image()
-        if der is not None: self.extract_image(der)
         return
 
     def check_uncheck_direction_axes(self):
@@ -1109,18 +1112,10 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         return "".join(["# "+l for l in config[1:]]) + "# " + msg + "\n"
 
     def affiche_image_spinbox(self):
+        """
+        Affiche l'image dpont le numéro est dans self.spinBox_image
+        """
         self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
-        if self.lance_capture:
-            if self.spinBox_image.value() < self.index:
-                # si le point est sur une image, on efface le point
-                if self.spinBox_image.value() == self.index:
-                    for i in range(self.nb_obj):
-                        self.efface_point_precedent()
-            if self.spinBox_image.value() > self.index:
-                # on refait le point
-                if self.spinBox_image.value() <= self.index:
-                    for i in range(self.nb_obj):
-                        self.refait_point_suivant()
         self.index = self.spinBox_image.value()
         self.affiche_image()
         return
@@ -1194,4 +1189,36 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             else:
                 self.echelle_image.p1 = None
                 self.echelle_image.p2 = None
+        return
+
+    def efface_point_precedent(self, event = None):
+        """
+        revient au point précédent ;
+        param event si la fonction est rappelée par un signal, event 
+        n'est pas None
+        """
+        self.dbg.p(1, "rentre dans 'efface_point_precedent'")
+        # efface la dernière entrée dans le tableau
+        self.tableWidget.removeRow(self.derniere_image() - 1)
+        if inhibe("defaire",100): return # corrige un bug de Qt 5.15
+        self.defaire()
+        # dernière image à afficher
+        if self.index > 1:
+            self.index -= 1
+        self.clic_sur_video_ajuste_ui(self.index)
+        return
+    
+    def refait_point_suivant(self):
+        """rétablit le point suivant après un effacement
+        """
+        self.dbg.p(1, "rentre dans 'refait_point_suivant'")
+        self.listePoints.incPtr()
+        # on stocke si la ligne est complète
+        if len(self.listePoints) % self.nb_de_points == 0:
+            self.stock_coordonnees_image(
+                ligne=int((len(self.listePoints)-1)/self.nb_de_points))
+            self.video.index = self.listePoints[len(
+                self.listePoints)-1][0]+1
+        self.affiche_image()
+        self.clic_sur_video_ajuste_ui(self.video.index)
         return

@@ -60,8 +60,57 @@ class Pointage(QObject):
         self.echelle_image = echelle()  # objet gérant l'échelle
         self.sens_X = 1                 # sens de l'axe des abscisses
         self.sens_Y = 1                 # sens de l'axe des ordonnées
+        self.defaits = deque()          # pile des pointages défaits
         return
 
+    def defaire(self):
+        """
+        retire le dernier pointage de self.data et l'empile dans
+        self.defaits
+        """
+        der = self.derniere_image()
+        if der:
+            t = self.dates[der - 1]
+            self.defaits.append(self.data[t])
+            self.data[t] = {obj: None for obj in self.suivis}
+        return
+
+    def refaire(self):
+        """
+        dépile un pointage de self.defaits et le rajoute à la fin de
+        self.data
+        """
+        if len (self.defaits) > 0:
+            der = self.derniere_image
+            if der and der < self.max_image:
+                t = self.dates[der]
+            else:
+                t = self.dates[0]
+            pointage = self.defaits.pop()
+            self.data[t] = pointage
+        return
+
+    def peut_defaire(self):
+        """
+        @return vrai si on peut défaire un pointage
+        """
+        return bool(self.derniere_image())
+
+    def peut_refaire(self):
+        """
+        @return vrai si on peut refaire un pointage
+        """
+        return len(self.defaits) > 0
+    
+    def purge_defaits(self):
+        """
+        purge les données à refaire si
+        on vient de cliquer sur la vidéo pour un pointage
+        """
+        self.defaits = deque()
+        return
+
+    
     def clearEchelle(self):
         """
         oublie la valeur de self.echelle_image
@@ -118,27 +167,6 @@ class Pointage(QObject):
         self.data[date][objet] = position
         return
 
-    def peut_defaire(self):
-        """
-        @return vrai si on peut défaire un pointage
-        """
-        return len(self.index_trajectoires()) > 0
-
-    def peut_refaire(self):
-        """
-        pas encore implémenté
-        @return vrai si on peut refaire un pointage
-        """
-        return False
-    
-    def purge_refaire(self):
-        """
-        pas encore implémenté ; purge les données à refaire si
-        on vient de cliquer sur la vidéo pour un pointage
-        """
-        return
-
-    
     def position(self, objet, index=None, date=None, unite="px"):
         """
         ajoute un pointage aux données ; on peut soit préciser l'index

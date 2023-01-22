@@ -21,7 +21,7 @@
 """
 
 from version import Version
-from PyQt5.QtCore import QStandardPaths
+from PyQt5.QtCore import QStandardPaths, QTimer
 from PyQt5.QtGui import QPixmap, QCursor
 from PyQt5.QtWidgets import QApplication
 
@@ -203,3 +203,31 @@ def beauGrosCurseur(widget):
     widget.setMouseTracking(True)
     return
     
+inhibitions = []; # liste de mots-clés pour inhiber des actions trop rapides
+
+def inhibe(motcle, duree):
+    """
+    Qt 5.15 a un bug : certains évenements sont lancés deux fois
+    On peut y remédier avec un timer.
+
+    Cette fonction teste si un mot-clé est dans la liste globdef.inhibe
+    s'il n'y est pas, elle l'y place et fait en sorte de l'effacer
+    après une durée de duree millisecondes
+
+    @param motcle le mot-clé d'inhibition
+    @param duree la durée du tabou sur le mot-clé
+
+    @return vrai si le mot-clé est encore là dans la liste des inhibitions,
+      faux s'il n'était pas là (et alors il y est placé pour quelques temps)
+    """
+    result = motcle in inhibitions
+    if not result:
+        inhibitions.append(motcle)
+        def efface(mot):
+            def callback():
+                if mot in inhibitions:
+                    inhibitions.remove(mot)
+                return
+            return callback
+        QTimer.singleShot(duree, efface(motcle))
+    return result

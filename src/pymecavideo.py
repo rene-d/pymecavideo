@@ -424,8 +424,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.actionExemples.triggered.connect(self.openexample)
         self.action_propos.triggered.connect(self.propos)
         self.actionAide.triggered.connect(self.aide)
-        self.actionDefaire.triggered.connect(self.efface_point_precedent)
-        self.actionRefaire.triggered.connect(self.refait_point_suivant)
+        #self.actionDefaire.triggered.connect(self.video.efface_point_precedent)
+        self.actionRefaire.triggered.connect(self.video.refait_point_suivant)
         self.actionQuitter.triggered.connect(self.close)
         self.actionSaveData.triggered.connect(self.video.enregistre_ui)
         self.actionCopier_dans_le_presse_papier.triggered.connect(
@@ -448,8 +448,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_select_all_table.clicked.connect(self.presse_papier)
         self.comboBoxChrono.currentIndexChanged.connect(self.chronoPhoto)
         self.pushButton_reinit.clicked.connect(self.video.reinitialise_capture)
-        self.pushButton_defait.clicked.connect(self.efface_point_precedent)
-        self.pushButton_refait.clicked.connect(self.refait_point_suivant)
         self.pushButton_origine.clicked.connect(
             self.choisi_nouvelle_origine)
         self.checkBox_abscisses.stateChanged.connect(self.change_sens_X)
@@ -954,59 +952,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             return (min_ + max_) * 0.5
         else:
             return vecteur(self.largeur / 2, self.hauteur / 2)
-
-    def efface_point_precedent(self):
-        """revient au point précédent
-        """
-        self.dbg.p(1, "rentre dans 'efface_point_precedent'")
-        # efface la dernière entrée dans le tableau
-        self.tableWidget.removeRow(
-            int((len(self.listePoints)-1)/self.nb_de_points))
-        self.listePoints.decPtr()
-        self.dbg.p(2, "self.listePoints" + str(self.listePoints) +
-                   "self.points" + str(self.points))
-        if len(self.listePoints) % self.nb_de_points != 0:
-            try:
-                self.points[len(self.listePoints)/self.nb_de_points].pop()
-            except KeyError as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                # liée au passage de ptyhon2 à python3 et au changement de comportement de /
-                self.dbg.p(1, "Erreur de clé : " +
-                           str(len(self.listePoints)/self.nb_de_points))
-        else:
-            try:
-                del self.points[len(self.listePoints)/self.nb_de_points]
-            except KeyError as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                self.dbg.p(1, "Erreur de clé : " +
-                           str(len(self.listePoints)/self.nb_de_points))
-        # dernière image à afficher
-        if self.nb_de_points != 1:
-            if len(self.listePoints)-1 >= 0:
-                if len(self.listePoints) % self.nb_de_points == self.nb_de_points-1:
-                    self.video.index = self.listePoints[len(
-                        self.listePoints)-1][0]
-        else:
-            if len(self.listePoints)-1 >= 0:
-                if len(self.listePoints) % self.nb_de_points == self.nb_de_points-1:
-                    self.video.index = self.listePoints[len(
-                        self.listePoints)-1][0]+1
-        self.affiche_image()
-        self.clic_sur_video_ajuste_ui(self.video.index)
-
-    def refait_point_suivant(self):
-        """rétablit le point suivant après un effacement
-        """
-        self.dbg.p(1, "rentre dans 'refait_point_suivant'")
-        self.listePoints.incPtr()
-        # on stocke si la ligne est complète
-        if len(self.listePoints) % self.nb_de_points == 0:
-            self.stock_coordonnees_image(
-                ligne=int((len(self.listePoints)-1)/self.nb_de_points))
-            self.video.index = self.listePoints[len(
-                self.listePoints)-1][0]+1
-        self.affiche_image()
-        self.clic_sur_video_ajuste_ui(self.video.index)
 
     def montre_video(self):
         self.dbg.p(1, "rentre dans 'montre_video'")
