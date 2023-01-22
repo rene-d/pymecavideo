@@ -8,6 +8,49 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context encoding="UTF-8">
+    <name>CsvExportDialog</name>
+    <message>
+        <location filename="../../src/export.py" line="621"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="622"/>
+        <source>Séparateur décimal :</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="624"/>
+        <source>Point ( . )</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="628"/>
+        <source>Virgule ( , )</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="626"/>
+        <source>Séparateur de champ :</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="630"/>
+        <source>Point-virgule ( ; )</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="632"/>
+        <source>Tabulation ( \t )</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="634"/>
+        <source>Ajouter les grandeurs comme en-tête</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 <context>
     <name>Dialog</name>
     <message>
@@ -169,6 +212,194 @@ Voulez-vous les sauvegarder ?</source>
         <location filename="." line="144"/>
         <source>point N&#xc2;&#xb0;</source>
         <translation type="obsolete">punto N°</translation>
+    </message>
+</context>
+<context>
+    <name>choix_exports</name>
+    <message>
+        <location filename="../../src/export.py" line="677"/>
+        <source>Choix export python</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="678"/>
+        <source>insérer les lignes pour le calcul des vitesses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="680"/>
+        <source>insérer les lignes pour le calcul des accélérations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="682"/>
+        <source>insérer les lignes pour l&apos;affichage des vecteurs vitesses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="684"/>
+        <source>insérer les lignes pour l&apos;affichage des vecteurs des accélérations</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context encoding="UTF-8">
+    <name>choix_exports_notebook</name>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="779"/>
+        <source>Choix des représentations graphiques</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="780"/>
+        <source>Chronogramme des positions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="782"/>
+        <source>Vecteurs vitesse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="784"/>
+        <source>Vecteurs accélération</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="786"/>
+        <source>Vecteurs variation de vitesse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="788"/>
+        <source>Energies</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>export</name>
+    <message>
+        <location filename="../../src/export.py" line="48"/>
+        <source>Libre/OpenOffice Calc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="49"/>
+        <source>Feuille de calcul OpenDocument (*.ods)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="56"/>
+        <source>Python (source)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="57"/>
+        <source>Fichier Python (*.py)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="64"/>
+        <source>Python (Numpy)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="65"/>
+        <source>Fichier Numpy (*.npy)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="72"/>
+        <source>Jupyter Notebook</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="73"/>
+        <source>Notebook (*.ipynb)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="80"/>
+        <source>Fichier CSV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="81"/>
+        <source>Fichier CSV (*.csv, *.txt)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="88"/>
+        <source>Pandas Dataframe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="89"/>
+        <source>Dataframe (*.pkl)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="96"/>
+        <source>Qtiplot/Scidavis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="97"/>
+        <source>Fichier Qtiplot (*.qti)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="107"/>
+        <source>Erreur lors de l&apos;exportation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/export.py" line="108"/>
+        <source>Echec de l&apos;enregistrement du fichier:&lt;b&gt;
+{0}&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="116"/>
+        <source>Impossible de créer le fichier</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="111"/>
+        <source>L&apos;export n&apos;est possible que pour 1 seul point cliqué.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="113"/>
+        <source>Exportation terminée</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="114"/>
+        <source>Fichier:
+&lt;b&gt;{0}&lt;/b&gt;
+enregistré avec succès.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="117"/>
+        <source>Le module &lt;b&gt;{0}&lt;/b&gt; n&apos;est pas installé.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context encoding="UTF-8">
+    <name>export_numpy</name>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="717"/>
+        <source>Fichier Numpy sauvegardé</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context encoding="UTF-8">
+    <name>export_pandas</name>
+    <message encoding="UTF-8">
+        <location filename="../../src/export.py" line="136"/>
+        <source>Fichier Pandas sauvegardé</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -339,7 +570,7 @@ Voulez-vous les sauvegarder ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="498"/>
+        <location filename="../../src/videoWidget.py" line="1044"/>
         <source>Erreur lors de l&apos;enregistrement</source>
         <translation type="unfinished"></translation>
     </message>
@@ -405,24 +636,24 @@ Voulez-vous les sauvegarder ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="213"/>
+        <location filename="../../src/videoWidget.py" line="436"/>
         <source>indéf.</source>
         <translation type="unfinished">indéf.</translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="../../src/pymecavideo.py" line="1446"/>
+        <location filename="../../src/videoWidget.py" line="1063"/>
         <source>temps en seconde, positions en mètre</source>
-        <translation type="obsolete">tiempo en segundos, posición en metros</translation>
+        <translation type="unfinished">tiempo en segundos, posición en metros</translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="../../src/pymecavideo.py" line="2604"/>
+        <location filename="../../src/videoWidget.py" line="827"/>
         <source>Quelle est la longueur en mètre de votre étalon sur l&apos;image ?</source>
-        <translation type="obsolete">¿Cuál es el tamaño , en metros de su calibrador en la imagen?</translation>
+        <translation type="unfinished">¿Cuál es el tamaño , en metros de su calibrador en la imagen?</translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="../../src/pymecavideo.py" line="2626"/>
+        <location filename="../../src/videoWidget.py" line="846"/>
         <source> Merci d&apos;indiquer une échelle valable</source>
-        <translation type="obsolete">Usted tiene que dar una escala válida</translation>
+        <translation type="unfinished">Usted tiene que dar una escala válida</translation>
     </message>
     <message encoding="UTF-8">
         <location filename="../../src/pymecavideo.py" line="1537"/>
@@ -878,6 +1109,83 @@ vecteurs vitesse</source>
     <message encoding="UTF-8">
         <location filename="../../src/pymecavideo.py" line="241"/>
         <source>Le fichier {filename} n&apos;est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="371"/>
+        <source>Pymecavideo n&apos;arrive pas à lire l&apos;image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="502"/>
+        <source>le format de cette vidéo n&apos;est pas pris en charge par pymecavideo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="529"/>
+        <source>Veuillez choisir une image (et définir l&apos;échelle)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/videoWidget.py" line="561"/>
+        <source>Erreur lors de la lecture du fichier</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="561"/>
+        <source>Le fichier&lt;b&gt;{0}&lt;/b&gt; ...
+n&apos;est peut-être pas dans un format vidéo supporté.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="588"/>
+        <source>Pointage des positions : cliquer sur le point N° {0}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="603"/>
+        <source>Vous avez atteint la fin de la vidéo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="671"/>
+        <source>point N° {0}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/videoWidget.py" line="695"/>
+        <source>Pointage Automatique</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="697"/>
+        <source>Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
+Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="751"/>
+        <source>Définir l&apos;échelle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="827"/>
+        <source>Définir léchelle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/videoWidget.py" line="1037"/>
+        <source>Enregistrer le projet pymecavideo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/videoWidget.py" line="1037"/>
+        <source>Projet pymecavideo (*.mecavideo)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="../../src/videoWidget.py" line="1044"/>
+        <source>Il manque les données, ou l&apos;échelle</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
