@@ -1218,32 +1218,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.trajectoire_widget.update()
         return
     
-    def enregistre_dans_listePoints(self, point, index=None):
-        """
-        enregistre un clic dans self.listePoints à la bonne place.
-        on ajoute à cette liste un triplet :
-        numéro de l'image, rang du point (0,1 ou 2 s'il y a trois
-        points à saisir par image), et le point lui-même.
-
-        Le calcul du rang du point est lié à self.nb_clics, calculé dans clic_sur_video()
-        @param point un point à enregistrer
-        @param index un numéro d'image. S'il est indéfini (par défaut), il
-        est remplacé par self.video.index.
-        """
-        self.dbg.p(1, "rentre dans 'enregistre_dans_listePoints'")
-        if index:
-            i = index
-        else:
-            i = self.video.index
-        nieme  = self.nb_clics
-        if self.refait_point : #arrive si on refait qu'un seul point à partir du tableau de l'onglet 3.
-            self.listePoints[(self.video.index-self.premiere_image_pointee)*self.nb_de_points+nieme] = [i, nieme, point]
-
-        else :
-            self.listePoints.append([i, nieme, point])
-        self.dbg.p(3, "dans 'enregistre_dans_listePoints', self.listePoints vaut %s"%self.listePoints)
-        return
-
     def stock_coordonnees_image(self, ligne,  interactif=True, index_image=False):
         """
         place les données dans le tableau, rempli les dictionnaires de pixels
