@@ -1,6 +1,7 @@
 *~
 \#*
 *.qm
+pymecavideo_project.pro 
 *.pyc
 Ui_*
 *.1
