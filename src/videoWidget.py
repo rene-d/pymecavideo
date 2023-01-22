@@ -245,7 +245,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     def storePoint(self, point):
         """
         enregistre un point, quand self.index et self.objet_courant
-        sont déjà bien réglés.
+        sont déjà bien réglés. Si self.refait_point est vrai (on a été
+        délégué depuis un bouton refaire, du tableau de coordonnées, alors
+        on rebascule éventuellement vers l'onglet coordonnées, quand le
+        dernier objet a été pointé.
         @param point la position à enregistrer
         """
         self.dbg.p(1, "rentre dans 'storePoint'")
@@ -261,6 +264,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.clic_sur_video_signal.emit()
             self.updateZoom(self.hotspot)
             self.update()
+            if self.refait_point : # on a été délégué pour corriger le tableau
+                if self.objet_courant == self.suivis[0]:
+                    # le dernier objet est pointé, retour au tableau de coords
+                    self.tabWidget.setCurrentIndex(2) # montre le tableau
         return
 
     def objetSuivant(self):
@@ -1197,3 +1204,33 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.index += 1
         self.clic_sur_video_ajuste_ui(self.index)
         return
+
+    def refait_point_depuis_tableau(self, qpbn ):
+        """
+        fonction de rappel déclenchée quand on clique dans la dernière
+        colonne du tableau
+        @param qbbn le bouton qui a été cliqué pour en arriver là
+        """
+        self.dbg.p(1, "rentre dans 'refait_point_depuis_tableau'")
+        self.refait_point=True
+        numero_image = int(qpbn.toolTip().split(' ')[-1])
+        self.index_de_l_image_actuelle = self.index
+        self.index = numero_image
+
+        self.tabWidget.setCurrentIndex(0) # montre le videoWidget
+        self.clic_sur_video_ajuste_ui(numero_image)
+        return
+
+    def fin_refait_point_depuis_tableau(self):
+        self.dbg.p(1, "rentre dans 'fin_refait_point_depuis_tableau'")
+        self.refait_point = False
+
+        #####remplacement de la valeur de self.points pour la ligne correspondante
+        self.stock_coordonnees_image(self.video.index-self.premiere_image_pointee-1, index_image=True)
+
+        self.video.index = self.index_de_l_image_actuelle
+        self.index_de_l_image_actuelle = None
+        self.clic_sur_video_ajuste_ui(0)
+        self.tabWidget.setCurrentIndex(2)
+
+

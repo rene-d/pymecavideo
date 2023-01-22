@@ -1323,7 +1323,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         b.setIcon(QIcon(":/data/icones/curseur_cible.svg"))
         b.setToolTip("refaire le pointage\n de l'image %s"%(ligne+1))
         b.setFlat(True)
-        b.clicked.connect( lambda state, widget: self.refait_point_depuis_tableau( b ))
+        b.clicked.connect( lambda state: self.video.refait_point_depuis_tableau( b ))
         return b
     
     def affiche_tableau(self):
@@ -1411,30 +1411,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             cb_temps, cb_point,
             unite = "m" if self.video.echelle_image else "px")
         return
-
-    def refait_point_depuis_tableau(self, qpbn ):
-        self.dbg.p(1, "rentre dans 'refait_point_depuis_tableau'")
-        self.refait_point=True
-        numero_image = qpbn.toolTip().split(' ')[-1]
-        self.index_de_l_image_actuelle = self.video.index
-        self.video.index = int(numero_image)+self.premiere_image_pointee-1
-
-        self.tabWidget.setCurrentIndex(0)
-        point_actuel = len(self.listePoints)%self.nb_de_points
-        self.clic_sur_video_ajuste_ui(point_actuel)
-
-    def fin_refait_point_depuis_tableau(self):
-        self.dbg.p(1, "rentre dans 'fin_refait_point_depuis_tableau'")
-        self.refait_point = False
-
-        #####remplacement de la valeur de self.points pour la ligne correspondante
-        self.stock_coordonnees_image(self.video.index-self.premiere_image_pointee-1, index_image=True)
-
-        self.video.index = self.index_de_l_image_actuelle
-        self.index_de_l_image_actuelle = None
-        self.clic_sur_video_ajuste_ui(0)
-        self.tabWidget.setCurrentIndex(2)
-
 
     def recommence_echelle(self):
         self.dbg.p(1, "rentre dans 'recommence_echelle'")
