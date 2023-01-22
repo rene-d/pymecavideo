@@ -81,8 +81,8 @@ class Pointage(QObject):
         self.data
         """
         if len (self.defaits) > 0:
-            der = self.derniere_image
-            if der and der < self.max_image:
+            der = self.derniere_image()
+            if der and der < self.image_max:
                 t = self.dates[der]
             else:
                 t = self.dates[0]

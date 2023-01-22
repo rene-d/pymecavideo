@@ -595,7 +595,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.lance_capture = True
         if self.index <= self.image_max:
             # si on n'atteint pas encore la fin de la vidéo
-            self.purge_refaire() # oublie les pointages à refaire
+            self.purge_defaits() # oublie les pointages à refaire
             if interactif:
                 self.modifie = True
             self.clic_sur_video_ajuste_ui(self.objet_courant)
@@ -911,20 +911,19 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         # affiche la dernière image pointée
         der = self.derniere_image()
         if der is not None:
-            self.extract_image(der)
-            self.horizontalSlider.setValue(der)
-            self.spinBox_image.setValue(der)
-            self.spinBox_chrono.setMaximum(der)
+            if der < self.image_max:
+                self.index = der + 1
+            else:
+                self.index = self.image_max
         else:
-            self.extract_image(1)
-        self.affiche_image()  # on affiche l'image
+            self.index = 1
+        self.clic_sur_video_ajuste_ui(self.index)
         self.affiche_echelle()  # on met à jour le widget d'échelle
         self.mets_en_orange_echelle()
-        self.enableDefaire(True)
-        self.enableRefaire(False)
         self.tableWidget.show()
         self.app.recalculLesCoordonnees()
         self.debut_capture(rouvre=True)
+        self.active_controle_image()
         return
 
     def check_uncheck_direction_axes(self):
@@ -1191,20 +1190,23 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.echelle_image.p2 = None
         return
 
-    def efface_point_precedent(self, event = None):
+    def efface_point_precedent(self):
         """
-        revient au point précédent ;
-        param event si la fonction est rappelée par un signal, event 
-        n'est pas None
+        revient au point précédent
         """
         self.dbg.p(1, "rentre dans 'efface_point_precedent'")
+        if inhibe("defaire",100): return # corrige un bug de Qt 5.15
+        if not self.peut_defaire(): return
         # efface la dernière entrée dans le tableau
         self.tableWidget.removeRow(self.derniere_image() - 1)
-        if inhibe("defaire",100): return # corrige un bug de Qt 5.15
         self.defaire()
         # dernière image à afficher
-        if self.index > 1:
-            self.index -= 1
+        der = self.derniere_image()
+        if der:
+            self.index = self.derniere_image() + 1
+        else:
+            self.purge_defaits() # si on a retiré le dernier pointage visible
+            if self.index > 1: self.index -= 1
         self.clic_sur_video_ajuste_ui(self.index)
         return
     
@@ -1212,13 +1214,11 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         """rétablit le point suivant après un effacement
         """
         self.dbg.p(1, "rentre dans 'refait_point_suivant'")
-        self.listePoints.incPtr()
-        # on stocke si la ligne est complète
-        if len(self.listePoints) % self.nb_de_points == 0:
-            self.stock_coordonnees_image(
-                ligne=int((len(self.listePoints)-1)/self.nb_de_points))
-            self.video.index = self.listePoints[len(
-                self.listePoints)-1][0]+1
-        self.affiche_image()
-        self.clic_sur_video_ajuste_ui(self.video.index)
+        if inhibe("refaire",100): return # corrige un bug de Qt 5.15
+        self.refaire()
+        # ce serait moins long de remettre juste une ligne dans le tableau
+        self.app.recalculLesCoordonnees()
+        if self.index < self.image_max:
+            self.index += 1
+        self.clic_sur_video_ajuste_ui(self.index)
         return
