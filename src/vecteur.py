@@ -118,6 +118,9 @@ class vecteur:
     def __str__(self):
         return "(%5f, %5f)" % (self.x, self.y)
 
+    def toIntStr(self):
+        return f"'{round(self.x)}, {round(self.y)})"
+    
     def __repr__(self):
         return "vecteur %s" % self
 

@@ -1083,12 +1083,14 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         d['sens_y'] = str(self.sens_Y)
         d['taille'] = str((self.app.size().width(),self.app.size().height()))
         d['rotation'] = str(self.rotation)
-        d['origine'] = f"({self.origine.x},{self.origine.y})"
+        d['origine'] = f"({round(self.origine.x)}, {round(self.origine.y)})"
         d['index_depart'] = str(self.premiere_image())
         d['etalon_m'] = str(self.echelle_image.longueur_reelle_etalon)
         d['etalon_px'] = str(self.echelle_image.longueur_pixel_etalon())
-        d['etalon_org'] = str(self.echelle_image.p1 if self.echelle_image else None)
-        d['etalon_ext'] = str(self.echelle_image.p2 if self.echelle_image else None)
+        d['etalon_org'] = self.echelle_image.p1.toIntStr() \
+            if self.echelle_image else "None"
+        d['etalon_ext'] = self.echelle_image.p2.toIntStr() \
+            if self.echelle_image else "None"
         d['deltat'] = str(self.deltaT)
         d['nb_obj'] = str(len(self.suivis))
         self.prefs.save()
