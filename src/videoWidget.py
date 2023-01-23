@@ -604,7 +604,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
     def clic_sur_la_video(self, liste_points=None, interactif=True):
         self.dbg.p(1, "rentre dans 'clic_sur_video'")
-        self.lance_capture = True
         if self.index <= self.image_max:
             # si on n'atteint pas encore la fin de la vidéo
             self.purge_defaits() # oublie les pointages à refaire
@@ -613,6 +612,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.clic_sur_video_ajuste_ui(self.objet_courant)
         if self.index > self.image_max:
             self.lance_capture = False
+            self.setCursor(Qt.CrossCursor)
             self.affiche_barre_statut(_translate(
                 "pymecavideo", "Vous avez atteint la fin de la vidéo", None))
             self.index = self.image_max
@@ -668,15 +668,15 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             # si rouvre, self.premiere_image_pointee est déjà définie
             # 
             self.premiere_image_pointee = self.horizontalSlider.value()
-        self.affiche_point_attendu(1)
+        self.affiche_point_attendu(self.suivis[0])
         self.lance_capture = True
         self.app.fixeLesDimensions()
         self.setCursor(Qt.CrossCursor)
-        self.tab_traj.setEnabled(1)
+        self.tab_traj.setEnabled(True)
         self.app.actionSaveData.setEnabled(1)
-        self.app.actionCopier_dans_le_presse_papier.setEnabled(1)
-        self.comboBox_referentiel.setEnabled(1)
-        self.pushButton_select_all_table.setEnabled(1)
+        self.app.actionCopier_dans_le_presse_papier.setEnabled(True)
+        self.comboBox_referentiel.setEnabled(True)
+        self.pushButton_select_all_table.setEnabled(True)
 
         self.comboBox_referentiel.clear()
         self.comboBox_referentiel.insertItem(-1, "camera")
@@ -684,14 +684,13 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.comboBox_referentiel.insertItem(-1, _translate(
                 "pymecavideo", "point N° {0}", None).format(str(obj)))
 
-        self.pushButton_origine.setEnabled(0)
-        self.checkBox_abscisses.setEnabled(0)
-        self.checkBox_ordonnees.setEnabled(0)
-        self.checkBox_auto.setEnabled(0)
-        # self.Bouton_Echelle.setEnabled(0)
-        self.Bouton_lance_capture.setEnabled(0)
-        self.pushButton_rot_droite.setEnabled(0)
-        self.pushButton_rot_gauche.setEnabled(0)
+        self.pushButton_origine.setEnabled(False)
+        self.checkBox_abscisses.setEnabled(False)
+        self.checkBox_ordonnees.setEnabled(False)
+        self.checkBox_auto.setEnabled(False)
+        self.Bouton_lance_capture.setEnabled(False)
+        self.pushButton_rot_droite.setEnabled(False)
+        self.pushButton_rot_gauche.setEnabled(False)
 
         # on empêche le redimensionnement
         self.app.fixeLesDimensions()
@@ -700,11 +699,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.echelle_image.mParPx() == 1:
             self.echelle_image.longueur_reelle_etalon = 1
             self.echelle_image.p1 = vecteur(0, 0)
-            self.echelle_image.p1 = vecteur(0, 1)
+            self.echelle_image.p2 = vecteur(0, 1)
 
         # automatic capture
         if self.checkBox_auto.isChecked():
-            #self.auto = True
             self.app.affiche_barre_statut(
                 _translate("pymecavideo", "Pointage Automatique", None))
             reponse = QMessageBox.warning(None, "Capture Automatique",
@@ -713,13 +711,8 @@ Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
 Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",
                                                      None),
                                           QMessageBox.Ok, QMessageBox.Ok)
-            if self.selRect:
-                self.selRect.finish(delete=True)
-            # in this widget, motif(s) are defined.
             self.selRect = SelRectWidget(self)
             self.selRect.show()
-            # IMPORTANT : permet de gagner en fluidité de l'affichage
-            # lors du pointage automatique.
             self.active_controle_image(False)
         return
 
@@ -957,7 +950,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.dbg.p(1, "rentre dans 'suiviDuMotif'")
         if len(self.motifs_auto) == self.nb_obj:
             self.dbg.p(3, "selection des motifs finie")
-            self.selRect.finish(delete=True)
+            self.selRect.hide()
             self.indexMotif = 0
             self.pushButton_stopCalculs.setText("STOP")
             self.pushButton_stopCalculs.setEnabled(1)
@@ -1005,7 +998,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             # programme le suivi du point suivant après un délai de 50 ms,
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
-            timer = QTimer.singleShot(50, self.detecteUnPoint)
+            QTimer.singleShot(50, self.detecteUnPoint)
         else:
             self.stopCalculs.emit()
 
@@ -1017,6 +1010,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.pushButton_stopCalculs.hide()
         # rétablit les fonctions du spinbox et du slider pour gérer l'image
         self.active_controle_image()
+        self.selRect.hide()
         return
 
     def enregistre_ui(self):

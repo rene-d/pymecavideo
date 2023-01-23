@@ -778,19 +778,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.resize(self.size()+QSize(1, 0))
             self.resize(self.size()+QSize(-1, 0))
 
-        if self.video.lance_capture:
-            self.dbg.p(2, "on fixe les hauteurs du widget")
-            self.video.setFixedHeight(
-                self.video.height())
-            self.video.setFixedWidth(
-                self.video.width())
-            self.dbg.p(2, "on fixe les hauteurs de la fenetre")
-
-        self.dbg.p(2, "on fixe les hauteurs de video")
-        self.dbg.p(2, "widget_vidéo situé en %s %s" %
-                   (self.video.pos().x, self.video.pos().y))
-        self.dbg.p(3, "widget_vidéo largeur :  %s hauteur : %s" %
-                   (self.video.width(), self.video.height()))
         self.dbg.p(2, "MAJ de video")
         self.video.maj()
         self.trajectoire_widget.maj()
