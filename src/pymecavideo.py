@@ -1255,9 +1255,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         b = QPushButton()
         b.setIcon(QIcon(":/data/icones/curseur_cible.svg"))
-        b.setToolTip("refaire le pointage\n de l'image %s"%(ligne+1))
+        b.setToolTip(self.tr(
+            "refaire le pointage\n de l'image {numero}").format(
+                numero = ligne + 1))
         b.setFlat(True)
-        b.clicked.connect( lambda state: self.video.refait_point_depuis_tableau( b ))
+        b.clicked.connect(lambda state: \
+                          self.video.refait_point_depuis_tableau( b ))
+        b.index_image = ligne + 1
         return b
     
     def affiche_tableau(self):

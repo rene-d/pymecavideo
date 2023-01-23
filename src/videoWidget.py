@@ -85,8 +85,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.lance_cature = False  # devient vrai quand on commence à pointer
         self.auto = False          # devient vrai pour le pointage automatique
         self.motifs_auto = []      # liste de motifs pour le suivi auto
-        self.pointsProbables = {}  # dictionnaire de points proches de la détection ?
-
+        self.pointsProbables = {}  # dict. de points proches de la détection ?
+        self.refait_point = False  # on doit repointer une date
         return
 
     # signaux de la classe
@@ -245,10 +245,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     def storePoint(self, point):
         """
         enregistre un point, quand self.index et self.objet_courant
-        sont déjà bien réglés. Si self.refait_point est vrai (on a été
-        délégué depuis un bouton refaire, du tableau de coordonnées, alors
-        on rebascule éventuellement vers l'onglet coordonnées, quand le
-        dernier objet a été pointé.
+        sont déjà bien réglés.
         @param point la position à enregistrer
         """
         self.dbg.p(1, "rentre dans 'storePoint'")
@@ -258,6 +255,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def mouseReleaseEvent(self, event):
+        """
+        enregistre le point de l'évènement souris.
+
+        Si self.refait_point est vrai (on a été délégué depuis un
+        bouton refaire, du tableau de coordonnées, alors on rebascule
+        éventuellement vers l'onglet coordonnées, quand le dernier
+        objet a été pointé.
+        """
         if self.lance_capture == True:
             self.pointe(self.objet_courant, event, index=self.index-1)
             self.objetSuivant()
@@ -267,6 +272,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             if self.refait_point : # on a été délégué pour corriger le tableau
                 if self.objet_courant == self.suivis[0]:
                     # le dernier objet est pointé, retour au tableau de coords
+                    self.refait_point = False
                     self.tabWidget.setCurrentIndex(2) # montre le tableau
         return
 
@@ -1213,11 +1219,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         """
         self.dbg.p(1, "rentre dans 'refait_point_depuis_tableau'")
         self.refait_point=True
-        numero_image = int(qpbn.toolTip().split(' ')[-1])
-        self.index_de_l_image_actuelle = self.index
-        self.index = numero_image
-
+        self.objet_courant = self.suivis[0]
+        self.index = qpbn.index_image
         self.tabWidget.setCurrentIndex(0) # montre le videoWidget
-        self.clic_sur_video_ajuste_ui(numero_image)
+        self.clic_sur_video_ajuste_ui(self.index)
         return
 

@@ -21,7 +21,7 @@ pymecavideo_project.pro: $(SOURCES)
 
 languages: pymecavideo_project.pro
 	LC_ALL=en_US.UTF-8 pylupdate5 -translate-function _translate pymecavideo_project.pro
-	lrelease ../data/lang/*.ts
+	lrelease ../data/lang/*.ts 2>&1 | grep -A2 "Updating"
 
 
 helpfiles:
