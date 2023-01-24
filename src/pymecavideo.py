@@ -158,10 +158,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         self.setupUi(self)
 
-        # définition des widgets importants
-        self.zoom_zone.setApp(self)
-        self.trajectoire_widget.setApp(self)
-
         # gestion des layout pour redimensionnement
         self.aspectlayout1 = AspectLayout(self.ratio)
 
@@ -173,18 +169,27 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.dbg = Dbg(o[1])
                 self.dbg.p(1, "Niveau de débogage" + o[1])
 
+        self.prefs = Preferences(self)
+
+        # définition des widgets importants
+        self.graphWidget = None
+        self.zoom_zone.setApp(self)
+        self.trajectoire_widget.setApp(self)
+
+        # on passe la main au videowidget pour faire les liaisons aux
+        # autres widgets de la fenêtre principale
+        self.video.setApp(self)
+
+        self.apply_preferences()
+
         self.args = args
 
         self.cvReader = None
-        self.graphWidget = None
 
         self.platform = platform.system()
 
         # initialise les répertoires
         self._dir()
-
-        # lecture du fichier de préférences
-        self.apply_preferences()
 
         # variables à initialiser
         # disable UI at beginning
@@ -257,7 +262,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # de réouverture d'un fichier pymecavideo, qui contient les préférences
         if not rouvre:
             self.prefs = Preferences(self)
-            
         m = re.match(r"pymecavideo (.*)",
                      self.prefs.config["DEFAULT"]["version"])
         if m:
@@ -278,9 +282,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         rect = self.geometry()
         self.setGeometry(rect.x(), rect.y(), int(taille.x), int(taille.y))
         self.radioButtonNearMouse.setChecked(d["proximite"] == "True")
-        # on passe la main au videowidget pour appliquer le reste
-        # des données du fichier de préférences
-        self.video.setApp(self)
         self.video.apply_preferences(rouvre = rouvre)
         return
 

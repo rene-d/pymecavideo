@@ -75,6 +75,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.largeurFilm, self.hauteurFilm = None, None
         self.index = None          # index de l'image courante
         self.objet_courant = 1     # désignation de l'objet courant
+        self.filename = None       # le nom du fichier vidéo
         self.a_une_image = False   # indication quant à une image disponible
         self.imageExtraite = None  # référence de l'image courante
         self.lance_capture = False # un pointage est en cours
