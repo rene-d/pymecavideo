@@ -671,9 +671,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.affiche_point_attendu(self.suivis[0])
         self.lance_capture = True
         self.app.fixeLesDimensions()
-        self.setCursor(Qt.CrossCursor)
         self.tab_traj.setEnabled(True)
-        self.app.actionSaveData.setEnabled(1)
+        self.app.actionSaveData.setEnabled(True)
         self.app.actionCopier_dans_le_presse_papier.setEnabled(True)
         self.comboBox_referentiel.setEnabled(True)
         self.pushButton_select_all_table.setEnabled(True)
@@ -695,7 +694,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # on empêche le redimensionnement
         self.app.fixeLesDimensions()
 
-        # si aucune échelle n'a été définie, on place l'étalon à 1 px pou 1 m.
+        # si aucune échelle n'a été définie, on place l'étalon à 1 px pour 1 m.
         if self.echelle_image.mParPx() == 1:
             self.echelle_image.longueur_reelle_etalon = 1
             self.echelle_image.p1 = vecteur(0, 0)
@@ -703,6 +702,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
         # automatic capture
         if self.checkBox_auto.isChecked():
+            self.auto = True
             self.app.affiche_barre_statut(
                 _translate("pymecavideo", "Pointage Automatique", None))
             reponse = QMessageBox.warning(None, "Capture Automatique",
@@ -855,7 +855,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         return
     
     def mets_en_orange_echelle(self):
-        self.Bouton_Echelle.setEnabled(1)
+        self.Bouton_Echelle.setEnabled(True)
         self.Bouton_Echelle.setText("refaire l'échelle")
         self.Bouton_Echelle.setStyleSheet("background-color:orange;")
         return
