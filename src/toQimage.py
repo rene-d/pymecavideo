@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QImage, qRgb
+from PyQt6.QtGui import QImage, qRgb
 
 import numpy as np
 

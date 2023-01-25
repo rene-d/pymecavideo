@@ -21,9 +21,9 @@
 """
 from math import sqrt, atan2, degrees
 
-from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QRect, QPoint, QPointF
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPicture, QPainter, QColor, QFont, QPainterPath, QPen, QFontMetrics
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QRect, QPoint, QPointF
+from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPicture, QPainter, QColor, QFont, QPainterPath, QPen, QFontMetrics, QShortcut
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from image_widget import ImageWidget
 
@@ -80,7 +80,7 @@ class TrajectoireWidget(ImageWidget):
         return
 
     def paintText(self, x, y, text,
-                  color = Qt.white, bgcolor = Qt.lightGray,
+                  color = QColor("white"), bgcolor = QColor("lightGray"),
                   fontsize = 12,
                   fontfamily = None,
                   center=False):

@@ -22,9 +22,9 @@
 
 import locale
 
-from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QMimeData
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QDrag
-from PyQt5.QtWidgets import QTableWidget, QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QMimeData
+from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QDrag, QShortcut
+from PyQt6.QtWidgets import QTableWidget, QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 
 class standardDragTable(QTableWidget):

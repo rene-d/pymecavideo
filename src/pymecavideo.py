@@ -10,7 +10,11 @@ from globdef import HOME_PATH, VIDEO_PATH, CONF_PATH, \
     ICON_PATH, LANG_PATH, \
     DATA_PATH, HELP_PATH, DOCUMENT_PATH, \
     _translate
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QVBoxLayout, QTableWidgetSelectionRange, QDialog, QAction, QPushButton
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QVBoxLayout, QTableWidgetSelectionRange, QDialog, QPushButton
+from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QShortcut, QScreen, QAction
+from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
+from PyQt6 import uic
+
 import getopt
 import traceback
 import time
@@ -38,9 +42,6 @@ from grandeurs import grandeurs
 from glob import glob
 import pyqtgraph as pg
 import pyqtgraph.exporters
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
-from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
-from PyQt5 import uic
 from vecteur import vecteur
 import icon_rc
 licence = {}
@@ -146,15 +147,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         # Mode plein écran
         self.plein_ecran = False
-        QShortcut(QKeySequence(Qt.Key_F11), self, self.basculer_plein_ecran)
+        QShortcut(QKeySequence("FullScreen"), self, self.basculer_plein_ecran)
 
-        self.height_screen, self.width_screen = QDesktopWidget(
-        ).screenGeometry().height(), QDesktopWidget().screenGeometry().width()
-
-
-        self.setWindowFlags(self.windowFlags() |
-                            Qt.WindowSystemMenuHint |
-                            Qt.WindowMinMaxButtonsHint)
+        g = QApplication.instance().screens()[0].geometry()
+        self.height_screen, self.width_screen = g.height(), g.width()
 
         self.setupUi(self)
 

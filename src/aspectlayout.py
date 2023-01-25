@@ -19,8 +19,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from PyQt5.QtWidgets import QLayout
-from PyQt5.QtCore import Qt, QSize
+from PyQt6.QtWidgets import QLayout
+from PyQt6.QtCore import Qt, QSize
 
 
 class AspectLayout(QLayout):

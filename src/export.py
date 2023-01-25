@@ -25,8 +25,8 @@ export.py permet d'exporter les données de pymecavideo dans différents formats
 
 from dbg import Dbg
 from globdef import DOCUMENT_PATH
-from PyQt5.QtWidgets import QFileDialog, QCheckBox, QDialog, QMessageBox, QDialogButtonBox, QVBoxLayout, QGroupBox, QHBoxLayout, QRadioButton, QSpacerItem, QSizePolicy, QGridLayout
-from PyQt5.QtCore import Qt, QCoreApplication, QSize, QUrl, QStandardPaths
+from PyQt6.QtWidgets import QFileDialog, QCheckBox, QDialog, QMessageBox, QDialogButtonBox, QVBoxLayout, QGroupBox, QHBoxLayout, QRadioButton, QSpacerItem, QSizePolicy, QGridLayout
+from PyQt6.QtCore import Qt, QCoreApplication, QSize, QUrl, QStandardPaths
 import sys
 import os, time
 DBG = Dbg(0)

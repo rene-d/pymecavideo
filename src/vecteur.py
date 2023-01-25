@@ -27,7 +27,7 @@ vecteur.py implements some operations for 2D vectors, using tuples
 
 import math
 
-from PyQt5.QtCore import QPointF
+from PyQt6.QtCore import QPointF
 
 class vecteur:
     """

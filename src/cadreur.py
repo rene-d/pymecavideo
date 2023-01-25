@@ -30,9 +30,9 @@ import subprocess
 import shutil
 import numpy as np
 import cv2
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QCoreApplication, QMetaObject
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage
-from PyQt5.QtWidgets import QVBoxLayout, QLabel, QSizePolicy, QFrame, QGridLayout, QSlider, QDialogButtonBox, QDialog
+from PyQt6.QtCore import QObject, QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QCoreApplication, QMetaObject
+from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage
+from PyQt6.QtWidgets import QVBoxLayout, QLabel, QSizePolicy, QFrame, QGridLayout, QSlider, QDialogButtonBox, QDialog
 from vecteur import vecteur
 from itertools import cycle
 

@@ -21,9 +21,9 @@
 """
 
 from version import Version
-from PyQt5.QtCore import QStandardPaths, QTimer
-from PyQt5.QtGui import QPixmap, QCursor
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtCore import QStandardPaths, QTimer
+from PyQt6.QtGui import QPixmap, QCursor
+from PyQt6.QtWidgets import QApplication
 
 import subprocess
 import os
@@ -97,7 +97,7 @@ def toFileEncoding(path):
 #######################################################################################
 # HOME_PATH : Dossier des documents
 # APP_PATH : Dossier du lancement de l'application pymecavideo
-#CONF_PATH : StandardPaths.standardLocations(QStandardPaths.DataLocation)[0] / pymecavideo/ data
+#CONF_PATH : QStandardPaths.locate(QStandardPaths.StandardLocation.AppDataLocation, "pymecavideo/")
 # DATA_PATH : Dossier contenant les datas, selon scenario
 #ICON_PATH : DATA_PATH / icones
 #LANG_PATH : DATA_PATH / lang
@@ -124,15 +124,13 @@ else:
                                '/usr/share/python3-mecavideo/', '/usr/share/pymecavideo/'))
 
 # CONF_PATH
-CONF_PATH = os.path.join(QStandardPaths.standardLocations(
-    QStandardPaths.DataLocation)[0], "pymecavideo")
+CONF_PATH = QStandardPaths.locate(QStandardPaths.StandardLocation.AppDataLocation, "pymecavideo/")
 
 # HOME_PATH
-HOME_PATH = QStandardPaths.standardLocations(QStandardPaths.HomeLocation)
+HOME_PATH = QStandardPaths.locate(QStandardPaths.StandardLocation.HomeLocation, "")
 
 # DOCUMENTS_PATH
-DOCUMENT_PATH = QStandardPaths.standardLocations(
-    QStandardPaths.DocumentsLocation)
+DOCUMENT_PATH = QStandardPaths.locate(QStandardPaths.StandardLocation.DocumentsLocation, "")
 
 # DOSSIERS
 #

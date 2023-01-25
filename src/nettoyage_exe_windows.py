@@ -8,10 +8,10 @@ a_enlever = {}
 
 a_enlever["lib/cv2"] = ["opencv_videoio_ffmpeg451_64.dll", "python39.dll"]
 
-#rep : "lib\PyQt5\Qt\bin"
+#rep : "lib\PyQt6\Qt\bin"
 # fichiers :
 
-a_enlever["lib/PyQt5/Qt5/bin"] = [
+a_enlever["lib/PyQt6/Qt5/bin"] = [
     "d3dcompiler_47.dll",
     "Qt5QmlModels.dll",
     "libcrypto-1_1-x64.dll",
@@ -32,7 +32,7 @@ a_enlever["lib/PyQt5/Qt5/bin"] = [
     "QtCore.dll",
 ]
 
-a_enlever["lib/PyQt5/Qt/bin"] = [
+a_enlever["lib/PyQt6/Qt/bin"] = [
     "d3dcompiler_47.dll",
     "Qt5QmlModels.dll",
     "libcrypto-1_1-x64.dll",
@@ -52,8 +52,8 @@ a_enlever["lib/PyQt5/Qt/bin"] = [
     "Qt5Location.dll",
 ]
 
-#rep : "lib\PyQt5\Qt5\plugins"
-a_enlever["lib/PyQt5/Qt5/plugins"] = [
+#rep : "lib\PyQt6\Qt5\plugins"
+a_enlever["lib/PyQt6/Qt5/plugins"] = [
     "printsupport",
     "sensorgestures",
     "sqldrivers",
@@ -64,8 +64,8 @@ a_enlever["lib/PyQt5/Qt5/plugins"] = [
 
 
 
-#rep : "lib\PyQt5"
-a_enlever["lib/PyQt5"] = [
+#rep : "lib\PyQt6"
+a_enlever["lib/PyQt6"] = [
     "python39.dll",
     # "qt5gui.dll",
     # "qt5widgets.dll"

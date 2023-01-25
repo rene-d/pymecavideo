@@ -22,9 +22,9 @@
 from math import sqrt
 import os
 
-from PyQt5.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QShortcut, QDesktopWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect
+from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QShortcut
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
 from globdef import beauGrosCurseur
