@@ -81,9 +81,9 @@ class Zoom(ImageWidget):
         crop = image.copy(rect)
         if isinstance(crop, QImage):
             cropX2 = QPixmap.fromImage(
-                crop.scaled(100, 100, Qt.KeepAspectRatio))
+                crop.scaled(100, 100, Qt.AspectRatioMode.KeepAspectRatio))
         else:
-            cropX2 = crop.scaled(100, 100, Qt.KeepAspectRatio)
+            cropX2 = crop.scaled(100, 100, Qt.AspectRatioMode.KeepAspectRatio)
         self.setImage(cropX2)
         return
 
@@ -93,7 +93,7 @@ class Zoom(ImageWidget):
             painter.begin(self)
             if self.image != None:
                 painter.drawPixmap(0, 0, self.image)
-            painter.setPen(Qt.red)
+            painter.setPen(QColor("red"))
             painter.drawLine(50, 0, 50, 45)
             painter.drawLine(50, 55, 50, 100)
             painter.drawLine(0, 50, 45, 50)

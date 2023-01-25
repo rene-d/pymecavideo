@@ -152,6 +152,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         g = QApplication.instance().screens()[0].geometry()
         self.height_screen, self.width_screen = g.height(), g.width()
 
+        self.origine_trace = None
+        
         self.setupUi(self)
 
         # gestion des layout pour redimensionnement

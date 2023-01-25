@@ -23,7 +23,7 @@ from math import sqrt
 import os
 
 from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect
-from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QShortcut
+from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QShortcut, QColor
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
@@ -115,46 +115,44 @@ class EchelleWidget(QWidget):
         self.cropX2 = None
         self.setMouseTracking(True)
         self.pressed = False
-        try:
-            # origine definition is optionnal but hide scale if defined first
+        # origine definition is optionnal but hide scale if defined first
+        if self.app.origine_trace:
             self.app.origine_trace.lower()
-        except AttributeError:
-            pass
-        try:
             self.app.echelle_trace.hide()
-            del self.app.echelle_trace
-        except AttributeError:
-            pass
         return
 
     def mousePressEvent(self, event):
         if event.button() != 1:
             self.p1 = vecteur(-1, -1)
             self.close()
-        self.p1 = vecteur(event.x(), event.y())
+        self.p1 = vecteur(qPoint = event.position())
         self.pressed = True
+        return
 
     def paintEvent(self, event):
+        if self.p1.x <= 0 or self.p2.x <= 0: return
         painter = QPainter()
         painter.begin(self)
 
-        painter.setPen(Qt.red)
-        if self.p1.x > 0:
-            painter.drawLine(round(self.p1.x), round(self.p1.y),
-                             round(self.p2.x), round(self.p2.y))
+        painter.setPen(QColor("red"))
+        painter.drawLine(round(self.p1.x), round(self.p1.y),
+                         round(self.p2.x), round(self.p2.y))
         painter.end()
+        return
 
     def mouseMoveEvent(self, event):
-        if (event.x() > 0 and event.x() < self.largeur) and (event.y() > 0 and event.y() < self.hauteur):
-            self.video.updateZoom(vecteur(event.x(), event.y()))
+        p = vecteur(qPoint = event.position())
+        if (p.x > 0 and p.x < self.largeur) and (p.y > 0 and p.y < self.hauteur):
+            self.video.updateZoom(p)
 
         if self.pressed:
-            self.p2 = vecteur(event.x(), event.y())
+            self.p2 = p
             self.update()
 
     def mouseReleaseEvent(self, event):
+        p = vecteur(qPoint = event.position())
         if event.button() == 1 and self.p1.x >= 0:
-            self.p2 = vecteur(event.x(), event.y())
+            self.p2 = p
         self.video.updateZoom()
         self.video.index_du_point = 0
 
@@ -202,12 +200,12 @@ class Echelle_TraceWidget(QWidget):
             QRect(0, 0, self.video.width(), self.video.height()))
 
     def paintEvent(self, event):
+        if self.p1.x <= 0 or self.p2.x <= 0: return
+
         painter = QPainter()
         painter.begin(self)
-        try:
-            painter.setPen(Qt.green)
-            painter.drawLine(round(self.p1.x), round(self.p1.y),
-                             round(self.p2.x), round(self.p2.y))
-        except AttributeError:
-            pass  # arrive au premier lancement sans vidéos
+        painter.setPen(QColor("green"))
+        painter.drawLine(round(self.p1.x), round(self.p1.y),
+                         round(self.p2.x), round(self.p2.y))
         painter.end()
+        return

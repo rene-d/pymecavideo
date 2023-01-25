@@ -16,7 +16,7 @@ def toQImage(im, copy=False):
         if len(im.shape) == 3:
             if im.shape[2] == 3:
                 qim = QImage(im.data, im.shape[1],
-                             im.shape[0], QImage.Format_RGB888)
+                             im.shape[0], QImage.Format.Format_RGB888)
                 return qim.copy() if copy else qim
 
     raise NotImplementedException

@@ -195,7 +195,7 @@ def beauGrosCurseur(widget):
     @param widget le widget affecté par le curseur
     """
     cible_icon = os.path.join(ICON_PATH, "curseur_cible.svg")
-    pix = QPixmap(cible_icon).scaledToHeight(32, 32)
+    pix = QPixmap(cible_icon).scaledToHeight(32)
     cursor = QCursor(pix)
     widget.setCursor(cursor)
     widget.setMouseTracking(True)

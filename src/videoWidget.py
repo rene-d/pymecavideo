@@ -198,7 +198,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.updateZoom()
         self.setMouseTracking(True)
         self.update()
-        self.setCursor(Qt.ArrowCursor)
+        self.setCursor(Qt.CursorShape.ArrowCursor)
         self.setEnabled(1)
         self.reinit_origine()
         self.pointsProbables = {}
@@ -298,7 +298,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             # beau curseur seulment si la capture manuelle est lancée
             beauGrosCurseur(self)
         else:
-            self.setCursor(Qt.ArrowCursor)
+            self.setCursor(Qt.CursorShape.ArrowCursor)
         return
     
     def mouseMoveEvent(self, event):
@@ -322,7 +322,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             ############################################################
             # dessin de l'origine
             longueur_origine = 5
-            painter.setPen(Qt.green)
+            painter.setPen(QColor("green"))
             painter.drawLine(
                 round(self.origine.x) - longueur_origine, round(self.origine.y),
                 round(self.origine.x) + longueur_origine, round(self.origine.y))
@@ -351,7 +351,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
             ############################################################
             # paint repere
-            painter.setPen(Qt.green)
+            painter.setPen(QColor("green"))
             painter.translate(0, 0)
             try:
                 painter.translate(
@@ -784,9 +784,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.checkBox_abscisses.setEnabled(1)
         self.checkBox_ordonnees.setEnabled(1)
         self.checkBox_auto.setEnabled(1)
-        self.checkBox_abscisses.setCheckState(Qt.Unchecked)
-        self.checkBox_ordonnees.setCheckState(Qt.Unchecked)
-        self.checkBox_auto.setCheckState(Qt.Unchecked)
+        self.checkBox_abscisses.setCheckState(Qt.CheckState.Unchecked)
+        self.checkBox_ordonnees.setCheckState(Qt.CheckState.Unchecked)
+        self.checkBox_auto.setCheckState(Qt.CheckState.Unchecked)
         if self.a_une_image:
             self.pushButton_rot_droite.setEnabled(1)
             self.pushButton_rot_gauche.setEnabled(1)
@@ -835,8 +835,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             None,
             _translate("pymecavideo", "Définir léchelle", None),
             _translate("pymecavideo", "Quelle est la longueur en mètre de votre étalon sur l'image ?", None),
-            QLineEdit.Normal,
-            f"{self.echelle_image.longueur_reelle_etalon:.3f}")
+            text = f"{self.echelle_image.longueur_reelle_etalon:.3f}")
         if not ok:
             return
         try:
