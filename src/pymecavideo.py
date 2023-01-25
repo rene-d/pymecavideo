@@ -1558,7 +1558,7 @@ def run():
         b = app.installTranslator(appTranslator)
     window = FenetrePrincipale(None, opts, args)
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 class plotThread(threading.Thread):

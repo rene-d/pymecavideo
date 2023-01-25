@@ -69,7 +69,7 @@
              <x>0</x>
              <y>0</y>
              <width>168</width>
-             <height>553</height>
+             <height>541</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -592,7 +592,14 @@ vers le bas</string>
             </widget>
            </item>
            <item>
-            <widget class="VideoPointeeWidget" name="video" native="true"/>
+            <widget class="VideoPointeeWidget" name="video" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -1301,7 +1308,7 @@ vecteurs vitesse</string>
      <x>0</x>
      <y>0</y>
      <width>1041</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

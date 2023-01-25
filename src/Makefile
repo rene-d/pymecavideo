@@ -10,7 +10,7 @@ all:	Ui_pymecavideo_mini_layout.py helpfiles languages icon_rc.py
 icon_rc.py: icon.qrc
 	pyrcc5 $< -o $@
 
-Ui_pymecavideo_mini_layout.py : pymecavideo.py
+Ui_pymecavideo_mini_layout.py : pymecavideo_mini_layout.ui
 	pyuic6 $< > $@
 
 Ui_%.py: %.ui

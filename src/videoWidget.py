@@ -54,7 +54,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app = None        # pointeur vers la fenêtre principale
         self.zoom = None       # pointeur vers le widget de zoom
         self.hotspot = None    # vecteur (position de la souris)
-        pix = QPixmap(":/data/icones/curseur_cible.svg").scaledToHeight(32, 32)
+        pix = QPixmap(":/data/icones/curseur_cible.svg").scaledToHeight(32)
         self.cursor = QCursor(pix)
         self.setCursor(self.cursor)     # le curseur en forme de cible
         self.pos_zoom = vecteur(50, 50) # point initialement grossi dans le zoom

@@ -547,7 +547,7 @@ enregistré avec succès.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="744"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="751"/>
         <source>Image n°</source>
         <translation type="unfinished">Image #</translation>
     </message>
@@ -627,17 +627,17 @@ enregistré avec succès.</source>
         <translation type="obsolete">Scale for velocities:</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="710"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="717"/>
         <source>px pour 1 m/s</source>
         <translation>px for 1 m/s</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="854"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="861"/>
         <source>Coordonnées</source>
         <translation type="unfinished">Coordinates</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="869"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="876"/>
         <source>Copier les mesures dans le presse papier</source>
         <translation>Copy data to the clipboard</translation>
     </message>
@@ -662,12 +662,12 @@ enregistré avec succès.</source>
         <translation type="unfinished">Open a video</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1366"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1373"/>
         <source>avanceimage</source>
         <translation>imgforward</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1371"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1378"/>
         <source>reculeimage</source>
         <translation>imgbackward</translation>
     </message>
@@ -758,7 +758,7 @@ vers la gauche</source>
 </translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="604"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="611"/>
         <source>Trajectoires</source>
         <translation>Trajectories</translation>
     </message>
@@ -784,7 +784,7 @@ mouse</translation>
         <translation type="obsolete">everywhere</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="690"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="697"/>
         <source>Échelle de vitesses</source>
         <translation type="unfinished">Scale for speed</translation>
     </message>
@@ -1022,269 +1022,269 @@ vers le bas</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="629"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="636"/>
         <source>Trajectoire</source>
         <translation>Trajectory</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="634"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="641"/>
         <source>Chronophotographie</source>
         <translation>Chronophotography</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="639"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="646"/>
         <source>Chronogramme</source>
         <translation>Chronogram</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="647"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="654"/>
         <source>vecteur vitesse ...</source>
         <translation>Velocity vector ...</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="665"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="672"/>
         <source>Montrer les
 vecteurs vitesse</source>
         <translation>Show
 velocity vectors</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="673"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="680"/>
         <source>Près de la souris</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="683"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="690"/>
         <source>Partout</source>
         <translation>Everywhere</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="726"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="733"/>
         <source>Chronophotographie ...</source>
         <translation>Chronophotography ...</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1255"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1262"/>
         <source>Enregistrer</source>
         <translation>Save</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="820"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="827"/>
         <source>Changement de référentiel :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="833"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="840"/>
         <source>Voir la vidéo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="860"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="867"/>
         <source>Tableau des dates et des coordonnées</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="899"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="906"/>
         <source>Changer d'échelle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="919"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="926"/>
         <source>Ajouter les énergies :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="940"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="947"/>
         <source>Cinétique (échelle obligatoire)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="947"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="954"/>
         <source>Potentielle de pesanteur</source>
         <translation>Potential of weight</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="954"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="961"/>
         <source>Mécanique</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="964"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="971"/>
         <source>Intensité de la pesanteur :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="982"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="989"/>
         <source>g (N/kg)</source>
         <translation>g (N/kg)</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1146"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1153"/>
         <source>9.8</source>
         <translation>9.8</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1032"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1039"/>
         <source>Grapheur</source>
         <translation>Plotter</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1038"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1045"/>
         <source>Données et grandeurs à représenter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1071"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1078"/>
         <source>Masse (kg)</source>
         <translation>Mass (kg)</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1096"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1103"/>
         <source>1.0</source>
         <translation>1.0</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1121"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1128"/>
         <source>Intensité de la pesanteur g (N/kg)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1194"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1201"/>
         <source>Tracer :</source>
         <translation>Plot:</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1204"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1211"/>
         <source>En fonction de :</source>
         <translation>As a function of:</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1214"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1221"/>
         <source>Avec le style :</source>
         <translation>Styled like:</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1222"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1229"/>
         <source>Points seuls</source>
         <translation>Plain Dots</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1231"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1238"/>
         <source>Points et lignes</source>
         <translation>Dots and Lines</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1240"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1247"/>
         <source>Lignes seules</source>
         <translation>Lines</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1309"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1316"/>
         <source>&amp;Fichier</source>
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1313"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1320"/>
         <source>E&amp;xporter vers ...</source>
         <translation>E&amp;xport to ...</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1416"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1423"/>
         <source>&amp;Aide</source>
         <translation>&amp;Help</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1341"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1348"/>
         <source>&amp;Edition</source>
         <translation>&amp;Edit</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1358"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1365"/>
         <source>&amp;Ouvrir une vidéo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1380"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1387"/>
         <source>&amp;Quitter</source>
         <translation>&amp;Quit</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1392"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1399"/>
         <source>&amp;Enregistrer le projet mecavideo</source>
         <translation>&amp;Save the project (mecavideo)</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1395"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1402"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enregistre les données du projet pour pouvoir être réouvert dans PyMecaVideo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1407"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1414"/>
         <source>À &amp;propos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1428"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1435"/>
         <source>&amp;Exemples ...</source>
         <translation>&amp;Examples ...</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1437"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1444"/>
         <source>Ouvrir un projet &amp;mecavideo</source>
         <translation>Open a &amp;mecavideo project</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1442"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1449"/>
         <source>&amp;Préférences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1451"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1458"/>
         <source>&amp;Copier dans le presse-papier</source>
         <translation>&amp;Copy to the clipboard</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1463"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1470"/>
         <source>&amp;Défaire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1475"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1482"/>
         <source>&amp;Refaire</source>
         <translation>&amp;Redo</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1481"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1488"/>
         <source>Refaire</source>
         <translation>Redo</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1489"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1496"/>
         <source>LibreOffice &amp;Calc</source>
         <translation>LibreOffice &amp;Calc</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1494"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1501"/>
         <source>Qti&amp;plot</source>
         <translation>Qti&amp;plot</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1499"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1506"/>
         <source>Sci&amp;davis</source>
         <translation>Sci&amp;davis</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1504"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1511"/>
         <source>&amp;Python (source)</source>
         <translation>&amp;Python (source)</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1509"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1516"/>
         <source>&amp;Fichier numpy</source>
         <translation>&amp;Numpy file</translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo_mini_layout.ui" line="1512"/>
+        <location filename="../../src/pymecavideo_mini_layout.ui" line="1519"/>
         <source>Fichier Numpy</source>
         <translation>Numpy file</translation>
     </message>
