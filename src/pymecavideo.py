@@ -243,10 +243,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     OK = True
                     self.video.rouvre(filename)
             if not OK:
-                QMessageBox.information(
-                    self,
-                    _translate("pymecavideo", "Argument non pris en compte", None),
-                    _translate("pymecavideo", "Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.", None).format(filename=filename))
+                QTimer.singleShot(
+                    50,
+                    lambda: QMessageBox.information(
+                        self,
+                        _translate("pymecavideo", "Argument non pris en compte", None),
+                        _translate("pymecavideo", "Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.", None).format(filename=filename)))
                 
         return
 
@@ -269,10 +271,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         else:
             version = "0"
         if version < self.min_version:
-            QMessageBox.information(
-                self,
-                _translate("pymecavideo", "Configuration trop ancienne", None),
-                _translate("pymecavideo", "La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte", None).format(version = version, min_version = self.min_version))
+            QTimer.singleShot(
+                50,
+                lambda: QMessageBox.information(
+                    self,
+                    _translate("pymecavideo", "Configuration trop ancienne", None),
+                    _translate("pymecavideo", "La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte", None).format(version = version, min_version = self.min_version)))
             return
         # le fichier de configuration a la bonne version, on applique ses
         # données

@@ -20,7 +20,7 @@ licence = """
 """
 
 # from Ui_preferences import Ui_Dialog
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, QTimer
 from PyQt5.QtWidgets import QMessageBox
 
 import os, re, configparser
@@ -88,6 +88,9 @@ class Preferences (QObject):
         Sauvegarde des préférences dans le fichier de configuration.
         """
         with open(self.conffile, "w") as outfile:
+            d = self.config["DEFAULT"]
+            d["version"] = f"pymecavideo {Version}"
+            d["lastvideo"] = str(self.app.video.filename)
             self.config.write(outfile)
         return
 
@@ -96,8 +99,10 @@ class Preferences (QObject):
             try:
                 self.config.read(self.conffile)
             except UnicodeDecodeError:
-                QMessageBox.information(
-                    self.app,
-                    self.tr("Erreur de lecture de la configuration"),
-                    self.tr("Peut-être un ancien format de fichier de configuration ? On recommence avec une configuration neuve."))
+                QTimer.singleShot(
+                    50,
+                    lambda: QMessageBox.information(
+                        self.app,
+                        self.tr("Erreur de lecture de la configuration"),
+                        self.tr("Peut-être un ancien format de fichier de configuration ? On recommence avec une configuration neuve.")))
         return
