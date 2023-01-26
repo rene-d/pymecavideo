@@ -131,7 +131,7 @@ class TrajectoireWidget(ImageWidget):
         ############################################################
         # paint the origin
         if not self.chrono == 2:
-            self.painter.setPen(Qt.green)
+            self.painter.setPen(QColor("green"))
             self.painter.drawLine(
                 round(self.origine_mvt.x) - 5, round(self.origine_mvt.y),
                 round(self.origine_mvt.x) + 5, round(self.origine_mvt.y))
@@ -270,7 +270,7 @@ class TrajectoireWidget(ImageWidget):
             self.painter = QPainter()
             self.painter.begin(self)
             self.painter.setRenderHint(QPainter.Antialiasing)
-            self.painter.setPen(Qt.green)
+            self.painter.setPen(QColor("green"))
             # self.painter.translate(0,0)
             self.painter.translate(
                 round(self.origine_mvt.x), round(self.origine_mvt.y))

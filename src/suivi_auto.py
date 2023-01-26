@@ -62,24 +62,27 @@ class SelRectWidget(QWidget):
         
     def mousePressEvent(self, event):
         self.setMouseTracking(False)
-        self.x_1 = event.x()
-        self.x_2 = event.x()
-        self.y_1 = event.y()
-        self.y_2 = event.y()
+        p = vecteur(qPoint = event.position())
+        self.x_1 = p.x
+        self.x_2 = p.x
+        self.y_1 = p.y
+        self.y_2 = p.y
+        return
 
     def mouseMoveEvent(self, event):
-        x = event.x()
-        y = event.y()
+        p = vecteur(qPoint = event.position())
 
         if not self.hasMouseTracking():  # lancé lors de la sélection.
-            self.x_2 = x
-            self.y_2 = y
-        self.video.updateZoom(vecteur(x, y))
+            self.x_2 = p.x
+            self.y_2 = p.y
+        self.video.updateZoom(p)
         self.update()
+        return
 
     def mouseReleaseEvent(self, event):
         self.video.motifs_auto.append(self.getMotif())
         self.video.selection_motif_done.emit()
+        return
 
     def getMotif(self):
         """
@@ -103,7 +106,9 @@ class SelRectWidget(QWidget):
         if not self.hasMouseTracking():
             painter = QPainter()
             painter.begin(self)
-            painter.setPen(Qt.green)
-            painter.drawRect(self.x_1, self.y_1, self.x_2 -
-                             self.x_1, self.y_2 - self.y_1)
+            painter.setPen(QColor("green"))
+            painter.drawRect(round(self.x_1), round(self.y_1),
+                             round(self.x_2 - self.x_1),
+                             round(self.y_2 - self.y_1))
             painter.end()
+        return
