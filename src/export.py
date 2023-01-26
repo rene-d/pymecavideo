@@ -24,7 +24,7 @@ export.py permet d'exporter les données de pymecavideo dans différents formats
 
 
 from dbg import Dbg
-from globdef import DOCUMENT_PATH
+from globdef import DOCUMENT_PATH, HOME_PATH
 from PyQt6.QtWidgets import QFileDialog, QCheckBox, QDialog, QMessageBox, QDialogButtonBox, QVBoxLayout, QGroupBox, QHBoxLayout, QRadioButton, QSpacerItem, QSizePolicy, QGridLayout
 from PyQt6.QtCore import Qt, QCoreApplication, QSize, QUrl, QStandardPaths
 import sys
@@ -169,7 +169,7 @@ class FichierCSV:
         """
         import csv
         d = CsvExportDialog(app)
-        if d.exec_() == QDialog.Accepted:
+        if d.exec() == QDialog.DialogCode.Accepted:
             _decimal = d.decimal
             _field = d.field
             _header = d.checkBox.isChecked()
@@ -337,6 +337,7 @@ class Calc():
             """
             fonction de rappel qui inscrit les coordonnées dans le tableur
             """
+            if p is None: return
             self.tr[i].addElement(
                 self.TableCell(valuetype="float", value=str(p.x)))
             self.tr[i].addElement(
@@ -458,7 +459,7 @@ dt={deltaT}
         # si seule l'accélération est cochée, les vitesses sont calculées mais non affichées
         #self.dbg.p(1, "rentre dans 'python source2'")
         d = PythonExportDialog(app)
-        if d.exec_() == QDialog.Accepted:
+        if d.exec() == QDialog.DialogCode.Accepted:
             calcule_vitesse, affiche_vitesse, calcule_accel, affiche_accel = d.checkBox_v.isChecked(
             ), d.checkBox_v2.isChecked(), d.checkBox_accel.isChecked(), d.checkBox_accel2.isChecked()
         if affiche_vitesse:
@@ -526,76 +527,21 @@ dt={deltaT}
             ))
         return
     
+from Ui_csv_dialog import Ui_Dialog as Ui_csv_Dialog
 
-class CsvExportDialog(QDialog):
+class CsvExportDialog(QDialog, Ui_csv_Dialog):
     """
     Fenêtre de dialogue permettant de choisir séparateurs de champ et décimal dans le fichier CSV
     """
 
     def __init__(self, *args, **kwargs):
-        super(CsvExportDialog, self).__init__(*args, **kwargs)
-        self.setObjectName("CsvExportDialog")
-        self.resize(430, 262)
-        self.decimal = "."
-        self.field = ","
-        self.verticalLayout = QVBoxLayout(self)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.gbDec = QGroupBox(self)
-        self.gbDec.setObjectName("gbDec")
-        self.horizontalLayout = QHBoxLayout(self.gbDec)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.rbDecDot = QRadioButton(self.gbDec)
-        self.rbDecDot.setMinimumSize(QSize(130, 0))
-        self.rbDecDot.setChecked(True)
-        self.rbDecDot.setObjectName("rbDecDot")
-        self.horizontalLayout.addWidget(self.rbDecDot)
-        self.rbDecComma = QRadioButton(self.gbDec)
-        self.rbDecComma.setMinimumSize(QSize(130, 0))
-        self.rbDecComma.setObjectName("rbDecComma")
-        self.horizontalLayout.addWidget(self.rbDecComma)
-        spacerItem = QSpacerItem(
-            127, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
-        self.verticalLayout.addWidget(self.gbDec)
-        self.gbCha = QGroupBox(self)
-        self.gbCha.setObjectName("gbCha")
-        self.gridLayout_2 = QGridLayout(self.gbCha)
-        self.gridLayout_2.setObjectName("gridLayout_2")
-        self.rbFieldComma = QRadioButton(self.gbCha)
-        self.rbFieldComma.setMinimumSize(QSize(130, 0))
-        self.rbFieldComma.setChecked(True)
-        self.rbFieldComma.setObjectName("rbFieldComma")
-        self.gridLayout_2.addWidget(self.rbFieldComma, 0, 0, 1, 1)
-        self.rbFieldSemicolon = QRadioButton(self.gbCha)
-        self.rbFieldSemicolon.setMinimumSize(QSize(130, 0))
-        self.rbFieldSemicolon.setChecked(False)
-        self.rbFieldSemicolon.setObjectName("rbFieldSemicolon")
-        self.gridLayout_2.addWidget(self.rbFieldSemicolon, 0, 1, 1, 1)
-        self.rbFieldTab = QRadioButton(self.gbCha)
-        self.rbFieldTab.setMinimumSize(QSize(130, 0))
-        self.rbFieldTab.setChecked(False)
-        self.rbFieldTab.setObjectName("rbFieldTab")
-        self.gridLayout_2.addWidget(self.rbFieldTab, 0, 2, 1, 1)
-        self.verticalLayout.addWidget(self.gbCha)
-        self.checkBox = QCheckBox(self)
-        self.checkBox.setChecked(True)
-        self.checkBox.setObjectName("checkBox")
-        self.verticalLayout.addWidget(self.checkBox)
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(
-            QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
-        self.verticalLayout.addWidget(self.buttonBox)
-        self.retranslateUi()
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        self.rbDecComma.toggled.connect(self.check_if_dot)
-        self.rbDecDot.toggled.connect(self.change_dec)
-        self.rbFieldComma.toggled.connect(self.change_field)
-        self.rbFieldSemicolon.toggled.connect(self.change_field)
-        self.rbFieldTab.toggled.connect(self.change_field)
-
+        QDialog.__init__(self, *args, **kwargs)
+        Ui_csv_Dialog.__init__(self)
+        self.setupUi(self)
+        self.change_field()
+        self.change_dec()
+        return
+    
     def change_field(self):
         if self.rbFieldComma.isChecked():
             self.field = ","
@@ -603,13 +549,15 @@ class CsvExportDialog(QDialog):
             self.field = ";"
         elif self.rbFieldTab.isChecked():
             self.field = "\t"
+        return
 
     def change_dec(self):
         if self.rbFieldComma.isChecked():
             self.decimal = ","
         elif self.rbDecDot.isChecked():
             self.decimal = "."
-
+        return
+    
     def check_if_dot(self):
         if self.rbDecComma.isChecked():
             if self.rbFieldComma.isChecked():
@@ -618,26 +566,8 @@ class CsvExportDialog(QDialog):
         else:
             self.rbFieldComma.setEnabled(True)
         self.change_field()
-
-    def retranslateUi(self):
-        _translate = QCoreApplication.translate
-        self.setWindowTitle(_translate("CsvExportDialog", "Dialog"))
-        self.gbDec.setTitle(_translate(
-            "CsvExportDialog", "Séparateur décimal :"))
-        self.rbDecDot.setText(_translate("CsvExportDialog", "Point ( . )"))
-        self.rbDecComma.setText(_translate("CsvExportDialog", "Virgule ( , )"))
-        self.gbCha.setTitle(_translate(
-            "CsvExportDialog", "Séparateur de champ :"))
-        self.rbFieldComma.setText(_translate(
-            "CsvExportDialog", "Virgule ( , )"))
-        self.rbFieldSemicolon.setText(_translate(
-            "CsvExportDialog", "Point-virgule ( ; )"))
-        self.rbFieldTab.setText(_translate(
-            "CsvExportDialog", "Tabulation ( \\t )"))
-        self.checkBox.setText(_translate(
-            "CsvExportDialog", "Ajouter les grandeurs comme en-tête"))
-
-
+        return
+    
 class PythonExportDialog(QDialog):
     """
     Fenêtre de dialogue permettant de choisir les grandeurs à exporter 
@@ -654,8 +584,6 @@ class PythonExportDialog(QDialog):
         self.verticalLayout.setObjectName("verticalLayout")
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(
-            QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.layout = QVBoxLayout()
@@ -802,7 +730,7 @@ class PythonNotebook :
         ligne_x = "np.array({})".format([p.x for p in points])
         ligne_y = "np.array({})".format([p.y for p in points])
         d = NotebookExportDialog(app)
-        if d.exec_() == QDialog.Accepted:
+        if d.exec_() == QDialog.DialogCode.Accepted:
             graphs = (d.checkBox_c.isChecked(), d.checkBox_v.isChecked(
             ), d.checkBox_v2.isChecked(), d.checkBox_a.isChecked(), d.checkBox_e.isChecked())
         nb = genere_notebook((ligne_t, ligne_x, ligne_y), graphs = graphs)
@@ -817,12 +745,12 @@ class SaveThenOpenFileDialog(QFileDialog):
     def __init__(self, *args, extension=None, proposeOuverture=True):
         super().__init__(*args)
         DBG.p(1, "rentre dans 'SaveThenOpenFileDialog'")
-        self.setOption(QFileDialog.DontUseNativeDialog)
-        self.setAcceptMode(QFileDialog.AcceptSave)
-        self.setWindowFlags(self.windowFlags() & ~Qt.Dialog)
-        urls = [QUrl.fromLocalFile(QStandardPaths.standardLocations(QStandardPaths.DocumentsLocation)[0]),
-                QUrl.fromLocalFile(QStandardPaths.standardLocations(QStandardPaths.HomeLocation)[0]),
-                QUrl.fromLocalFile(QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0])
+        self.setOption(QFileDialog.Option.DontUseNativeDialog)
+        self.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
+        #self.setWindowFlags(self.windowFlags() & ~Qt.WindowFlags.Dialog)
+        urls = [QUrl.fromLocalFile(DOCUMENT_PATH),
+                QUrl.fromLocalFile(HOME_PATH),
+                QUrl.fromLocalFile(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DesktopLocation))
                 ]
         self.setSidebarUrls(urls)
         self.setDefaultSuffix(extension)
@@ -876,7 +804,7 @@ class Export:
         fd = SaveThenOpenFileDialog(None, 'Exporter...', defaultName,
                                     filtre, extension=extension, proposeOuverture=propose_ouverture)
         ouvre = False
-        if fd.exec_() == QDialog.Accepted:
+        if fd.exec() == QDialog.DialogCode.Accepted:
             filepath = fd.selectedFiles()[0]
             ouvre = fd.checkbox.isChecked()
             # self.enregistre_fichier(filepath)

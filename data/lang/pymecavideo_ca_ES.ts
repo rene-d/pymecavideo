@@ -12,42 +12,42 @@
 <context>
     <name>CsvExportDialog</name>
     <message>
-        <location filename="../../src/export.py" line="621"/>
+        <location filename="../../src/export.py" line="625"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="622"/>
+        <location filename="../../src/export.py" line="626"/>
         <source>Séparateur décimal :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="624"/>
+        <location filename="../../src/export.py" line="628"/>
         <source>Point ( . )</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="628"/>
+        <location filename="../../src/export.py" line="632"/>
         <source>Virgule ( , )</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="626"/>
+        <location filename="../../src/export.py" line="630"/>
         <source>Séparateur de champ :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="630"/>
+        <location filename="../../src/export.py" line="634"/>
         <source>Point-virgule ( ; )</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="632"/>
+        <location filename="../../src/export.py" line="636"/>
         <source>Tabulation ( \t )</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="634"/>
+        <location filename="../../src/export.py" line="638"/>
         <source>Ajouter les grandeurs comme en-tête</source>
         <translation type="unfinished"></translation>
     </message>
@@ -55,7 +55,7 @@
 <context>
     <name>FenetrePrincipale</name>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1246"/>
+        <location filename="../../src/pymecavideo.py" line="1248"/>
         <source>refaire le pointage
  de l&apos;image {numero}</source>
         <translation type="unfinished"></translation>
@@ -64,12 +64,12 @@
 <context>
     <name>MontreFilm</name>
     <message>
-        <location filename="../../src/cadreur.py" line="208"/>
+        <location filename="../../src/cadreur.py" line="210"/>
         <source>Ralenti : 1/1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/cadreur.py" line="207"/>
+        <location filename="../../src/cadreur.py" line="209"/>
         <source>Voir la vidéo</source>
         <translation type="unfinished"></translation>
     </message>
@@ -90,27 +90,27 @@
 <context>
     <name>choix_exports</name>
     <message>
-        <location filename="../../src/export.py" line="677"/>
+        <location filename="../../src/export.py" line="679"/>
         <source>Choix export python</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="678"/>
+        <location filename="../../src/export.py" line="680"/>
         <source>insérer les lignes pour le calcul des vitesses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="680"/>
+        <location filename="../../src/export.py" line="682"/>
         <source>insérer les lignes pour le calcul des accélérations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="682"/>
+        <location filename="../../src/export.py" line="684"/>
         <source>insérer les lignes pour l'affichage des vecteurs vitesses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="684"/>
+        <location filename="../../src/export.py" line="686"/>
         <source>insérer les lignes pour l'affichage des vecteurs des accélérations</source>
         <translation type="unfinished"></translation>
     </message>
@@ -262,7 +262,7 @@ enregistré avec succès.</source>
 <context>
     <name>export_numpy</name>
     <message>
-        <location filename="../../src/export.py" line="717"/>
+        <location filename="../../src/export.py" line="719"/>
         <source>Fichier Numpy sauvegardé</source>
         <translation type="unfinished"></translation>
     </message>
@@ -278,130 +278,130 @@ enregistré avec succès.</source>
 <context>
     <name>pymecavideo</name>
     <message>
-        <location filename="../../src/pymecavideo.py" line="488"/>
+        <location filename="../../src/pymecavideo.py" line="490"/>
         <source>Enregistrer comme image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="488"/>
+        <location filename="../../src/pymecavideo.py" line="490"/>
         <source>fichiers images(*.png *.jpg)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1029"/>
+        <location filename="../../src/videoWidget.py" line="1028"/>
         <source>Erreur lors de l&apos;enregistrement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="496"/>
+        <location filename="../../src/pymecavideo.py" line="498"/>
         <source>Echec de l&apos;enregistrement du fichier:&lt;b&gt;
 {0}&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="750"/>
+        <location filename="../../src/pymecavideo.py" line="752"/>
         <source>Ouvrir un projet Pymecavideo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="750"/>
+        <location filename="../../src/pymecavideo.py" line="752"/>
         <source>Projet Pymecavideo (*.mecavideo)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1032"/>
+        <location filename="../../src/pymecavideo.py" line="1034"/>
         <source>Choisir ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1159"/>
+        <location filename="../../src/pymecavideo.py" line="1161"/>
         <source>Enregistrer le graphique</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1159"/>
+        <location filename="../../src/pymecavideo.py" line="1161"/>
         <source>fichiers images(*.png)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1218"/>
+        <location filename="../../src/pymecavideo.py" line="1220"/>
         <source>Masse de l&apos;objet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1218"/>
+        <location filename="../../src/pymecavideo.py" line="1220"/>
         <source>Quelle est la masse de l&apos;objet ? (en kg)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1231"/>
+        <location filename="../../src/pymecavideo.py" line="1233"/>
         <source> Merci d&apos;indiquer une masse valable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1422"/>
+        <location filename="../../src/pymecavideo.py" line="1424"/>
         <source>MAUVAISE VALEUR !</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1475"/>
+        <location filename="../../src/pymecavideo.py" line="1477"/>
         <source>Nom de fichier non conforme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1519"/>
+        <location filename="../../src/pymecavideo.py" line="1520"/>
         <source>merci de recommencer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="450"/>
+        <location filename="../../src/videoWidget.py" line="452"/>
         <source>indéf.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1383"/>
+        <location filename="../../src/pymecavideo.py" line="1385"/>
         <source>Les données seront perdues</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1383"/>
+        <location filename="../../src/pymecavideo.py" line="1385"/>
         <source>Votre travail n'a pas été sauvegardé
 Voulez-vous les sauvegarder ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1422"/>
+        <location filename="../../src/pymecavideo.py" line="1424"/>
         <source>La valeur rentrée n'est pas compatible avec le calcul</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1480"/>
+        <location filename="../../src/pymecavideo.py" line="1481"/>
         <source>Ouvrir une vidéo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1444"/>
+        <location filename="../../src/pymecavideo.py" line="1446"/>
         <source>fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1460"/>
+        <location filename="../../src/pymecavideo.py" line="1462"/>
         <source>fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1475"/>
+        <location filename="../../src/pymecavideo.py" line="1477"/>
         <source>Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1511"/>
+        <location filename="../../src/pymecavideo.py" line="1512"/>
         <source>Désolé pas de fichier d'aide pour le langage {0}.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="1519"/>
+        <location filename="../../src/pymecavideo.py" line="1520"/>
         <source>Le nombre d'images par seconde doit être un entier</source>
         <translation type="unfinished"></translation>
     </message>
@@ -819,47 +819,47 @@ vecteurs vitesse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="270"/>
+        <location filename="../../src/pymecavideo.py" line="272"/>
         <source>Configuration trop ancienne</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="270"/>
+        <location filename="../../src/pymecavideo.py" line="272"/>
         <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="242"/>
+        <location filename="../../src/pymecavideo.py" line="244"/>
         <source>Argument non pris en compte</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/pymecavideo.py" line="242"/>
+        <location filename="../../src/pymecavideo.py" line="244"/>
         <source>Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="385"/>
+        <location filename="../../src/videoWidget.py" line="387"/>
         <source>Pymecavideo n'arrive pas à lire l'image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="516"/>
+        <location filename="../../src/videoWidget.py" line="518"/>
         <source>le format de cette vidéo n'est pas pris en charge par pymecavideo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="543"/>
+        <location filename="../../src/videoWidget.py" line="544"/>
         <source>Veuillez choisir une image (et définir l'échelle)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="575"/>
+        <location filename="../../src/videoWidget.py" line="576"/>
         <source>Erreur lors de la lecture du fichier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="575"/>
+        <location filename="../../src/videoWidget.py" line="576"/>
         <source>Le fichier&lt;b&gt;{0}&lt;/b&gt; ...
 n'est peut-être pas dans un format vidéo supporté.</source>
         <translation type="unfinished"></translation>
@@ -906,27 +906,27 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="853"/>
+        <location filename="../../src/videoWidget.py" line="852"/>
         <source> Merci d'indiquer une échelle valable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1022"/>
+        <location filename="../../src/videoWidget.py" line="1021"/>
         <source>Enregistrer le projet pymecavideo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1022"/>
+        <location filename="../../src/videoWidget.py" line="1021"/>
         <source>Projet pymecavideo (*.mecavideo)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1029"/>
+        <location filename="../../src/videoWidget.py" line="1028"/>
         <source>Il manque les données, ou l'échelle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1048"/>
+        <location filename="../../src/videoWidget.py" line="1047"/>
         <source>temps en seconde, positions en mètre</source>
         <translation type="unfinished"></translation>
     </message>
@@ -934,12 +934,12 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</s
 <context>
     <name>self.app</name>
     <message>
-        <location filename="../../src/echelle.py" line="175"/>
+        <location filename="../../src/echelle.py" line="172"/>
         <source>Vous pouvez continuer votre acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/echelle.py" line="167"/>
+        <location filename="../../src/echelle.py" line="163"/>
         <source>Choisir le nombre de points puis « Démarrer l'acquisition » </source>
         <translation type="unfinished"></translation>
     </message>
