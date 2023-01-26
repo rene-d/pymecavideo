@@ -254,28 +254,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.clic_sur_video_signal.emit()
         return
 
-    def mouseReleaseEvent(self, event):
-        """
-        enregistre le point de l'évènement souris.
-
-        Si self.refait_point est vrai (on a été délégué depuis un
-        bouton refaire, du tableau de coordonnées, alors on rebascule
-        éventuellement vers l'onglet coordonnées, quand le dernier
-        objet a été pointé.
-        """
-        if self.lance_capture == True:
-            self.pointe(self.objet_courant, event, index=self.index-1)
-            self.objetSuivant()
-            self.clic_sur_video_signal.emit()
-            self.updateZoom(self.hotspot)
-            self.update()
-            if self.refait_point : # on a été délégué pour corriger le tableau
-                if self.objet_courant == self.suivis[0]:
-                    # le dernier objet est pointé, retour au tableau de coords
-                    self.refait_point = False
-                    self.tabWidget.setCurrentIndex(2) # montre le tableau
-        return
-
     def objetSuivant(self):
         """
         passage à l'objet suivant pour le pointage.
@@ -300,10 +278,35 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.setCursor(Qt.CursorShape.ArrowCursor)
         return
     
+    def mouseReleaseEvent(self, event):
+        """
+        enregistre le point de l'évènement souris.
+
+        Si self.refait_point est vrai (on a été délégué depuis un
+        bouton refaire, du tableau de coordonnées, alors on rebascule
+        éventuellement vers l'onglet coordonnées, quand le dernier
+        objet a été pointé.
+        """
+        if self.lance_capture == True and \
+           event.button() == Qt.MouseButton.LeftButton:
+            self.pointe(
+                self.objet_courant, event, index=self.index-1)
+            self.objetSuivant()
+            self.clic_sur_video_signal.emit()
+            self.updateZoom(self.hotspot)
+            self.update()
+            if self.refait_point : # on a été délégué pour corriger le tableau
+                if self.objet_courant == self.suivis[0]:
+                    # le dernier objet est pointé, retour au tableau de coords
+                    self.refait_point = False
+                    self.tabWidget.setCurrentIndex(2) # montre le tableau
+        return
+
     def mouseMoveEvent(self, event):
         if self.lance_capture == True and self.auto == False:
+            p =vecteur(qPoint = event.position())
             # ne se lance que si la capture manuelle est lancée
-            self.hotspot = vecteur(event.x(), event.y())
+            self.hotspot = p
             self.updateZoom(self.hotspot)
         return
     
