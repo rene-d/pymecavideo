@@ -96,12 +96,12 @@ def toFileEncoding(path):
         return path
 #######################################################################################
 # HOME_PATH : Dossier des documents
-# APP_PATH : Dossier du lancement de l'application pymecavideo
-#CONF_PATH : QStandardPaths.locate(QStandardPaths.StandardLocation.AppDataLocation, "pymecavideo/")
+# APP_PATH :  Dossier du lancement de l'application pymecavideo
+#CONF_PATH :  Sous linux, ça donnera /home/<user>/.local/share/pymecavideo
 # DATA_PATH : Dossier contenant les datas, selon scenario
-#ICON_PATH : DATA_PATH / icones
-#LANG_PATH : DATA_PATH / lang
-#HELP_PATH : DATA_PATH / lang
+#ICON_PATH :  DATA_PATH / icones
+#LANG_PATH :  DATA_PATH / lang
+#HELP_PATH :  DATA_PATH / lang
 #VIDEO_PATH : DATA_PATH / videos
 
 
@@ -124,7 +124,10 @@ else:
                                '/usr/share/python3-mecavideo/', '/usr/share/pymecavideo/'))
 
 # CONF_PATH
-CONF_PATH = QStandardPaths.locate(QStandardPaths.StandardLocation.AppDataLocation, "pymecavideo/")
+CONF_PATH = os.path.join(
+    QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppLocalDataLocation),
+    "pymecavideo"
+)
 
 # HOME_PATH
 HOME_PATH = QStandardPaths.locate(QStandardPaths.StandardLocation.HomeLocation, "")
