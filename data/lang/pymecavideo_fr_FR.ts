@@ -23,12 +23,12 @@
     <message>
         <location filename="../../src/cadreur.py" line="209"/>
         <source>Voir la vidéo</source>
-        <translation type="unfinished">Voir la vidéo</translation>
+        <translation type="obsolete">Voir la vidéo</translation>
     </message>
     <message>
         <location filename="../../src/cadreur.py" line="210"/>
         <source>Ralenti : 1/1</source>
-        <translation>Ralenti : 1/1</translation>
+        <translation type="obsolete">Ralenti : 1/1</translation>
     </message>
 </context>
 <context>
@@ -41,6 +41,14 @@
     <message>
         <location filename="../../src/preferences.py" line="102"/>
         <source>Peut-être un ancien format de fichier de configuration ? On recommence avec une configuration neuve.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RalentiWidget</name>
+    <message>
+        <location filename="../../src/cadreur.py" line="178"/>
+        <source>Ralenti : 1/{}</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -153,39 +161,6 @@ Merci de bien vouloir le renommer avant de continuer</translation>
 Merci de bien vouloir le renommer avant de continuer</source>
         <translation type="obsolete">Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</translation>
-    </message>
-</context>
-<context>
-    <name>choix_exports_notebook</name>
-    <message>
-        <location filename="../../src/export.py" line="677"/>
-        <source>Choix des représentations graphiques</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="678"/>
-        <source>Chronogramme des positions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="680"/>
-        <source>Vecteurs vitesse</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="682"/>
-        <source>Vecteurs accélération</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="684"/>
-        <source>Vecteurs variation de vitesse</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="686"/>
-        <source>Energies</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

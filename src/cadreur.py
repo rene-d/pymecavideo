@@ -144,75 +144,38 @@ class Cadreur(QObject):
         else:
             return img  # angle=0
 
+from Ui_ralenti_dialog import Ui_Dialog as Ralenti_Dialog
 
-class RalentiWidget(QDialog):
+class RalentiWidget(QDialog, Ralenti_Dialog):
 
     """Affiche le film recadré"""
 
     def __init__(self, parentObject):
-        super().__init__()
+        QDialog.__init__(self)
+        Ralenti_Dialog.__init__(self)
         self.cadreur = parentObject
         self.ralenti = 1
         self.images   = cycle(self.cadreur.index_obj)
         self.origines = cycle(self.cadreur.trajectoire_obj)
         self.delay = self.cadreur.delay
         self.ech, self.w, self.h = self.cadreur.echelleTaille()
-        self.verticalLayout = QVBoxLayout(self)
-        self.label_2 = QLabel(self)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding,
-                                 QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy)
-        self.label_2.setFrameShape(QFrame.Shape.Box)
-        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label_2.setText("")
-        self.verticalLayout.addWidget(self.label_2)
-        self.gridLayout = QGridLayout()
-        self.label = QLabel(self)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred,
-                                 QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        self.label.setMinimumSize(QSize(100, 0))
-        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
-        self.horizontalSlider = QSlider(self)
-        self.horizontalSlider.setMinimum(1)
-        self.horizontalSlider.setMaximum(16)
-        self.horizontalSlider.setPageStep(4)
-        self.horizontalSlider.setOrientation(Qt.Orientation.Horizontal)
-        self.gridLayout.addWidget(self.horizontalSlider, 0, 1, 1, 1)
-        self.verticalLayout.addLayout(self.gridLayout)
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Close)
-        self.buttonBox.setCenterButtons(True)
-        self.verticalLayout.addWidget(self.buttonBox)
-        QMetaObject.connectSlotsByName(self)
-        self._translate = QCoreApplication.translate
-        self.retranslateUi()
         self.timer = QTimer()
         self.timer.setInterval(int(self.delay * self.ralenti))
         self.timer.timeout.connect(self.affiche_image)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        self.horizontalSlider.valueChanged.connect(self.change_ralenti)
-        self.label_2.resize(self.w, self.h)
-        self.timer.start()
 
-    def retranslateUi(self):
-        self.setWindowTitle(self._translate("MontreFilm", "Voir la vidéo"))
-        self.label.setText(self._translate("MontreFilm", "Ralenti : 1/1"))
+        self.setupUi(self)
+        self.pushButton.clicked.connect(self.reject)
+        self.horizontalSlider.valueChanged.connect(self.change_ralenti)
+        self.label.resize(self.w, self.h)
+
+        self.timer.start()
+        return
+        
 
     def change_ralenti(self, ralenti):
         self.ralenti = ralenti
-        self.label.setText(self._translate(
-            "MontreFilm", "Ralenti : 1/{}".format(ralenti)))
+        self.label_2.setText(self.tr(
+            "Ralenti : 1/{}".format(ralenti)))
         self.timer.setInterval(int(self.delay * self.ralenti))
 
     def toQimage(self, img):
@@ -240,7 +203,7 @@ class RalentiWidget(QDialog):
 
         crop_img = img[y:y+h, x:x+w]
         # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
-        self.label_2.setPixmap(self.toQimage(crop_img))
+        self.label.setPixmap(self.toQimage(crop_img))
         return
 
 class openCvReader:

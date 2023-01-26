@@ -98,12 +98,7 @@ image #{numero}</translation>
     <message>
         <location filename="../../src/cadreur.py" line="210"/>
         <source>Ralenti : 1/1</source>
-        <translation>Slow motion: 1/1</translation>
-    </message>
-    <message>
-        <location filename="../../src/cadreur.py" line="209"/>
-        <source>Voir la vidéo</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Slow motion: 1/1</translation>
     </message>
 </context>
 <context>
@@ -121,6 +116,14 @@ image #{numero}</translation>
     <message>
         <location filename="../../src/preferences.py" line="102"/>
         <source>Peut-être un ancien format de fichier de configuration ? On recommence avec une configuration neuve.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RalentiWidget</name>
+    <message>
+        <location filename="../../src/cadreur.py" line="178"/>
+        <source>Ralenti : 1/{}</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -326,34 +329,24 @@ PLease rename it before going on</translation>
 <context>
     <name>choix_exports_notebook</name>
     <message>
-        <location filename="../../src/export.py" line="677"/>
-        <source>Choix des représentations graphiques</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/export.py" line="678"/>
         <source>Chronogramme des positions</source>
-        <translation>Chronogram of spots</translation>
+        <translation type="obsolete">Chronogram of spots</translation>
     </message>
     <message>
         <location filename="../../src/export.py" line="680"/>
         <source>Vecteurs vitesse</source>
-        <translation>Velocity vectors</translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="682"/>
-        <source>Vecteurs accélération</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Velocity vectors</translation>
     </message>
     <message>
         <location filename="../../src/export.py" line="684"/>
         <source>Vecteurs variation de vitesse</source>
-        <translation>Velocity variation vectors</translation>
+        <translation type="obsolete">Velocity variation vectors</translation>
     </message>
     <message>
         <location filename="../../src/export.py" line="686"/>
         <source>Energies</source>
-        <translation>Energies</translation>
+        <translation type="obsolete">Energies</translation>
     </message>
 </context>
 <context>
