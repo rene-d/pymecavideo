@@ -100,7 +100,7 @@ class AspectLayout(QLayout):
         return QSize(margins[0]+margins[2] + w, margins[1]+margins[3] + h)
 
     def expandingDirections(self):
-        return Qt.Horizontal | Qt.Vertical
+        return Qt.Orientation.Horizontal | Qt.Orientation.Vertical
 
     def hasHeightForWidth(self):
         return False

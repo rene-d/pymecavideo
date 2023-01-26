@@ -132,7 +132,7 @@ class Cadreur(QObject):
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
         self.dialog = RalentiWidget(parentObject=self)
-        self.dialog.exec_()
+        self.dialog.exec()
 
     def rotateImage(self, img, angle):
         if angle == 90:
@@ -159,19 +159,21 @@ class RalentiWidget(QDialog):
         self.ech, self.w, self.h = self.cadreur.echelleTaille()
         self.verticalLayout = QVBoxLayout(self)
         self.label_2 = QLabel(self)
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding,
+                                 QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(
             self.label_2.sizePolicy().hasHeightForWidth())
         self.label_2.setSizePolicy(sizePolicy)
-        self.label_2.setFrameShape(QFrame.Box)
-        self.label_2.setAlignment(Qt.AlignCenter)
+        self.label_2.setFrameShape(QFrame.Shape.Box)
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_2.setText("")
         self.verticalLayout.addWidget(self.label_2)
         self.gridLayout = QGridLayout()
         self.label = QLabel(self)
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred,
+                                 QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(
@@ -183,12 +185,12 @@ class RalentiWidget(QDialog):
         self.horizontalSlider.setMinimum(1)
         self.horizontalSlider.setMaximum(16)
         self.horizontalSlider.setPageStep(4)
-        self.horizontalSlider.setOrientation(Qt.Horizontal)
+        self.horizontalSlider.setOrientation(Qt.Orientation.Horizontal)
         self.gridLayout.addWidget(self.horizontalSlider, 0, 1, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.setOrientation(Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QDialogButtonBox.Close)
+        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.StandardButton.Close)
         self.buttonBox.setCenterButtons(True)
         self.verticalLayout.addWidget(self.buttonBox)
         QMetaObject.connectSlotsByName(self)
@@ -219,8 +221,8 @@ class RalentiWidget(QDialog):
         h, w, ch = rgb.shape
         bytes_per_line = ch * w
         convert_to_Qt_format = QImage(
-            rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaled(self.w, self.h, Qt.KeepAspectRatio)
+            rgb.data, w, h, bytes_per_line, QImage.Format.Format_RGB888)
+        p = convert_to_Qt_format.scaled(self.w, self.h, Qt.AspectRatioMode.KeepAspectRatio)
         return QPixmap.fromImage(p)
 
     def affiche_image(self):
