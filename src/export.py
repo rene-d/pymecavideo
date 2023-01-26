@@ -623,46 +623,19 @@ class PythonNumpy:
 import numpy as np\nt,x1,y1 ... = np.load("{}")""".format(
     os.path.basename(filepath))))
         return
+from Ui_jupyter_dialog import Ui_Dialog as Jupyter_Dialog
 
-class NotebookExportDialog(QDialog):
+class NotebookExportDialog(QDialog, Jupyter_Dialog):
     """
     Fenêtre de dialogue permettant de choisir les grandeurs à exporter 
     dans le fichier Notebook Jupyterlab
     """
 
     def __init__(self, *args, **kwargs):
-        super(NotebookExportDialog, self).__init__(*args, **kwargs)
-        self.resize(390,225)
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(
-            QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.buttonBox)
-        self.setLayout(self.layout)
-        self.checkBox_c = QCheckBox(self)
-        self.checkBox_v = QCheckBox(self)        
-        self.checkBox_v2 = QCheckBox(self)
-        self.checkBox_a = QCheckBox(self)
-        self.checkBox_e = QCheckBox(self)
-        for w in (self.checkBox_c, self.checkBox_v, self.checkBox_v2, self.checkBox_a, self.checkBox_e) :
-            w.setTristate(False)
-            w.setChecked(True)
-        self.verticalLayout.addWidget(self.checkBox_c)
-        self.verticalLayout.addWidget(self.checkBox_v)
-        self.verticalLayout.addWidget(self.checkBox_v2)
-        self.verticalLayout.addWidget(self.checkBox_a)
-        self.verticalLayout.addWidget(self.checkBox_e)
-        self.layout.addLayout(self.verticalLayout)
-        self.retranslateUi()
-        self.checkBox_v.stateChanged.connect(self.etat_vitesse)
+        QDialog.__init__(self, *args, **kwargs)
+        Jupyter_Dialog.__init__(self)
+        self.setupUi(self)
+        return
         
     def etat_vitesse(self,etat):
         if etat == 0 :
@@ -671,21 +644,10 @@ class NotebookExportDialog(QDialog):
                 w.setEnabled(False)
         else : 
             for w in (self.checkBox_v2, self.checkBox_a, self.checkBox_e):
-                w.setEnabled(True)    
+                w.setEnabled(True)
+        return
+    
             
-    def retranslateUi(self):
-        self.setWindowTitle(_translate("choix_exports_notebook", "Choix des représentations graphiques"))
-        self.checkBox_c.setText(_translate(
-            "choix_exports_notebook", "Chronogramme des positions"))
-        self.checkBox_v.setText(_translate(
-            "choix_exports_notebook", "Vecteurs vitesse"))
-        self.checkBox_a.setText(_translate(
-            "choix_exports_notebook", "Vecteurs accélération"))
-        self.checkBox_v2.setText(_translate(
-            "choix_exports_notebook", "Vecteurs variation de vitesse"))
-        self.checkBox_e.setText(_translate(
-            "choix_exports_notebook", "Energies"))
-        
 class PythonNotebook :
     """
     Exporte les données dans un fichier Notebook Jupyterlab
@@ -699,7 +661,7 @@ class PythonNotebook :
         ligne_x = "np.array({})".format([p.x for p in points])
         ligne_y = "np.array({})".format([p.y for p in points])
         d = NotebookExportDialog(app)
-        if d.exec_() == QDialog.DialogCode.Accepted:
+        if d.exec() == QDialog.DialogCode.Accepted:
             graphs = (d.checkBox_c.isChecked(), d.checkBox_v.isChecked(
             ), d.checkBox_v2.isChecked(), d.checkBox_a.isChecked(), d.checkBox_e.isChecked())
         nb = genere_notebook((ligne_t, ligne_x, ligne_y), graphs = graphs)
