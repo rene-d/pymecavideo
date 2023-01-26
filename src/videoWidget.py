@@ -157,11 +157,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         """
         place dans le widget de zoom une image agrandie pertinente
         @param position l'endroit où prendre l'image à agrandir ; si
-          position == None (par défaut) ça signifie vecteur(50,50)
+          position == None (par défaut) ça ne fait rien
         """
+        if position is None: return
         self.dbg.p(1, "rentre dans 'updateZoom'")
-        if position is None :
-            position = vecteur(50,50)
         self.zoom.fait_crop(self.image, position)
         return
     

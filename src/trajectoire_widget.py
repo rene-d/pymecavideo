@@ -118,7 +118,7 @@ class TrajectoireWidget(ImageWidget):
     def paintEvent(self, event):
         self.painter = QPainter()
         self.painter.begin(self)
-        self.painter.setRenderHint(QPainter.Antialiasing)
+        self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         # self.painter.save()
         if self.chrono == 2 :
             couleur_de_fond = QColor("white")
@@ -149,7 +149,7 @@ class TrajectoireWidget(ImageWidget):
             if self.chrono==1:
                 self.painter.drawPixmap(0, 0, self.image)
             self.painter.setRenderHint(QPainter.TextAntialiasing)
-            self.painter.setRenderHint(QPainter.Antialiasing)
+            self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             x1 = 50 # marge en largeur
             y1 = 50 # marge en hauteur
             # Ecrit l'intervalle de temps
@@ -187,7 +187,7 @@ class TrajectoireWidget(ImageWidget):
             if self.chrono == 1:  # chronophotographie
                 self.painter = QPainter()
                 self.painter.begin(self)
-                self.painter.setRenderHint(QPainter.Antialiasing)
+                self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
                 pen = QPen(Qt.blue)
                 pen.setWidth(3)
                 self.painter.setPen(pen)
@@ -225,7 +225,7 @@ class TrajectoireWidget(ImageWidget):
         # Paint points
         self.painter = QPainter()
         self.painter.begin(self)
-        self.painter.setRenderHint(QPainter.Antialiasing)
+        self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         # préparation de la fonction de rappel
         data = self.video.data
@@ -269,7 +269,7 @@ class TrajectoireWidget(ImageWidget):
         if not self.chrono == 2 :
             self.painter = QPainter()
             self.painter.begin(self)
-            self.painter.setRenderHint(QPainter.Antialiasing)
+            self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             self.painter.setPen(QColor("green"))
             # self.painter.translate(0,0)
             self.painter.translate(
@@ -305,7 +305,7 @@ class TrajectoireWidget(ImageWidget):
                         if ecart.manhattanLength() > 20: continue
                     self.painter = QPainter()
                     self.painter.begin(self)
-                    self.painter.setRenderHint(QPainter.Antialiasing)
+                    self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
                     self.painter.setPen(QColor(self.couleurs[int(obj) - 1]))
                     vec = ext - org                # le vecteur de la flèche 
                     ortho = vecteur(-vec.y, vec.x) # idem tourné de 90°
