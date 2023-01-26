@@ -155,7 +155,7 @@ class Pointage(QObject):
             raise Exception(
                 "index et date tous deux inconnus pour Pointage.pointe")
         if isinstance(position, QMouseEvent):
-            position = vecteur(position.x(), position.y())
+            position = vecteur(qPoint = position.position())
         elif isinstance(position, vecteur):
             pass
         else:
