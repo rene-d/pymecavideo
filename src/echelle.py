@@ -121,14 +121,6 @@ class EchelleWidget(QWidget):
             self.app.echelle_trace.hide()
         return
 
-    def mousePressEvent(self, event):
-        if event.button() != 1:
-            self.p1 = vecteur(-1, -1)
-            self.close()
-        self.p1 = vecteur(qPoint = event.position())
-        self.pressed = True
-        return
-
     def paintEvent(self, event):
         if self.p1.x <= 0 or self.p2.x <= 0: return
         painter = QPainter()
@@ -140,6 +132,14 @@ class EchelleWidget(QWidget):
         painter.end()
         return
 
+    def mousePressEvent(self, event):
+        if event.button() != Qt.MouseButton.LeftButton:
+            self.p1 = vecteur(-1, -1)
+            self.close()
+        self.p1 = vecteur(qPoint = event.position())
+        self.pressed = True
+        return
+
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
         if (p.x > 0 and p.x < self.largeur) and (p.y > 0 and p.y < self.hauteur):
@@ -148,34 +148,34 @@ class EchelleWidget(QWidget):
         if self.pressed:
             self.p2 = p
             self.update()
+        return
 
     def mouseReleaseEvent(self, event):
         p = vecteur(qPoint = event.position())
-        if event.button() == 1 and self.p1.x >= 0:
+        if event.button() == Qt.MouseButton.LeftButton and self.p1.x >= 0:
             self.p2 = p
-        self.video.updateZoom()
-        self.video.index_du_point = 0
+            self.video.echelle_image.p1 = self.p1.copy()
+            self.video.echelle_image.p2 = self.p2.copy()
 
-        self.video.echelle_image.p1 = self.p1.copy()
-        self.video.echelle_image.p2 = self.p2.copy()
-
-        epxParM = self.video.echelle_image.pxParM()
-        self.video.affiche_echelle()
-        # self.app.affiche_nb_points(True)
-        self.app.affiche_barre_statut(self.app.tr(
-            u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
-        self.video.mets_en_orange_echelle()
-
-        self.video.feedbackEchelle(self.p1, self.p2)
-        self.app.fixeLesDimensions()
-        self.video.egalise_origine()
-        if self.video.data:  # si on a déjà pointé une position au moins
+            epxParM = self.video.echelle_image.pxParM()
+            self.video.affiche_echelle()
+            # self.app.affiche_nb_points(True)
             self.app.affiche_barre_statut(self.app.tr(
-                "Vous pouvez continuer votre acquisition"))
-            self.app.refait_echelle()
+                u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
+            self.video.mets_en_orange_echelle()
+            self.video.index_du_point = 0
 
+            self.video.feedbackEchelle(self.p1, self.p2)
+            self.app.fixeLesDimensions()
+            self.video.egalise_origine()
+            if self.video.data:  # si on a déjà pointé une position au moins
+                self.app.affiche_barre_statut(self.app.tr(
+                    "Vous pouvez continuer votre acquisition"))
+                self.app.refait_echelle()
+
+        self.video.updateZoom()
         self.close()
-
+        return
 
 class Echelle_TraceWidget(QWidget):
     def __init__(self, parent, p1, p2):
