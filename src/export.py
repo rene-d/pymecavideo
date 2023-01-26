@@ -872,7 +872,7 @@ class Export:
             base_name, filtre, extension, propose_ouverture)
 
     def demande_nom_fichier(self, filename, filtre, extension, propose_ouverture):
-        defaultName = os.path.join(DOCUMENT_PATH[0], filename)
+        defaultName = os.path.join(DOCUMENT_PATH, filename)
         fd = SaveThenOpenFileDialog(None, 'Exporter...', defaultName,
                                     filtre, extension=extension, proposeOuverture=propose_ouverture)
         ouvre = False

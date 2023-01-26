@@ -486,7 +486,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pixmapChrono = QPixmap(self.trajectoire_widget.size())
         self.trajectoire_widget.render(self.pixmapChrono)
         base_name = os.path.splitext(os.path.basename(self.filename))[0]
-        defaultName = os.path.join(DOCUMENT_PATH[0], base_name)
+        defaultName = os.path.join(DOCUMENT_PATH, base_name)
         fichier = QFileDialog.getSaveFileName(self,
                                               _translate(
                                                   "pymecavideo", "Enregistrer comme image", None),
@@ -748,7 +748,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def rouvre_ui(self):
         self.dbg.p(1, "rentre dans 'rouvre_ui'")
 
-        dir_ = DOCUMENT_PATH[0]
+        dir_ = DOCUMENT_PATH
         fichier, _ = QFileDialog.getOpenFileName(
             self,
             _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
@@ -1157,7 +1157,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def enregistre_graphe(self):
         if hasattr (self, 'pg_exporter'):
             base_name = os.path.splitext(os.path.basename(self.filename))[0]
-            defaultName = os.path.join(DOCUMENT_PATH[0], base_name+'.png')
+            defaultName = os.path.join(DOCUMENT_PATH, base_name+'.png')
             fichier = QFileDialog.getSaveFileName(self,
                                               _translate(
                                                   "pymecavideo", "Enregistrer le graphique", None),

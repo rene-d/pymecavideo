@@ -130,10 +130,10 @@ CONF_PATH = os.path.join(
 )
 
 # HOME_PATH
-HOME_PATH = QStandardPaths.locate(QStandardPaths.StandardLocation.HomeLocation, "")
+HOME_PATH = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation)
 
 # DOCUMENTS_PATH
-DOCUMENT_PATH = QStandardPaths.locate(QStandardPaths.StandardLocation.DocumentsLocation, "")
+DOCUMENT_PATH = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DocumentsLocation)
 
 # DOSSIERS
 #
