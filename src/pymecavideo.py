@@ -496,7 +496,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         except Exception as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
-                    fichier[0]), QMessageBox.Ok, QMessageBox.Ok)
+                    fichier[0]))
 
     def chronoPhoto(self):
         """lance la sauvegarde du trajectoire_widget.
@@ -1477,8 +1477,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         renomme_fichier = QMessageBox.warning(self, _translate("pymecavideo", "Nom de fichier non conforme", None),
                                               _translate("pymecavideo", """\
 Le nom de votre fichier contient des caractères accentués ou des espaces.
-Merci de bien vouloir le renommer avant de continuer""", None),
-                                              QMessageBox.Ok, QMessageBox.Ok)
+Merci de bien vouloir le renommer avant de continuer""", None))
         filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"),
                                                self._dir("videos", None),
                                                "*.avi")
@@ -1496,8 +1495,8 @@ Merci de bien vouloir le renommer avant de continuer""", None),
             licence_XX = licence[loc] % Version
         else:
             licence_XX = licence["en"] % Version
-        QMessageBox.warning(None, u"Licence", licence_XX,
-                            QMessageBox.Ok, QMessageBox.Ok)
+        QMessageBox.information(None, "Licence", licence_XX)
+        return
 
     def aide(self):
         self.dbg.p(1, "rentre dans 'aide'")

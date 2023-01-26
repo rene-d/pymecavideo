@@ -515,8 +515,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if not self.cvReader.ok:
             QMessageBox.warning(None, "Format vidéo non pris en charge",
                                 _translate("pymecavideo", """\le format de cette vidéo n'est pas pris en charge par pymecavideo""",
-                                           None),
-                                QMessageBox.Ok, QMessageBox.Ok)
+                                           None))
         else:
             return True
 
@@ -576,8 +575,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 None,
                 _translate("pymecavideo", "Erreur lors de la lecture du fichier", None),
                 _translate("pymecavideo", "Le fichier<b>{0}</b> ...\nn'est peut-être pas dans un format vidéo supporté.", None).format(
-                    filename),
-                QMessageBox.Ok, QMessageBox.Ok)
+                    filename))
         return
     
     def egalise_origine(self):
@@ -706,12 +704,12 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.auto = True
             self.app.affiche_barre_statut(
                 _translate("pymecavideo", "Pointage Automatique", None))
-            reponse = QMessageBox.warning(None, "Capture Automatique",
-                                          _translate("pymecavideo", """\
+            reponse = QMessageBox.information(
+                None, "Capture Automatique",
+                _translate("pymecavideo", """\
 Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
 Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",
-                                                     None),
-                                          QMessageBox.Ok, QMessageBox.Ok)
+                           None))
             self.selRect = SelRectWidget(self)
             self.selRect.show()
             self.active_controle_image(False)
@@ -1025,7 +1023,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 _translate("pymecavideo", "Projet pymecavideo (*.mecavideo)", None))
             self.enregistre(fichier[0])
         else :
-            QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Il manque les données, ou l'échelle", None), QMessageBox.Ok, QMessageBox.Ok)
+            QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Il manque les données, ou l'échelle", None))
         return
     
     def enregistre(self, fichier):

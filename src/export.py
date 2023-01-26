@@ -133,8 +133,11 @@ class DataframePandas:
         table = app.tableWidget
         df = self.write_qtable_to_df(table)
         df.to_pickle(filepath)
-        QMessageBox.information(None, _translate("export_pandas", "Fichier Pandas sauvegardé"), _translate(
-            "export_pandas", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport pandas as pd\ndf = pd.read_pickle("{}")""".format(os.path.basename(filepath))), QMessageBox.Ok, QMessageBox.Ok)
+        QMessageBox.information(
+            None,
+            _translate("export_pandas", "Fichier Pandas sauvegardé"),
+            _translate(
+            "export_pandas", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport pandas as pd\ndf = pd.read_pickle("{}")""".format(os.path.basename(filepath))))
 
     def write_qtable_to_df(self, table):
         """
@@ -721,9 +724,7 @@ class PythonNumpy:
                        """Pour ouvrir ce fichier depuis Python, taper :
 
 import numpy as np\nt,x1,y1 ... = np.load("{}")""".format(
-    os.path.basename(filepath))),
-            QMessageBox.Ok,
-            QMessageBox.Ok)
+    os.path.basename(filepath))))
         return
 
 class NotebookExportDialog(QDialog):
@@ -859,7 +860,7 @@ class Export:
                     DBG.p(3, EXPORT_MESSAGES)
                     msg = EXPORT_MESSAGES[3]
                     QMessageBox.critical(None, msg['titre'], msg['texte'].format(
-                        mod), QMessageBox.Ok, QMessageBox.Ok)
+                        mod))
                     return
         # On vérifie si le nombre de points est adapté
         if un_point and app.nb_de_points > 1:
@@ -883,7 +884,7 @@ class Export:
             if INFO_OK:
                 msg = EXPORT_MESSAGES[2]
                 QMessageBox.information(None, msg['titre'], msg['texte'].format(
-                    filepath), QMessageBox.Ok, QMessageBox.Ok)
+                    filepath))
         if ouvre:
             self.ouvre_fichier(filepath)
         return
