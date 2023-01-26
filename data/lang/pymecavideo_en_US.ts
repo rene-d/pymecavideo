@@ -24,42 +24,27 @@ to capture a video</translation>
     <message>
         <location filename="../../src/export.py" line="625"/>
         <source>Dialog</source>
-        <translation>Dialogue</translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="626"/>
-        <source>Séparateur décimal :</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Dialogue</translation>
     </message>
     <message>
         <location filename="../../src/export.py" line="628"/>
         <source>Point ( . )</source>
-        <translation>Dot (.)</translation>
+        <translation type="obsolete">Dot (.)</translation>
     </message>
     <message>
         <location filename="../../src/export.py" line="632"/>
         <source>Virgule ( , )</source>
-        <translation>Comma (,)</translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="630"/>
-        <source>Séparateur de champ :</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Comma (,)</translation>
     </message>
     <message>
         <location filename="../../src/export.py" line="634"/>
         <source>Point-virgule ( ; )</source>
-        <translation>Semicolon (;)</translation>
+        <translation type="obsolete">Semicolon (;)</translation>
     </message>
     <message>
         <location filename="../../src/export.py" line="636"/>
         <source>Tabulation ( \t )</source>
-        <translation>Tab (\t)</translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="638"/>
-        <source>Ajouter les grandeurs comme en-tête</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Tab (\t)</translation>
     </message>
 </context>
 <context>
@@ -335,58 +320,38 @@ PLease rename it before going on</translation>
     <message>
         <location filename="../../src/export.py" line="679"/>
         <source>Choix export python</source>
-        <translation>&quot;Export Python&quot; choice</translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="680"/>
-        <source>insérer les lignes pour le calcul des vitesses</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="682"/>
-        <source>insérer les lignes pour le calcul des accélérations</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="684"/>
-        <source>insérer les lignes pour l'affichage des vecteurs vitesses</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/export.py" line="686"/>
-        <source>insérer les lignes pour l'affichage des vecteurs des accélérations</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&quot;Export Python&quot; choice</translation>
     </message>
 </context>
 <context>
     <name>choix_exports_notebook</name>
     <message>
-        <location filename="../../src/export.py" line="779"/>
+        <location filename="../../src/export.py" line="677"/>
         <source>Choix des représentations graphiques</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="780"/>
+        <location filename="../../src/export.py" line="678"/>
         <source>Chronogramme des positions</source>
         <translation>Chronogram of spots</translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="782"/>
+        <location filename="../../src/export.py" line="680"/>
         <source>Vecteurs vitesse</source>
         <translation>Velocity vectors</translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="784"/>
+        <location filename="../../src/export.py" line="682"/>
         <source>Vecteurs accélération</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="786"/>
+        <location filename="../../src/export.py" line="684"/>
         <source>Vecteurs variation de vitesse</source>
         <translation>Velocity variation vectors</translation>
     </message>
     <message>
-        <location filename="../../src/export.py" line="788"/>
+        <location filename="../../src/export.py" line="686"/>
         <source>Energies</source>
         <translation>Energies</translation>
     </message>
@@ -506,7 +471,7 @@ enregistré avec succès.</source>
 <context>
     <name>export_numpy</name>
     <message>
-        <location filename="../../src/export.py" line="719"/>
+        <location filename="../../src/export.py" line="617"/>
         <source>Fichier Numpy sauvegardé</source>
         <translation type="unfinished"></translation>
     </message>

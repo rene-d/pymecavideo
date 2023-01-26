@@ -460,8 +460,11 @@ dt={deltaT}
         #self.dbg.p(1, "rentre dans 'python source2'")
         d = PythonExportDialog(app)
         if d.exec() == QDialog.DialogCode.Accepted:
-            calcule_vitesse, affiche_vitesse, calcule_accel, affiche_accel = d.checkBox_v.isChecked(
-            ), d.checkBox_v2.isChecked(), d.checkBox_accel.isChecked(), d.checkBox_accel2.isChecked()
+            calcule_vitesse, affiche_vitesse, calcule_accel, affiche_accel = \
+                d.checkBox_v.isChecked(), \
+                d.checkBox_v2.isChecked(), \
+                d.checkBox_a.isChecked(),  \
+                d.checkBox_a2.isChecked()
         if affiche_vitesse:
             calcule_vitesse = True
         if calcule_accel or affiche_accel:
@@ -567,54 +570,20 @@ class CsvExportDialog(QDialog, Ui_csv_Dialog):
             self.rbFieldComma.setEnabled(True)
         self.change_field()
         return
-    
-class PythonExportDialog(QDialog):
+
+from Ui_python_dialog import Ui_Dialog as Ui_Python
+
+class PythonExportDialog(QDialog, Ui_Python):
     """
     Fenêtre de dialogue permettant de choisir les grandeurs à exporter 
     dans le fichier Python(source)
     """
 
     def __init__(self, *args, **kwargs):
-        super(PythonExportDialog, self).__init__(*args, **kwargs)
-        self.setGeometry(30, 20, 359, 87)
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.buttonBox = QDialogButtonBox(self)
-        self.buttonBox.setOrientation(Qt.Orientation.Horizontal)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.buttonBox)
-        self.setLayout(self.layout)
-        self.checkBox_v = QCheckBox(self)
-        self.checkBox_v.setObjectName("checkBox_vitesse")
-        self.checkBox_v2 = QCheckBox(self)
-        self.checkBox_v2.setObjectName("checkBox_vitesse2")
-        self.checkBox_accel = QCheckBox(self)
-        self.checkBox_accel.setObjectName("checkBox_accel")
-        self.checkBox_accel2 = QCheckBox(self)
-        self.checkBox_accel2.setObjectName("checkBox_accel2")
-        self.verticalLayout.addWidget(self.checkBox_v)
-        self.verticalLayout.addWidget(self.checkBox_v2)
-        self.verticalLayout.addWidget(self.checkBox_accel)
-        self.verticalLayout.addWidget(self.checkBox_accel2)
-        self.layout.addLayout(self.verticalLayout)
-        self.retranslateUi()
-
-    def retranslateUi(self):
-        self.setWindowTitle(_translate("choix_exports", "Choix export python"))
-        self.checkBox_v.setText(_translate(
-            "choix_exports", "insérer les lignes pour le calcul des vitesses"))
-        self.checkBox_accel.setText(_translate(
-            "choix_exports", "insérer les lignes pour le calcul des accélérations"))
-        self.checkBox_v2.setText(_translate(
-            "choix_exports", "insérer les lignes pour l'affichage des vecteurs vitesses"))
-        self.checkBox_accel2.setText(_translate(
-            "choix_exports", "insérer les lignes pour l'affichage des vecteurs des accélérations"))
-
+        QDialog.__init__(self, *args, **kwargs)
+        Ui_Python.__init__(self)
+        self.setupUi(self)
+        return
 
 class PythonNumpy:
     """
