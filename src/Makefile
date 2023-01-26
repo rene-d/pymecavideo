@@ -5,21 +5,18 @@ SOURCES = $(shell ls *.py | grep -v Ui_)
 TRANSLATIONS = $(shell find ../data/lang -name *.ts)
 GUIS = $(shell ls *.ui)
 COMPILED_GUIS = $(patsubst %.ui, Ui_%.py, $(GUIS))
-all:	Ui_pymecavideo_mini_layout.py $(COMPILED_GUIS) helpfiles languages icon_rc.py
+all:	$(COMPILED_GUIS) helpfiles languages icon_rc.py
 
 
 icon_rc.py: icon.qrc
 	pyrcc5 $< -o $@
-
-Ui_pymecavideo_mini_layout.py : pymecavideo_mini_layout.ui
-	pyuic6 $< > $@
 
 Ui_%.py: %.ui
 	pyuic6 $< > $@
 
 pymecavideo_project.pro: $(SOURCES)
 	@echo "# this file is generated automatically, do not edit it." > $@
-	@echo "FORMS        = pymecavideo_mini_layout.ui" >> $@
+	@echo "FORMS        = $(GUIS)" >> $@
 	@echo "SOURCES      = $(SOURCES)" >> $@
 	@echo "TRANSLATIONS = $(TRANSLATIONS)" >> $@
 

@@ -120,7 +120,7 @@ def time_it(func):
     return wrapper
 
 
-from Ui_pymecavideo_mini_layout import Ui_pymecavideo
+from Ui_pymecavideo import Ui_pymecavideo
 
 class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def __init__(self, parent=None, opts=[], args=[]):
