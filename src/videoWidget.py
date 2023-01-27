@@ -21,9 +21,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect, QPoint, QPointF
-from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QPen, QColor, QFont, QResizeEvent, QShortcut
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
+from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, \
+    QSize, QTimer, QObject, QRect, QPoint, QPointF
+from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, \
+    QCursor, QPen, QColor, QFont, QResizeEvent, QShortcut
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, \
+    QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, \
+    QTableWidgetSelectionRange
 
 import os, time, re
 import locale
@@ -39,7 +43,7 @@ from toQimage import toQImage
 from suivi_auto import SelRectWidget
 from detect import filter_picture
 
-import icon_rc
+import interfaces.icon_rc
 
 class VideoPointeeWidget(ImageWidget, Pointage):
     """
@@ -164,9 +168,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.zoom.fait_crop(self.image, position)
         return
     
-    def cache_zoom(self):
-        return
-
     def placeImage(self, im, ratio):
         """
         place une image dans le widget, en conservant le ratio de cette image

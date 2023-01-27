@@ -43,7 +43,7 @@ from glob import glob
 import pyqtgraph as pg
 import pyqtgraph.exporters
 from vecteur import vecteur
-import icon_rc
+import interfaces.icon_rc
 licence = {}
 licence['en'] = """
     pymecavideo version %s:

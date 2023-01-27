@@ -5,14 +5,20 @@ SOURCES = $(shell ls *.py | grep -v Ui_)
 TRANSLATIONS = $(shell find ../data/lang -name *.ts)
 GUIS = $(shell find interfaces -name "*.ui")
 COMPILED_GUIS = $(patsubst interfaces/%.ui, interfaces/Ui_%.py, $(GUIS))
-all:	$(COMPILED_GUIS) helpfiles languages icon_rc.py
+GRAPHS = $(shell ls *.dot)
+GRAPHS_SVG = $(patsubst %.dot, %.svg, $(GRAPHS))
+
+all:	$(COMPILED_GUIS) $(GRAPHS_SVG) helpfiles languages interfaces/icon_rc.py
 
 
-icon_rc.py: icon.qrc
+interfaces/%_rc.py: interfaces/%.qrc
 	pyrcc5 $< -o $@
 
 interfaces/Ui_%.py: interfaces/%.ui
 	pyuic6 $< > $@
+
+%.svg : %.dot
+	dot -Tsvg $< -o $@
 
 pymecavideo_project.pro: $(SOURCES)
 	@echo "# this file is generated automatically, do not edit it." > $@
