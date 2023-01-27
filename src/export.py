@@ -530,7 +530,7 @@ dt={deltaT}
             ))
         return
     
-from Ui_csv_dialog import Ui_Dialog as Ui_csv_Dialog
+from interfaces.Ui_csv_dialog import Ui_Dialog as Ui_csv_Dialog
 
 class CsvExportDialog(QDialog, Ui_csv_Dialog):
     """
@@ -571,7 +571,7 @@ class CsvExportDialog(QDialog, Ui_csv_Dialog):
         self.change_field()
         return
 
-from Ui_python_dialog import Ui_Dialog as Ui_Python
+from interfaces.Ui_python_dialog import Ui_Dialog as Ui_Python
 
 class PythonExportDialog(QDialog, Ui_Python):
     """
@@ -623,7 +623,7 @@ class PythonNumpy:
 import numpy as np\nt,x1,y1 ... = np.load("{}")""".format(
     os.path.basename(filepath))))
         return
-from Ui_jupyter_dialog import Ui_Dialog as Jupyter_Dialog
+from interfaces.Ui_jupyter_dialog import Ui_Dialog as Jupyter_Dialog
 
 class NotebookExportDialog(QDialog, Jupyter_Dialog):
     """

@@ -3,15 +3,15 @@ HELPFILES = $(shell ls help | grep -E 'xhtml$$|css$$|png$$')
 LRELEASE = /usr/lib/qt5/bin/lrelease
 SOURCES = $(shell ls *.py | grep -v Ui_)
 TRANSLATIONS = $(shell find ../data/lang -name *.ts)
-GUIS = $(shell ls *.ui)
-COMPILED_GUIS = $(patsubst %.ui, Ui_%.py, $(GUIS))
+GUIS = $(shell find interfaces -name "*.ui")
+COMPILED_GUIS = $(patsubst interfaces/%.ui, interfaces/Ui_%.py, $(GUIS))
 all:	$(COMPILED_GUIS) helpfiles languages icon_rc.py
 
 
 icon_rc.py: icon.qrc
 	pyrcc5 $< -o $@
 
-Ui_%.py: %.ui
+interfaces/Ui_%.py: interfaces/%.ui
 	pyuic6 $< > $@
 
 pymecavideo_project.pro: $(SOURCES)

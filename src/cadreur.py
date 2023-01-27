@@ -144,7 +144,7 @@ class Cadreur(QObject):
         else:
             return img  # angle=0
 
-from Ui_ralenti_dialog import Ui_Dialog as Ralenti_Dialog
+from interfaces.Ui_ralenti_dialog import Ui_Dialog as Ralenti_Dialog
 
 class RalentiWidget(QDialog, Ralenti_Dialog):
 

@@ -19,7 +19,7 @@ licence = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# from Ui_preferences import Ui_Dialog
+# from interfaces.Ui_preferences import Ui_Dialog
 from PyQt6.QtCore import QObject, QTimer
 from PyQt6.QtWidgets import QMessageBox
 
