@@ -134,6 +134,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         QMainWindow.__init__(self, parent)
         Ui_pymecavideo.__init__(self)
         QWidget.__init__(self, parent)
+        self.etat = None
+        self.etat_ancien = None
         self.min_version = "7.3.0-1" # version minimale du fichier de conf.
         self.hauteur = 1
         self.largeur = 0
@@ -189,24 +191,14 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # initialise les répertoires
         self._dir()
 
-        # variables à initialiser
-        # disable UI at beginning
-        self.tabWidget.setEnabled(0)
-        self.actionDefaire.setEnabled(0)
-        self.actionRefaire.setEnabled(0)
-        self.actionCopier_dans_le_presse_papier.setEnabled(0)
-        self.menuE_xporter_vers.setEnabled(0)
-        self.actionSaveData.setEnabled(0)
-        self.actionExemples.setEnabled(0)
-        self.widget_chronophoto.setEnabled(False)
 
-        # exportCombo
+        # remplit l'exportCombo
         self.exportCombo.addItem('Exporter vers...')
         # Ajoute les différents formats d'exportation
         for key in sorted(EXPORT_FORMATS.keys()):
             self.exportCombo.addItem(EXPORT_FORMATS[key]['nom'])
 
-        #exportQactions
+        # crée les action exportQactions du menu Fichier
         for key in sorted(EXPORT_FORMATS.keys()):
             action = QAction(EXPORT_FORMATS[key]
                              ['nom'], self.menuE_xporter_vers)
@@ -215,11 +207,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.menuE_xporter_vers.addAction(action)
 
         self.init_variables(opts, self.prefs.defaults['lastVideo'])
-        self.init_interface()
         # connections internes
         self.ui_connections()
 
         self.traite_arg()
+        self.etatUI() # met l'état à "debut"
         return
 
     def traite_arg(self):
@@ -346,68 +338,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.defixeLesDimensions()
         return
 
-    def init_interface(self, refait=0):
-        self.dbg.p(1, "rentre dans 'init_interface'")
-
-        # activation des boutons de rotation (ou pas)
-        self.pushButton_rot_droite.setEnabled(self.video.a_une_image)
-        self.pushButton_rot_gauche.setEnabled(self.video.a_une_image)
-        
-        # activation des onglets (ou pas), l'onglet 0 passe devant
-        self.tabWidget.setEnabled(1)
-        self.tabWidget.setCurrentIndex(0)  # montre l'onglet video
-        self.tabWidget.setTabEnabled(0, self.video.a_une_image)
-        grain_a_moudre = bool(self.video)
-        for tab in (1, 2, 3):
-            self.tabWidget.setTabEnabled(tab, grain_a_moudre)
-        self.actionExemples.setEnabled(1)
-
-        # activation de certaines actions (ou pas)
-        self.actionSaveData.setEnabled(grain_a_moudre)
-        self.actionCopier_dans_le_presse_papier.setEnabled(grain_a_moudre)
-        self.spinBox_image.setEnabled(grain_a_moudre)
-        
-        # initialisation de self.trajectoire_widget
-        self.trajectoire_widget.chrono = False
-
-        self.video.active_controle_image(False)
-        self.echelleEdit.setEnabled(False)
-
-        # marque "indéf." dans l'afficheur d'échelle à gauche
-        self.video.affiche_echelle()
-
-        # met à jour du bouton pour définir l'échelle
-        self.Bouton_Echelle.setEnabled(True)
-        self.Bouton_Echelle.setStyleSheet("background-color:None;")
-
-        self.video.Bouton_lance_capture.setEnabled(True)
-        
-        if not refait:
-            self.horizontalSlider.setValue(1)
-
-        # active l'affichage du nombre d'objets suivis
-        self.video.affiche_nb_points(True)
-
-        # cache les boutons radio pour les vecteurs vitesse sur la trajectoire
-        self.radioButtonNearMouse.hide()
-        self.radioButtonSpeedEveryWhere.hide()
-
-        # désactive et cache le bouton pour l'arrêt du pointage automatique
-        self.pushButton_stopCalculs.setEnabled(False)
-        self.pushButton_stopCalculs.hide()
-
-        # désactivations diverses
-        self.button_video.setEnabled(False)
-        self.checkBox_Ec.setChecked(False)
-        self.checkBox_Em.setChecked(False)
-        self.checkBox_Epp.setChecked(False)
-
-        # inactive le spinner pour les incréments de plus d'une image
-        # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
-        # non encore implémentée
-        self.imgno_incr.hide()
-        self.spinBox.hide()
-        return
     
 
     ############ les signaux spéciaux #####################
@@ -417,8 +347,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     OKRedimensionnement = pyqtSignal()
     redimensionneSignal = pyqtSignal(bool)
     updateProgressBar = pyqtSignal()
-    pythonsourceOK = pyqtSignal(list)
-    #chrono_changed = pyqtSignal()
+    change_etat = pyqtSignal(str)
 
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -463,6 +392,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.redimensionneSignal.connect(self.redimensionneFenetre)
         self.pushButton_stopCalculs.clicked.connect(self.video.stopCalculs)
         self.updateProgressBar.connect(self.updatePB)
+        self.change_etat.connect(self.etatUI)
         self.exportCombo.currentIndexChanged.connect(self.export)
         self.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
         self.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
@@ -477,7 +407,167 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_save.clicked.connect(self.enregistreChrono)
         self.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
         self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
+        return
 
+    def etatUI(self, etat="debut"):
+        """
+        Mise en place d'un état de l'interface utilisateur, voir la
+        documentation dans le fichier etat_pymecavideo.html
+        """
+        if self.etat == etat: return # inutile de changer !
+        self.etat = etat
+        #après l'état C, on doit tenir compte d'un ancien état, A*/D*
+        if etat != "C":
+            self.etat_ancien = etat
+        if etat == "debut":
+           self.etatDebut()
+        elif etat in ("A0", "A1"):
+            """
+            Une vidéo est connue et on en affiche une image.
+
+            A0 : l’échelle est indéfinie
+            A1 : l’échelle est définie
+
+            Le premier onglet est actif, on voit une image de la
+            vidéo, les contrôles pour se déplacer dans le film sont
+            actifs, on peut modifier le nombre d’objets à pointer, Le
+            bouton Démarrer est visible et actif.
+
+            Inutile de montrer le bouton de réinitialisation
+
+            Sur l’image de la vidéo, le curseur est ordinaire.
+            """
+            pass
+        elif etat in ("AB0", "AB1"):
+            """
+            On y arrive en cliquant sur le bouton démarrer, si la case
+            à cocher « pointage auto » était cochée. On doit définir,
+            par tirer-glisser à la souris, autant de zones
+            rectangulaires à suivre qu’il y a d’objets à pointer.
+
+            Le premier onglet est actif, mais tous les widgets de
+            contrôle y sont inactifs.
+            """
+            pass
+        elif etat == "C":
+            """
+            L’échelle est en cours de définition.
+
+            Le premier onglet est actif, mais tous les boutons qu’on
+            peut y voir sont inactifs jusqu’à la fin de la définition
+            de l’échelle.
+
+            Cet état peut se situer entre A0 et A1, ou entre D0 et D1.
+            """
+            pass
+        elif etat in ("D0", "D1"):
+            """
+            On a « démarré », et une pointage manuel est
+            possible. Tous les onglets sont actifs.
+
+            Les contrôles pour changer d’image sont actifs, et le seul
+            autre bouton actif sur le premier onglet est celui qui
+            permet de changer d’échelle.
+
+            Le pointage n’est possible que dans deux cas :
+
+            quand aucune image n’a été pointée quand le pointage à
+            venir est voisin de pointages existants : sur une image
+            déjà pointée, ou juste avant, ou juste après.
+
+            Quand le pointage est possible et seulement alors, le
+            curseur de souris a la forme d’une grosse cible ;
+            idéalement il identifie aussi l’objet à pointer.
+            """
+            pass
+        elif etat == "E":
+            """
+            On est en train de pointer une série d’objets. Le curseur
+            de souris a la forme d’une grosse cible ; idéalement il
+            identifie aussi l’objet à pointer.
+
+            Durant ce pointage, les contrôles de changement d’image
+            sont inactifs, ainsi que les onglets autres que le
+            premier.
+            """
+            pass
+        else:
+            raise Exception("L'état doit être debut, A0, A1, AB0, AB1, B0, B1, C, D0, D1 ou E")
+        return
+    
+    def etatDebut(self):
+        """
+        On y arrive quand on lance pymecavideo, et qu’aucune vidéo
+        n’est passée, ni par argument, ni par le fichier de
+        configuration.
+
+        Tous les onglets sont désactivés ; idéalement, une aide
+        pour dire d’aller chercher un fichier vidéo apparaît.
+        """
+        self.dbg.p(1, "rentre dans l'état « debut »")
+        self.actionDefaire.setEnabled(0)
+        self.actionRefaire.setEnabled(0)
+        self.actionCopier_dans_le_presse_papier.setEnabled(0)
+        self.menuE_xporter_vers.setEnabled(0)
+        self.actionSaveData.setEnabled(0)
+        self.actionExemples.setEnabled(0)
+        self.widget_chronophoto.setEnabled(False)
+
+        # activation des boutons de rotation (ou pas)
+        self.pushButton_rot_droite.setEnabled(self.video.a_une_image)
+        self.pushButton_rot_gauche.setEnabled(self.video.a_une_image)
+        
+        # activation des onglets (ou pas), l'onglet 0 passe devant
+        self.tabWidget.setEnabled(True)
+        self.tabWidget.setCurrentIndex(0)       # montre l'onglet video
+        self.tabWidget.setTabEnabled(0, False)  # mais il est inactif
+        self.actionExemples.setEnabled(True)
+
+        # désactivation de certaines actions
+        self.actionSaveData.setEnabled(False)
+        self.actionCopier_dans_le_presse_papier.setEnabled(False)
+        self.spinBox_image.setEnabled(False)
+        
+        # initialisation de self.trajectoire_widget
+        self.trajectoire_widget.chrono = False
+
+        self.video.active_controle_image(False)
+        self.echelleEdit.setEnabled(False)
+
+        # marque "indéf." dans l'afficheur d'échelle à gauche
+        self.video.affiche_echelle()
+
+        # met à jour du bouton pour définir l'échelle
+        self.Bouton_Echelle.setEnabled(True)
+        self.Bouton_Echelle.setStyleSheet("background-color:None;")
+
+        self.video.Bouton_lance_capture.setEnabled(True)
+        
+        # active l'affichage du nombre d'objets suivis
+        self.video.affiche_nb_points(True)
+
+        # cache les boutons radio pour les vecteurs vitesse sur la trajectoire
+        self.radioButtonNearMouse.hide()
+        self.radioButtonSpeedEveryWhere.hide()
+
+        # désactive et cache le bouton pour l'arrêt du pointage automatique
+        self.pushButton_stopCalculs.setEnabled(False)
+        self.pushButton_stopCalculs.hide()
+
+        # désactivations diverses
+        self.button_video.setEnabled(False)
+        self.checkBox_Ec.setChecked(False)
+        self.checkBox_Em.setChecked(False)
+        self.checkBox_Epp.setChecked(False)
+
+        # inactive le spinner pour les incréments de plus d'une image
+        # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
+        # non encore implémentée
+        self.imgno_incr.hide()
+        self.spinBox.hide()
+        return
+        
+    
     def changeChronoImg(self,img):
         self.chronoImg = img
         self.chronoPhoto()
@@ -663,7 +753,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         except AttributeError as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
             pass
-        self.redimensionneSignal.emit(1)
+        self.redimensionneSignal.emit(True)
 
     def change_sens_X(self):
         self.dbg.p(1, "rentre dans 'change_sens_X'")
@@ -758,7 +848,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.video.rouvre(fichier)
         return
 
-    def redimensionneFenetre(self, tourne=False, old=None):
+    def redimensionneFenetre(self, tourne=False):
         self.dbg.p(1, "rentre dans 'redimensionneFenetre'")
 
         self.tourne = tourne  # n'est utilisée que ici et dans video
@@ -814,12 +904,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def resizeEvent(self, event):
         self.dbg.p(1, "rentre dans 'resizeEvent'")
-        self.redimensionneFenetre(tourne=False, old=event.oldSize())
+        self.redimensionneFenetre(tourne=False)
         return super(FenetrePrincipale, self).resizeEvent(event)
 
     def showEvent(self, event):
         self.dbg.p(1, "rentre dans 'showEvent'")
-        self.redimensionneSignal.emit(0)
+        self.redimensionneSignal.emit(False)
 
     def cree_tableau(self, nb_suivis=1):
         """

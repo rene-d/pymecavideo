@@ -151,6 +151,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         """
         @return le nombre d'objets suivis
         """
+        if self.suivis is None: return 0
         return len(self.suivis)
     
     def clear(self):
@@ -218,7 +219,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.reinit_origine()
 
         if e.oldSize() != QSize(-1, -1):
-            if not self.app.tourne:
+            if not self.tourne:
                 ratiow = self.width()/e.oldSize().width()
                 ratioh = self.height()/e.oldSize().height()
             else:
@@ -474,7 +475,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
             self.cvReader.recupere_avi_infos(self.rotation)
         self.ratio = self.largeurFilm / self.hauteurFilm
-        self.app.init_interface()
+        self.app.change_etat.emit("debut")
         self.calcul_deltaT()
         # on dimensionne les données pour les pointages
         self.redimensionne_data()
@@ -880,7 +881,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
         # on remet l'interface bien d'équerre
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
-        self.app.init_interface()
+        self.app.change_etat.emit("debut")
         self.egalise_origine()
 
         # puis on trace le segment entre les points cliqués pour l'échelle

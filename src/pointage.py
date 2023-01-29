@@ -341,6 +341,7 @@ class Pointage(QObject):
           les données brutes du pointage en pixels sont renvoyées ; si
           l'unité est "m" alors les coordonnées du point sont en mètre
         """
+        if self.dates is None: return     # pas de données, pas d'itértation !
         precedents = [None] * self.nb_obj # points precedents, un par objet
         for i,t in enumerate(self.dates):
             if callback_t is not None:
