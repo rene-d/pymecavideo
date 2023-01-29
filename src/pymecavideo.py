@@ -375,7 +375,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
         self.pushButton_rot_droite.clicked.connect(self.tourne_droite)
         self.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
-        self.change_axe_origine.connect(self.video.egalise_origine)
+        self.change_axe_origine.connect(self.egalise_origine)
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
         self.redimensionneSignal.connect(self.redimensionneFenetre)
@@ -555,7 +555,47 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         Sur l’image de la vidéo, le curseur est ordinaire.
         """
+        self.etat = "A1" if self.video.echelle else "A0"
+        self.video.active_controle_image(True)
+        # réactive des widgets
+        for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
+            self.label_nb_de_points, \
+            self.spinBox_nb_de_points, self.Bouton_Echelle, \
+            self.checkBox_auto, self.Bouton_lance_capture, \
+            self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
+            self.checkBox_abscisses, self.checkBox_ordonnees, \
+            self.label_IPS, self.lineEdit_IPS, \
+            self.menuE_xporter_vers, self.actionSaveData :
 
+            obj.setEnabled(True)
+
+        """
+        Prépare une session de pointage, au niveau de la
+        fenêtre principale, et met à jour les préférences
+        """
+        self.prefs.defaults['lastVideo'] = self.video.filename
+        self.prefs.defaults['videoDir'] = os.path.dirname(self.video.filename)
+        self.prefs.save()
+
+        self.spinBox_image.setMinimum(1)
+        self.spinBox_chrono.setMaximum(self.video.image_max)
+        self.spinBox_nb_de_points.setEnabled(True)
+        self.tab_traj.setEnabled(0)
+
+        self.app.affiche_barre_statut(
+            _translate("pymecavideo", "Veuillez choisir une image (et définir l'échelle)", None))
+        self.montre_vitesses = False
+        self.egalise_origine()
+        return
+
+    def egalise_origine(self):
+        """
+        harmonise l'origine : recopie celle de la vidéo vers le
+        widget des trajectoires et redessine les deux.
+        """
+        self.trajectoire_widget.origine_mvt = self.video.origine
+        self.trajectoire_widget.update()
+        self.video.update()
         return
     
     def changeChronoImg(self,img):

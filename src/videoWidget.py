@@ -471,12 +471,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
             self.cvReader.recupere_avi_infos(self.rotation)
         self.ratio = self.largeurFilm / self.hauteurFilm
-        self.app.change_etat.emit("debut")
         self.calcul_deltaT()
         # on dimensionne les données pour les pointages
         self.redimensionne_data()
-        self.active_controle_image()
-        self.affiche_echelle()
         self.affiche_image()
         return
 
@@ -519,42 +516,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         else:
             return True
 
-    def init_capture(self):
-        """
-        Prépare une session de pointage, au niveau de la
-        fenêtre principale, et met à jour les préférences
-        """
-        self.dbg.p(1, "rentre dans 'init_capture'")
-        self.prefs.defaults['lastVideo'] = self.filename
-        self.prefs.defaults['videoDir'] = os.path.dirname(self.filename)
-        self.prefs.save()
-
-        self.spinBox_image.setMinimum(1)
-        self.spinBox_chrono.setMaximum(self.image_max)
-        self.spinBox_nb_de_points.setEnabled(True)
-        self.tab_traj.setEnabled(0)
-        self.tabWidget.setTabEnabled(0, True)
-        self.active_controle_image()
-        self.app.actionCopier_dans_le_presse_papier.setEnabled(1)
-        self.app.menuE_xporter_vers.setEnabled(1)
-        self.app.actionSaveData.setEnabled(1)
-
-        self.app.affiche_barre_statut(
-            _translate("pymecavideo", "Veuillez choisir une image (et définir l'échelle)", None))
-        self.Bouton_Echelle.setEnabled(True)
-        self.active_controle_image()
-        self.checkBox_abscisses.setEnabled(1)
-        self.checkBox_ordonnees.setEnabled(1)
-        self.checkBox_auto.setEnabled(1)
-        self.Bouton_lance_capture.setEnabled(True)
-        self.app.montre_vitesses = False
-        try:
-            self.app.trajectoire_widget.update()  # premier lancement sans fichier
-        except AttributeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
-        return
-
     def openTheFile(self, filename):
         """
         Ouvre le fichier de nom filename, enregistre les préférences de
@@ -568,26 +529,13 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         goOn = self.init_cvReader()
         if goOn:  # le fichier vidéo est OK, et son format est reconnu
             self.init_image()
-            self.init_capture()
-            self.egalise_origine()
+            self.app.change_etat.emit("A0")
         else:
             QMessageBox.warning(
                 None,
                 _translate("pymecavideo", "Erreur lors de la lecture du fichier", None),
                 _translate("pymecavideo", "Le fichier<b>{0}</b> ...\nn'est peut-être pas dans un format vidéo supporté.", None).format(
                     filename))
-        return
-    
-    def egalise_origine(self):
-        """
-        harmonise l'origine : recopie celle de la vidéo vers le
-        widget des trajectoires et redessine les deux.
-        """
-        self.dbg.p(1, "rentre dans 'egalise_origine'")
-        # repaint axes and define origine
-        self.app.trajectoire_widget.origine_mvt = self.origine
-        self.app.trajectoire_widget.update()
-        self.update()
         return
     
     def affiche_point_attendu(self, obj):
