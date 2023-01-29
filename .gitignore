@@ -3,6 +3,7 @@
 *.qm
 pymecavideo_project.pro
 etats_pymecavideo.svg
+etats_pymecavideo.html
 *.pyc
 Ui_*
 *.1
