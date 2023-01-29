@@ -612,7 +612,7 @@ successfully saved.</translation>
         <translation type="obsolete">Welcome in pymecavideo, no video loaded</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="758"/>
+        <location filename="../../src/videoWidget.py" line="759"/>
         <source>Définir l'échelle</source>
         <translation>Define the scale</translation>
     </message>
@@ -627,7 +627,7 @@ successfully saved.</translation>
         <translation type="obsolete">Number of points to study</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="452"/>
+        <location filename="../../src/videoWidget.py" line="453"/>
         <source>indéf.</source>
         <translation>undef.</translation>
     </message>
@@ -874,7 +874,7 @@ mouse</translation>
         <translation>image files (*.png *.jpg)</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1028"/>
+        <location filename="../../src/videoWidget.py" line="1029"/>
         <source>Erreur lors de l&apos;enregistrement</source>
         <translation>Error while saving the data</translation>
     </message>
@@ -946,22 +946,22 @@ mouse</translation>
         <translation type="obsolete">undef</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1047"/>
+        <location filename="../../src/videoWidget.py" line="1048"/>
         <source>temps en seconde, positions en mètre</source>
         <translation>time in second, positions in meter</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="617"/>
+        <location filename="../../src/videoWidget.py" line="618"/>
         <source>Vous avez atteint la fin de la vidéo</source>
         <translation>You reached the end of the video</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="834"/>
+        <location filename="../../src/videoWidget.py" line="835"/>
         <source>Quelle est la longueur en mètre de votre étalon sur l'image ?</source>
         <translation>Which the length (in meter) of your gauge in the image?</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="852"/>
+        <location filename="../../src/videoWidget.py" line="853"/>
         <source> Merci d'indiquer une échelle valable</source>
         <translation> Please give a valid scale</translation>
     </message>
@@ -1254,71 +1254,71 @@ velocity vectors</translation>
         <translation>The file {filename} is neither a video file, not a pymecavideo saved file..</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="387"/>
+        <location filename="../../src/videoWidget.py" line="388"/>
         <source>Pymecavideo n'arrive pas à lire l'image</source>
         <translation>Pymecavideo cannot read the image</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="518"/>
+        <location filename="../../src/videoWidget.py" line="519"/>
         <source>le format de cette vidéo n'est pas pris en charge par pymecavideo</source>
         <translation>The format of this video is not compatible with pymecavideo</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="544"/>
+        <location filename="../../src/videoWidget.py" line="545"/>
         <source>Veuillez choisir une image (et définir l'échelle)</source>
         <translation>Please select an image (and define the scale)</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="576"/>
+        <location filename="../../src/videoWidget.py" line="577"/>
         <source>Erreur lors de la lecture du fichier</source>
         <translation>Error while reading the file</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="576"/>
+        <location filename="../../src/videoWidget.py" line="577"/>
         <source>Le fichier&lt;b&gt;{0}&lt;/b&gt; ...
 n'est peut-être pas dans un format vidéo supporté.</source>
         <translation>The file&lt;b&gt;{0}&lt;/b&gt; ...
 is maybe in an unsupported video format.</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="602"/>
+        <location filename="../../src/videoWidget.py" line="603"/>
         <source>Pointage des positions : cliquer sur le point N° {0}</source>
         <translation>Spotting objects: please click on object #{0}</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="684"/>
+        <location filename="../../src/videoWidget.py" line="685"/>
         <source>point N° {0}</source>
         <translation>point #{0}</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="707"/>
+        <location filename="../../src/videoWidget.py" line="708"/>
         <source>Pointage Automatique</source>
         <translation>Automatic Spotting</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="709"/>
+        <location filename="../../src/videoWidget.py" line="710"/>
         <source>Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
 Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</source>
         <translation>PLease select a frame around the object(s) which you will spot.
 You can stop the capture at any moment by clicking the STOP button</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="834"/>
+        <location filename="../../src/videoWidget.py" line="835"/>
         <source>Définir léchelle</source>
         <translation>Define the scale</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1021"/>
+        <location filename="../../src/videoWidget.py" line="1022"/>
         <source>Enregistrer le projet pymecavideo</source>
         <translation>Save the Pymecavideo project</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1021"/>
+        <location filename="../../src/videoWidget.py" line="1022"/>
         <source>Projet pymecavideo (*.mecavideo)</source>
         <translation>pymecavideo project file (*.mecavideo)</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1028"/>
+        <location filename="../../src/videoWidget.py" line="1029"/>
         <source>Il manque les données, ou l'échelle</source>
         <translation>Some data, or the scale, are missing</translation>
     </message>

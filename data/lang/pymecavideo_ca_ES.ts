@@ -292,7 +292,7 @@ enregistré avec succès.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1028"/>
+        <location filename="../../src/videoWidget.py" line="1029"/>
         <source>Erreur lors de l&apos;enregistrement</source>
         <translation type="unfinished"></translation>
     </message>
@@ -358,7 +358,7 @@ enregistré avec succès.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="452"/>
+        <location filename="../../src/videoWidget.py" line="453"/>
         <source>indéf.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -430,94 +430,94 @@ Merci de bien vouloir le renommer avant de continuer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="387"/>
+        <location filename="../../src/videoWidget.py" line="388"/>
         <source>Pymecavideo n'arrive pas à lire l'image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="518"/>
+        <location filename="../../src/videoWidget.py" line="519"/>
         <source>le format de cette vidéo n'est pas pris en charge par pymecavideo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="544"/>
+        <location filename="../../src/videoWidget.py" line="545"/>
         <source>Veuillez choisir une image (et définir l'échelle)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="576"/>
+        <location filename="../../src/videoWidget.py" line="577"/>
         <source>Erreur lors de la lecture du fichier</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="576"/>
+        <location filename="../../src/videoWidget.py" line="577"/>
         <source>Le fichier&lt;b&gt;{0}&lt;/b&gt; ...
 n'est peut-être pas dans un format vidéo supporté.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="602"/>
+        <location filename="../../src/videoWidget.py" line="603"/>
         <source>Pointage des positions : cliquer sur le point N° {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="617"/>
+        <location filename="../../src/videoWidget.py" line="618"/>
         <source>Vous avez atteint la fin de la vidéo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="684"/>
+        <location filename="../../src/videoWidget.py" line="685"/>
         <source>point N° {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="707"/>
+        <location filename="../../src/videoWidget.py" line="708"/>
         <source>Pointage Automatique</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="709"/>
+        <location filename="../../src/videoWidget.py" line="710"/>
         <source>Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
 Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="758"/>
+        <location filename="../../src/videoWidget.py" line="759"/>
         <source>Définir l'échelle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="834"/>
+        <location filename="../../src/videoWidget.py" line="835"/>
         <source>Définir léchelle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="834"/>
+        <location filename="../../src/videoWidget.py" line="835"/>
         <source>Quelle est la longueur en mètre de votre étalon sur l'image ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="852"/>
+        <location filename="../../src/videoWidget.py" line="853"/>
         <source> Merci d'indiquer une échelle valable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1021"/>
+        <location filename="../../src/videoWidget.py" line="1022"/>
         <source>Enregistrer le projet pymecavideo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1021"/>
+        <location filename="../../src/videoWidget.py" line="1022"/>
         <source>Projet pymecavideo (*.mecavideo)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1028"/>
+        <location filename="../../src/videoWidget.py" line="1029"/>
         <source>Il manque les données, ou l'échelle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="1047"/>
+        <location filename="../../src/videoWidget.py" line="1048"/>
         <source>temps en seconde, positions en mètre</source>
         <translation type="unfinished"></translation>
     </message>

@@ -7,8 +7,10 @@ GUIS = $(shell find interfaces -name "*.ui")
 COMPILED_GUIS = $(patsubst interfaces/%.ui, interfaces/Ui_%.py, $(GUIS))
 GRAPHS = $(shell ls *.dot)
 GRAPHS_SVG = $(patsubst %.dot, %.svg, $(GRAPHS))
+DOC_DEV = $(shell ls *.md)
+DOC_DEV_HTML = $(patsubst %.md, %.html, $(DOC_DEV))
 
-all:	$(COMPILED_GUIS) $(GRAPHS_SVG) helpfiles languages interfaces/icon_rc.py
+all:	$(COMPILED_GUIS) $(GRAPHS_SVG) $(DOC_DEV_HTML) helpfiles languages interfaces/icon_rc.py
 
 
 interfaces/%_rc.py: interfaces/%.qrc
@@ -18,7 +20,10 @@ interfaces/Ui_%.py: interfaces/%.ui
 	pyuic6 $< > $@
 
 %.svg : %.dot
-	dot -Tsvg $< -o $@
+	dot -Tsvg $< -o $@ || true
+
+%.html : %.md $(GRAPHS_SVG)
+	pandoc --standalone $< -o $@
 
 pymecavideo_project.pro: $(SOURCES)
 	@echo "# this file is generated automatically, do not edit it." > $@
