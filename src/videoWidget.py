@@ -58,9 +58,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app = None        # pointeur vers la fenêtre principale
         self.zoom = None       # pointeur vers le widget de zoom
         self.hotspot = None    # vecteur (position de la souris)
-        pix = QPixmap(":/data/icones/curseur_cible.svg").scaledToHeight(32)
-        self.cursor = QCursor(pix)
-        self.setCursor(self.cursor)     # le curseur en forme de cible
         self.pos_zoom = vecteur(50, 50) # point initialement grossi dans le zoom
         self.image = None               # l'image tirée du film
         self.image_w = self.width()     # deux valeurs par défaut
@@ -453,7 +450,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.echelle_image.isUndef():
             self.app.echelleEdit.setText(
                 _translate("pymecavideo", "indéf.", None))
-            self.app.Bouton_Echelle.setEnabled(True)
         else:
             epxParM = self.echelle_image.pxParM()
             if epxParM > 20:

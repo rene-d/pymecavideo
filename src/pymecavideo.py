@@ -158,16 +158,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         
         self.setupUi(self)
 
-        # gestion des layout pour redimensionnement
-        self.aspectlayout1 = AspectLayout(self.ratio)
-
-        self.aspectlayout2 = AspectLayout(self.ratio)
-
         self.dbg = Dbg(0)
         for o in opts:
             if ('-d' in o[0]) or ('--debug' in o[0]):
                 self.dbg = Dbg(o[1])
-                self.dbg.p(1, "Niveau de débogage" + o[1])
+                print(self.dbg)
 
         self.prefs = Preferences(self)
 
@@ -211,6 +206,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.ui_connections()
 
         self.traite_arg()
+
         self.etatUI() # met l'état à "debut"
         return
 
@@ -271,7 +267,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # le fichier de configuration a la bonne version, on applique ses
         # données
         d = self.prefs.config["DEFAULT"]
-        self.dbg = Dbg(d.getint("niveaudbg"))
+        #self.dbg = Dbg(d.getint("niveaudbg"))
         taille = self.prefs.config.getvecteur("DEFAULT", "taille")
         rect = self.geometry()
         self.setGeometry(rect.x(), rect.y(), int(taille.x), int(taille.y))
@@ -302,7 +298,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def init_variables(self, opts, filename=""):
         self.dbg.p(1, "rentre dans 'init_variables'")
-        self.logiciel_acquisition = False
         self.index_max = 1
         self.repere = 0
         self.masse_objet = 0
@@ -315,8 +310,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.modifie = False
         self.points = {}  # dictionnaire des points cliqués, par n d'image.
         self.trajectoire = {}  # dictionnaire des points des trajectoires
-        self.pX = {}  # points apparaissant à l'écran, indexés par X
-        self.pY = {}  # points apparaissant à l'écran, indexés par Y
         self.index_du_point = 0
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray",
                          "green"]  # correspond aux couleurs des points de la trajectoire
@@ -335,7 +328,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.stopRedimensionne = False
         self.refait_point = False
         self.graphe_deja_choisi = None
-        self.defixeLesDimensions()
         return
 
     
@@ -364,12 +356,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.presse_papier)
         self.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
         self.Bouton_Echelle.clicked.connect(self.video.demande_echelle)
-        self.video.active_controle_image()
         self.Bouton_lance_capture.clicked.connect(self.video.debut_capture)
         self.comboBox_referentiel.currentIndexChanged.connect(
             self.tracer_trajectoires)
-        #self.comboBox_mode_tracer.currentIndexChanged.connect(
-            #self.tracer_courbe)
         self.tabWidget.currentChanged.connect(self.choix_onglets)
         self.checkBoxScale.currentIndexChanged.connect(self.enableSpeed)
         self.checkBoxScale.currentTextChanged.connect(self.enableSpeed)
@@ -422,22 +411,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if etat == "debut":
            self.etatDebut()
         elif etat in ("A0", "A1"):
-            """
-            Une vidéo est connue et on en affiche une image.
-
-            A0 : l’échelle est indéfinie
-            A1 : l’échelle est définie
-
-            Le premier onglet est actif, on voit une image de la
-            vidéo, les contrôles pour se déplacer dans le film sont
-            actifs, on peut modifier le nombre d’objets à pointer, Le
-            bouton Démarrer est visible et actif.
-
-            Inutile de montrer le bouton de réinitialisation
-
-            Sur l’image de la vidéo, le curseur est ordinaire.
-            """
-            pass
+            self.etatA()
         elif etat in ("AB0", "AB1"):
             """
             On y arrive en cliquant sur le bouton démarrer, si la case
@@ -505,68 +479,84 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         pour dire d’aller chercher un fichier vidéo apparaît.
         """
         self.dbg.p(1, "rentre dans l'état « debut »")
-        self.actionDefaire.setEnabled(0)
-        self.actionRefaire.setEnabled(0)
-        self.actionCopier_dans_le_presse_papier.setEnabled(0)
-        self.menuE_xporter_vers.setEnabled(0)
-        self.actionSaveData.setEnabled(0)
-        self.actionExemples.setEnabled(0)
-        self.widget_chronophoto.setEnabled(False)
+        # désactivation de widgets
+        for obj in self.actionDefaire, self.actionRefaire, \
+            self.actionCopier_dans_le_presse_papier, self.menuE_xporter_vers, \
+            self.actionSaveData, self.widget_chronophoto, self.spinBox_image, \
+            self.pushButton_rot_droite, self.pushButton_rot_gauche, \
+            self.pushButton_stopCalculs, \
+            self.button_video, self.label_nb_de_points, \
+            self.spinBox_nb_de_points, self.Bouton_Echelle, \
+            self.checkBox_auto, self.Bouton_lance_capture, \
+            self.pushButton_reinit, self.pushButton_origine, \
+            self.pushButton_defait, self.pushButton_refait, \
+            self.checkBox_abscisses, self.checkBox_ordonnees, \
+            self.label_IPS, self.lineEdit_IPS :
+            
+            obj.setEnabled(False)
+            
+        # décochage de widgets
+        for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
 
-        # activation des boutons de rotation (ou pas)
-        self.pushButton_rot_droite.setEnabled(self.video.a_une_image)
-        self.pushButton_rot_gauche.setEnabled(self.video.a_une_image)
+            obj.setChecked(False)
         
-        # activation des onglets (ou pas), l'onglet 0 passe devant
-        self.tabWidget.setEnabled(True)
+        # activation de widgets
+        for obj in self.tabWidget, self.actionExemples:
+
+            obj.setEnabled(True)
+
+        # on cache certains widgets
+        for obj in self.radioButtonNearMouse, \
+            self.radioButtonSpeedEveryWhere, self.pushButton_stopCalculs:
+
+            obj.hide()
+
+        # organisation des onglets
         self.tabWidget.setCurrentIndex(0)       # montre l'onglet video
-        self.tabWidget.setTabEnabled(0, False)  # mais il est inactif
-        self.actionExemples.setEnabled(True)
+        for i in range(1,4):
+            self.tabWidget.setTabEnabled(i, False)  # autres onglets inactifs
 
-        # désactivation de certaines actions
-        self.actionSaveData.setEnabled(False)
-        self.actionCopier_dans_le_presse_papier.setEnabled(False)
-        self.spinBox_image.setEnabled(False)
-        
-        # initialisation de self.trajectoire_widget
+         # initialisation de self.trajectoire_widget
         self.trajectoire_widget.chrono = False
 
+        # désactive les contôles de l'image
         self.video.active_controle_image(False)
-        self.echelleEdit.setEnabled(False)
 
         # marque "indéf." dans l'afficheur d'échelle à gauche
         self.video.affiche_echelle()
 
-        # met à jour du bouton pour définir l'échelle
-        self.Bouton_Echelle.setEnabled(True)
+        # mise à jour de styles
         self.Bouton_Echelle.setStyleSheet("background-color:None;")
 
-        self.video.Bouton_lance_capture.setEnabled(True)
-        
-        # active l'affichage du nombre d'objets suivis
-        self.video.affiche_nb_points(True)
-
-        # cache les boutons radio pour les vecteurs vitesse sur la trajectoire
-        self.radioButtonNearMouse.hide()
-        self.radioButtonSpeedEveryWhere.hide()
-
-        # désactive et cache le bouton pour l'arrêt du pointage automatique
-        self.pushButton_stopCalculs.setEnabled(False)
-        self.pushButton_stopCalculs.hide()
-
-        # désactivations diverses
-        self.button_video.setEnabled(False)
-        self.checkBox_Ec.setChecked(False)
-        self.checkBox_Em.setChecked(False)
-        self.checkBox_Epp.setChecked(False)
+        # autorise le redimensionnement de la fenêtre principale
+        self.defixeLesDimensions()
 
         # inactive le spinner pour les incréments de plus d'une image
         # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
         # non encore implémentée
         self.imgno_incr.hide()
         self.spinBox.hide()
+        self.dbg.p(1, "L'UI est maintenant réglée pour l'état « debut »")
         return
         
+    def etatA(self):
+        """
+        Une vidéo est connue et on en affiche une image.
+
+        A0 : l’échelle est indéfinie
+        A1 : l’échelle est définie
+
+        Le premier onglet est actif, on voit une image de la
+        vidéo, les contrôles pour se déplacer dans le film sont
+        actifs, on peut modifier le nombre d’objets à pointer, Le
+        bouton Démarrer est visible et actif.
+
+        Inutile de montrer le bouton de réinitialisation
+
+        Sur l’image de la vidéo, le curseur est ordinaire.
+        """
+
+        return
     
     def changeChronoImg(self,img):
         self.chronoImg = img
@@ -863,13 +853,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.video.echelle_image.p2 = self.video.echelle_image.p2.rotate(
                 self.increment, largeur, hauteur)
             self.video.setGeometry(0, 0, hauteur, largeur)
-            self.ratio = 1/self.ratio
-            self.aspectlayout1.aspect = self.ratio
-            self.aspectlayout2.aspect = self.ratio
             self.tourne = False
-            # HACK : oblige le redimensionnement
-            self.resize(self.size()+QSize(1, 0))
-            self.resize(self.size()+QSize(-1, 0))
 
         self.dbg.p(2, "MAJ de video")
         self.video.maj()
@@ -1041,21 +1025,29 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         c.montrefilm()
         return
 
-    def choix_onglets(self, newValue):
+    def choix_onglets(self, newIndex):
         """
         traite les signaux émis par le changement d'onglet, ou
-        par le changement de référentiel dans l'onglet des trajectoires."""
-        self.dbg.p(1, "rentre dans 'choix_onglets'")
+        par le changement de référentiel dans l'onglet des trajectoires.
+        @param newIndex la variable transmise par le signal currentChanged
+          du tabWidget
+        """
+        self.dbg.p(1, f"rentre dans 'choix_onglets', self.tabWidget.currentIndex() = {self.tabWidget.currentIndex()}, newIndex = {newIndex}")
+        self.statusBar().clearMessage()
+        if self.tabWidget.currentIndex() == 0:
+            # onglet video, on ne fait rien de spécial
+            pass
         if self.tabWidget.currentIndex() == 1:
-            self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
+            # onglet des trajectoires
             self.tracer_trajectoires("absolu")
         elif self.tabWidget.currentIndex() == 2:
-            self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
+            # onglet des coordonnées
             self.affiche_tableau()
         elif self.tabWidget.currentIndex() == 3:
+            # onglet du grapheur
             self.affiche_grapheur()
             self.MAJ_combox_box_grapheur()
-            self.statusBar().clearMessage() # ClearMessage plutôt que hide, ne décale pas les widgets
+        return
 
     def affiche_grapheur(self, MAJ=True):
         self.dbg.p(1, "rentre dans 'affiche_grapheur'")

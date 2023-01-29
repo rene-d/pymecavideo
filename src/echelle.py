@@ -23,7 +23,7 @@ from math import sqrt
 import os
 
 from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect
-from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QCursor, QShortcut, QColor
+from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QShortcut, QColor
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur

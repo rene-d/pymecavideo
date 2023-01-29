@@ -67,9 +67,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-134</y>
              <width>168</width>
-             <height>541</height>
+             <height>587</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -212,6 +212,9 @@
                  <property name="text">
                   <string>indéf.</string>
                  </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
                <item>
@@ -246,7 +249,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QLabel" name="label_4">
+                <widget class="QLabel" name="label_nb_de_points">
                  <property name="text">
                   <string>Points à&lt;br&gt;étudier :</string>
                  </property>
@@ -296,7 +299,8 @@
             <item>
              <widget class="QPushButton" name="pushButton_reinit">
               <property name="styleSheet">
-               <string notr="true">color: red</string>
+               <string notr="true">QPushButton{color: red;}
+QPushButton:disabled{color: #c0c0c0;}</string>
               </property>
               <property name="text">
                <string>Tout réinitialiser</string>
@@ -356,7 +360,7 @@ vers le bas</string>
                 <number>0</number>
                </property>
                <item>
-                <widget class="QLabel" name="label_5">
+                <widget class="QLabel" name="label_IPS">
                  <property name="text">
                   <string>IPS :</string>
                  </property>
@@ -1308,7 +1312,7 @@ vecteurs vitesse</string>
      <x>0</x>
      <y>0</y>
      <width>1041</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
