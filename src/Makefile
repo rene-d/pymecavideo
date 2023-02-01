@@ -3,21 +3,15 @@ HELPFILES = $(shell ls help | grep -E 'xhtml$$|css$$|png$$')
 LRELEASE = /usr/lib/qt5/bin/lrelease
 SOURCES = $(shell ls *.py | grep -v Ui_)
 TRANSLATIONS = $(shell find ../data/lang -name *.ts)
-GUIS = $(shell find interfaces -name "*.ui")
-COMPILED_GUIS = $(patsubst interfaces/%.ui, interfaces/Ui_%.py, $(GUIS))
+COMPILED_TRANSLATIONS = $(patsubst %.ts, %.qm, $(TRANSLATIONS))
+GUIS = $(shell ls *.ui)
 GRAPHS = $(shell ls *.dot)
 GRAPHS_SVG = $(patsubst %.dot, %.svg, $(GRAPHS))
 DOC_DEV = $(shell ls *.md)
 DOC_DEV_HTML = $(patsubst %.md, %.html, $(DOC_DEV))
 
-all:	$(COMPILED_GUIS) $(GRAPHS_SVG) $(DOC_DEV_HTML) helpfiles languages interfaces/icon_rc.py
-
-
-interfaces/%_rc.py: interfaces/%.qrc
-	pyrcc5 $< -o $@
-
-interfaces/Ui_%.py: interfaces/%.ui
-	pyuic6 $< > $@
+all: $(GRAPHS_SVG) $(DOC_DEV_HTML) $(COMPILED_TRANSLATIONS) helpfiles
+	cd interfaces; $(MAKE) $@
 
 %.svg : %.dot
 	dot -Tsvg $< -o $@ || true
@@ -25,14 +19,17 @@ interfaces/Ui_%.py: interfaces/%.ui
 %.html : %.md $(GRAPHS_SVG)
 	pandoc --standalone $< -o $@
 
-pymecavideo_project.pro: $(SOURCES)
+pymecavideo_project.pro:  $(GUIS) $(SOURCES)
 	@echo "# this file is generated automatically, do not edit it." > $@
 	@echo "FORMS        = $(GUIS)" >> $@
 	@echo "SOURCES      = $(SOURCES)" >> $@
 	@echo "TRANSLATIONS = $(TRANSLATIONS)" >> $@
 
-languages: pymecavideo_project.pro
-	LC_ALL=en_US.UTF-8 pylupdate5 -translate-function _translate pymecavideo_project.pro
+$(TRANSLATIONS): pymecavideo_project.pro
+	LC_ALL=en_US.UTF-8 pylupdate5 -translate-function _translate \
+	  pymecavideo_project.pro
+
+%.qm: %.ts pymecavideo_project.pro
 	lrelease ../data/lang/*.ts 2>&1 | grep -A2 "Updating"
 
 
