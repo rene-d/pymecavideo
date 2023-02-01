@@ -50,8 +50,8 @@ class ChoixOrigineWidget(QWidget):
         return
 
     def mouseReleaseEvent(self, event):
-        self.app.video.origine = vecteur(event.x() + 1, event.y() + 1)
+        self.app.video.origine = vecteur(event.x(), event.y())
         self.app.video.updateZoom()
 
-        self.app.video.egalise_origine()
+        self.app.egalise_origine()
         self.close()

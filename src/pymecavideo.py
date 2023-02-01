@@ -44,6 +44,7 @@ import pyqtgraph as pg
 import pyqtgraph.exporters
 from vecteur import vecteur
 import interfaces.icon_rc
+
 licence = {}
 licence['en'] = """
     pymecavideo version %s:
@@ -119,7 +120,6 @@ def time_it(func):
         return result
     return wrapper
 
-
 from interfaces.Ui_pymecavideo import Ui_pymecavideo
 
 class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
@@ -130,7 +130,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         @param opts les options de l'invocation bien rangées en tableau
         @param args les arguments restants après raitement des options
         """
-        # QT
         QMainWindow.__init__(self, parent)
         Ui_pymecavideo.__init__(self)
         QWidget.__init__(self, parent)
@@ -149,7 +148,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         # Mode plein écran
         self.plein_ecran = False
-        QShortcut(QKeySequence("FullScreen"), self, self.basculer_plein_ecran)
+        QShortcut(QKeySequence("F11"), self, self.basculer_plein_ecran)
 
         g = QApplication.instance().screens()[0].geometry()
         self.height_screen, self.width_screen = g.height(), g.width()
@@ -174,8 +173,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # on passe la main au videowidget pour faire les liaisons aux
         # autres widgets de la fenêtre principale
         self.video.setApp(self)
-
-        self.apply_preferences()
 
         self.args = args
 
@@ -205,21 +202,25 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # connections internes
         self.ui_connections()
 
-        self.traite_arg()
+        self.change_etat.emit("debut") # met l'état à "debut"
 
-        self.etatUI() # met l'état à "debut"
+        # traite un argument ; si ça ne va pas, s'intéresse à la
+        # aux préférences du fichier pymecavideo.conf
+        self.traite_arg() or self.apply_preferences()
+
         return
 
     def traite_arg(self):
         """
         traite les arguments donnés à l'application. Trouve le type de fichier
         et selon le cas, ouvre ou "rouvre" son contenu
+        @return vrai si on a réussi à traiter un argument
         """
+        OK = False
         if len(self.args) > 0:
             filename = self.args[0]
             mime = magic.Magic(mime=True)
             mt = mime.from_file(filename)
-            OK = False
             if mt.startswith("video/"):
                 OK = True
                 self.video.openTheFile(filename)
@@ -236,7 +237,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                         _translate("pymecavideo", "Argument non pris en compte", None),
                         _translate("pymecavideo", "Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.", None).format(filename=filename)))
                 
-        return
+        return OK
 
     def apply_preferences(self, rouvre = False):
         """
@@ -246,6 +247,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         @param rouvre est vrai quand on ouvre un fichier pymecavideo ; 
           il est faux par défaut
         """
+        self.dbg.p(1, "rentre dans 'FenetrePrincipale.apply_preferences'")
         # on relit les préférences du fichier de configuration, sauf en cas
         # de réouverture d'un fichier pymecavideo, qui contient les préférences
         if not rouvre:
@@ -398,7 +400,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
         return
 
-    def etatUI(self, etat="debut"):
+    def etatUI(self, etat):
         """
         Mise en place d'un état de l'interface utilisateur, voir la
         documentation dans le fichier etat_pymecavideo.html
@@ -582,7 +584,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.spinBox_nb_de_points.setEnabled(True)
         self.tab_traj.setEnabled(0)
 
-        self.app.affiche_barre_statut(
+        self.affiche_barre_statut(
             _translate("pymecavideo", "Veuillez choisir une image (et définir l'échelle)", None))
         self.montre_vitesses = False
         self.egalise_origine()

@@ -167,7 +167,6 @@ class EchelleWidget(QWidget):
 
             self.video.feedbackEchelle(self.p1, self.p2)
             self.app.fixeLesDimensions()
-            self.video.egalise_origine()
             if self.video.data:  # si on a déjà pointé une position au moins
                 self.app.affiche_barre_statut(self.app.tr(
                     "Vous pouvez continuer votre acquisition"))

@@ -6,6 +6,7 @@ etats_pymecavideo.svg
 etats_pymecavideo.html
 *.pyc
 Ui_*
+*_rc.py
 *.1
 *.xhtml
 

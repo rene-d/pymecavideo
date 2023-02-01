@@ -793,7 +793,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.echelle_image.etalonneReel(reponse)
                 self.job = EchelleWidget(self, self.app)
                 self.job.show()
-                self.egalise_origine()
         except ValueError as err:
             self.affiche_barre_statut(_translate(
                 "pymecavideo", " Merci d'indiquer une échelle valable", None))
@@ -826,7 +825,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         # on remet l'interface bien d'équerre
         self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
         self.app.change_etat.emit("debut")
-        self.egalise_origine()
 
         # puis on trace le segment entre les points cliqués pour l'échelle
         # on réinitialise l'échelle.p1, self.echelle_image.p2)
@@ -1088,6 +1086,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         @param rouvre est vrai quand on ouvre un fichier pymecavideo ; 
           il est faux par défaut
         """
+        self.dbg.p(1, "rentre dans 'VideoWidget.apply_preferences'")
         d = self.prefs.config["DEFAULT"]
         self.filename = d["lastvideo"]
         if os.path.isfile(self.filename):
