@@ -77,112 +77,112 @@ to capture a video</translation>
     <message>
         <location filename="../../src/csv_dialog.ui" line="14"/>
         <source>Options de l&apos;export CSV</source>
-        <translation type="unfinished">Options for the CSV export</translation>
+        <translation type="obsolete">Options for the CSV export</translation>
     </message>
     <message>
         <location filename="../../src/csv_dialog.ui" line="20"/>
         <source>Séparateur décimal :</source>
-        <translation type="unfinished">Decimal separator:</translation>
+        <translation type="obsolete">Decimal separator:</translation>
     </message>
     <message>
         <location filename="../../src/csv_dialog.ui" line="26"/>
         <source>Point (.)</source>
-        <translation type="unfinished">Dot (.)</translation>
+        <translation type="obsolete">Dot (.)</translation>
     </message>
     <message>
         <location filename="../../src/csv_dialog.ui" line="65"/>
         <source>Virgule (,)</source>
-        <translation type="unfinished">Comma (,)</translation>
+        <translation type="obsolete">Comma (,)</translation>
     </message>
     <message>
         <location filename="../../src/csv_dialog.ui" line="59"/>
         <source>Séparateur de champ :</source>
-        <translation type="unfinished">Field separator:</translation>
+        <translation type="obsolete">Field separator:</translation>
     </message>
     <message>
         <location filename="../../src/csv_dialog.ui" line="72"/>
         <source>Point-virgule (;)</source>
-        <translation type="unfinished">Semicolon (,)</translation>
+        <translation type="obsolete">Semicolon (,)</translation>
     </message>
     <message>
         <location filename="../../src/csv_dialog.ui" line="79"/>
         <source>Tabulation (t)</source>
-        <translation type="unfinished">Tab (\t)</translation>
+        <translation type="obsolete">Tab (\t)</translation>
     </message>
     <message>
         <location filename="../../src/csv_dialog.ui" line="92"/>
         <source>Ajouter les grandeurs comme en-tête</source>
-        <translation type="unfinished">Add quantities to the header</translation>
+        <translation type="obsolete">Add quantities to the header</translation>
     </message>
     <message>
         <location filename="../../src/jupyter_dialog.ui" line="14"/>
         <source>Choix des représentations graphiques</source>
-        <translation type="unfinished">Choice of graphics</translation>
+        <translation type="obsolete">Choice of graphics</translation>
     </message>
     <message>
         <location filename="../../src/jupyter_dialog.ui" line="20"/>
         <source>Chronogramme des positions</source>
-        <translation type="unfinished">Chronogram of spots</translation>
+        <translation type="obsolete">Chronogram of spots</translation>
     </message>
     <message>
         <location filename="../../src/jupyter_dialog.ui" line="30"/>
         <source>Vecteurs vitesse</source>
-        <translation type="unfinished">Velocity vectors</translation>
+        <translation type="obsolete">Velocity vectors</translation>
     </message>
     <message>
         <location filename="../../src/jupyter_dialog.ui" line="40"/>
         <source>Vecteurs variation de vitesse</source>
-        <translation type="unfinished">Velocity variation vectors</translation>
+        <translation type="obsolete">Velocity variation vectors</translation>
     </message>
     <message>
         <location filename="../../src/jupyter_dialog.ui" line="50"/>
         <source>Vecteurs accélération</source>
-        <translation type="unfinished">Acceleration vectors</translation>
+        <translation type="obsolete">Acceleration vectors</translation>
     </message>
     <message>
         <location filename="../../src/jupyter_dialog.ui" line="60"/>
         <source>Énergies</source>
-        <translation type="unfinished">Energies</translation>
+        <translation type="obsolete">Energies</translation>
     </message>
     <message>
         <location filename="../../src/python_dialog.ui" line="14"/>
         <source>Choix pour l&apos;export Python</source>
-        <translation type="unfinished">Choices for the Python export</translation>
+        <translation type="obsolete">Choices for the Python export</translation>
     </message>
     <message>
         <location filename="../../src/python_dialog.ui" line="20"/>
         <source>Insérer les lignes pour le calcul de vitesse</source>
-        <translation type="unfinished">Insert lines to compute the speed</translation>
+        <translation type="obsolete">Insert lines to compute the speed</translation>
     </message>
     <message>
         <location filename="../../src/python_dialog.ui" line="27"/>
         <source>Insérer les lignes pour l'affichage des vecteurs vitesse</source>
-        <translation type="unfinished">Insert lines to display velocity vectors</translation>
+        <translation type="obsolete">Insert lines to display velocity vectors</translation>
     </message>
     <message>
         <location filename="../../src/python_dialog.ui" line="34"/>
         <source>Insérer les lignes pour le calcul des accélérations</source>
-        <translation type="unfinished">Insert lines to compute acceleration</translation>
+        <translation type="obsolete">Insert lines to compute acceleration</translation>
     </message>
     <message>
         <location filename="../../src/python_dialog.ui" line="41"/>
         <source>Insérer les lignes pour le calcul des vecteurs accélération</source>
-        <translation type="unfinished">Insert lines to display acceleration vectors</translation>
+        <translation type="obsolete">Insert lines to display acceleration vectors</translation>
     </message>
     <message>
         <location filename="../../src/ralenti_dialog.ui" line="20"/>
         <source>Vidéo recalculée</source>
-        <translation type="unfinished">computed video</translation>
+        <translation type="obsolete">computed video</translation>
     </message>
     <message>
         <location filename="../../src/ralenti_dialog.ui" line="51"/>
         <source>Ralenti : 1/1</source>
-        <translation type="unfinished">Slow motion: 1/1</translation>
+        <translation type="obsolete">Slow motion: 1/1</translation>
     </message>
     <message>
         <location filename="../../src/ralenti_dialog.ui" line="92"/>
         <source>Fermer</source>
-        <translation type="unfinished">Close</translation>
+        <translation type="obsolete">Close</translation>
     </message>
 </context>
 <context>
@@ -619,7 +619,7 @@ successfully saved.</translation>
     <message>
         <location filename="../../src/pymecavideo.ui" line="759"/>
         <source>Image n°</source>
-        <translation type="unfinished">Image #</translation>
+        <translation type="obsolete">Image #</translation>
     </message>
     <message>
         <location filename="pymecavideo.ui" line="246"/>
@@ -634,7 +634,7 @@ successfully saved.</translation>
     <message>
         <location filename="../../src/pymecavideo.ui" line="233"/>
         <source>px/m</source>
-        <translation type="unfinished">px/m</translation>
+        <translation type="obsolete">px/m</translation>
     </message>
     <message>
         <location filename="pymecavideo.ui" line="297"/>
@@ -644,7 +644,7 @@ successfully saved.</translation>
     <message>
         <location filename="../../src/pymecavideo.ui" line="310"/>
         <source>Tout réinitialiser</source>
-        <translation type="unfinished">Reinitialize</translation>
+        <translation type="obsolete">Reinitialize</translation>
     </message>
     <message>
         <location filename="pymecavideo.ui" line="390"/>
@@ -699,17 +699,17 @@ successfully saved.</translation>
     <message>
         <location filename="../../src/pymecavideo.ui" line="725"/>
         <source>px pour 1 m/s</source>
-        <translation type="unfinished">px for 1 m/s</translation>
+        <translation type="obsolete">px for 1 m/s</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="869"/>
         <source>Coordonnées</source>
-        <translation type="unfinished">Coordinates</translation>
+        <translation type="obsolete">Coordinates</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="884"/>
         <source>Copier les mesures dans le presse papier</source>
-        <translation type="unfinished">Copy data to the clipboard</translation>
+        <translation type="obsolete">Copy data to the clipboard</translation>
     </message>
     <message>
         <location filename="pymecavideo.ui" line="682"/>
@@ -734,12 +734,12 @@ successfully saved.</translation>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1381"/>
         <source>avanceimage</source>
-        <translation type="unfinished">imgforward</translation>
+        <translation type="obsolete">imgforward</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1386"/>
         <source>reculeimage</source>
-        <translation type="unfinished">imgbackward</translation>
+        <translation type="obsolete">imgbackward</translation>
     </message>
     <message>
         <location filename="pymecavideo.ui" line="738"/>
@@ -784,7 +784,7 @@ successfully saved.</translation>
     <message>
         <location filename="../../src/pymecavideo.ui" line="83"/>
         <source>Zoom</source>
-        <translation type="unfinished">Zoom</translation>
+        <translation type="obsolete">Zoom</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini_layout.ui" line="209"/>
@@ -794,7 +794,7 @@ successfully saved.</translation>
     <message>
         <location filename="../../src/pymecavideo.ui" line="285"/>
         <source>Démarrer</source>
-        <translation type="unfinished">Start</translation>
+        <translation type="obsolete">Start</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="418"/>
@@ -818,7 +818,7 @@ tracking</translation>
     <message>
         <location filename="../../src/pymecavideo.ui" line="317"/>
         <source>Changer d&apos;origine</source>
-        <translation type="unfinished">Change the origin</translation>
+        <translation type="obsolete">Change the origin</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini_layout.ui" line="418"/>
@@ -830,7 +830,7 @@ vers la gauche</source>
     <message>
         <location filename="../../src/pymecavideo.ui" line="619"/>
         <source>Trajectoires</source>
-        <translation type="unfinished">Trajectories</translation>
+        <translation type="obsolete">Trajectories</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini.ui" line="782"/>
@@ -856,7 +856,7 @@ mouse</translation>
     <message>
         <location filename="../../src/pymecavideo.ui" line="705"/>
         <source>Échelle de vitesses</source>
-        <translation type="unfinished">Scale for speed</translation>
+        <translation type="obsolete">Scale for speed</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo_mini_layout.ui" line="909"/>
@@ -874,7 +874,7 @@ mouse</translation>
         <translation>image files (*.png *.jpg)</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="974"/>
+        <location filename="../../src/videoWidget.py" line="972"/>
         <source>Erreur lors de l&apos;enregistrement</source>
         <translation>Error while saving the data</translation>
     </message>
@@ -946,7 +946,7 @@ mouse</translation>
         <translation type="obsolete">undef</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="993"/>
+        <location filename="../../src/videoWidget.py" line="991"/>
         <source>temps en seconde, positions en mètre</source>
         <translation>time in second, positions in meter</translation>
     </message>
@@ -961,7 +961,7 @@ mouse</translation>
         <translation>Which the length (in meter) of your gauge in the image?</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="798"/>
+        <location filename="../../src/videoWidget.py" line="797"/>
         <source> Merci d'indiquer une échelle valable</source>
         <translation> Please give a valid scale</translation>
     </message>
@@ -1017,221 +1017,221 @@ PLease rename it before going on</translation>
     <message>
         <location filename="../../src/pymecavideo.ui" line="32"/>
         <source>Pointage</source>
-        <translation type="unfinished">SpottingSpotting</translation>
+        <translation type="obsolete">SpottingSpotting</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="278"/>
         <source>Suivi automatique</source>
-        <translation type="unfinished">Auto Spot</translation>
+        <translation type="obsolete">Auto Spot</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="295"/>
         <source>STOP</source>
-        <translation type="unfinished">STOP</translation>
+        <translation type="obsolete">STOP</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="331"/>
         <source>Abscisses
 vers la gauche</source>
-        <translation type="unfinished">Abcissa
+        <translation type="obsolete">Abcissa
 to the left</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="369"/>
         <source>IPS :</source>
-        <translation type="unfinished">FPS:</translation>
+        <translation type="obsolete">FPS:</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="438"/>
         <source>Incr :</source>
-        <translation type="unfinished">Incr:</translation>
+        <translation type="obsolete">Incr:</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="644"/>
         <source>Trajectoire</source>
-        <translation type="unfinished">Trajectory</translation>
+        <translation type="obsolete">Trajectory</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="649"/>
         <source>Chronophotographie</source>
-        <translation type="unfinished">Chronophotography</translation>
+        <translation type="obsolete">Chronophotography</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="654"/>
         <source>Chronogramme</source>
-        <translation type="unfinished">Chronogram</translation>
+        <translation type="obsolete">Chronogram</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="662"/>
         <source>vecteur vitesse ...</source>
-        <translation type="unfinished">Velocity vector ...</translation>
+        <translation type="obsolete">Velocity vector ...</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="680"/>
         <source>Montrer les
 vecteurs vitesse</source>
-        <translation type="unfinished">Show
+        <translation type="obsolete">Show
 velocity vectors</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="698"/>
         <source>Partout</source>
-        <translation type="unfinished">Everywhere</translation>
+        <translation type="obsolete">Everywhere</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="741"/>
         <source>Chronophotographie ...</source>
-        <translation type="unfinished">Chronophotography ...</translation>
+        <translation type="obsolete">Chronophotography ...</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1270"/>
         <source>Enregistrer</source>
-        <translation type="unfinished">Save</translation>
+        <translation type="obsolete">Save</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="962"/>
         <source>Potentielle de pesanteur</source>
-        <translation type="unfinished">Potential of weight</translation>
+        <translation type="obsolete">Potential of weight</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="997"/>
         <source>g (N/kg)</source>
-        <translation type="unfinished">g (N/kg)</translation>
+        <translation type="obsolete">g (N/kg)</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1161"/>
         <source>9.8</source>
-        <translation type="unfinished">9.8</translation>
+        <translation type="obsolete">9.8</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1047"/>
         <source>Grapheur</source>
-        <translation type="unfinished">Plotter</translation>
+        <translation type="obsolete">Plotter</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1086"/>
         <source>Masse (kg)</source>
-        <translation type="unfinished">Mass (kg)</translation>
+        <translation type="obsolete">Mass (kg)</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1111"/>
         <source>1.0</source>
-        <translation type="unfinished">1.0</translation>
+        <translation type="obsolete">1.0</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1209"/>
         <source>Tracer :</source>
-        <translation type="unfinished">Plot:</translation>
+        <translation type="obsolete">Plot:</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1219"/>
         <source>En fonction de :</source>
-        <translation type="unfinished">As a function of:</translation>
+        <translation type="obsolete">As a function of:</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1229"/>
         <source>Avec le style :</source>
-        <translation type="unfinished">Styled like:</translation>
+        <translation type="obsolete">Styled like:</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1237"/>
         <source>Points seuls</source>
-        <translation type="unfinished">Plain Dots</translation>
+        <translation type="obsolete">Plain Dots</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1246"/>
         <source>Points et lignes</source>
-        <translation type="unfinished">Dots and Lines</translation>
+        <translation type="obsolete">Dots and Lines</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1255"/>
         <source>Lignes seules</source>
-        <translation type="unfinished">Lines</translation>
+        <translation type="obsolete">Lines</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1324"/>
         <source>&amp;Fichier</source>
-        <translation type="unfinished">&amp;File</translation>
+        <translation type="obsolete">&amp;File</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1328"/>
         <source>E&amp;xporter vers ...</source>
-        <translation type="unfinished">E&amp;xport to ...</translation>
+        <translation type="obsolete">E&amp;xport to ...</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1431"/>
         <source>&amp;Aide</source>
-        <translation type="unfinished">&amp;Help</translation>
+        <translation type="obsolete">&amp;Help</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1356"/>
         <source>&amp;Edition</source>
-        <translation type="unfinished">&amp;Edit</translation>
+        <translation type="obsolete">&amp;Edit</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1395"/>
         <source>&amp;Quitter</source>
-        <translation type="unfinished">&amp;Quit</translation>
+        <translation type="obsolete">&amp;Quit</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1407"/>
         <source>&amp;Enregistrer le projet mecavideo</source>
-        <translation type="unfinished">&amp;Save the project (mecavideo)</translation>
+        <translation type="obsolete">&amp;Save the project (mecavideo)</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1443"/>
         <source>&amp;Exemples ...</source>
-        <translation type="unfinished">&amp;Examples ...</translation>
+        <translation type="obsolete">&amp;Examples ...</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1452"/>
         <source>Ouvrir un projet &amp;mecavideo</source>
-        <translation type="unfinished">Open a &amp;mecavideo project</translation>
+        <translation type="obsolete">Open a &amp;mecavideo project</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1466"/>
         <source>&amp;Copier dans le presse-papier</source>
-        <translation type="unfinished">&amp;Copy to the clipboard</translation>
+        <translation type="obsolete">&amp;Copy to the clipboard</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1490"/>
         <source>&amp;Refaire</source>
-        <translation type="unfinished">&amp;Redo</translation>
+        <translation type="obsolete">&amp;Redo</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1496"/>
         <source>Refaire</source>
-        <translation type="unfinished">Redo</translation>
+        <translation type="obsolete">Redo</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1504"/>
         <source>LibreOffice &amp;Calc</source>
-        <translation type="unfinished">LibreOffice &amp;Calc</translation>
+        <translation type="obsolete">LibreOffice &amp;Calc</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1509"/>
         <source>Qti&amp;plot</source>
-        <translation type="unfinished">Qti&amp;plot</translation>
+        <translation type="obsolete">Qti&amp;plot</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1514"/>
         <source>Sci&amp;davis</source>
-        <translation type="unfinished">Sci&amp;davis</translation>
+        <translation type="obsolete">Sci&amp;davis</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1519"/>
         <source>&amp;Python (source)</source>
-        <translation type="unfinished">&amp;Python (source)</translation>
+        <translation type="obsolete">&amp;Python (source)</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1524"/>
         <source>&amp;Fichier numpy</source>
-        <translation type="unfinished">&amp;Numpy file</translation>
+        <translation type="obsolete">&amp;Numpy file</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1527"/>
         <source>Fichier Numpy</source>
-        <translation type="unfinished">Numpy file</translation>
+        <translation type="obsolete">Numpy file</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.py" line="262"/>
@@ -1308,153 +1308,153 @@ You can stop the capture at any moment by clicking the STOP button</translation>
         <translation>Define the scale</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="967"/>
+        <location filename="../../src/videoWidget.py" line="965"/>
         <source>Enregistrer le projet pymecavideo</source>
         <translation>Save the Pymecavideo project</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="967"/>
+        <location filename="../../src/videoWidget.py" line="965"/>
         <source>Projet pymecavideo (*.mecavideo)</source>
         <translation>pymecavideo project file (*.mecavideo)</translation>
     </message>
     <message>
-        <location filename="../../src/videoWidget.py" line="974"/>
+        <location filename="../../src/videoWidget.py" line="972"/>
         <source>Il manque les données, ou l'échelle</source>
         <translation>Some data, or the scale, are missing</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="14"/>
         <source>PyMecavideo : étude d'enregistrements vidéo</source>
-        <translation type="unfinished">PyMecavideo: studying video records</translation>
+        <translation type="obsolete">PyMecavideo: studying video records</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="192"/>
         <source>Définir Échelle</source>
-        <translation type="unfinished">Define the scale</translation>
+        <translation type="obsolete">Define the scale</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="258"/>
         <source>Points à&lt;br&gt;étudier :</source>
-        <translation type="unfinished">Points to 
+        <translation type="obsolete">Points to 
 study:</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="339"/>
         <source>Ordonnées
 vers le bas</source>
-        <translation type="unfinished">Ordinate
+        <translation type="obsolete">Ordinate
 to the bottom</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="394"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Le nombre d'images par seconde est détecté automatiquement. Enter la valeur manuellement si la détection échoue.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The framerate has been detected automatically. Enter the value manually if the autodetection failed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="obsolete">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The framerate has been detected automatically. Enter the value manually if the autodetection failed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="448"/>
         <source>Incrémenter le compteur d'image à chaque pointage</source>
-        <translation type="unfinished">Increment the image counter at every spotting</translation>
+        <translation type="obsolete">Increment the image counter at every spotting</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="505"/>
         <source>Tourner l'image de 90° vers la gauche</source>
-        <translation type="unfinished">Turn the image 90 degrees left</translation>
+        <translation type="obsolete">Turn the image 90 degrees left</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="525"/>
         <source>Tourner l'image de 90° vers la droite</source>
-        <translation type="unfinished">Turn the image 90 degrees right</translation>
+        <translation type="obsolete">Turn the image 90 degrees right</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="562"/>
         <source>Efface le point précédent</source>
-        <translation type="unfinished">Delete the previous point</translation>
+        <translation type="obsolete">Delete the previous point</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="582"/>
         <source>Rétablit le point suivant</source>
-        <translation type="unfinished">Restore the next point</translation>
+        <translation type="obsolete">Restore the next point</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="688"/>
         <source>Près de la souris</source>
-        <translation type="unfinished">Near the
+        <translation type="obsolete">Near the
 mouse</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="835"/>
         <source>Changement de référentiel :</source>
-        <translation type="unfinished">Change the referential:</translation>
+        <translation type="obsolete">Change the referential:</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="848"/>
         <source>Voir la vidéo</source>
-        <translation type="unfinished">tch the video</translation>
+        <translation type="obsolete">tch the video</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="875"/>
         <source>Tableau des dates et des coordonnées</source>
-        <translation type="unfinished">Table of dates and coordinates</translation>
+        <translation type="obsolete">Table of dates and coordinates</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="914"/>
         <source>Changer d'échelle</source>
-        <translation type="unfinished">Change the scale</translation>
+        <translation type="obsolete">Change the scale</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="934"/>
         <source>Ajouter les énergies :</source>
-        <translation type="unfinished">Add energies:</translation>
+        <translation type="obsolete">Add energies:</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="955"/>
         <source>Cinétique (échelle obligatoire)</source>
-        <translation type="unfinished">Cinetic (scale is mandatory)</translation>
+        <translation type="obsolete">Cinetic (scale is mandatory)</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="969"/>
         <source>Mécanique</source>
-        <translation type="unfinished">Mechanic</translation>
+        <translation type="obsolete">Mechanic</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="979"/>
         <source>Intensité de la pesanteur :</source>
-        <translation type="unfinished">gravity:</translation>
+        <translation type="obsolete">gravity:</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1053"/>
         <source>Données et grandeurs à représenter</source>
-        <translation type="unfinished">Data and quantities to plot</translation>
+        <translation type="obsolete">Data and quantities to plot</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1136"/>
         <source>Intensité de la pesanteur g (N/kg)</source>
-        <translation type="unfinished">Gravity g (N/kg)</translation>
+        <translation type="obsolete">Gravity g (N/kg)</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1373"/>
         <source>&amp;Ouvrir une vidéo</source>
-        <translation type="unfinished">&amp;Open a video</translation>
+        <translation type="obsolete">&amp;Open a video</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1410"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enregistre les données du projet pour pouvoir être réouvert dans PyMecaVideo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the project's data so thei can be reopened later with PyMecaVideo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="obsolete">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the project's data so thei can be reopened later with PyMecaVideo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1422"/>
         <source>À &amp;propos</source>
-        <translation type="unfinished">&amp;About</translation>
+        <translation type="obsolete">&amp;About</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1457"/>
         <source>&amp;Préférences</source>
-        <translation type="unfinished">&amp;Preferences</translation>
+        <translation type="obsolete">&amp;Preferences</translation>
     </message>
     <message>
         <location filename="../../src/pymecavideo.ui" line="1478"/>
         <source>&amp;Défaire</source>
-        <translation type="unfinished">&amp;Undo</translation>
+        <translation type="obsolete">&amp;Undo</translation>
     </message>
 </context>
 <context>
@@ -1533,7 +1533,7 @@ mouse</translation>
 <context>
     <name>self.app</name>
     <message>
-        <location filename="../../src/echelle.py" line="172"/>
+        <location filename="../../src/echelle.py" line="171"/>
         <source>Vous pouvez continuer votre acquisition</source>
         <translation>You can keep on plotting</translation>
     </message>

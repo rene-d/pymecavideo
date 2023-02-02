@@ -198,7 +198,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 lambda checked, index=key: self.export(index))
             self.menuE_xporter_vers.addAction(action)
 
-        self.init_variables(opts, self.prefs.defaults['lastVideo'])
+        self.init_variables(self.prefs.defaults['lastVideo'])
         # connections internes
         self.ui_connections()
 
@@ -298,7 +298,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.showNormal()
         self.plein_ecran = not (self.plein_ecran)
 
-    def init_variables(self, opts, filename=""):
+    def init_variables(self, filename=""):
         self.dbg.p(1, "rentre dans 'init_variables'")
         self.index_max = 1
         self.repere = 0
@@ -323,7 +323,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.video.index = 1  # image à afficher
         self.chronoImg = 0
         self.filename = filename
-        self.opts = opts
         self.stdout_file = os.path.join(CONF_PATH, "stdout")
         self.exitDecode = False
         self.resizing = False
@@ -525,7 +524,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.video.active_controle_image(False)
 
         # marque "indéf." dans l'afficheur d'échelle à gauche
-        self.video.affiche_echelle()
+        self.affiche_echelle()
 
         # mise à jour de styles
         self.Bouton_Echelle.setStyleSheet("background-color:None;")
@@ -557,9 +556,26 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         Sur l’image de la vidéo, le curseur est ordinaire.
         """
-        self.etat = "A1" if self.video.echelle else "A0"
+        self.etat = "A1" if self.video.echelle_image else "A0"
+        if self.etat == "A0":
+            self.Bouton_Echelle.setText(_translate(
+                "pymecavideo", "Définir l'échelle", None))
+            self.Bouton_Echelle.setStyleSheet("background-color:None;")
+            # s'il n'y a pas d'échelle, on peut redimensionner la fenêtre
+            self.defixeLesDimensions()
+            if self.video.echelle_trace:
+                self.video.echelle_trace.hide()
+        # ferme les widget d'affichages des x, y, v du 2eme onglet
+        # si elles existent
+        for plotwidget in self.dictionnairePlotWidget.values():
+            plotwidget.parentWidget().close()
+            plotwidget.close()
+            del plotwidget
+        self.init_variables(self.video.filename)
+        # active les contrôle de l'image, montre l'image
         self.video.active_controle_image(True)
-        # réactive des widgets
+        self.video.affiche_image()
+        # réactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
             self.label_nb_de_points, \
             self.spinBox_nb_de_points, self.Bouton_Echelle, \
@@ -571,6 +587,41 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
             obj.setEnabled(True)
 
+        # ajuste le nombre d'objets suivis
+        if self.video.suivis:
+            self.spinBox_nb_de_points.setValue(self.video.nb_obj)
+        else:
+            self.spinBox_nb_de_points.setValue(1)
+
+        # desactive d'autres widgets
+        self.pushButton_stopCalculs.setEnabled(False)
+        self.pushButton_stopCalculs.hide()
+        self.enableDefaire(False)
+        self.enableRefaire(False)
+        self.checkBox_abscisses.setCheckState(Qt.CheckState.Unchecked)
+        self.checkBox_ordonnees.setCheckState(Qt.CheckState.Unchecked)
+        self.checkBox_auto.setCheckState(Qt.CheckState.Unchecked)
+        for i in 1, 2, 3:
+            self.tabWidget.setTabEnabled(i, False)
+        self.checkBox_Ec.setChecked(False)
+        self.checkBox_Em.setChecked(False)
+        self.checkBox_Epp.setChecked(False)
+        
+        # désactive le grapheur si existant
+        if self.graphWidget:
+            plotItem = self.graphWidget.getPlotItem()
+            plotItem.clear()
+            plotItem.setTitle('')
+            plotItem.hideAxis('bottom')
+            plotItem.hideAxis('left')
+        ### Réactive conditionnellement les boutons de rotation
+        if self.video.a_une_image:
+            self.pushButton_rot_droite.setEnabled(True)
+            self.pushButton_rot_gauche.setEnabled(True)
+        else:
+            self.pushButton_rot_droite.setEnabled(False)
+            self.pushButton_rot_gauche.setEnabled(False)
+ 
         """
         Prépare une session de pointage, au niveau de la
         fenêtre principale, et met à jour les préférences
@@ -580,6 +631,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.prefs.save()
 
         self.spinBox_image.setMinimum(1)
+        self.spinBox_image.setValue(1)
         self.spinBox_chrono.setMaximum(self.video.image_max)
         self.spinBox_nb_de_points.setEnabled(True)
         self.tab_traj.setEnabled(0)
@@ -1649,7 +1701,47 @@ Merci de bien vouloir le renommer avant de continuer""", None))
                 QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
         return
     
+    def affiche_echelle(self):
+        """
+        affiche l'échelle courante pour les distances sur l'image
+        """
+        self.dbg.p(1, "rentre dans 'affiche_echelle'")
+        if self.video.echelle_image.isUndef():
+            self.echelleEdit.setText(
+                _translate("pymecavideo", "indéf.", None))
+        else:
+            epxParM = self.video.echelle_image.pxParM()
+            if epxParM > 20:
+                self.echelleEdit.setText("%.1f" % epxParM)
+            else:
+                self.echelleEdit.setText("%8e" % epxParM)
+        self.echelleEdit.show()
+        self.Bouton_Echelle.show()
+        return
 
+    def enableDefaire(self, value):
+        """
+        Contrôle la possibilité de défaire un clic
+        @param value booléen
+        """
+        self.dbg.p(1, "rentre dans 'enableDefaire, %s'" % (str(value)))
+        self.pushButton_defait.setEnabled(value)
+        self.actionDefaire.setEnabled(value)
+        # permet de remettre l'interface à zéro
+        if not value:
+            self.video.active_controle_image()
+        return
+    
+    def enableRefaire(self, value):
+        """
+        Contrôle la possibilité de refaire un clic
+        @param value booléen
+        """
+        self.dbg.p(1, "rentre dans 'enableRefaire, %s'" % (value))
+        self.pushButton_refait.setEnabled(value)
+        self.actionRefaire.setEnabled(value)
+        return
+    
 def usage():
     print("""\
 Usage : pymecavideo [-d (1-3)| --debug=(1-3)] [video | mecavideo]

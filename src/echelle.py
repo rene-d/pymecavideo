@@ -158,8 +158,7 @@ class EchelleWidget(QWidget):
             self.video.echelle_image.p2 = self.p2.copy()
 
             epxParM = self.video.echelle_image.pxParM()
-            self.video.affiche_echelle()
-            # self.app.affiche_nb_points(True)
+            self.app.affiche_echelle()
             self.app.affiche_barre_statut(self.app.tr(
                 u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
             self.video.mets_en_orange_echelle()

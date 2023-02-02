@@ -191,19 +191,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.origine = vecteur(self.image_w//2, self.image_h//2)
         return
 
-    def reinit(self):
-        self.dbg.p(1, "rentre dans 'reinit'")
-        self.updateZoom()
-        self.setMouseTracking(True)
-        self.update()
-        self.setCursor(Qt.CursorShape.ArrowCursor)
-        self.setEnabled(1)
-        self.reinit_origine()
-        self.pointsProbables = {}
-        self.motifs_auto = []
-        self.redimensionne_data()
-        return
-
     def maj(self, tourne=False):
         if tourne:
             self.tourne = True
@@ -442,24 +429,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.spinBox_image.setEnabled(state)
         return
         
-    def affiche_echelle(self):
-        """
-        affiche l'échelle courante pour les distances sur l'image
-        """
-        self.dbg.p(1, "rentre dans 'affiche_echelle'")
-        if self.echelle_image.isUndef():
-            self.app.echelleEdit.setText(
-                _translate("pymecavideo", "indéf.", None))
-        else:
-            epxParM = self.echelle_image.pxParM()
-            if epxParM > 20:
-                self.app.echelleEdit.setText("%.1f" % epxParM)
-            else:
-                self.app.echelleEdit.setText("%8e" % epxParM)
-        self.app.echelleEdit.show()
-        self.app.Bouton_Echelle.show()
-        return
-
     def init_image(self):
         """
         initialise certaines variables lors le la mise en place d'une 
@@ -574,21 +543,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.dbg.p(1, "rentre dans 'clic_sur_video_ajuste_ui'")
         self.affiche_image()
         self.affiche_point_attendu(self.objet_courant)
-        self.enableDefaire(self.peut_defaire())
-        self.enableRefaire(self.peut_refaire())
+        self.app.enableDefaire(self.peut_defaire())
+        self.app.enableRefaire(self.peut_refaire())
         return
-
-    def affiche_nb_points(self, active=False):
-        """
-        Met à jour l'afficheur de nombre de points à saisir
-        @param active vrai si on doit permettre la saisie du nombre de points
-        """
-        self.dbg.p(1, "rentre dans 'affiche_nb_points'")
-        self.spinBox_nb_de_points.setEnabled(active)
-        if self.suivis:
-            self.spinBox_nb_de_points.setValue(self.nb_obj)
-        return
-
 
     def debut_capture(self, departManuel=True, rouvre=False):
         """
@@ -683,93 +640,23 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
     def reinitialise_capture(self):
         """
         Efface toutes les données de la capture en cours et prépare une nouvelle
-        session de capture.
+        session de capture. Retourne à l'état A
         """
         self.dbg.p(1, "rentre dans 'reinitialise_capture'")
 
-        # ferme les widget d'affichages des x, y, v du 2e onglets si elles existent
-        for plotwidget in self.app.dictionnairePlotWidget.values():
-            plotwidget.parentWidget().close()
-            plotwidget.close()
-            del plotwidget
 
-        # redonne la possibilité de redimensionner la fenêtre
-        # et oublie self.echelle_image
-        self.app.defixeLesDimensions()
+        # oublie self.echelle_image
         self.clearEchelle()
-        
-        self.reinit()
-        if self.echelle_trace:
-            self.echelle_trace.hide()
-        self.Bouton_Echelle.setText(_translate(
-            "pymecavideo", "Définir l'échelle", None))
-        self.Bouton_Echelle.setStyleSheet("background-color:None;")
-        self.app.init_variables(tuple(), filename=self.filename)
-        self.affiche_image()
-        self.affiche_echelle()
-        self.active_controle_image()
-        self.spinBox_image.setValue(1)
-        self.enableDefaire(False)
-        self.enableRefaire(False)
-        self.affiche_nb_points(1)
-        self.Bouton_lance_capture.setEnabled(1)
-
-        # désactive le bouton de calculs si existant :
-        self.pushButton_stopCalculs.setEnabled(0)
-        self.pushButton_stopCalculs.hide()
-
-        # désactive graphe si existant
-        if self.graphWidget:
-            plotItem = self.graphWidget.getPlotItem()
-            plotItem.clear()
-            plotItem.setTitle('')
-            plotItem.hideAxis('bottom')
-            plotItem.hideAxis('left')
-        ### Réactiver checkBox_avancees après réinitialisation ###
-        self.pushButton_origine.setEnabled(1)
-        self.checkBox_abscisses.setEnabled(1)
-        self.checkBox_ordonnees.setEnabled(1)
-        self.checkBox_auto.setEnabled(1)
-        self.checkBox_abscisses.setCheckState(Qt.CheckState.Unchecked)
-        self.checkBox_ordonnees.setCheckState(Qt.CheckState.Unchecked)
-        self.checkBox_auto.setCheckState(Qt.CheckState.Unchecked)
-        if self.a_une_image:
-            self.pushButton_rot_droite.setEnabled(1)
-            self.pushButton_rot_gauche.setEnabled(1)
-        else:
-            self.pushButton_rot_droite.setEnabled(0)
-            self.pushButton_rot_gauche.setEnabled(0)
-        # réactive les contrôles de l'image (spinbox et slider) :
-        self.active_controle_image()
-        self.tabWidget.setTabEnabled(3, False)
-        self.tabWidget.setTabEnabled(2, False)
-        self.tabWidget.setTabEnabled(1, False)
-        self.checkBox_Ec.setChecked(0)
-        self.checkBox_Em.setChecked(0)
-        self.checkBox_Epp.setChecked(0)
-        return
-    
-    def enableDefaire(self, value):
-        """
-        Contrôle la possibilité de défaire un clic
-        @param value booléen
-        """
-        self.dbg.p(1, "rentre dans 'enableDefaire, %s'" % (str(value)))
-        self.pushButton_defait.setEnabled(value)
-        self.app.actionDefaire.setEnabled(value)
-        # permet de remettre l'interface à zéro
-        if not value:
-            self.active_controle_image()
-        return
-    
-    def enableRefaire(self, value):
-        """
-        Contrôle la possibilité de refaire un clic
-        @param value booléen
-        """
-        self.dbg.p(1, "rentre dans 'enableRefaire, %s'" % (value))
-        self.pushButton_refait.setEnabled(value)
-        self.app.actionRefaire.setEnabled(value)
+        # reinitialisation du widget video
+        self.updateZoom()
+        self.setMouseTracking(True)
+        self.setCursor(Qt.CursorShape.ArrowCursor)
+        self.setEnabled(True)
+        self.reinit_origine()
+        self.pointsProbables = {}
+        self.motifs_auto = []
+        self.redimensionne_data()
+        self.app.change_etat.emit("A0")
         return
     
     def demande_echelle(self):
