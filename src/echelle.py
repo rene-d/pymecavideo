@@ -40,7 +40,7 @@ class echelle(QObject):
         """
         @return vrai si l'échelle a été faite
         """
-        return self.p1 != self.p2
+        return self.p1 != self.p2 and (self.p1 - self.p2).norme > 1
     
     def __str__(self):
         return "echelle(%s,%s,%s m)" % (self.p1, self.p2, self.longueur_reelle_etalon)

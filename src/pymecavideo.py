@@ -66,7 +66,7 @@ licence['en'] = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-licence['fr'] = u"""
+licence['fr'] = """
     pymecavideo version %s :
 
     un programme pour tracer les trajectoires des points dans une vidéo.
@@ -468,7 +468,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             
         # décochage de widgets
         for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
-
             obj.setChecked(False)
         
         # activation de widgets
@@ -529,10 +528,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.etat = "A1" if self.video.echelle_image else "A0"
         self.dbg.p(1, f"rentre dans l'état « {self.etat} »")
         if self.etat == "A0":
+            self.affiche_echelle() # marque "indéf."
             self.Bouton_Echelle.setText(_translate(
                 "pymecavideo", "Définir l'échelle", None))
             self.Bouton_Echelle.setStyleSheet("background-color:None;")
-            # s'il n'y a pas d'échelle, on peut redimensionner la fenêtre
+            # comme il n'y a pas d'échelle, on peut redimensionner la fenêtre
             self.defixeLesDimensions()
             if self.video.echelle_trace:
                 self.video.echelle_trace.hide()
@@ -675,9 +675,17 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.video.lance_capture = True
          # les widgets de contrôle de l'image sont actifs ici
         self.video.active_controle_image(True)
+        
         # tous les onglets sont actifs
         for i in 1, 2, 3:
             self.tabWidget.setTabEnabled(i, True)
+            
+        # comme l'onglet 2 est actif, il faut s'occuper du statut des
+        # boutons pour les énergies !
+        for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
+            obj.setChecked(False)
+            obj.setEnabled(bool(self.video.echelle_image))
+            
         # mise à jour des menus
         self.actionSaveData.setEnabled(True)
         self.actionCopier_dans_le_presse_papier.setEnabled(True)
@@ -879,8 +887,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(1, "rentre dans 'choisi_nouvelle_origine'")
         nvl_origine = QMessageBox.information(
             self,
-            u"NOUVELLE ORIGINE",
-            u"Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
+            "NOUVELLE ORIGINE",
+            "Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
         ChoixOrigineWidget(parent=self.video, app=self).show()
 
     def tourne_droite(self):
@@ -1479,7 +1487,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 _translate("pymecavideo",
                            "Quelle est la masse de l'objet ? (en kg)",
                            None),
-                QLineEdit.Normal, u"1.0")
+                text ="1.0")
             if masse_objet_raw[1] == False:
                 return None
             masse_objet = [
@@ -1518,18 +1526,18 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         # active ou désactive les checkbox énergies
         # (n'ont un intérêt que si l'échelle est déterminée)
-        if self.video.echelle:
-            self.checkBox_Ec.setEnabled(1)
-            self.checkBox_Epp.setEnabled(1)
+        if self.video.echelle_image:
+            self.checkBox_Ec.setEnabled(True)
+            self.checkBox_Epp.setEnabled(True)
             if self.checkBox_Ec.isChecked() and self.checkBox_Epp.isChecked():
-                self.checkBox_Em.setEnabled(1)
+                self.checkBox_Em.setEnabled(True)
             else:
                 # s'il manque Ec ou Epp on décoche Em
                 self.checkBox_Em.setChecked(False)
         else:
-            self.checkBox_Ec.setEnabled(0)
-            self.checkBox_Em.setEnabled(0)
-            self.checkBox_Epp.setEnabled(0)
+            self.checkBox_Ec.setEnabled(False)
+            self.checkBox_Em.setEnabled(False)
+            self.checkBox_Epp.setEnabled(False)
 
         # masse de l'objet ATTENTION : QUID SI PLUSIEURS OBJETS ?
         if self.checkBox_Ec.isChecked():
@@ -1593,17 +1601,16 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.video.iteration_data(
             cb_temps, cb_point,
             unite = "m" if self.video.echelle_image else "px")
+        
         # rajoute des boutons pour refaire le pointage
         # au voisinage immédiat des zones de pointage
-        derniere = self.video.nb_obj * (2 + colonnes_sup) +1
+        colonne = self.video.nb_obj * (2 + colonnes_sup) +1
         if self.video.premiere_image() > 1:
             i = self.video.premiere_image() - 2
-            self.tableWidget.setCellWidget(
-                    i, derniere, self.bouton_refaire(i))
+            self.tableWidget.setCellWidget(i, colonne, self.bouton_refaire(i))
         if self.video.derniere_image() < len(self.video):
             i = self.video.derniere_image()
-            self.tableWidget.setCellWidget(
-                    i, derniere, self.bouton_refaire(i))
+            self.tableWidget.setCellWidget(i, colonne, self.bouton_refaire(i))
         return
 
     def recommence_echelle(self):
@@ -1611,13 +1618,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.tabWidget.setCurrentIndex(0)
         self.video.echelle_image = echelle()
         self.affiche_echelle()
-        try:
-            self.job.dialog.close()
-            self.job.close()
-        except AttributeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
         self.demande_echelle()
+        return
 
     def affiche_image_slider(self):
         self.dbg.p(1, "rentre dans 'affiche_image_slider'")
@@ -1650,9 +1652,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if self.modifie:
             retour = QMessageBox.warning(
                 self,
-                _translate(u"pymecavideo", "Les données seront perdues", None),
+                _translate("pymecavideo", "Les données seront perdues", None),
                 _translate(
-                    u"pymecavideo", "Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?", None),
+                    "pymecavideo", "Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?", None),
                 QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if retour == QMessageBox.Yes:
                 self.enregistre_ui()
@@ -1673,9 +1675,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 retour = QMessageBox.critical(
                     self,
-                    _translate(u"pymecavideo", "MAUVAISE VALEUR !", None),
+                    _translate("pymecavideo", "MAUVAISE VALEUR !", None),
                     _translate(
-                        u"pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
+                        "pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
                     QMessageBox.Yes)
         self.affiche_grapheur()
         self.dessine_graphe()
@@ -1689,9 +1691,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
                 retour = QMessageBox.critical(
                     self,
-                    _translate(u"pymecavideo", "MAUVAISE VALEUR !", None),
+                    _translate("pymecavideo", "MAUVAISE VALEUR !", None),
                     _translate(
-                        u"pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
+                        "pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
                     QMessageBox.Yes)
         self.affiche_grapheur()
         self.dessine_graphe()
@@ -1786,8 +1788,8 @@ Merci de bien vouloir le renommer avant de continuer""", None))
             retour = QMessageBox.warning(
                 self,
                 _translate(
-                    u"pymecavideo", "Le nombre d'images par seconde doit être un entier", None),
-                _translate(u"pymecavideo", "merci de recommencer", None),
+                    "pymecavideo", "Le nombre d'images par seconde doit être un entier", None),
+                _translate("pymecavideo", "merci de recommencer", None),
                 QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
         return
     

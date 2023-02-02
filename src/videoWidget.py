@@ -604,19 +604,18 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         session de capture. Retourne à l'état A
         """
         self.dbg.p(1, "rentre dans 'reinitialise_capture'")
-
-
         # oublie self.echelle_image
         self.clearEchelle()
         # reinitialisation du widget video
         self.updateZoom()
-        self.setMouseTracking(True)
+        self.setMouseTracking(False)
         self.setCursor(Qt.CursorShape.ArrowCursor)
         self.setEnabled(True)
         self.reinit_origine()
         self.pointsProbables = {}
         self.motifs_auto = []
         self.redimensionne_data()
+        self.update()
         self.app.change_etat.emit("A0")
         return
     
