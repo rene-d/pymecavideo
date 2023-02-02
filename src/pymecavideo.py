@@ -22,9 +22,12 @@ import numpy as np
 import math
 import tempfile
 import platform
-from export import Export, EXPORT_FORMATS
 import re
 import magic
+import pyqtgraph as pg
+import pyqtgraph.exporters
+
+from export import Export, EXPORT_FORMATS
 from toQimage import toQImage
 from version import Version
 from dbg import Dbg
@@ -33,10 +36,7 @@ from cadreur import Cadreur, openCvReader
 from choix_origine import ChoixOrigineWidget
 from trajectoire_widget import TrajectoireWidget
 from grandeurs import grandeurs
-
 from glob import glob
-import pyqtgraph as pg
-import pyqtgraph.exporters
 from vecteur import vecteur
 from echelle import EchelleWidget, echelle
 
@@ -1593,6 +1593,17 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.video.iteration_data(
             cb_temps, cb_point,
             unite = "m" if self.video.echelle_image else "px")
+        # rajoute des boutons pour refaire le pointage
+        # au voisinage immédiat des zones de pointage
+        derniere = self.video.nb_obj * (2 + colonnes_sup) +1
+        if self.video.premiere_image() > 1:
+            i = self.video.premiere_image() - 2
+            self.tableWidget.setCellWidget(
+                    i, derniere, self.bouton_refaire(i))
+        if self.video.derniere_image() < len(self.video):
+            i = self.video.derniere_image()
+            self.tableWidget.setCellWidget(
+                    i, derniere, self.bouton_refaire(i))
         return
 
     def recommence_echelle(self):

@@ -197,6 +197,11 @@ class Pointage(QObject):
     def __str__(self):
         return self.csv_string()
 
+    def __len__(self):
+        if self.dates is not None:
+            return len(self.dates)
+        return 0
+
     def __bool__(self):
         """
         @return faux si toutes les pointages sont None
