@@ -426,16 +426,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         elif etat in ("D", "D0", "D1"):
             self.etatD()
         elif etat == "E":
-            """
-            On est en train de pointer une série d’objets pour la même date.
-            Le curseur de souris a la forme d’une grosse cible ;
-            idéalement il identifie aussi l’objet à pointer.
-
-            Durant ce pointage, les contrôles de changement d’image
-            sont inactifs, ainsi que les onglets autres que le
-            premier.
-            """
-            pass
+            self.etatE()
         else:
             raise Exception("L'état doit être debut, A0, A1, AB0, AB1, B0, B1, C, D0, D1 ou E")
         return
@@ -716,6 +707,21 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_reinit.setEnabled(True)
         return
 
+    def etatE(self):
+        """
+        On est en train de pointer une série d’objets pour la même date.
+        Le curseur de souris a la forme d’une grosse cible ;
+        idéalement il identifie aussi l’objet à pointer.
+
+        Durant ce pointage, les contrôles de changement d’image
+        sont inactifs, ainsi que les onglets autres que le
+        premier.
+        """
+        self.video.active_controle_image(False)
+        for i in 1, 2, 3:
+            self.tabWidget.setTabEnabled(i, False)        
+        return
+        
     def restaureEtat(self):
         """
         Restauration de l'état A ou D après (re)définition de l'échelle
