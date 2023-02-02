@@ -29,7 +29,6 @@ from export import Export, EXPORT_FORMATS
 import re
 import magic
 from toQimage import toQImage
-from dialogencode import QMessageBoxEncode
 from version import Version
 from listes import listePointee
 from dbg import Dbg
