@@ -251,7 +251,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         revient au premier objet quand on a fait le dernier, et
         change d'image aussi
         """
-        print(f"GRRRR dans objetSuivant,  self.objet_courant = {self.objet_courant}, l'état est {self.app.etat}")
         i = self.suivis.index(self.objet_courant)
         if i < self.nb_obj - 1 :
             self.objet_courant = self.suivis[i+1]
@@ -261,7 +260,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             if self.index < self.image_max:
                 self.index +=1
             self.app.change_etat.emit("D1" if self.echelle_image else "D0")
-        print(f"GRRRR à la fin de objetSuivant,  self.objet_courant = {self.objet_courant}, l'état est {self.app.etat}")
         return
 
     def mouseReleaseEvent(self, event):
@@ -275,11 +273,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         éventuellement vers l'onglet coordonnées, quand le dernier
         objet a été pointé.
         """
-        print("GRRRR dans videoWidget.mouseReleaseEvent self.pointageOK =", self.pointageOK)
-        if self.pointageOK and \
-           event.button() == Qt.MouseButton.LeftButton:
+        if self.pointageOK and event.button() == Qt.MouseButton.LeftButton:
             self.app.change_etat.emit("E")
-            print(f"GRRRR on pointe {self.objet_courant}, l'état est {self.app.etat}")
             self.pointe(
                 self.objet_courant, event, index=self.index-1)
             self.objetSuivant()
@@ -295,15 +290,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
     def mouseMoveEvent(self, event):
         if self.lance_capture == True and self.auto == False:
-            p =vecteur(qPoint = event.position())
-            # ne se lance que si la capture manuelle est lancée
+            p = vecteur(qPoint = event.position())
             self.hotspot = p
             self.updateZoom(self.hotspot)
         return
     
     def paintEvent(self, event):
         if self.image:
-            if self.echelle_image and self.lance_capture:
+            if self.app.etat in ("A0", "A1", "C", "D0", "D1", "E"):
                 self.updateZoom(self.hotspot)
 
             painter = QPainter()
@@ -386,8 +380,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # qu'il n'y ait encore aucun pointage, ou que l'index soit
         # connexe aux pointages existants
         self.pointageOK = \
-            (self.app.etat == "D0" or  self.app.etat == "D1" or self.app.etat == "E") and \
-            (not self or index in range(self.premiere_image() - 1, self.derniere_image() + 2))
+            self.app.etat in ("D0", "D1", "E") and \
+            (not self or index in range(self.premiere_image() - 1, \
+                                        self.derniere_image() + 2))
         if self.pointageOK:
             # beau gros curseur seulement si le pointage est licite ;
             self.setCursor(self.pointageCursor)
