@@ -24,7 +24,6 @@ import numpy as np
 import math
 import tempfile
 import platform
-import threading
 from export import Export, EXPORT_FORMATS
 import re
 import magic
@@ -1834,29 +1833,6 @@ def run():
     window = FenetrePrincipale(None, opts, args)
     window.show()
     sys.exit(app.exec())
-
-
-class plotThread(threading.Thread):
-    """
-    une classe pour lancer un traceur de courbe
-    """
-
-    def __init__(self, cmd, dataLines):
-        """
-        Le constructeur
-        @param cmd la commande à lancer dans un shell
-        @param dataLines une chaîne de plusieurs lignes (format x y)
-        """
-        threading.Thread.__init__(self)
-        self.cmd = cmd
-        self.xy = dataLines
-        return
-
-    def run(self):
-        p = subprocess.Popen(str(self.cmd), shell=True, stdin=subprocess.PIPE)
-        p.communicate(self.xy.encode("utf-8"))
-        return
-
 
 if __name__ == "__main__":
     run()
