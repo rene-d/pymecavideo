@@ -27,7 +27,7 @@ from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QShortcu
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
-from globdef import beauGrosCurseur
+from globdef import cible_icon
 
 class echelle(QObject):
     def __init__(self, p1=vecteur(0, 0), p2=vecteur(0, 0)):
@@ -111,7 +111,9 @@ class EchelleWidget(QWidget):
         self.p1 = vecteur()
         self.p2 = vecteur()
         self.pos_echelle = vecteur()
-        beauGrosCurseur(self)
+        cible_pix = QPixmap(cible_icon).scaledToHeight(32)
+        cible_cursor = QCursor(cible_pix)
+        self.setCursor(cible_cursor)
         self.cropX2 = None
         self.setMouseTracking(True)
         self.pressed = False

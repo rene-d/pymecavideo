@@ -26,7 +26,8 @@ from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QPen, QC
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
-from globdef import beauGrosCurseur
+from globdef import cible_icon
+
 import os.path
 
 
@@ -46,7 +47,9 @@ class SelRectWidget(QWidget):
         self.setGeometry(
             QRect(0, 0, self.video.image_w, self.video.image_h))
         self.setAutoFillBackground(False)
-        beauGrosCurseur(self)
+        cible_pix = QPixmap(cible_icon).scaledToHeight(32)
+        cible_cursor = QCursor(cible_pix)
+        self.setCursor(cible_cursor)        
         return
 
     def finish(self, delete=False):

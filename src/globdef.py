@@ -191,19 +191,8 @@ def GetChildStdErr():
 def _translate(context, text, disambig):
     return QApplication.translate(context, text, disambig)
 
+cible_icon = os.path.join(ICON_PATH, "curseur_cible.svg")
 
-def beauGrosCurseur(widget):
-    """
-    Définit un beau gros curseur rouge immanquable pour un widget
-    @param widget le widget affecté par le curseur
-    """
-    cible_icon = os.path.join(ICON_PATH, "curseur_cible.svg")
-    pix = QPixmap(cible_icon).scaledToHeight(32)
-    cursor = QCursor(pix)
-    widget.setCursor(cursor)
-    widget.setMouseTracking(True)
-    return
-    
 inhibitions = []; # liste de mots-clés pour inhiber des actions trop rapides
 
 def inhibe(motcle, duree):

@@ -357,7 +357,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.presse_papier)
         self.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
         self.Bouton_Echelle.clicked.connect(self.video.demande_echelle)
-        self.Bouton_lance_capture.clicked.connect(self.video.debut_capture)
+        self.Bouton_lance_capture.clicked.connect(self.debut_capture)
         self.comboBox_referentiel.currentIndexChanged.connect(
             self.tracer_trajectoires)
         self.tabWidget.currentChanged.connect(self.choix_onglets)
@@ -411,9 +411,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.etat_ancien = etat
         if etat == "debut":
            self.etatDebut()
-        elif etat in ("A0", "A1"):
+        elif etat in ("A", "A0", "A1"):
             self.etatA()
-        elif etat in ("AB0", "AB1"):
+        elif etat in ("AB", "AB0", "AB1"):
             """
             On y arrive en cliquant sur le bouton démarrer, si la case
             à cocher « pointage auto » était cochée. On doit définir,
@@ -435,31 +435,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             Cet état peut se situer entre A0 et A1, ou entre D0 et D1.
             """
             pass
-        elif etat in ("D0", "D1"):
-            """
-            On a « démarré », et une pointage manuel est
-            possible. Tous les onglets sont actifs.
-
-            Les contrôles pour changer d’image sont actifs, et le seul
-            autre bouton actif sur le premier onglet est celui qui
-            permet de changer d’échelle.
-
-            Le pointage n’est possible que dans deux cas :
-
-            quand aucune image n’a été pointée quand le pointage à
-            venir est voisin de pointages existants : sur une image
-            déjà pointée, ou juste avant, ou juste après.
-
-            Quand le pointage est possible et seulement alors, le
-            curseur de souris a la forme d’une grosse cible ;
-            idéalement il identifie aussi l’objet à pointer.
-            """
-            pass
+        elif etat in ("D", "D0", "D1"):
+            self.etatD()
         elif etat == "E":
             """
-            On est en train de pointer une série d’objets. Le curseur
-            de souris a la forme d’une grosse cible ; idéalement il
-            identifie aussi l’objet à pointer.
+            On est en train de pointer une série d’objets pour la même date.
+            Le curseur de souris a la forme d’une grosse cible ;
+            idéalement il identifie aussi l’objet à pointer.
 
             Durant ce pointage, les contrôles de changement d’image
             sont inactifs, ainsi que les onglets autres que le
@@ -557,6 +539,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Sur l’image de la vidéo, le curseur est ordinaire.
         """
         self.etat = "A1" if self.video.echelle_image else "A0"
+        self.dbg.p(1, f"rentre dans l'état « {self.etat} »")
         if self.etat == "A0":
             self.Bouton_Echelle.setText(_translate(
                 "pymecavideo", "Définir l'échelle", None))
@@ -642,6 +625,74 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.egalise_origine()
         return
 
+    def etatD(self):
+        """
+        Une vidéo est connue et on en affiche une image.
+        Le pointage a été démarré, manuellement, ou un pointage
+        automatique vient de finir.Tous les onglets sont actifs.
+
+        D0 : l’échelle est indéfinie
+        D1 : l’échelle est définie
+
+        Les contrôles pour changer d’image sont actifs, et le seul
+        autre bouton actif sur le premier onglet est celui qui
+        permet de changer d’échelle.
+
+        Le pointage n’est possible que dans deux cas :
+
+        quand aucune image n’a été pointée quand le pointage à
+        venir est voisin de pointages existants : sur une image
+        déjà pointée, ou juste avant, ou juste après.
+
+        Quand le pointage est possible et seulement alors, le
+        curseur de souris a la forme d’une grosse cible ;
+        idéalement il identifie aussi l’objet à pointer.
+        """
+        self.etat = "D1" if self.video.echelle_image else "D0"
+        self.dbg.p(1, f"rentre dans l'état « {self.etat} »")
+        # empêche de redimensionner la fenêtre
+        self.fixeLesDimensions()
+        # prépare le widget video
+        self.video.setFocus()
+        if self.video.echelle_trace: self.video.echelle_trace.lower()
+        # on force extract_image afin de mettre à jour le curseur de la vidéo
+        self.video.extract_image(self.horizontalSlider.value())
+        
+        self.video.affiche_point_attendu(self.video.suivis[0])
+        self.video.lance_capture = True
+         # les widgets de contrôle de l'image sont actifs ici
+        self.video.active_controle_image(True)
+        # tous les onglets sont actifs
+        for i in 1, 2, 3:
+            self.tabWidget.setTabEnabled(i, True)
+        # mise à jour des menus
+        self.actionSaveData.setEnabled(True)
+        self.actionCopier_dans_le_presse_papier.setEnabled(True)
+        self.comboBox_referentiel.setEnabled(True)
+        self.pushButton_select_all_table.setEnabled(True)
+
+        self.comboBox_referentiel.clear()
+        self.comboBox_referentiel.insertItem(-1, "camera")
+        for obj in self.video.suivis:
+            self.comboBox_referentiel.insertItem(-1, _translate(
+                "pymecavideo", "point N° {0}", None).format(str(obj)))
+
+        # désactive des boutons et des cases à cocher
+        for obj in self.pushButton_origine, self.checkBox_abscisses, \
+            self.checkBox_ordonnees, self.checkBox_auto, \
+            self.Bouton_lance_capture, self.pushButton_rot_droite, \
+            self.pushButton_rot_gauche :
+
+            obj.setEnabled(False)
+
+        # si aucune échelle n'a été définie, on place l'étalon à 1 px pour 1 m.
+        if self.video.echelle_image.mParPx() == 1:
+            self.video.echelle_image.longueur_reelle_etalon = 1
+            self.video.echelle_image.p1 = vecteur(0, 0)
+            self.video.echelle_image.p2 = vecteur(0, 1)
+
+        return
+    
     def egalise_origine(self):
         """
         harmonise l'origine : recopie celle de la vidéo vers le
@@ -1740,6 +1791,15 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.dbg.p(1, "rentre dans 'enableRefaire, %s'" % (value))
         self.pushButton_refait.setEnabled(value)
         self.actionRefaire.setEnabled(value)
+        return
+
+    def debut_capture(self):
+        """
+        Fonction de rappel du bouton Bouton_lance_capture
+
+        Passe à l'état D
+        """
+        self.change_etat.emit("D")
         return
     
 def usage():

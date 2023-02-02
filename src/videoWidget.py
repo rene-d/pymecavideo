@@ -37,7 +37,7 @@ from vecteur import vecteur
 from echelle import Echelle_TraceWidget, EchelleWidget
 from image_widget import ImageWidget
 from pointage import Pointage
-from globdef import _translate, beauGrosCurseur, DOCUMENT_PATH, inhibe
+from globdef import _translate, cible_icon, DOCUMENT_PATH, inhibe
 from cadreur import openCvReader
 from toQimage import toQImage
 from suivi_auto import SelRectWidget
@@ -89,6 +89,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.motifs_auto = []      # liste de motifs pour le suivi auto
         self.pointsProbables = {}  # dict. de points proches de la détection ?
         self.refait_point = False  # on doit repointer une date
+        self.pointageOK = False    # il est possible de faire un pointage
+        self.pointageCursor = None # le curseur pour le pointage
         return
 
     # signaux de la classe
@@ -129,6 +131,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.pushButton_refait.clicked.connect(self.refait_point_suivant)
         self.spinBox_nb_de_points.valueChanged.connect(self.redimensionne_data)
 
+        # fait un beau gros curseur
+        cible_pix = QPixmap(cible_icon).scaledToHeight(32)
+        self.pointageCursor = QCursor(cible_pix)
         return
     
     def redimensionne_data(self):
@@ -256,24 +261,18 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 self.index +=1
         return
 
-    def enterEvent(self, event):
-        if self.lance_capture == True and self.auto == False:
-            # beau curseur seulment si la capture manuelle est lancée
-            beauGrosCurseur(self)
-        else:
-            self.setCursor(Qt.CursorShape.ArrowCursor)
-        return
-    
     def mouseReleaseEvent(self, event):
         """
-        enregistre le point de l'évènement souris.
+        enregistre le point de l'évènement souris, si self.pointageOK
+        est vrai ; voir self.extract_image pour voir les conditions
+        de validité.
 
         Si self.refait_point est vrai (on a été délégué depuis un
         bouton refaire, du tableau de coordonnées, alors on rebascule
         éventuellement vers l'onglet coordonnées, quand le dernier
         objet a été pointé.
         """
-        if self.lance_capture == True and \
+        if self.pointageOK and \
            event.button() == Qt.MouseButton.LeftButton:
             self.pointe(
                 self.objet_courant, event, index=self.index-1)
@@ -361,7 +360,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
     def extract_image(self, index):
         """
-        extrait une image de la video à l'aide d'OpenCV
+        extrait une image de la video à l'aide d'OpenCV ; met à jour
+        self.pointageOK s'il est licite de pointer dans l'état actuel;
+        met à jour le curseur à utiliser aussi
         @param index le numéro de l'image (commence à 1)
 
         @return un boolen (ok), et l'image au format d'openCV ; l'image
@@ -375,6 +376,17 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             return False, None
         self.a_une_image = ok
         self.imageExtraite = toQImage(image_opencv)
+        # il est licite de pointer dans l'état D à condition
+        # qu'il n'y ait encore aucun pointage, ou que l'index soit
+        # connexe aux pointages existants
+        self.pointageOK = \
+            (self.app.etat == "D0" or  self.app.etat == "D1") and \
+            (not self or index in range(self.premiere_image() - 1, self.derniere_image() + 2))
+        if self.pointageOK:
+            # beau gros curseur seulement si le pointage est licite ;
+            self.setCursor(self.pointageCursor)
+        else:
+            self.setCursor(Qt.CursorShape.ArrowCursor)
         return ok, image_opencv
 
     def calcul_deltaT(self, ips_from_line_edit=False, rouvre=False):
@@ -547,62 +559,11 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app.enableRefaire(self.peut_refaire())
         return
 
-    def debut_capture(self, departManuel=True, rouvre=False):
+    def debut_capture(self):
         """
-        permet de mettre en place le nombre de point à acquérir
-        @param departManuel vrai si on a fixé à la main la première image.
-        @param rouvre  : ne mets pas à jour self.premiere_image_pointee 
-          à partir du slider.
+        FONCTION OBSOLÈTE : ON Y GARDE LE CODE PRÉCÉDANT LA CAPTURE AUTO
         """
         self.dbg.p(1, "rentre dans 'debut_capture'")
-        self.setFocus()
-        self.show()
-        self.activateWindow()
-        self.setVisible(True)
-        # nécessaire sinon, video n'est pas actif.
-        if self.echelle_trace: self.echelle_trace.lower()
-        self.active_controle_image(False)
-        self.tabWidget.setEnabled(1)
-        self.tabWidget.setTabEnabled(3, True)
-        self.tabWidget.setTabEnabled(2, True)
-        self.tabWidget.setTabEnabled(1, True)
-        self.arretAuto = False
-        self.Bouton_lance_capture.setEnabled(True)
-        if not rouvre :
-            # si rouvre, self.premiere_image_pointee est déjà définie
-            # 
-            self.premiere_image_pointee = self.horizontalSlider.value()
-        self.affiche_point_attendu(self.suivis[0])
-        self.lance_capture = True
-        self.app.fixeLesDimensions()
-        self.tab_traj.setEnabled(True)
-        self.app.actionSaveData.setEnabled(True)
-        self.app.actionCopier_dans_le_presse_papier.setEnabled(True)
-        self.comboBox_referentiel.setEnabled(True)
-        self.pushButton_select_all_table.setEnabled(True)
-
-        self.comboBox_referentiel.clear()
-        self.comboBox_referentiel.insertItem(-1, "camera")
-        for obj in self.suivis:
-            self.comboBox_referentiel.insertItem(-1, _translate(
-                "pymecavideo", "point N° {0}", None).format(str(obj)))
-
-        self.pushButton_origine.setEnabled(False)
-        self.checkBox_abscisses.setEnabled(False)
-        self.checkBox_ordonnees.setEnabled(False)
-        self.checkBox_auto.setEnabled(False)
-        self.Bouton_lance_capture.setEnabled(False)
-        self.pushButton_rot_droite.setEnabled(False)
-        self.pushButton_rot_gauche.setEnabled(False)
-
-        # on empêche le redimensionnement
-        self.app.fixeLesDimensions()
-
-        # si aucune échelle n'a été définie, on place l'étalon à 1 px pour 1 m.
-        if self.echelle_image.mParPx() == 1:
-            self.echelle_image.longueur_reelle_etalon = 1
-            self.echelle_image.p1 = vecteur(0, 0)
-            self.echelle_image.p2 = vecteur(0, 1)
 
         # automatic capture
         if self.checkBox_auto.isChecked():
