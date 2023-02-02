@@ -13,7 +13,6 @@ from globdef import HOME_PATH, VIDEO_PATH, CONF_PATH, \
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QVBoxLayout, QTableWidgetSelectionRange, QDialog, QPushButton
 from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QShortcut, QScreen, QAction
 from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
-from PyQt6 import uic
 
 import getopt
 import traceback
@@ -39,6 +38,8 @@ from glob import glob
 import pyqtgraph as pg
 import pyqtgraph.exporters
 from vecteur import vecteur
+from echelle import EchelleWidget, echelle
+
 import interfaces.icon_rc
 
 licence = {}
@@ -336,6 +337,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     redimensionneSignal = pyqtSignal(bool)
     updateProgressBar = pyqtSignal()
     change_etat = pyqtSignal(str)
+    apres_echelle = pyqtSignal()
 
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -351,7 +353,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.actionCopier_dans_le_presse_papier.triggered.connect(
             self.presse_papier)
         self.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
-        self.Bouton_Echelle.clicked.connect(self.video.demande_echelle)
+        self.Bouton_Echelle.clicked.connect(self.demande_echelle)
         self.Bouton_lance_capture.clicked.connect(self.debut_capture)
         self.comboBox_referentiel.currentIndexChanged.connect(
             self.tracer_trajectoires)
@@ -378,6 +380,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_stopCalculs.clicked.connect(self.video.stopCalculs)
         self.updateProgressBar.connect(self.updatePB)
         self.change_etat.connect(self.etatUI)
+        self.apres_echelle.connect(self.restaureEtat)
         self.exportCombo.currentIndexChanged.connect(self.export)
         self.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
         self.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
@@ -398,12 +401,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         Mise en place d'un état de l'interface utilisateur, voir la
         documentation dans le fichier etat_pymecavideo.html
+
+        après l'état C, il faut tenir compte d'un ancien état, A*/D*
         """
         if self.etat == etat: return # inutile de changer !
         self.etat = etat
-        #après l'état C, on doit tenir compte d'un ancien état, A*/D*
-        if etat != "C":
-            self.etat_ancien = etat
         if etat == "debut":
            self.etatDebut()
         elif etat in ("A", "A0", "A1"):
@@ -420,16 +422,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             """
             pass
         elif etat == "C":
-            """
-            L’échelle est en cours de définition.
-
-            Le premier onglet est actif, mais tous les boutons qu’on
-            peut y voir sont inactifs jusqu’à la fin de la définition
-            de l’échelle.
-
-            Cet état peut se situer entre A0 et A1, ou entre D0 et D1.
-            """
-            pass
+            self.etatC()
         elif etat in ("D", "D0", "D1"):
             self.etatD()
         elif etat == "E":
@@ -620,6 +613,31 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.egalise_origine()
         return
 
+    def etatC(self):
+        """
+        L’échelle est en cours de définition.
+
+        Le premier onglet est actif, mais tous les boutons qu’on
+        peut y voir sont inactifs jusqu’à la fin de la définition
+        de l’échelle.
+
+        Cet état peut se situer entre A0 et A1, ou entre D0 et D1,
+        selon la valeur de self.etat_ancien.
+        """
+        # désactive plusieurs widgets
+        for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
+            self.label_nb_de_points, \
+            self.spinBox_nb_de_points, self.Bouton_Echelle, \
+            self.checkBox_auto, self.Bouton_lance_capture, \
+            self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
+            self.checkBox_abscisses, self.checkBox_ordonnees, \
+            self.label_IPS, self.lineEdit_IPS, \
+            self.menuE_xporter_vers, self.actionSaveData :
+
+            obj.setEnabled(False)
+        
+        return
+        
     def etatD(self):
         """
         Une vidéo est connue et on en affiche une image.
@@ -686,7 +704,22 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.video.echelle_image.p1 = vecteur(0, 0)
             self.video.echelle_image.p2 = vecteur(0, 1)
 
+        # active le bouton de réinitialisation
+        self.pushButton_reinit.setEnabled(True)
         return
+
+    def restaureEtat(self):
+        """
+        Restauration de l'état A ou D après (re)définition de l'échelle
+        """
+        if self.etat_ancien == 'A1' or self.etat_ancien == 'A0':
+            self.etatA()
+        elif self.etat_ancien == 'D1' or self.etat_ancien == 'D0':
+            self.etatD()
+        else:
+            raise Exception(f"Fin de définition de l'échelle après un état inattendu : {self.etat_ancien}")
+        return
+        
     
     def egalise_origine(self):
         """
@@ -1795,6 +1828,35 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         Passe à l'état D
         """
         self.change_etat.emit("D")
+        return
+    
+    def demande_echelle(self):
+        """
+        demande l'échelle interactivement
+        """
+        self.dbg.p(1, "rentre dans 'demande_echelle'")
+        reponse, ok = QInputDialog.getText(
+            None,
+            _translate("pymecavideo", "Définir léchelle", None),
+            _translate("pymecavideo", "Quelle est la longueur en mètre de votre étalon sur l'image ?", None),
+            text = f"{self.video.echelle_image.longueur_reelle_etalon:.3f}")
+        if not ok:
+            return
+        try:
+            reponse = float(reponse.replace(",", "."))
+            if reponse <= 0:
+                self.app.affiche_barre_statut(_translate(
+                    "pymecavideo", " Merci d'indiquer une échelle valable", None))
+            else:
+                self.video.echelle_image.etalonneReel(reponse)
+                self.etat_ancien = self.etat # conserve pour plus tard
+                self.change_etat.emit("C")
+                job = EchelleWidget(self.video, self)
+                job.show()
+        except ValueError as err:
+            self.affiche_barre_statut(_translate(
+                "pymecavideo", " Merci d'indiquer une échelle valable", None))
+            self.demande_echelle()
         return
     
 def usage():

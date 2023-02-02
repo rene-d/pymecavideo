@@ -34,7 +34,7 @@ import locale
 
 from version import Version
 from vecteur import vecteur
-from echelle import Echelle_TraceWidget, EchelleWidget
+from echelle import Echelle_TraceWidget
 from image_widget import ImageWidget
 from pointage import Pointage
 from globdef import _translate, cible_icon, DOCUMENT_PATH, inhibe
@@ -618,33 +618,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.motifs_auto = []
         self.redimensionne_data()
         self.app.change_etat.emit("A0")
-        return
-    
-    def demande_echelle(self):
-        """
-        demande l'échelle interactivement
-        """
-        self.dbg.p(1, "rentre dans 'demande_echelle'")
-        reponse, ok = QInputDialog.getText(
-            None,
-            _translate("pymecavideo", "Définir léchelle", None),
-            _translate("pymecavideo", "Quelle est la longueur en mètre de votre étalon sur l'image ?", None),
-            text = f"{self.echelle_image.longueur_reelle_etalon:.3f}")
-        if not ok:
-            return
-        try:
-            reponse = float(reponse.replace(",", "."))
-            if reponse <= 0:
-                self.app.affiche_barre_statut(_translate(
-                    "pymecavideo", " Merci d'indiquer une échelle valable", None))
-            else:
-                self.echelle_image.etalonneReel(reponse)
-                self.job = EchelleWidget(self, self.app)
-                self.job.show()
-        except ValueError as err:
-            self.affiche_barre_statut(_translate(
-                "pymecavideo", " Merci d'indiquer une échelle valable", None))
-            self.demande_echelle()
         return
     
     def mets_en_orange_echelle(self):
