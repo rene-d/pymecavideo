@@ -18,7 +18,6 @@ from PyQt6 import uic
 import getopt
 import traceback
 import time
-from aspectlayout import AspectLayout
 import functools
 import numpy as np
 import math
