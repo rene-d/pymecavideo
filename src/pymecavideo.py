@@ -140,7 +140,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.decalw = 0
         # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
         self.pointsProbables = [None]
-        self.methode_thread = 3  # définit la methode de calcul à utiliser pour la détection auto. 1 : 1 thread de calcul  2 : découpage en plusieurs thread 3: 1 thread<-> 1 calcul
         self.dictionnairePlotWidget = {}
 
         # Mode plein écran
