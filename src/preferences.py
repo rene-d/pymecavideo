@@ -23,7 +23,7 @@ licence = """
 from PyQt6.QtCore import QObject, QTimer
 from PyQt6.QtWidgets import QMessageBox
 
-import os, re, configparser
+import os, re, configparser, io
 
 from version import Version
 from vecteur import vecteur
@@ -82,6 +82,16 @@ class Preferences (QObject):
         # récupère les valeurs enregistrées
         self.load()
         return
+
+    def __str__(self):
+        """
+        donne une représentation lisible de la configuration
+        """
+        with io.StringIO() as outfile:
+            d = self.config["DEFAULT"]
+            self.config.write(outfile)
+            result = outfile.getvalue()
+        return result
 
     def save(self):
         """

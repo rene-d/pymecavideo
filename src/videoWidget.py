@@ -98,6 +98,16 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     selection_motif_done = pyqtSignal()
     stopCalculs = pyqtSignal()
 
+    def __str__(self):
+        """
+        donne une vision partielle de l'instance courante
+        """
+        result = {a : str(getattr(self,a)) for a in dir(self) \
+                  if not callable(getattr(self,a)) and \
+                  not isinstance(getattr(self,a), QObject)}
+        
+        return f"VideoPointeeWidget({result})"
+    
     def setApp(self, app):
         """
         Connecte le videoWidget à sa fenêtre principale, et connecte
@@ -441,7 +451,51 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.horizontalSlider.setEnabled(state)
         self.spinBox_image.setEnabled(state)
         return
-        
+
+    def rouvre(self):
+        """
+        Ici c'est la partie dévolue au videoWidget quand on rouvre un
+        fichier pymecavideo
+        """
+        self.check_uncheck_direction_axes()
+        self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
+            self.cvReader.recupere_avi_infos(self.rotation)
+        self.ratio = self.largeurFilm / self.hauteurFilm
+        return
+
+    def restaure_pointages(self, data) :
+        """
+        Rejoue les pointages issus d'un fichier pymecavideo
+        @param data une liste de listes de type [t, x1, y1, ..., xn, yn]
+        """
+        self.dimensionne(self.nb_obj, self.deltaT, self.image_max)
+        for i in range(len(data)) :
+            for obj in self.suivis:
+                j = int(obj)*2-1 # index du début des coordonnées xj, yj
+                if len(data[i]) > j:
+                    x, y = data[i][j:j + 2]
+                    # À ce stade x et y sont en mètre
+                    # on remet ça en pixels
+                    x = self.origine.x + self.sens_X * \
+                        round(float(x) * self.echelle_image.pxParM())
+                    y = self.origine.y - self.sens_Y * \
+                        round(float(y) * self.echelle_image.pxParM())
+                    self.pointe(
+                        obj, vecteur(x, y),
+                        index = i + self.premiere_image_pointee - 1)
+        # affiche la dernière image pointée
+        der = self.derniere_image()
+        if der is not None:
+            if der < self.image_max:
+                self.index = der + 1
+            else:
+                self.index = self.image_max
+        else:
+            self.index = 1
+        self.clic_sur_video_ajuste_ui(self.index)
+        self.mets_en_orange_echelle()
+        return
+    
     def init_image(self):
         """
         initialise certaines variables lors le la mise en place d'une 
@@ -615,8 +669,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.reinit_origine()
         self.pointsProbables = {}
         self.motifs_auto = []
-        self.redimensionne_data()
-        self.update()
         self.app.change_etat.emit("A0")
         return
     
@@ -624,76 +676,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.Bouton_Echelle.setEnabled(True)
         self.Bouton_Echelle.setText("refaire l'échelle")
         self.Bouton_Echelle.setStyleSheet("background-color:orange;")
-        return
-
-    def rouvre(self, fichier):
-        """
-        Rouvre un fichier pymecavideo précédemment enregistré
-        """
-        self.dbg.p(1, "rentre dans 'rouvre'")
-        self.reinitialise_capture()
-        lignes = open(fichier, "r").readlines()
-
-        # réinitialisation des données de pointage
-        self.init_pointage()
-
-        # on récupère les données importantes
-        lignes_config = [l for l in lignes if re.match("# .* = .*", l)]
-        lignes_config = ["[DEFAULT]\n"] + [re.sub("^# ", "", l) for l in lignes_config]
-        self.prefs.config.read_string("".join(lignes_config))
-        self.app.apply_preferences(rouvre=True)
-
-        # on remet l'interface bien d'équerre
-        self.check_uncheck_direction_axes()  # check or uncheck axes Checkboxes
-        self.app.change_etat.emit("debut")
-
-        # puis on trace le segment entre les points cliqués pour l'échelle
-        # on réinitialise l'échelle.p1, self.echelle_image.p2)
-        self.feedbackEchelle(
-            self.echelle_image.p1, self.echelle_image.p2)
-        self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = self.cvReader.recupere_avi_infos(
-            self.rotation)
-        self.ratio = self.largeurFilm / self.hauteurFilm
-        self.rouvert = True
-        lignes_data = [l for l in lignes if l[0] != "#" and len(l.strip()) > 0]
-        # on trouve les données en coupant là où il y a des séparations
-        # par des espaces ou des tabulations, on ne conserve pas la
-        # première ligne qui commence par "t x1 y1 ..." et aussi
-        # on remplace les virgules décimales par des points
-        data = [re.split(r"\s+", l.strip().replace(",", "."))
-                for l in lignes_data][1:]
-        for i in range(len(data)) :
-            for obj in self.suivis:
-                j = int(obj)*2-1 # index du début des coordonnées xj, yj
-                if len(data[i]) > j:
-                    x, y = data[i][j:j + 2]
-                    # À ce stade x et y sont en mètre
-                    # on remet ça en pixels
-                    x = self.origine.x + self.sens_X * \
-                        round(float(x) * self.echelle_image.pxParM())
-                    y = self.origine.y - self.sens_Y * \
-                        round(float(y) * self.echelle_image.pxParM())
-                    self.pointe(
-                        obj, vecteur(x, y),
-                        index = i + self.premiere_image_pointee - 1)
-                
-        self.active_controle_image()
-        # affiche la dernière image pointée
-        der = self.derniere_image()
-        if der is not None:
-            if der < self.image_max:
-                self.index = der + 1
-            else:
-                self.index = self.image_max
-        else:
-            self.index = 1
-        self.clic_sur_video_ajuste_ui(self.index)
-        self.affiche_echelle()  # on met à jour le widget d'échelle
-        self.mets_en_orange_echelle()
-        self.tableWidget.show()
-        self.app.recalculLesCoordonnees()
-        self.debut_capture(rouvre=True)
-        self.active_controle_image()
         return
 
     def check_uncheck_direction_axes(self):

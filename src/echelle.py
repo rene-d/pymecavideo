@@ -36,6 +36,12 @@ class echelle(QObject):
         # si les deux points sont distincts, l'échelle est faite
         return
 
+    def __str__(self):
+        """
+        donne une vision partielle de l'instance courante
+        """
+        return f"echelle(p1 = {self.p1}, p2 = {self.p2}, longueur_reelle_etalon = {self.longueur_reelle_etalon})"
+    
     def __bool__(self):
         """
         @return vrai si l'échelle a été faite
@@ -144,9 +150,7 @@ class EchelleWidget(QWidget):
 
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
-        if (p.x > 0 and p.x < self.largeur) and (p.y > 0 and p.y < self.hauteur):
-            self.video.updateZoom(p)
-
+        self.video.updateZoom(p)
         if self.pressed:
             self.p2 = p
             self.update()
@@ -154,6 +158,7 @@ class EchelleWidget(QWidget):
 
     def mouseReleaseEvent(self, event):
         p = vecteur(qPoint = event.position())
+        self.pressed = False
         if event.button() == Qt.MouseButton.LeftButton and self.p1.x >= 0:
             self.p2 = p
             self.video.echelle_image.p1 = self.p1.copy()
@@ -173,7 +178,6 @@ class EchelleWidget(QWidget):
                     "Vous pouvez continuer votre acquisition"))
                 self.app.refait_echelle()
 
-        self.video.updateZoom()
         self.close()
         self.app.apres_echelle.emit()
         return

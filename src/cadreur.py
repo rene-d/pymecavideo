@@ -293,7 +293,7 @@ class openCvReader:
         return int(fps), int(fcount), int(largeur), int(hauteur)
 
     def __str__(self):
-        return "<openCvReader instance: filename=%s, nextImage=%d>" % (self.filename, self.nextImage)
+        return f"<openCvReader instance: filename={self.filename}>"
 
 
 if __name__ == '__main__':

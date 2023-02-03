@@ -224,7 +224,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 signature = open(filename).read(24)
                 if signature.startswith("# version = pymecavideo"):
                     OK = True
-                    self.video.rouvre(filename)
+                    self.rouvre(filename)
             if not OK:
                 QTimer.singleShot(
                     50,
@@ -265,7 +265,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # le fichier de configuration a la bonne version, on applique ses
         # données
         d = self.prefs.config["DEFAULT"]
-        #self.dbg = Dbg(d.getint("niveaudbg"))
         taille = self.prefs.config.getvecteur("DEFAULT", "taille")
         rect = self.geometry()
         self.setGeometry(rect.x(), rect.y(), int(taille.x), int(taille.y))
@@ -302,7 +301,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.premier_chargement_fichier_mecavideo = False #gere l'origine au premier chargement
         # contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
         self.locals = {} # dictionnaire de variables locales, pour eval
-        self.rouvert = False  # positionné a vrai si on vien d'ouvrir un fichier mecavideo
         self.motif = []
         # est Vraie si le fichier est odifié. permet de sauvegarder les changements
         self.modifie = False
@@ -726,9 +724,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         Restauration de l'état A ou D après (re)définition de l'échelle
         """
-        if self.etat_ancien == 'A1' or self.etat_ancien == 'A0':
+        if self.etat_ancien in ('A1', 'A0'):
             self.etatA()
-        elif self.etat_ancien == 'D1' or self.etat_ancien == 'D0':
+        elif self.etat_ancien in ('D1', 'D0'):
             self.etatD()
         else:
             raise Exception(f"Fin de définition de l'échelle après un état inattendu : {self.etat_ancien}")
@@ -1022,7 +1020,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             dir_,
             _translate("pymecavideo", "Projet Pymecavideo (*.mecavideo)", None))
         if fichier != "":
-            self.video.rouvre(fichier)
+            self.rouvre(fichier)
         return
 
     def redimensionneFenetre(self, tourne=False):
@@ -1740,12 +1738,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                        "fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)",
                        None))
         self.video.openTheFile(filename)
-        try:
-            self.reinitialise_capture()
-        except Exception as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
-
+        self.video.reinitialise_capture()
+        return
+    
     def renomme_le_fichier(self):
         self.dbg.p(1, "rentre dans 'renomme_le_fichier'")
         renomme_fichier = QMessageBox.warning(self, _translate("pymecavideo", "Nom de fichier non conforme", None),
@@ -1838,6 +1833,35 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.dbg.p(1, "rentre dans 'enableRefaire, %s'" % (value))
         self.pushButton_refait.setEnabled(value)
         self.actionRefaire.setEnabled(value)
+        return
+
+    def rouvre(self, fichier):
+        """
+        Rouvre un fichier pymecavideo précédemment enregistré
+        """
+        self.dbg.p(1, "rentre dans 'rouvre'")
+        
+        lignes = open(fichier).readlines()
+        # on récupère les données importantes
+        lignes_config = [l for l in lignes if re.match("# .* = .*", l)]
+        lignes_config = ["[DEFAULT]\n"] + [re.sub("^# ", "", l) \
+                                           for l in lignes_config]
+        self.prefs.config.read_string("".join(lignes_config))
+        self.apply_preferences(rouvre=True)
+        
+        # donne la main au videoWidget pour préparer les pointages
+        self.video.rouvre()
+        lignes_data = [l for l in lignes if l[0] != "#" and len(l.strip()) > 0]
+        # on trouve les données en coupant là où il y a des séparations
+        # par des espaces ou des tabulations, on ne conserve pas la
+        # première ligne qui commence par "t x1 y1 ..." et aussi
+        # on remplace les virgules décimales par des points
+        data = [re.split(r"\s+", l.strip().replace(",", "."))
+                for l in lignes_data][1:]
+        self.video.restaure_pointages(data)
+        self.affiche_echelle()  # on met à jour le widget d'échelle
+        
+        self.change_etat.emit("D")
         return
 
     def debut_capture(self):
