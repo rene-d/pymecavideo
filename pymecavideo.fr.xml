@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='ISO-8859-1'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
 "file:///usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd" [
 
@@ -30,7 +30,7 @@ and docbook-xsl in your Build-Depends control field.
   <!ENTITY dhfirstname "<firstname>FIRSTNAME</firstname>">
   <!ENTITY dhsurname   "<surname>SURNAME</surname>">
   <!-- Please adjust the date whenever revising the manpage. -->
-  <!ENTITY dhdate      "<date>24 juin 2012</date>">
+  <!ENTITY dhdate      "<date>4 fÃ©vrier 2023</date>">
   <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
        allowed: see man(7), man(1). -->
   <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
@@ -67,7 +67,7 @@ and docbook-xsl in your Build-Depends control field.
   <refnamediv>
     <refname>&dhpackage;.&lang;</refname>
 
-    <refpurpose>programme pédagogique pour l'enseignement de la mécanique</refpurpose>
+    <refpurpose>programme pÃ©dagogique pour l'enseignement de la mÃ©canique</refpurpose>
   </refnamediv>
   <refsynopsisdiv>
     <cmdsynopsis>
@@ -78,7 +78,7 @@ and docbook-xsl in your Build-Depends control field.
           <arg choice="plain"><option>-d</option></arg>
           <arg choice="plain"><option>--debug=</option></arg>
         </group>
-        <replaceable class="option">verbosité (niveau de 1 à 3)</replaceable>
+        <replaceable class="option">verbositÃ© (niveau de 1 Ã  3)</replaceable>
       </arg>
       <arg><option><replaceable>fichier.{avi|mpg|...} | fichier.mecavideo</replaceable></option></arg>
     </cmdsynopsis>
@@ -86,16 +86,16 @@ and docbook-xsl in your Build-Depends control field.
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><command>&dhpackage;</command> est un programme servant à
-      suivre la cinématique d'un ensemble de points dans une série d'images
-      d'une vidéo. La taille de l'image peut être calibrée, ensuite on passe
-      au suivi des points et exporter dans un fichier les dates et les
-      coordonnées des points, afin de les analyser avec un autre logiciel.
+    <para><command>&dhpackage;</command> est un programme servant Ã 
+      suivre la cinÃ©matique d'un ensemble de points dans une sÃ©rie d'images
+      d'une vidÃ©o. La taille de l'image peut Ãªtre modifiÃ©e, ensuite on passe
+      au suivi des points et on peut exporter dans un fichier les dates et les
+      coordonnÃ©es des points, afin de les analyser avec un autre logiciel.
     </para>
     <para>
       On peut avoir plus d'information sous forme de fichiers HTML dans le
-      répertoire <filename>/usr/share/doc/python-mecavideo/html</filename>.
-      On peut assi accéder à cette information depuis l'interface utilisateur
+      rÃ©pertoire <filename>/usr/share/doc/python-mecavideo/html</filename>.
+      On peut assi accÃ©der Ã  cette information depuis l'interface utilisateur
       de <command>&dhpackage;</command> par le menu Aide -> Aide.
     </para>
 
@@ -110,8 +110,8 @@ and docbook-xsl in your Build-Depends control field.
         <term><option>-d <replaceable>niveau</replaceable></option></term>
         <term><option>--debug=<replaceable>niveau</replaceable></option></term>
         <listitem>
-          <para>Déclare le niveau de verbosité pour déboguer l'application. Ce niveau vaut zéro
-	  par défaut (pas d'émission de messages), et il peut valoir entre 1 et 3.</para>
+          <para>DÃ©clare le niveau de verbositÃ© pour dÃ©boguer l'application. Ce niveau vaut zÃ©ro
+	  par dÃ©faut (pas d'Ã©mission de messages), et il peut valoir entre 1 et 3.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -125,7 +125,7 @@ and docbook-xsl in your Build-Depends control field.
         </term>
         <listitem>
           <para>
-	    Paramètre optionnel : définit une vidéo à charger au début. 
+	    ParamÃ¨tre optionnelÂ : dÃ©finit une vidÃ©o Ã  charger au dÃ©but. 
 	    Ou encore ...
 	  </para>
         </listitem>
@@ -135,8 +135,8 @@ and docbook-xsl in your Build-Depends control field.
         </term>
         <listitem>
           <para>
-	    Paramètre optionnel : permet la réouverture d'un fichier
-	    enregistré par pymecavideo.
+	    ParamÃ¨tre optionnelÂ : permet la rÃ©ouverture d'un fichier
+	    enregistrÃ© par pymecavideo.
 	  </para>
         </listitem>
       </varlistentry>
@@ -145,14 +145,14 @@ and docbook-xsl in your Build-Depends control field.
   <refsect1>
     <title>AUTEUR</title>
 
-    <para>Cette page de manuel a été écrite par &dhusername; &dhemail; pour le
-      système &debian; (mais peut être utilisée pour d'autres).  Vous avez
+    <para>Cette page de manuel a Ã©tÃ© Ã©crite par &dhusername; &dhemail; pour le
+      systÃ¨me &debian; (mais peut Ãªtre utilisÃ©e pour d'autres).  Vous avez
       la permission de la copier, de la distribuer et/ou de la modifier
       sous les termes de la licence &gnu; General Public License, Version 3
-      ou toute autre version supérieure publiée par la Free Software Foundation.
+      ou toute autre version supÃ©rieure publiÃ©e par la Free Software Foundation.
     </para>
 	<para>
-	  Dans le cas des systèmes Debian, le texte complet de la licence
+	  Dans le cas des systÃ¨mes Debian, le texte complet de la licence
 	  GNU General Public License se trouve dans le fichier
 	  /usr/share/common-licenses/GPL-3.
 	</para>
