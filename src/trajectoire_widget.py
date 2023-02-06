@@ -26,9 +26,8 @@ from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPicture, QPainter
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from image_widget import ImageWidget
-
 from vecteur import vecteur
-
+from globdef import pattern_float
 
 class TrajectoireWidget(ImageWidget):
     def __init__(self, parent):
@@ -62,14 +61,10 @@ class TrajectoireWidget(ImageWidget):
 
     def prepare_vecteurs_pour_paint(self):
         if self.video.app.checkBoxVectorSpeed.isChecked():
-            try:
-                echelle_vitesse = float(
-                    self.video.app.checkBoxScale.currentText())
-            except ValueError:
-                # rien ne se passe si on découvre pas un flottant
-                # pour l'échelle pixel par m/s
-                return
-            self.speedToDraw = self.video.vecteursVitesse(echelle_vitesse)
+            vitesse = self.video.app.checkBoxScale.currentText().replace(
+                ",",".")
+            if not pattern_float.match(vitesse): return
+            self.speedToDraw = self.video.vecteursVitesse(float(vitesse))
         return
 
     def mouseMoveEvent(self, event):
