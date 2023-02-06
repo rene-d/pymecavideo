@@ -223,4 +223,4 @@ def inhibe(motcle, duree):
 # modèle pour reconnaître des flottants, voir
 # https://stackoverflow.com/questions/12929308/python-regular-expression-that-matches-floating-point-numbers
 
-pattern_float = re.compile(r'[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?')
+pattern_float = re.compile(r'^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$')

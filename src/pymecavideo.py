@@ -1917,23 +1917,19 @@ Merci de bien vouloir le renommer avant de continuer""", None))
             _translate("pymecavideo", "Définir léchelle", None),
             _translate("pymecavideo", "Quelle est la longueur en mètre de votre étalon sur l'image ?", None),
             text = f"{self.video.echelle_image.longueur_reelle_etalon:.3f}")
+        reponse = reponse.replace(",", ".")
+        ok = ok and pattern_float.match(reponse) and float(reponse) > 0
         if not ok:
-            return
-        try:
-            reponse = float(reponse.replace(",", "."))
-            if reponse <= 0:
-                self.app.affiche_barre_statut(_translate(
-                    "pymecavideo", " Merci d'indiquer une échelle valable", None))
-            else:
-                self.video.echelle_image.etalonneReel(reponse)
-                self.etat_ancien = self.etat # conserve pour plus tard
-                self.change_etat.emit("C")
-                job = EchelleWidget(self.video, self)
-                job.show()
-        except ValueError as err:
             self.affiche_barre_statut(_translate(
-                "pymecavideo", " Merci d'indiquer une échelle valable", None))
+                "pymecavideo", "Merci d'indiquer une échelle valable : {} ne peut pas être converti en nombre.", None).format(reponse))
             self.demande_echelle()
+            return
+        reponse = float(reponse)
+        self.video.echelle_image.etalonneReel(reponse)
+        self.etat_ancien = self.etat # conserve pour plus tard
+        self.change_etat.emit("C")
+        job = EchelleWidget(self.video, self)
+        job.show()
         return
     
 def usage():
