@@ -402,24 +402,24 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         après l'état C, il faut tenir compte d'un ancien état, A*/D*
         """
+        fonctions = {
+            "debut": self.etatDebut,
+            "A":     self.etatA,
+            "AB":    self.etatAB,
+            "B":     self.etatB,
+            "C":     self.etatC,
+            "D":     self.etatD,
+            "E":     self.etatE,
+        }
         if self.etat == etat: return # inutile de changer !
+        self.dbg.p(1, f"========> État précédent = {self.etat}. État suivant = {etat}")
         self.etat = etat
-        if etat == "debut":
-           self.etatDebut()
-        elif etat in ("A", "A0", "A1"):
-            self.etatA()
-        elif etat in ("AB", "AB0", "AB1"):
-            self.etatAB()
-        elif etat in ("B", "B0", "B1"):
-            self.etatB()
-        elif etat == "C":
-            self.etatC()
-        elif etat in ("D", "D0", "D1"):
-            self.etatD()
-        elif etat == "E":
-            self.etatE()
-        else:
-            raise Exception("L'état doit être debut, A0, A1, AB0, AB1, B0, B1, C, D0, D1 ou E")
+        if self.etat not in fonctions:
+            raise Exception(
+                f"L'état doit être {', '.join(list(fonctions.keys()))}")
+        self.etat = etat
+        # appel de la fonction liée à l'état courant
+        fonctions[self.etat]()
         return
     
     def etatDebut(self):
@@ -431,7 +431,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Tous les onglets sont désactivés ; idéalement, une aide
         pour dire d’aller chercher un fichier vidéo apparaît.
         """
-        self.dbg.p(1, "rentre dans l'état « debut »")
         # désactivation de widgets
         for obj in self.actionDefaire, self.actionRefaire, \
             self.actionCopier_dans_le_presse_papier, self.menuE_xporter_vers, \
@@ -488,15 +487,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # non encore implémentée
         self.imgno_incr.hide()
         self.spinBox.hide()
-        self.dbg.p(1, "L'UI est maintenant réglée pour l'état « debut »")
         return
         
     def etatA(self):
         """
         Une vidéo est connue et on en affiche une image.
-
-        A0 : l’échelle est indéfinie
-        A1 : l’échelle est définie
 
         Le premier onglet est actif, on voit une image de la
         vidéo, les contrôles pour se déplacer dans le film sont
@@ -507,9 +502,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         Sur l’image de la vidéo, le curseur est ordinaire.
         """
-        self.etat = "A1" if self.video.echelle_image else "A0"
-        self.dbg.p(1, f"rentre dans l'état « {self.etat} »")
-        if self.etat == "A0":
+        if not self.video.echelle_image:
             self.affiche_echelle() # marque "indéf."
             self.Bouton_Echelle.setText(_translate(
                 "pymecavideo", "Définir l'échelle", None))
@@ -641,7 +634,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_stopCalculs.setEnabled(True)
         self.pushButton_stopCalculs.show()
         self.update()
-        print("GRRRRR dans l'état B, self.pushButton_stopCalculs =", self.pushButton_stopCalculs, self.pushButton_stopCalculs.text(), self.pushButton_stopCalculs.isEnabled())
         # initialise la détection des points
         self.video.detecteUnPoint()
         return
@@ -654,7 +646,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         peut y voir sont inactifs jusqu’à la fin de la définition
         de l’échelle.
 
-        Cet état peut se situer entre A0 et A1, ou entre D0 et D1,
+        Cet état peut se situer entre A et A, ou entre D et D,
         selon la valeur de self.etat_ancien.
         """
         # désactive plusieurs widgets
@@ -677,9 +669,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Le pointage a été démarré, manuellement, ou un pointage
         automatique vient de finir.Tous les onglets sont actifs.
 
-        D0 : l’échelle est indéfinie
-        D1 : l’échelle est définie
-
         Les contrôles pour changer d’image sont actifs, et le seul
         autre bouton actif sur le premier onglet est celui qui
         permet de changer d’échelle. Dans tous les cas, le bouton STOP
@@ -695,9 +684,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         curseur de souris a la forme d’une grosse cible ;
         idéalement il identifie aussi l’objet à pointer.
         """
-        print("GRRRR entrée dans l'état D")
-        self.etat = "D1" if self.video.echelle_image else "D0"
-        self.dbg.p(1, f"rentre dans l'état « {self.etat} »")
         # empêche de redimensionner la fenêtre
         self.fixeLesDimensions()
         # prépare le widget video
@@ -773,12 +759,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         Restauration de l'état A ou D après (re)définition de l'échelle
         """
-        if self.etat_ancien in ('A1', 'A0'):
-            self.etatA()
-        elif self.etat_ancien in ('D1', 'D0'):
-            self.etatD()
-        else:
-            raise Exception(f"Fin de définition de l'échelle après un état inattendu : {self.etat_ancien}")
+        self.change_etat.emit(self.etat_ancien)
         return
         
     

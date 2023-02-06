@@ -272,7 +272,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             # revient à l'état D sauf en cas de suivi automatique
             # auquel cas l'état B perdure
             if not self.auto:
-                self.app.change_etat.emit("D1" if self.echelle_image else "D0")
+                self.app.change_etat.emit("D")
         return
 
     def mouseReleaseEvent(self, event):
@@ -310,7 +310,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     
     def paintEvent(self, event):
         if self.image:
-            if self.app.etat in ("A0", "A1", "C", "D0", "D1", "E"):
+            if self.app.etat in ("A", "C", "D", "E"):
                 self.updateZoom(self.hotspot)
 
             painter = QPainter()
@@ -393,7 +393,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # qu'il n'y ait encore aucun pointage, ou que l'index soit
         # connexe aux pointages existants
         self.pointageOK = \
-            self.app.etat in ("D0", "D1", "E") and \
+            self.app.etat in ("D", "E") and \
             (not self or index in range(self.premiere_image() - 1, \
                                         self.derniere_image() + 2))
         if self.pointageOK:
@@ -568,7 +568,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         goOn = self.init_cvReader()
         if goOn:  # le fichier vidéo est OK, et son format est reconnu
             self.init_image()
-            self.app.change_etat.emit("A0")
+            self.app.change_etat.emit("A")
         else:
             QMessageBox.warning(
                 None,
@@ -657,7 +657,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.clearEchelle()
         # reinitialisation du widget video
         self.updateZoom()
-        self.setMouseTracking(False)
+        # self.setMouseTracking(False)
         self.setCursor(Qt.CursorShape.ArrowCursor)
         self.setEnabled(True)
         self.reinit_origine()
@@ -665,7 +665,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.motifs_auto = []
         # retire les objets déjà pointés
         self.redimensionne_data()
-        self.app.change_etat.emit("A0")
+        self.app.change_etat.emit("A")
         return
     
     def mets_en_orange_echelle(self):
@@ -738,7 +738,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             QTimer.singleShot(50, self.detecteUnPoint)
         else:
             self.stopCalculs.emit()
-            self.app.change_etat.emit("D1" if self.echelle_image else "D0")
+            self.app.change_etat.emit("D")
         return
 
     def stopComputing(self):

@@ -16,7 +16,7 @@ Pour y remédier, la fenêtre principale aura une propriété ```etat```, et
 disposera d'un ```SLOT``` ```change_etat``` ; on pourra émettre des signaux
 pour rappeler ce ```SLOT``` ; à chaque fois que la propriété ```etat```
 prend une nouvelle valeur, des modifications sont faites dans l'interface
-utilisateur. Il y a *grosso modo* sept états :
+utilisateur. Il y a sept états : 
 
 1. début
 2. A
@@ -36,12 +36,9 @@ par argument, ni par le fichier de configuration.
 Tous les onglets sont désactivés ; idéalement, une aide pour dire d'aller
 chercher un fichier vidéo apparaît.
 
-## L'état A (A0, A1) ##
+## L'état A ##
 
 Une vidéo est connue et on en affiche une image.
-
-- **A0** : l'échelle est indéfinie
-- **A1** : l'échelle est définie
 
 Le premier onglet est actif, on voit une image de la vidéo, les
 contrôles pour se déplacer dans le film sont actifs, on peut modifier le
@@ -51,7 +48,7 @@ Inutile de montrer le bouton de réinitialisation
 
 Sur l'image de la vidéo, le curseur est ordinaire.
 
-## L'état AB (AB0, AB1) ##
+## L'état AB ##
 On y arrive en cliquant sur le bouton démarrer, si la case à cocher
 « pointage auto » était cochée. On doit définir, par tirer-glisser à la
 souris, autant de zones rectangulaires à suivre qu'il y a d'objets à
@@ -59,7 +56,7 @@ pointer.
 
 Le premier onglet est actif, mais tous les widgets de contrôle y sont inactifs.
 
-## L'état B (B0, B1) ##
+## L'état B ##
 
 On y arrive en cliquant sur le bouton démarrer, si la case à cocher
 « pointage auto » était cochée, après passage par l'état AB.
@@ -78,9 +75,9 @@ L'échelle est en cours de définition.
 Le premier onglet est actif, mais tous les boutons qu'on peut y voir
 sont inactifs jusqu'à la fin de la définition de l'échelle.
 
-Cet état peut se situer entre A0 et A1, ou entre D0 et D1.
+Cet état peut se situer entre A et A, ou entre D et D.
 
-## L'état D (D0, D1) ##
+## L'état D ##
 
 On a « démarré », et une pointage manuel est possible. Tous les onglets
 sont actifs.

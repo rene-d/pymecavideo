@@ -38,7 +38,7 @@ class TrajectoireWidget(ImageWidget):
 
         self.setCursor(Qt.CursorShape.ArrowCursor)
         self.setAutoFillBackground(True)
-        # self.setMouseTracking(1)
+        # self.setMouseTracking(True)
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray", "green", "red", "blue", "cyan", "magenta",
                          "yellow", "gray", "green"]
         self.setMouseTracking(True)
