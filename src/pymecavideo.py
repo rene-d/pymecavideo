@@ -1159,23 +1159,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.video.iteration_data(cb_temps, cb_point, unite = "m")
         return
 
-    def barycentre_trajectoires(self, referentiel):
-        """
-        calcule le barycentre de tous les points constituant les trajectoires
-        rapportées à un référentiel.
-        """
-        self.dbg.p(2, "rentre dans 'barycentre_trajectoires'")
-        bc = vecteur(0, 0)
-        compte = 0
-        for n in range(self.nb_de_points):
-            if n == referentiel:
-                pass
-            for i in self.points.keys():
-                bc += self.points[i][1 + n] - self.points[i][1 + referentiel]
-                compte += 1
-        bc *= 1.0 / compte
-        return bc
-
     def montre_video(self):
         self.dbg.p(2, "rentre dans 'montre_video'")
         ref = self.comboBox_referentiel.currentText().split(" ")[-1]
