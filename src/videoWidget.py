@@ -353,11 +353,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             # paint repere
             painter.setPen(QColor("green"))
             painter.translate(0, 0)
-            try:
-                painter.translate(
-                    round(self.origine.x), round(self.origine.y))
-            except AttributeError:
-                pass
+            painter.translate(round(self.origine.x), round(self.origine.y))
             p1 = QPoint(round(self.sens_X * (-40)), 0)
             p2 = QPoint(round(self.sens_X * (40)), 0)
             p3 = QPoint(round(self.sens_X * (36)), 2)

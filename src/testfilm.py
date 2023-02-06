@@ -42,6 +42,7 @@ class film:
             pass
         except ZeroDivisionError:
             print("szero"+str(self.fps)+str(self.framecount))
+        return ok
 
     def __int__(self):
         return int(self.ok)
