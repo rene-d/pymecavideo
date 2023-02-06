@@ -888,30 +888,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.radioButtonSpeedEveryWhere.hide()
             self.trajectoire_widget.update()
 
-    def readStdout(self):
-        self.dbg.p(2, "rentre dans 'readStdout'")
-        try:
-            if not self.time.isActive():
-                self.timer = QTimer(self)
-                self.timer.timeout.connect(self, SLOT(self.readStdout()))
-                self.timer.start(100)
-            else:
-                while not self.exitDecode:
-                    stdout_file = open(self.stdout_file, 'w+')
-                    stdout = stdout_filepointsProbables.readlines()  # à globaliser pour windows
-                    if not self.exitDecode:
-                        try:
-                            pct = stdout[-1].split()[3].replace('%',
-                                                                '').replace(')', '').replace('(', '')
-                            assert (pct.isalnum())
-                            exit = True
-                        except IndexError as err:
-                            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                            exit = False
-        except Exception as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
-
     def refait_echelle(self):
         # """Permet de retracer une échelle et de recalculer les points"""
         self.dbg.p(2, "rentre dans 'refait_echelle'")
