@@ -9,7 +9,7 @@ import subprocess
 from globdef import HOME_PATH, VIDEO_PATH, CONF_PATH, \
     ICON_PATH, LANG_PATH, \
     DATA_PATH, HELP_PATH, DOCUMENT_PATH, \
-    _translate
+    _translate, pattern_float
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QVBoxLayout, QTableWidgetSelectionRange, QDialog, QPushButton
 from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QShortcut, QScreen, QAction
 from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
@@ -1266,9 +1266,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def affiche_grapheur(self, MAJ=True):
         self.dbg.p(2, "rentre dans 'affiche_grapheur'")
+        m = self.lineEdit_m.text().replace(',', '.')
+        g = self.lineEdit_g.text().replace(',', '.')
+        if not pattern_float.match(m) or not pattern_float.match(g): return 
         deltaT = self.video.deltaT
-        m = float(self.lineEdit_m.text().replace(',', '.'))
-        g = float(self.lineEdit_g.text().replace(',', '.'))
+        m = float(m)
+        g = float(g)
 
         # initialisation de self.locals avec des listes vides
         for obj in self.video.suivis:
