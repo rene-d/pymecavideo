@@ -926,14 +926,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                    str(self.rotation))
 
         # gestion de l'origine et de l'échelle :
-        self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.origine %s, largeur video%s, hauteur video%s" % (
-            self.video.origine, self.video.width(), self.video.height()))
-        try:
-            self.dbg.p(3, "Dans 'tourne_image' avant de tourner, self.echelle_image.p1 %s, self.echelle_image.p2 %s" % (
-                self.video.echelle_image.p1, self.video.echelle_image.p2))
-        except AttributeError as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            pass
+        self.dbg.p(3, f"Dans 'tourne_image' avant de tourner, self.origine {self.video.origine}, largeur video {self.video.width()}, hauteur video {self.video.height()}")
         self.redimensionneSignal.emit(True)
 
     def change_sens_X(self):
@@ -1182,30 +1175,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 compte += 1
         bc *= 1.0 / compte
         return bc
-
-    def mediane_trajectoires(self, referentiel):
-        """
-        calcule le barycentre de tous les points constituant les trajectoires
-        rapportées à un référentiel.
-        """
-        self.dbg.p(2, "rentre dans 'mediane_trajectoires'")
-        min_ = None
-        max_ = None
-        for n in range(self.nb_de_points):
-            if n == referentiel:
-                pass
-            for i in self.points.keys():
-                try:
-                    p = self.points[i][1 + n] - self.points[i][1 + referentiel]
-                    min_ = p.minXY(min_)
-                    max_ = p.maxXY(max_)
-                except Exception as err:
-                    self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                    pass  # si on s'arrête de cliquer avant d'avoir fini l'image
-        if min_ != None and max_ != None:
-            return (min_ + max_) * 0.5
-        else:
-            return vecteur(self.largeur / 2, self.hauteur / 2)
 
     def montre_video(self):
         self.dbg.p(2, "rentre dans 'montre_video'")
@@ -1469,9 +1438,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if ref != 0:
             self.button_video.setEnabled(1)
             self.trajectoire_widget.chrono = False
-            bc = self.mediane_trajectoires(int(ref) - 1)
-            origine = vecteur(self.video.width() // 2,
-                              self.video.height() // 2) - bc
+            origine = vecteur(self.video.width() // 2, self.video.height() // 2)
             self.trajectoire_widget.origine = origine
             self.trajectoire_widget.origine_mvt = origine
             self.trajectoire_widget.referentiel = ref
