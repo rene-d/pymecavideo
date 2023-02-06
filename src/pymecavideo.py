@@ -243,7 +243,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         @param rouvre est vrai quand on ouvre un fichier pymecavideo ; 
           il est faux par défaut
         """
-        self.dbg.p(1, "rentre dans 'FenetrePrincipale.apply_preferences'")
+        self.dbg.p(2, "rentre dans 'FenetrePrincipale.apply_preferences'")
         # on relit les préférences du fichier de configuration, sauf en cas
         # de réouverture d'un fichier pymecavideo, qui contient les préférences
         if not rouvre:
@@ -286,7 +286,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def basculer_plein_ecran(self):
         """Basculer en mode plein écran / mode fenétré"""
-        self.dbg.p(1, "rentre dans 'basculer_plein_ecran'")
+        self.dbg.p(2, "rentre dans 'basculer_plein_ecran'")
         if not self.plein_ecran:
             self.showFullScreen()
         else:
@@ -294,7 +294,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.plein_ecran = not (self.plein_ecran)
 
     def init_variables(self, filename=""):
-        self.dbg.p(1, "rentre dans 'init_variables'")
+        self.dbg.p(2, "rentre dans 'init_variables'")
         self.index_max = 1
         self.repere = 0
         self.masse_objet = 0
@@ -339,7 +339,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def ui_connections(self):
         """connecte les signaux de Qt"""
-        self.dbg.p(1, "rentre dans 'ui_connections'")
+        self.dbg.p(2, "rentre dans 'ui_connections'")
         self.actionOuvrir_un_fichier.triggered.connect(self.openfile)
         self.actionExemples.triggered.connect(self.openexample)
         self.action_propos.triggered.connect(self.propos)
@@ -816,7 +816,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.trajectoire_widget.setEnabled(False)
             self.widget_speed.setEnabled(False)
             self.checkBoxVectorSpeed.setChecked(False)
-        self.dbg.p(1, "rentre dans 'chronoPhoto'")
+        self.dbg.p(2, "rentre dans 'chronoPhoto'")
         # ajoute la première image utilisée pour le pointage sur le fond du vidget
         liste_types_photos = ['chronophotographie', 'chronophotogramme']
 
@@ -872,7 +872,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         @param secondParam peu utile mais nécessaire : certains modes
           de rappel de cette fonction ont un paramètre supplémentaire
         """
-        self.dbg.p(1, "rentre dans 'enableSpeed'")
+        self.dbg.p(2, "rentre dans 'enableSpeed'")
         if self.checkBoxVectorSpeed.isChecked():
             self.dbg.p(2, "In enableSpeed")
             self.checkBoxScale.setEnabled(1)
@@ -889,7 +889,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.trajectoire_widget.update()
 
     def readStdout(self):
-        self.dbg.p(1, "rentre dans 'readStdout'")
+        self.dbg.p(2, "rentre dans 'readStdout'")
         try:
             if not self.time.isActive():
                 self.timer = QTimer(self)
@@ -914,11 +914,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def refait_echelle(self):
         # """Permet de retracer une échelle et de recalculer les points"""
-        self.dbg.p(1, "rentre dans 'refait_echelle'")
+        self.dbg.p(2, "rentre dans 'refait_echelle'")
         self.recalculLesCoordonnees()
 
     def choisi_nouvelle_origine(self):
-        self.dbg.p(1, "rentre dans 'choisi_nouvelle_origine'")
+        self.dbg.p(2, "rentre dans 'choisi_nouvelle_origine'")
         nvl_origine = QMessageBox.information(
             self,
             "NOUVELLE ORIGINE",
@@ -926,15 +926,15 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         ChoixOrigineWidget(parent=self.video, app=self).show()
 
     def tourne_droite(self):
-        self.dbg.p(1, "rentre dans 'tourne_droite'")
+        self.dbg.p(2, "rentre dans 'tourne_droite'")
         self.tourne_image("droite")
 
     def tourne_gauche(self):
-        self.dbg.p(1, "rentre dans 'tourne_droite'")
+        self.dbg.p(2, "rentre dans 'tourne_droite'")
         self.tourne_image("gauche")
 
     def tourne_image(self, sens=None):
-        self.dbg.p(1, "rentre dans 'tourne_image'")
+        self.dbg.p(2, "rentre dans 'tourne_image'")
         if sens == "droite":
             self.increment = 90
         elif sens == "gauche":
@@ -961,7 +961,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.redimensionneSignal.emit(True)
 
     def change_sens_X(self):
-        self.dbg.p(1, "rentre dans 'change_sens_X'")
+        self.dbg.p(2, "rentre dans 'change_sens_X'")
         if self.checkBox_abscisses.isChecked():
             self.sens_X = -1
         else:
@@ -969,7 +969,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.change_axe_origine.emit()
 
     def change_sens_Y(self):
-        self.dbg.p(1, "rentre dans 'change_sens_Y'")
+        self.dbg.p(2, "rentre dans 'change_sens_Y'")
         if self.checkBox_ordonnees.isChecked():
             self.sens_Y = -1
         else:
@@ -983,7 +983,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         séparateurs décimaux sont automatiquement remplacés par des virgules
         si la locale est française.
         """
-        self.dbg.p(1, "rentre dans 'presse_papier'")
+        self.dbg.p(2, "rentre dans 'presse_papier'")
         self.affiche_tableau()
         trange = QTableWidgetSelectionRange(0, 0,
                                             self.tableWidget.rowCount() - 1,
@@ -992,7 +992,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.tableWidget.selection()
 
     def export(self, choix_export=None):
-        self.dbg.p(1, "rentre dans 'export'")
+        self.dbg.p(2, "rentre dans 'export'")
         """
         Traite le signal venu de exportCombo, puis remet l\'index de ce
         combo à zéro.
@@ -1041,7 +1041,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     _dir = staticmethod(_dir)
 
     def rouvre_ui(self):
-        self.dbg.p(1, "rentre dans 'rouvre_ui'")
+        self.dbg.p(2, "rentre dans 'rouvre_ui'")
 
         dir_ = DOCUMENT_PATH
         fichier, _ = QFileDialog.getOpenFileName(
@@ -1054,11 +1054,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         return
 
     def redimensionneFenetre(self, tourne=False):
-        self.dbg.p(1, "rentre dans 'redimensionneFenetre'")
+        self.dbg.p(2, "rentre dans 'redimensionneFenetre'")
 
         self.tourne = tourne  # n'est utilisée que ici et dans video
         if tourne:  # on vient de cliquer sur tourner. rien n'est changé.
-            self.dbg.p(1, "Dans 'redimensionneFenetre', tourne")
+            self.dbg.p(2, "Dans 'redimensionneFenetre', tourne")
             largeur = self.video.width()
             hauteur = self.video.height()
             self.video.origine = self.video.origine.rotate(
@@ -1081,14 +1081,14 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def widthForHeight_video(self, h):
         # calcule self.largeur et self.hauteur si la hauteur est prédominante
         # si la hauteur est trop petite, ne permet plus de redimensionnement
-        self.dbg.p(1, "retre dans 'widthForHeight'")
+        self.dbg.p(2, "retre dans 'widthForHeight'")
         self.dbg.p(2, "argument h : %s" % (str(h)))
         return round(h*self.ratio)
 
     def heightForWidth_video(self, w):
         # calcul self.largeur et self.hauteur
         # si la largeur est trop petite, ne permet plus de redimensionnement
-        self.dbg.p(1, "retre dans 'heightForWidth'")
+        self.dbg.p(2, "retre dans 'heightForWidth'")
         self.dbg.p(2, "argument w : %s" % (str(w)))
         return round(w/self.ratio)
 
@@ -1102,12 +1102,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.largeurAvant = self.largeur
 
     def resizeEvent(self, event):
-        self.dbg.p(1, "rentre dans 'resizeEvent'")
+        self.dbg.p(2, "rentre dans 'resizeEvent'")
         self.redimensionneFenetre(tourne=False)
         return super(FenetrePrincipale, self).resizeEvent(event)
 
     def showEvent(self, event):
-        self.dbg.p(1, "rentre dans 'showEvent'")
+        self.dbg.p(2, "rentre dans 'showEvent'")
         self.redimensionneSignal.emit(False)
 
     def cree_tableau(self, nb_suivis=1):
@@ -1115,7 +1115,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Crée un tableau de coordonnées neuf dans l'onglet idoine.
         @param nb_suivis le nombre d'objets suivis (1 par défaut)
         """
-        self.dbg.p(1, "rentre dans 'cree_tableau'")
+        self.dbg.p(2, "rentre dans 'cree_tableau'")
         self.tableWidget.clear()
         self.tab_coord.setEnabled(1)
         self.tableWidget.setRowCount(1)
@@ -1168,7 +1168,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Se produit quand on ouvre un fichier pymecavideo ou quand on 
         redéfinit l'échelle
         """
-        self.dbg.p(1, "rentre dans 'recalculLesCoordonnees'")
+        self.dbg.p(2, "rentre dans 'recalculLesCoordonnees'")
         nb_suivis = self.video.nb_obj
 
         def cb_temps(i, t):
@@ -1195,7 +1195,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         calcule le barycentre de tous les points constituant les trajectoires
         rapportées à un référentiel.
         """
-        self.dbg.p(1, "rentre dans 'barycentre_trajectoires'")
+        self.dbg.p(2, "rentre dans 'barycentre_trajectoires'")
         bc = vecteur(0, 0)
         compte = 0
         for n in range(self.nb_de_points):
@@ -1212,7 +1212,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         calcule le barycentre de tous les points constituant les trajectoires
         rapportées à un référentiel.
         """
-        self.dbg.p(1, "rentre dans 'mediane_trajectoires'")
+        self.dbg.p(2, "rentre dans 'mediane_trajectoires'")
         min_ = None
         max_ = None
         for n in range(self.nb_de_points):
@@ -1232,7 +1232,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             return vecteur(self.largeur / 2, self.hauteur / 2)
 
     def montre_video(self):
-        self.dbg.p(1, "rentre dans 'montre_video'")
+        self.dbg.p(2, "rentre dans 'montre_video'")
         ref = self.comboBox_referentiel.currentText().split(" ")[-1]
         if len(ref) == 0 or ref == "camera":
             return
@@ -1247,7 +1247,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         @param newIndex la variable transmise par le signal currentChanged
           du tabWidget
         """
-        self.dbg.p(1, f"rentre dans 'choix_onglets', self.tabWidget.currentIndex() = {self.tabWidget.currentIndex()}, newIndex = {newIndex}")
+        self.dbg.p(2, f"rentre dans 'choix_onglets', self.tabWidget.currentIndex() = {self.tabWidget.currentIndex()}, newIndex = {newIndex}")
         self.statusBar().clearMessage()
         if self.tabWidget.currentIndex() == 0:
             # onglet video, on ne fait rien de spécial
@@ -1265,7 +1265,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         return
 
     def affiche_grapheur(self, MAJ=True):
-        self.dbg.p(1, "rentre dans 'affiche_grapheur'")
+        self.dbg.p(2, "rentre dans 'affiche_grapheur'")
         deltaT = self.video.deltaT
         m = float(self.lineEdit_m.text().replace(',', '.'))
         g = float(self.lineEdit_g.text().replace(',', '.'))
@@ -1363,7 +1363,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def dessine_graphe(self):
         """dessine les graphes avec pyqtgraph au moment où les combobox sont choisies"""
-        self.dbg.p(1, "rentre dans 'dessine_graphe'")
+        self.dbg.p(2, "rentre dans 'dessine_graphe'")
         X, Y = [], []
         styles = {0: {'pen': None, 'symbol': '+'}, 1: {'pen': (0, 0, 0), 'symbol': '+'}, 2: {'pen': (
             0, 0, 0), 'symbol': None}}  # Dictionnaire contenant les différents styles de graphes
@@ -1470,7 +1470,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         trace les trajectoires en fonction du référentiel choisi.
 
         """
-        self.dbg.p(1, "rentre dans 'tracer_trajectoires'")
+        self.dbg.p(2, "rentre dans 'tracer_trajectoires'")
         self.trajectoire_widget.origine_mvt = self.video.origine
         if newValue == "absolu":
             ref = 0 # la caméra
@@ -1556,7 +1556,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         lancée à chaque affichage du tableau, recalcule les coordonnées
         à afficher à partir des listes de points.
         """
-        self.dbg.p(1, "rentre dans 'affiche_tableau'")
+        self.dbg.p(2, "rentre dans 'affiche_tableau'")
 
         # active ou désactive les checkbox énergies
         # (n'ont un intérêt que si l'échelle est déterminée)
@@ -1648,7 +1648,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         return
 
     def recommence_echelle(self):
-        self.dbg.p(1, "rentre dans 'recommence_echelle'")
+        self.dbg.p(2, "rentre dans 'recommence_echelle'")
         self.tabWidget.setCurrentIndex(0)
         self.video.echelle_image = echelle()
         self.affiche_echelle()
@@ -1656,13 +1656,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         return
 
     def affiche_image_slider(self):
-        self.dbg.p(1, "rentre dans 'affiche_image_slider'")
+        self.dbg.p(2, "rentre dans 'affiche_image_slider'")
         self.video.index = self.horizontalSlider.value()
         self.affiche_image()
 
     def affiche_image_slider_move(self):
         """only change spinBox value"""
-        self.dbg.p(1, "rentre dans 'affiche_image_slider_move'")
+        self.dbg.p(2, "rentre dans 'affiche_image_slider_move'")
         self.spinBox_image.setValue(self.horizontalSlider.value())
         # self.enableRefaire(0)
 
@@ -1671,7 +1671,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Un crochet pour y mettre toutes les procédures à faire lors
         de la fermeture de l'application.
         """
-        self.dbg.p(1, "rentre dans 'closeEvent'")
+        self.dbg.p(2, "rentre dans 'closeEvent'")
         for plotwidget in self.dictionnairePlotWidget.values():
             plotwidget.parentWidget().close()
             plotwidget.close()
@@ -1682,7 +1682,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         return
 
     def verifie_donnees_sauvegardees(self):
-        self.dbg.p(1, "rentre dans 'verifie_donnees_sauvegardees'")
+        self.dbg.p(2, "rentre dans 'verifie_donnees_sauvegardees'")
         if self.modifie:
             retour = QMessageBox.warning(
                 self,
@@ -1738,11 +1738,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         permet de gagner de la place en envelant le message de statut
         @param message message à afficher
         """
-        self.dbg.p(1, "rentre dans 'affiche_barre_statut'")
+        self.dbg.p(2, "rentre dans 'affiche_barre_statut'")
         self.statusBar().showMessage(message)
 
     def openexample(self):
-        self.dbg.p(1, "rentre dans 'openexample'")
+        self.dbg.p(2, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
         # self.reinitialise_tout()
         filename, hints = QFileDialog.getOpenFileName(
@@ -1759,7 +1759,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         Ouvre un dialogue pour choisir un fichier vidéo puis le charge
         """
-        self.dbg.p(1, "rentre dans 'openfile'")
+        self.dbg.p(2, "rentre dans 'openfile'")
         dir_ = self._dir("videos")
         filename, hints = QFileDialog.getOpenFileName(
             self, _translate("pymecavideo", "Ouvrir une vidéo", None),
@@ -1772,7 +1772,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         return
     
     def renomme_le_fichier(self):
-        self.dbg.p(1, "rentre dans 'renomme_le_fichier'")
+        self.dbg.p(2, "rentre dans 'renomme_le_fichier'")
         renomme_fichier = QMessageBox.warning(self, _translate("pymecavideo", "Nom de fichier non conforme", None),
                                               _translate("pymecavideo", """\
 Le nom de votre fichier contient des caractères accentués ou des espaces.
@@ -1784,7 +1784,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
 
 
     def propos(self):
-        self.dbg.p(1, "rentre dans 'propos'")
+        self.dbg.p(2, "rentre dans 'propos'")
         try:
             loc = locale.getdefaultlocale()[0][0:2]
         except TypeError as err:
@@ -1798,7 +1798,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         return
 
     def aide(self):
-        self.dbg.p(1, "rentre dans 'aide'")
+        self.dbg.p(2, "rentre dans 'aide'")
         lang = locale.getdefaultlocale()[0][0:2]
         helpfile = "%s/help-%s.xhtml" % (self._dir("help"), lang)
         if os.path.exists(helpfile):
@@ -1813,7 +1813,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
                 _translate("pymecavideo", "Désolé pas de fichier d'aide pour le langage {0}.", None).format(lang))
 
     def verifie_IPS(self):
-        self.dbg.p(1, "rentre dans 'verifie_IPS'")
+        self.dbg.p(2, "rentre dans 'verifie_IPS'")
         # si ce qui est rentré n'est pas un entier
         if not self.lineEdit_IPS.text().isdigit() and len(self.lineEdit_IPS.text()) > 0:
             retour = QMessageBox.warning(
@@ -1828,7 +1828,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         """
         affiche l'échelle courante pour les distances sur l'image
         """
-        self.dbg.p(1, "rentre dans 'affiche_echelle'")
+        self.dbg.p(2, "rentre dans 'affiche_echelle'")
         if self.video.echelle_image.isUndef():
             self.echelleEdit.setText(
                 _translate("pymecavideo", "indéf.", None))
@@ -1847,7 +1847,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         Contrôle la possibilité de défaire un clic
         @param value booléen
         """
-        self.dbg.p(1, "rentre dans 'enableDefaire, %s'" % (str(value)))
+        self.dbg.p(2, "rentre dans 'enableDefaire, %s'" % (str(value)))
         self.pushButton_defait.setEnabled(value)
         self.actionDefaire.setEnabled(value)
         # permet de remettre l'interface à zéro
@@ -1860,7 +1860,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         Contrôle la possibilité de refaire un clic
         @param value booléen
         """
-        self.dbg.p(1, "rentre dans 'enableRefaire, %s'" % (value))
+        self.dbg.p(2, "rentre dans 'enableRefaire, %s'" % (value))
         self.pushButton_refait.setEnabled(value)
         self.actionRefaire.setEnabled(value)
         return
@@ -1869,7 +1869,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         """
         Rouvre un fichier pymecavideo précédemment enregistré
         """
-        self.dbg.p(1, "rentre dans 'rouvre'")
+        self.dbg.p(2, "rentre dans 'rouvre'")
         
         lignes = open(fichier).readlines()
         # on récupère les données importantes
@@ -1908,7 +1908,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         """
         demande l'échelle interactivement
         """
-        self.dbg.p(1, "rentre dans 'demande_echelle'")
+        self.dbg.p(2, "rentre dans 'demande_echelle'")
         reponse, ok = QInputDialog.getText(
             None,
             _translate("pymecavideo", "Définir léchelle", None),

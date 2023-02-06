@@ -457,7 +457,7 @@ dt={deltaT}
         # si seule la vitesse est cochée, on calcule et affiche les vitesses
         # si les deux sont cochées, on calcule et affiche les vitesses et accélérations
         # si seule l'accélération est cochée, les vitesses sont calculées mais non affichées
-        #self.dbg.p(1, "rentre dans 'python source2'")
+        #self.dbg.p(2, "rentre dans 'python source2'")
         d = PythonExportDialog(app)
         if d.exec() == QDialog.DialogCode.Accepted:
             calcule_vitesse, affiche_vitesse, calcule_accel, affiche_accel = \

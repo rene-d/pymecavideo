@@ -151,7 +151,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         redimensionne self.data (fonction de rappel connectée aux
         changements de self.spinBox_nb_de_points
         """
-        self.dbg.p(1, "rentre dans 'redimensionne_data'")
+        self.dbg.p(2, "rentre dans 'redimensionne_data'")
         if self.image_max and self.deltaT:
             self.dimensionne(
                 self.spinBox_nb_de_points.value(), self.deltaT, self.image_max)
@@ -177,7 +177,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
           position == None (par défaut) ça ne fait rien
         """
         if position is None: return
-        self.dbg.p(1, "rentre dans 'updateZoom'")
+        self.dbg.p(2, "rentre dans 'updateZoom'")
         self.zoom.fait_crop(self.image, position)
         return
     
@@ -188,7 +188,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @param ratio le ratio à respecter
         @return l'image, redimensionnée selon le ratio
         """
-        self.dbg.p(1, "rentre dans 'placeImage'")
+        self.dbg.p(2, "rentre dans 'placeImage'")
         self.image_w = min(self.width(), round(self.height() * ratio))
         self.image_h = round(self.image_w / ratio)
         self.echelle = self.image_w / self.largeurFilm
@@ -212,7 +212,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def resizeEvent(self, e):
-        self.dbg.p(1, "rentre dans 'resizeEvent'")
+        self.dbg.p(2, "rentre dans 'resizeEvent'")
         if self.premier_resize:  # Au premier resize, la taille est changée mais pas l'origine.
             self.premier_resize = False
             self.reinit_origine()
@@ -249,7 +249,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         sont déjà bien réglés.
         @param point la position à enregistrer
         """
-        self.dbg.p(1, "rentre dans 'storePoint'")
+        self.dbg.p(2, "rentre dans 'storePoint'")
         if self.lance_capture or self.auto:
             self.pointe(self.objet_courant, point, index=self.index-1)
             self.clic_sur_video_signal.emit()
@@ -381,7 +381,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @return un boolen (ok), et l'image au format d'openCV ; l'image
           au bon format pour Qt est dans self.imageExtraite
         """
-        self.dbg.p(1, "rentre dans 'extract_image' " + 'index : ' + str(index))
+        self.dbg.p(2, "rentre dans 'extract_image' " + 'index : ' + str(index))
         ok, image_opencv = self.cvReader.getImage(index, self.rotation)
         if not ok:
             self.affiche_barre_statut(
@@ -413,7 +413,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @param rouvre (faux par défaut) indique qu'on lit les données depuis
          un fichier pymecavidéo
         """
-        self.dbg.p(1, "rentre dans 'calcul_deltaT'")
+        self.dbg.p(2, "rentre dans 'calcul_deltaT'")
         if rouvre:
             # se produit quand on lit un deltaT depuis un fichier mecavideo
             IPS = round(1/self.deltaT)
@@ -436,7 +436,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
           widgets sont activés et leurs signaux valueChanged sont pris
           en compte ; sinon ils sont désactivés ainsi que les signaux
         """
-        self.dbg.p(1, "rentre dans 'active_controle_image'")
+        self.dbg.p(2, "rentre dans 'active_controle_image'")
         if state:
             self.horizontalSlider.setMinimum(1)
             self.spinBox_image.setMinimum(1)
@@ -504,7 +504,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         initialise certaines variables lors le la mise en place d'une 
         nouvelle vidéo
         """
-        self.dbg.p(1, "rentre dans 'init_image'")
+        self.dbg.p(2, "rentre dans 'init_image'")
         self.index = 1
         self.extract_image(1)
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
@@ -517,7 +517,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def affiche_image(self):
-        self.dbg.p(1, "rentre dans 'affiche_image'" + ' ' +
+        self.dbg.p(2, "rentre dans 'affiche_image'" + ' ' +
                    str(self.index) + ' ' + str(self.image_max))
         if not self.filename:
             return
@@ -525,7 +525,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.extract_image(self.index)  # 2ms
             self.afficheJusteImage()  # 4 ms
             if self.horizontalSlider.value() != self.index:
-                self.dbg.p(1, "affiche_image " + "horizontal")
+                self.dbg.p(2, "affiche_image " + "horizontal")
                 i = int(self.index)
                 self.horizontalSlider.setValue(i)
                 self.spinBox_image.setValue(i)  # 0.01 ms
@@ -544,7 +544,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         Initialise le lecteur de flux vidéo pour OpenCV
         et recode la vidéo si nécessaire.
         """
-        self.dbg.p(1, "rentre dans 'init_cvReader', ouverture de %s" %
+        self.dbg.p(2, "rentre dans 'init_cvReader', ouverture de %s" %
                    (self.filename))
         self.cvReader = openCvReader(self.filename)
         time.sleep(0.1)
@@ -561,7 +561,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         fichier vidéo.
         @param filename nom du fichier
         """
-        self.dbg.p(1, "rentre dans 'openTheFile'")
+        self.dbg.p(2, "rentre dans 'openTheFile'")
         if not filename :
             return
         self.filename = filename
@@ -583,13 +583,13 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         affecte la ligne de statut et la ligne sous le zoom
         @param obj l'objet courant
         """
-        self.dbg.p(1, "rentre dans 'affiche_point_attendu'")
+        self.dbg.p(2, "rentre dans 'affiche_point_attendu'")
         self.app.affiche_barre_statut(
             _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(obj))
         return
 
-    def clic_sur_la_video(self, liste_points=None, interactif=True):
-        self.dbg.p(1, "rentre dans 'clic_sur_video'")
+    def clic_sur_la_video(self, interactif=True):
+        self.dbg.p(2, "rentre dans 'clic_sur_video'")
         if self.index <= self.image_max:
             # si on n'atteint pas encore la fin de la vidéo
             self.purge_defaits() # oublie les pointages à refaire
@@ -610,7 +610,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         Ajuste l'interface utilisateur pour attendre un nouveau clic
         @param point_attendu le numéro du point qui est à cliquer
         """
-        self.dbg.p(1, "rentre dans 'clic_sur_video_ajuste_ui'")
+        self.dbg.p(2, "rentre dans 'clic_sur_video_ajuste_ui'")
         self.affiche_image()
         self.affiche_point_attendu(self.objet_courant)
         self.app.enableDefaire(self.peut_defaire())
@@ -622,7 +622,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         fonction appelée au début de l'état AB : prépare la sélection
         des motifs à suivre en capture automatique
         """
-        self.dbg.p(1, "rentre dans 'capture_auto'")
+        self.dbg.p(2, "rentre dans 'capture_auto'")
         self.auto = True # inhibe le pointage à la souris !
         # recouvre l'image avec le widget selRect pour définir des
         # rectangles pour chaque motif à suivre
@@ -635,7 +635,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         affiche une trace au-dessus du self.job, qui reflète les positions
         retenues pour l'échelle
         """
-        self.dbg.p(1, "rentre dans 'feedbackEchelle'")
+        self.dbg.p(2, "rentre dans 'feedbackEchelle'")
         if self.echelle_trace:
             self.echelle_trace.hide()
 
@@ -652,7 +652,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         Efface toutes les données de la capture en cours et prépare une nouvelle
         session de capture. Retourne à l'état A
         """
-        self.dbg.p(1, "rentre dans 'reinitialise_capture'")
+        self.dbg.p(2, "rentre dans 'reinitialise_capture'")
         # oublie self.echelle_image
         self.clearEchelle()
         # reinitialisation du widget video
@@ -678,7 +678,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         """
         met à jour les axes selon les sens connus
         """
-        self.dbg.p(1, "rentre dans 'check_uncheck_direction_axes'")
+        self.dbg.p(2, "rentre dans 'check_uncheck_direction_axes'")
         if self.sens_X == -1:
             self.checkBox_abscisses.setChecked(1)
         else:
@@ -690,7 +690,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def suiviDuMotif(self):
-        self.dbg.p(1, "rentre dans 'suiviDuMotif'")
+        self.dbg.p(2, "rentre dans 'suiviDuMotif'")
         if len(self.motifs_auto) == self.nb_obj:
             self.dbg.p(3, "selection des motifs finie")
             self.selRect.hide()
@@ -710,7 +710,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         et relance un signal si la pile n'est pas vide après chacun
         des traitements.
         """
-        self.dbg.p(1, f"rentre dans 'detecteUnPoint', pileDeDetection = {self.pileDeDetections}")
+        self.dbg.p(2, f"rentre dans 'detecteUnPoint', pileDeDetection = {self.pileDeDetections}")
         if self.pileDeDetections:
             # on dépile un index de détections à faire et on met à jour
             # le bouton de STOP
@@ -737,18 +737,23 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             # d'être traités en priorité
             QTimer.singleShot(50, self.detecteUnPoint)
         else:
-            self.stopCalculs.emit()
+            # si la pile d'images à détecter a été vidée par self.stopComputing,
+            # il faut passer à l'image suivante si possible
+            print("GRRRR, la pile d'images à détecter a été vidée, self.index =", self.index)
+            self.clic_sur_video_signal.emit()
             self.app.change_etat.emit("D")
         return
 
     def stopComputing(self):
-        self.dbg.p(1, "rentre dans 'stopComputing'")
+        self.dbg.p(2, "rentre dans 'stopComputing'")
         self.pileDeDetections = []  # vide la liste des points à détecter encore
-        self.app.change_etat.emit("D")
+        # on ne revient pas tout de suite à l'état D, comme il peut y avoir des
+        # objets à pointer automatiquement ; la routine self.detecteUnPoint
+        # s'occupe de ça.
         return
 
     def enregistre_ui(self):
-        self.dbg.p(1, "rentre dans 'enregistre_ui'")
+        self.dbg.p(2, "rentre dans 'enregistre_ui'")
         if self.data and self.echelle_image:
             base_name = os.path.splitext(os.path.basename(self.filename))[0]
             defaultName = os.path.join(DOCUMENT_PATH, base_name+'.mecavideo')
@@ -767,7 +772,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         Enregistre les données courantes dans un fichier,
         à un format CSV, séparé par des tabulations
         """
-        self.dbg.p(1, "rentre dans 'enregistre'")
+        self.dbg.p(2, "rentre dans 'enregistre'")
         sep_decimal = "."
         if locale.getdefaultlocale()[0][0:2] == 'fr':
             # en France, le séparateur décimal est la virgule
@@ -822,7 +827,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @param msg le message
         @return le texte de l'en-tête (multi-ligne)
         """
-        self.dbg.p(1, "rentre dans 'entete_fichier'")
+        self.dbg.p(2, "rentre dans 'entete_fichier'")
         config = open(self.prefs.conffile).readlines()
         return "".join(["# "+l for l in config[1:]]) + "# " + msg + "\n"
 
@@ -830,7 +835,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         """
         Affiche l'image dpont le numéro est dans self.spinBox_image
         """
-        self.dbg.p(1, "rentre dans 'affiche_image_spinbox'")
+        self.dbg.p(2, "rentre dans 'affiche_image_spinbox'")
         self.index = self.spinBox_image.value()
         self.affiche_image()
         return
@@ -847,7 +852,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @return un dictionnaire objet => [(org, ext), ...] où org et ext
           sont l'origine et l'extrémité d'un vecteur vitesse
         """
-        self.dbg.p(1, "rentre dans 'vecteursVitesse'")
+        self.dbg.p(2, "rentre dans 'vecteursVitesse'")
         result = {obj : [] for obj in self.suivis}
         trajectoires = self.les_trajectoires()
         for obj in self.suivis:
@@ -876,7 +881,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @param rouvre est vrai quand on ouvre un fichier pymecavideo ; 
           il est faux par défaut
         """
-        self.dbg.p(1, "rentre dans 'VideoWidget.apply_preferences'")
+        self.dbg.p(2, "rentre dans 'VideoWidget.apply_preferences'")
         d = self.prefs.config["DEFAULT"]
         self.filename = d["lastvideo"]
         if os.path.isfile(self.filename):
@@ -911,7 +916,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         """
         revient au point précédent
         """
-        self.dbg.p(1, "rentre dans 'efface_point_precedent'")
+        self.dbg.p(2, "rentre dans 'efface_point_precedent'")
         if inhibe("defaire",100): return # corrige un bug de Qt 5.15
         if not self.peut_defaire(): return
         # efface la dernière entrée dans le tableau
@@ -930,7 +935,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     def refait_point_suivant(self):
         """rétablit le point suivant après un effacement
         """
-        self.dbg.p(1, "rentre dans 'refait_point_suivant'")
+        self.dbg.p(2, "rentre dans 'refait_point_suivant'")
         if inhibe("refaire",100): return # corrige un bug de Qt 5.15
         self.refaire()
         # ce serait moins long de remettre juste une ligne dans le tableau
@@ -946,7 +951,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         colonne du tableau
         @param qbbn le bouton qui a été cliqué pour en arriver là
         """
-        self.dbg.p(1, "rentre dans 'refait_point_depuis_tableau'")
+        self.dbg.p(2, "rentre dans 'refait_point_depuis_tableau'")
         self.refait_point=True
         self.objet_courant = self.suivis[0]
         self.index = qpbn.index_image

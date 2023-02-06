@@ -323,7 +323,7 @@ class Pointage(QObject):
         référentiel "à l'endroit"
         @param p un point en "coordonnées d'écran"
         """
-        self.dbg.p(1, "rentre dans 'pointEnMetre'")
+        self.dbg.p(2, "rentre dans 'pointEnMetre'")
         if p is None: return None
         return vecteur(
             self.sens_X * (p.x - self.origine.x) * self.echelle_image.mParPx(),
