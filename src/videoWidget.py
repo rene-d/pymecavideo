@@ -737,9 +737,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             # d'être traités en priorité
             QTimer.singleShot(50, self.detecteUnPoint)
         else:
+            # fin de la détection automatique
+            self.auto = False
             # si la pile d'images à détecter a été vidée par self.stopComputing,
             # il faut passer à l'image suivante si possible
-            print("GRRRR, la pile d'images à détecter a été vidée, self.index =", self.index)
             self.clic_sur_video_signal.emit()
             self.app.change_etat.emit("D")
         return
@@ -747,9 +748,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     def stopComputing(self):
         self.dbg.p(2, "rentre dans 'stopComputing'")
         self.pileDeDetections = []  # vide la liste des points à détecter encore
-        # on ne revient pas tout de suite à l'état D, comme il peut y avoir des
-        # objets à pointer automatiquement ; la routine self.detecteUnPoint
-        # s'occupe de ça.
+        # la routine self.detecteUnPoint reviendra à l'état D après que
+        # le dernier objet aura été détecté
         return
 
     def enregistre_ui(self):
