@@ -250,7 +250,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @param point la position à enregistrer
         """
         self.dbg.p(1, "rentre dans 'storePoint'")
-        if self.lance_capture == True:
+        if self.lance_capture or self.auto:
             self.pointe(self.objet_courant, point, index=self.index-1)
             self.clic_sur_video_signal.emit()
         return
@@ -663,6 +663,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.reinit_origine()
         self.pointsProbables = {}
         self.motifs_auto = []
+        # retire les objets déjà pointés
+        self.redimensionne_data()
         self.app.change_etat.emit("A0")
         return
     
@@ -696,9 +698,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.pileDeDetections = []
             for i in range(self.index, self.image_max+1):
                 self.pileDeDetections.append(i)
-            # programme le suivi du point suivant après un délai de 50 ms,
-            # pour laisser une chance aux évènement de l'interface graphique
-            # d'être traités en priorité
             self.dbg.p(3, "self.pileDeDetections : %s" % self.pileDeDetections)
             self.app.change_etat.emit("B")
         return
@@ -712,7 +711,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         des traitements.
         """
         self.dbg.p(1, f"rentre dans 'detecteUnPoint', pileDeDetection = {self.pileDeDetections}")
-        print("GRRRR self.pileDeDetections =", self.pileDeDetections, bool(self.pileDeDetections))
         if self.pileDeDetections:
             # on dépile un index de détections à faire et on met à jour
             # le bouton de STOP
