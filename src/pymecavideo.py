@@ -1632,34 +1632,30 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def verifie_m_grapheur(self):
         m = self.lineEdit_m.text().replace(',', '.')
         if m != "":
-            try:
-                float(m)
-            except Exception as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                retour = QMessageBox.critical(
+            if not pattern_float.match(m):
+                QMessageBox.critical(
                     self,
                     _translate("pymecavideo", "MAUVAISE VALEUR !", None),
                     _translate(
-                        "pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
-                    QMessageBox.Yes)
-        self.affiche_grapheur()
-        self.dessine_graphe()
+                        "pymecavideo", "La valeur rentrée (m = {}) n'est pas compatible avec le calcul", None).format(m))
+            else:
+                self.affiche_grapheur()
+                self.dessine_graphe()
+        return
 
     def verifie_g_grapheur(self):
         g = self.lineEdit_g.text().replace(',', '.')
         if g != "":
-            try:
-                float(g)
-            except Exception as err:
-                self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-                retour = QMessageBox.critical(
+            if not pattern_float.match(g):
+                QMessageBox.critical(
                     self,
                     _translate("pymecavideo", "MAUVAISE VALEUR !", None),
                     _translate(
-                        "pymecavideo", "La valeur rentrée n'est pas compatible avec le calcul", None),
-                    QMessageBox.Yes)
-        self.affiche_grapheur()
-        self.dessine_graphe()
+                        "pymecavideo", "La valeur rentrée (g = {}) n'est pas compatible avec le calcul", None).format(g))
+            else:
+                self.affiche_grapheur()
+                self.dessine_graphe()
+        return
 
     def affiche_barre_statut(self, message):
         """
