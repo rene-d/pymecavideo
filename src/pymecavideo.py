@@ -1517,7 +1517,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         @return la masse de cet objet
         """
         if self.masse_objet == 0:
-            masse_objet_raw = QInputDialog.getText(
+            masse_objet_raw, ok = QInputDialog.getText(
                 None,
                 _translate(
                     "pymecavideo", "Masse de l'objet", None),
@@ -1525,16 +1525,15 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                            "Quelle est la masse de l'objet ? (en kg)",
                            None),
                 text ="1.0")
-            if masse_objet_raw[1] == False:
-                return None
-            masse_objet = [
-                float(masse_objet_raw[0].replace(",", ".")), masse_objet_raw[1]]
-            if masse_objet[0] <= 0 or masse_objet[1] == False:
+            masse_objet_raw = masse_objet_raw.replace(",", ".")
+            ok = ok and pattern_float.match(masse_objet_raw)
+            masse_objet = float(masse_objet_raw)
+            if masse_objet <= 0 or not ok:
                 self.affiche_barre_statut(_translate(
-                    "pymecavideo", " Merci d'indiquer une masse valable", None))
-            self.masse_objet = float(masse_objet[0])
-        m = self.masse_objet
-        return m
+                    "pymecavideo", "Merci d'indiquer une masse valable", None))
+                return None
+            self.masse_objet = masse_objet
+        return self.masse_objet
 
     def bouton_refaire(self, ligne):
         """
@@ -1642,6 +1641,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # rajoute des boutons pour refaire le pointage
         # au voisinage immédiat des zones de pointage
         colonne = self.video.nb_obj * (2 + colonnes_sup) +1
+        if self.video.premiere_image() is None: return
         if self.video.premiere_image() > 1:
             i = self.video.premiere_image() - 2
             self.tableWidget.setCellWidget(i, colonne, self.bouton_refaire(i))
