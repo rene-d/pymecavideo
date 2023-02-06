@@ -409,16 +409,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         elif etat in ("A", "A0", "A1"):
             self.etatA()
         elif etat in ("AB", "AB0", "AB1"):
-            """
-            On y arrive en cliquant sur le bouton démarrer, si la case
-            à cocher « pointage auto » était cochée. On doit définir,
-            par tirer-glisser à la souris, autant de zones
-            rectangulaires à suivre qu’il y a d’objets à pointer.
-
-            Le premier onglet est actif, mais tous les widgets de
-            contrôle y sont inactifs.
-            """
-            pass
+            self.etatAB()
+        elif etat in ("B", "B0", "B1"):
+            self.etatB()
         elif etat == "C":
             self.etatC()
         elif etat in ("D", "D0", "D1"):
@@ -602,6 +595,57 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.egalise_origine()
         return
 
+    def etatAB(self):
+        """
+        On y arrive en cliquant sur le bouton démarrer, si la case
+        à cocher « pointage auto » était cochée. On doit définir,
+        par tirer-glisser à la souris, autant de zones
+        rectangulaires à suivre qu’il y a d’objets à pointer.
+
+        Le premier onglet est actif, mais tous les widgets de
+        contrôle y sont inactifs.
+        """
+        # désactive plusieurs widgets
+        for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
+            self.label_nb_de_points, \
+            self.spinBox_nb_de_points, self.Bouton_Echelle, \
+            self.checkBox_auto, self.Bouton_lance_capture, \
+            self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
+            self.checkBox_abscisses, self.checkBox_ordonnees, \
+            self.label_IPS, self.lineEdit_IPS, \
+            self.menuE_xporter_vers, self.actionSaveData :
+
+            obj.setEnabled(False)
+
+        QMessageBox.information(
+            None, "Capture Automatique",
+            _translate("pymecavideo", """\
+            Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
+            Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",None))
+        self.affiche_barre_statut(
+            _translate("pymecavideo", "Pointage Automatique", None))
+        self.video.active_controle_image(False)
+        # on démarre la définition des zones à suivre
+        self.video.capture_auto()
+        return
+        
+    def etatB(self):
+        """
+        On y arrive quand les zones rectangulaires à suivre sont
+        définies.
+
+        Le premier onglet est actif, mais tous les widgets de contrôle
+        y sont inactifs et on fait apparaître le bouton STOP
+        """
+        self.pushButton_stopCalculs.setText("STOP")
+        self.pushButton_stopCalculs.setEnabled(True)
+        self.pushButton_stopCalculs.show()
+        self.update()
+        print("GRRRRR dans l'état B, self.pushButton_stopCalculs =", self.pushButton_stopCalculs, self.pushButton_stopCalculs.text(), self.pushButton_stopCalculs.isEnabled())
+        # initialise la détection des points
+        self.video.detecteUnPoint()
+        return
+    
     def etatC(self):
         """
         L’échelle est en cours de définition.
@@ -638,7 +682,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         Les contrôles pour changer d’image sont actifs, et le seul
         autre bouton actif sur le premier onglet est celui qui
-        permet de changer d’échelle.
+        permet de changer d’échelle. Dans tous les cas, le bouton STOP
+        y est caché
 
         Le pointage n’est possible que dans deux cas :
 
@@ -650,6 +695,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         curseur de souris a la forme d’une grosse cible ;
         idéalement il identifie aussi l’objet à pointer.
         """
+        print("GRRRR entrée dans l'état D")
         self.etat = "D1" if self.video.echelle_image else "D0"
         self.dbg.p(1, f"rentre dans l'état « {self.etat} »")
         # empêche de redimensionner la fenêtre
@@ -657,6 +703,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # prépare le widget video
         self.video.setFocus()
         if self.video.echelle_trace: self.video.echelle_trace.lower()
+        # on cache le bouton STOP
+        self.pushButton_stopCalculs.setEnabled(False)
+        self.pushButton_stopCalculs.hide()
         # on force extract_image afin de mettre à jour le curseur de la vidéo
         self.video.extract_image(self.horizontalSlider.value())
         
@@ -1870,7 +1919,8 @@ Merci de bien vouloir le renommer avant de continuer""", None))
 
         Passe à l'état D
         """
-        self.change_etat.emit("D")
+        prochain_etat = "AB" if self.checkBox_auto.isChecked() else "D"
+        self.change_etat.emit(prochain_etat)
         return
     
     def demande_echelle(self):

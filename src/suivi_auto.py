@@ -22,7 +22,7 @@
 """
 
 from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer, QObject, QRect, QPoint, QPointF
-from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QPen, QColor, QShortcut
+from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, QPen, QColor, QShortcut, QCursor
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QTableWidgetSelectionRange
 
 from vecteur import vecteur
@@ -50,19 +50,12 @@ class SelRectWidget(QWidget):
         cible_pix = QPixmap(cible_icon).scaledToHeight(32)
         cible_cursor = QCursor(cible_pix)
         self.setCursor(cible_cursor)        
+        self.x_1 = None
+        self.x_2 = None
+        self.y_1 = None
+        self.y_2 = None
         return
 
-    def finish(self, delete=False):
-        """
-        Cache le rectangle de sélection
-        @param delete s'il est vrai, l'objet se détruit lui-même
-        """
-        self.hide()
-        self.close()
-        if delete:
-            del self
-        return
-        
     def mousePressEvent(self, event):
         self.setMouseTracking(False)
         p = vecteur(qPoint = event.position())
@@ -106,7 +99,7 @@ class SelRectWidget(QWidget):
         return image_opencv[y:y+h,x:x+w]
 
     def paintEvent(self, event):
-        if not self.hasMouseTracking():
+        if not self.hasMouseTracking() and self.x_1 is not None:
             painter = QPainter()
             painter.begin(self)
             painter.setPen(QColor("green"))

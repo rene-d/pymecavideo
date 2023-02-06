@@ -269,7 +269,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.objet_courant = self.suivis[0]
             if self.index < self.image_max:
                 self.index +=1
-            self.app.change_etat.emit("D1" if self.echelle_image else "D0")
+            # revient à l'état D sauf en cas de suivi automatique
+            # auquel cas l'état B perdure
+            if not self.auto:
+                self.app.change_etat.emit("D1" if self.echelle_image else "D0")
         return
 
     def mouseReleaseEvent(self, event):
@@ -614,26 +617,17 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app.enableRefaire(self.peut_refaire())
         return
 
-    def debut_capture(self):
+    def capture_auto(self):
         """
-        FONCTION OBSOLÈTE : ON Y GARDE LE CODE PRÉCÉDANT LA CAPTURE AUTO
+        fonction appelée au début de l'état AB : prépare la sélection
+        des motifs à suivre en capture automatique
         """
-        self.dbg.p(1, "rentre dans 'debut_capture'")
-
-        # automatic capture
-        if self.checkBox_auto.isChecked():
-            self.auto = True
-            self.app.affiche_barre_statut(
-                _translate("pymecavideo", "Pointage Automatique", None))
-            reponse = QMessageBox.information(
-                None, "Capture Automatique",
-                _translate("pymecavideo", """\
-Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
-Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",
-                           None))
-            self.selRect = SelRectWidget(self)
-            self.selRect.show()
-            self.active_controle_image(False)
+        self.dbg.p(1, "rentre dans 'capture_auto'")
+        self.auto = True # inhibe le pointage à la souris !
+        # recouvre l'image avec le widget selRect pour définir des
+        # rectangles pour chaque motif à suivre
+        self.selRect = SelRectWidget(self)
+        self.selRect.show()
         return
 
     def feedbackEchelle(self, p1, p2):
@@ -699,10 +693,6 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             self.dbg.p(3, "selection des motifs finie")
             self.selRect.hide()
             self.indexMotif = 0
-            self.pushButton_stopCalculs.setText("STOP")
-            self.pushButton_stopCalculs.setEnabled(1)
-            self.pushButton_stopCalculs.show()
-            self.setEnabled(0)
             self.pileDeDetections = []
             for i in range(self.index, self.image_max+1):
                 self.pileDeDetections.append(i)
@@ -710,7 +700,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             # pour laisser une chance aux évènement de l'interface graphique
             # d'être traités en priorité
             self.dbg.p(3, "self.pileDeDetections : %s" % self.pileDeDetections)
-            timer = QTimer.singleShot(5, self.detecteUnPoint)
+            self.app.change_etat.emit("B")
+        return
 
     # @time_it
     def detecteUnPoint(self):
@@ -721,6 +712,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         des traitements.
         """
         self.dbg.p(1, f"rentre dans 'detecteUnPoint', pileDeDetection = {self.pileDeDetections}")
+        print("GRRRR self.pileDeDetections =", self.pileDeDetections, bool(self.pileDeDetections))
         if self.pileDeDetections:
             # on dépile un index de détections à faire et on met à jour
             # le bouton de STOP
@@ -748,16 +740,13 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             QTimer.singleShot(50, self.detecteUnPoint)
         else:
             self.stopCalculs.emit()
+            self.app.change_etat.emit("D1" if self.echelle_image else "D0")
+        return
 
     def stopComputing(self):
         self.dbg.p(1, "rentre dans 'stopComputing'")
         self.pileDeDetections = []  # vide la liste des points à détecter encore
-        self.setEnabled(1)
-        self.pushButton_stopCalculs.setEnabled(0)
-        self.pushButton_stopCalculs.hide()
-        # rétablit les fonctions du spinbox et du slider pour gérer l'image
-        self.active_controle_image()
-        self.selRect.hide()
+        self.app.change_etat.emit("D")
         return
 
     def enregistre_ui(self):
