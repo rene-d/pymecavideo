@@ -400,7 +400,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_save.clicked.connect(self.enregistreChrono)
         self.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
         self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
-        self.spinBox_nb_de_points.valueChanged.connect(self.video.dimension_data)
+        self.spinBox_objets.valueChanged.connect(self.video.dimension_data)
+        self.pushButton_defait.clicked.connect(self.video.efface_point_precedent)
+        self.pushButton_refait.clicked.connect(self.video.refait_point_suivant)
         return
 
     def etatUI(self, etat):
@@ -446,7 +448,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.pushButton_rot_droite, self.pushButton_rot_gauche, \
             self.pushButton_stopCalculs, \
             self.button_video, self.label_nb_de_points, \
-            self.spinBox_nb_de_points, self.Bouton_Echelle, \
+            self.spinBox_objets, self.Bouton_Echelle, \
             self.checkBox_auto, self.Bouton_lance_capture, \
             self.pushButton_reinit, self.pushButton_origine, \
             self.pushButton_defait, self.pushButton_refait, \
@@ -533,7 +535,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # réactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
             self.label_nb_de_points, \
-            self.spinBox_nb_de_points, self.Bouton_Echelle, \
+            self.spinBox_objets, self.Bouton_Echelle, \
             self.checkBox_auto, self.Bouton_lance_capture, \
             self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
             self.checkBox_abscisses, self.checkBox_ordonnees, \
@@ -544,10 +546,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         # ajuste le nombre d'objets suivis
         if self.video.suivis:
-            self.spinBox_nb_de_points.setValue(self.video.nb_obj)
+            self.spinBox_objets.setValue(self.video.nb_obj)
         else:
             self.video.dimension_data.emit(1)
-            self.spinBox_nb_de_points.setValue(1)
+            self.spinBox_objets.setValue(1)
 
         # desactive d'autres widgets
         self.pushButton_stopCalculs.setEnabled(False)
@@ -589,7 +591,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.spinBox_image.setMinimum(1)
         self.spinBox_image.setValue(1)
         self.spinBox_chrono.setMaximum(self.video.image_max)
-        self.spinBox_nb_de_points.setEnabled(True)
+        self.spinBox_objets.setEnabled(True)
         self.tab_traj.setEnabled(0)
 
         self.affiche_barre_statut(
@@ -611,7 +613,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # désactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
             self.label_nb_de_points, \
-            self.spinBox_nb_de_points, self.Bouton_Echelle, \
+            self.spinBox_objets, self.Bouton_Echelle, \
             self.checkBox_auto, self.Bouton_lance_capture, \
             self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
             self.checkBox_abscisses, self.checkBox_ordonnees, \
@@ -662,7 +664,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # désactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
             self.label_nb_de_points, \
-            self.spinBox_nb_de_points, self.Bouton_Echelle, \
+            self.spinBox_objets, self.Bouton_Echelle, \
             self.checkBox_auto, self.Bouton_lance_capture, \
             self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
             self.checkBox_abscisses, self.checkBox_ordonnees, \

@@ -119,7 +119,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # réplication de certains attributs de la fenêtre principale
         attributes = [
             "dbg",
-            "pushButton_defait", "pushButton_refait",
             "pushButton_stopCalculs", "checkBox_Ec", "checkBox_Em",
             "checkBox_Epp", "checkBoxScale", "prefs"
         ]
@@ -133,9 +132,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.selection_motif_done.connect(self.suiviDuMotif)
         self.stopCalculs.connect(self.stopComputing)
         self.dimension_data.connect(self.redimensionne_data)
-        # connexion de signaux de widgets
-        self.pushButton_defait.clicked.connect(self.efface_point_precedent)
-        self.pushButton_refait.clicked.connect(self.refait_point_suivant)
 
         # fait un beau gros curseur
         cible_pix = QPixmap(cible_icon).scaledToHeight(32)

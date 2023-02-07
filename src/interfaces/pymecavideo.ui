@@ -260,7 +260,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="spinBox_nb_de_points">
+                <widget class="QSpinBox" name="spinBox_objets">
                  <property name="minimum">
                   <number>1</number>
                  </property>
