@@ -293,13 +293,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             if self.image is not None: painter.drawPixmap(0, 0, self.image)
 
             ############################################################
-            # dessin de l'origine
-            longueur_origine = 5
-            painter.setPen(QColor("green"))
-            painter.drawText(
-                round(self.origine.x), round(self.origine.y) + 15, "O")
-            ############################################################
-            # draw points
+            # dessine les pointages passés
             self.dbg.p(
                 5, "In videoWidget, paintEvent, self.data :%s" % self.data)
             if self.data:
@@ -317,8 +311,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                             painter.translate(-point.x + 10, -point.y - 10)
 
             ############################################################
-            # paint repere
+            # dessine le repere
             painter.setPen(QColor("green"))
+            painter.drawText(
+                round(self.origine.x) + 5, round(self.origine.y) + 15, "O")
             painter.translate(0, 0)
             painter.translate(round(self.origine.x), round(self.origine.y))
             p1 = QPoint(round(self.sens_X * (-40)), 0)
