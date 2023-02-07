@@ -278,7 +278,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def mouseMoveEvent(self, event):
-        if self.app.etat in ("A","D", "E"):
+        if self.app.etat in ("A", "D", "E"):
             p = vecteur(qPoint = event.position())
             self.hotspot = p
             self.app.update_zoom.emit(self.hotspot)
@@ -286,9 +286,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     
     def paintEvent(self, event):
         if self.image:
-            if self.app.etat in ("A", "C", "D", "E") and \
-               self.hotspot is not None:
-                self.app.update_zoom.emit(self.hotspot)
             painter = QPainter()
             painter.begin(self)
             ############################################################
