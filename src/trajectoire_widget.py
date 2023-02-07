@@ -66,14 +66,6 @@ class TrajectoireWidget(ImageWidget):
             self.speedToDraw = self.video.vecteursVitesse(float(vitesse))
         return
 
-    def enterEvent(self,event):
-        """
-        Quand la souris arrive sur la vidéo, on met des messages pertinents
-        dans la barre de statut
-        """
-        self.app.affiche_statut.emit("Onglet d'étude des trajectoires")
-        return
-    
     def mouseMoveEvent(self, event):
         # Look if mouse is near a point
         self.pos_souris = event.pos()
