@@ -118,7 +118,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # réplication de certains attributs de la fenêtre principale
         attributes = [
             "dbg",
-            "spinBox_image", "spinBox_nb_de_points", "spinBox_chrono",
+            "spinBox_nb_de_points", "spinBox_chrono",
             "Bouton_lance_capture", "Bouton_Echelle", "tabWidget",
             "graphWidget", "tableWidget", "tab_traj", "comboBox_referentiel",
             "pushButton_select_all_table", "pushButton_origine",
