@@ -427,18 +427,20 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     def rouvre(self):
         """
         Ici c'est la partie dévolue au videoWidget quand on rouvre un
-        fichier pymecavideo
+        fichier pymecavideox
         """
-        self.check_uncheck_direction_axes()
+        self.app.sens_axes.emit(self.sens_X, self.sens_Y)
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
             self.cvReader.recupere_avi_infos(self.rotation)
         self.ratio = self.largeurFilm / self.hauteurFilm
         return
 
-    def restaure_pointages(self, data) :
+    def restaure_pointages(self, data, premiere_image_pointee) :
         """
         Rejoue les pointages issus d'un fichier pymecavideo
         @param data une liste de listes de type [t, x1, y1, ..., xn, yn]
+        @param premiere_image_pointee la toute première image pointée
+          (au moins 1)
         """
         self.dimensionne(self.nb_obj, self.deltaT, self.image_max)
         for i in range(len(data)) :
@@ -454,7 +456,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                         round(float(y) * self.echelle_image.pxParM())
                     self.pointe(
                         obj, vecteur(x, y),
-                        index = i + self.premiere_image_pointee - 1)
+                        index = i + premiere_image_pointee - 1)
         # affiche la dernière image pointée
         der = self.derniere_image()
         if der is not None:
@@ -632,21 +634,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app.change_etat.emit("A")
         return
     
-    def check_uncheck_direction_axes(self):
-        """
-        met à jour les axes selon les sens connus
-        """
-        self.dbg.p(2, "rentre dans 'check_uncheck_direction_axes'")
-        if self.sens_X == -1:
-            self.checkBox_abscisses.setChecked(1)
-        else:
-            self.checkBox_abscisses.setChecked(0)
-        if self.sens_Y == -1:
-            self.checkBox_ordonnees.setChecked(1)
-        else:
-            self.checkBox_ordonnees.setChecked(0)
-        return
-
     def suiviDuMotif(self):
         self.dbg.p(2, "rentre dans 'suiviDuMotif'")
         if len(self.motifs_auto) == self.nb_obj:
@@ -746,7 +733,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             outfile.write(self.entete_fichier(message))
             donnees = self.csv_string(
                 sep = "\t", unite = "m",
-                debut = self.premiere_image_pointee,
+                debut = self.premiere_image(),
                 origine = self.origine
             ).replace(".",sep_decimal)
             outfile.write(donnees)
@@ -847,7 +834,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if rouvre:
             # dans ce cas on est en train de réouvrir un fichier pymecavideo
             # et on considère plus de données
-            self.premiere_image_pointee = d.getint("index_depart")
+            #!!!! self.premiere_image_pointee = d.getint("index_depart")
             self.deltatT = d.getfloat("deltat")
             self.dimensionne(d.getint("nb_obj"), self.deltaT, self.image_max)
             self.echelle_image.longueur_reelle_etalon = d.getfloat('etalon_m')

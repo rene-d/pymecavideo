@@ -264,10 +264,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             return
         # le fichier de configuration a la bonne version, on applique ses
         # données
-        d = self.prefs.config["DEFAULT"]
         taille = self.prefs.config.getvecteur("DEFAULT", "taille")
         rect = self.geometry()
         self.setGeometry(rect.x(), rect.y(), int(taille.x), int(taille.y))
+        d = self.prefs.config["DEFAULT"]
         self.radioButtonNearMouse.setChecked(d["proximite"] == "True")
         self.video.apply_preferences(rouvre = rouvre)
         return
@@ -313,7 +313,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.point_attendu = 0
         self.nb_clics = 0
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
-        self.premiere_image_pointee = 1  # n° de la première image cliquée
         self.video.index = 1  # image à afficher
         self.chronoImg = 0
         self.filename = filename
@@ -339,7 +338,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     echelle_orange = pyqtSignal(str)        # modifie le bouton d'échelle
     show_coord = pyqtSignal()               # montre l'onglet des coordonnées
     show_video = pyqtSignal()               # montre l'onglet des vidéos
-
+    sens_axes = pyqtSignal(int, int)        # coche les cases des axes
+    
     def ui_connections(self):
         """connecte les signaux de Qt"""
         self.dbg.p(2, "rentre dans 'ui_connections'")
@@ -385,6 +385,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.echelle_orange.connect(self.attire_attention_echelle)
         self.show_coord.connect(self.montre_volet_coord)
         self.show_video.connect(self.montre_volet_video)
+        self.sens_axes.connect(self.coche_axes)
         self.exportCombo.currentIndexChanged.connect(self.export)
         self.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
         self.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
@@ -941,17 +942,17 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def change_sens_X(self):
         self.dbg.p(2, "rentre dans 'change_sens_X'")
         if self.checkBox_abscisses.isChecked():
-            self.sens_X = -1
+            self.video.sens_X = -1
         else:
-            self.sens_X = 1
+            self.video.sens_X = 1
         self.change_axe_origine.emit()
 
     def change_sens_Y(self):
         self.dbg.p(2, "rentre dans 'change_sens_Y'")
         if self.checkBox_ordonnees.isChecked():
-            self.sens_Y = -1
+            self.video.sens_Y = -1
         else:
-            self.sens_Y = 1
+            self.video.sens_Y = 1
         self.change_axe_origine.emit()
 
     def presse_papier(self):
@@ -1811,9 +1812,9 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         # on remplace les virgules décimales par des points
         data = [re.split(r"\s+", l.strip().replace(",", "."))
                 for l in lignes_data][1:]
-        self.video.restaure_pointages(data)
+        self.video.restaure_pointages(
+            data, self.prefs.config["DEFAULT"].getint("index_depart"))
         self.affiche_echelle()  # on met à jour le widget d'échelle
-        
         self.change_etat.emit("D")
         return
 
@@ -1821,7 +1822,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         """
         Fonction de rappel du bouton Bouton_lance_capture
 
-        Passe à l'état D
+        Passe à l'état D ou AB, selon self.checkBox_auto
         """
         prochain_etat = "AB" if self.checkBox_auto.isChecked() else "D"
         self.change_etat.emit(prochain_etat)
@@ -1920,6 +1921,17 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         Met l'onglet des vidéos sur le dessus
         """
         self.tabWidget.setCurrentIndex(0)
+        return
+
+    def coche_axes(self, x, y):
+        """
+        Met à jour les caches à cocher des axes
+        @param x sens de l'axe x (+1 ou -1)
+        @param y sens de l'axe y (+1 ou -1)
+        """
+        self.dbg.p(2, "rentre dans 'coche_axes'")
+        self.checkBox_abscisses.setChecked(x < 0)
+        self.checkBox_ordonnees.setChecked(y < 0)
         return
 
 def usage():
