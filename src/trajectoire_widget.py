@@ -37,7 +37,6 @@ class TrajectoireWidget(ImageWidget):
 
         self.setCursor(Qt.CursorShape.ArrowCursor)
         self.setAutoFillBackground(True)
-        # self.setMouseTracking(True)
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray", "green", "red", "blue", "cyan", "magenta",
                          "yellow", "gray", "green"]
         self.setMouseTracking(True)
@@ -67,6 +66,14 @@ class TrajectoireWidget(ImageWidget):
             self.speedToDraw = self.video.vecteursVitesse(float(vitesse))
         return
 
+    def enterEvent(self,event):
+        """
+        Quand la souris arrive sur la vidéo, on met des messages pertinents
+        dans la barre de statut
+        """
+        self.app.affiche_statut.emit("Onglet d'étude des trajectoires")
+        return
+    
     def mouseMoveEvent(self, event):
         # Look if mouse is near a point
         self.pos_souris = event.pos()

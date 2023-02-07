@@ -194,6 +194,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         dans la barre de statut
         """
         self.app.affiche_statut.emit("")
+        return
 
     def resizeEvent(self, e):
         self.dbg.p(2, "rentre dans 'resizeEvent'")
