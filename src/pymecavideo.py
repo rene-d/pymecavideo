@@ -336,7 +336,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     updateProgressBar = pyqtSignal()
     change_etat = pyqtSignal(str)
     apres_echelle = pyqtSignal()
-    echelle_orange = pyqtSignal(str)
+    echelle_orange = pyqtSignal(str)        # modifie le bouton d'échelle
+    show_coord = pyqtSignal()               # montre l'onglet des coordonnées
+    show_video = pyqtSignal()               # montre l'onglet des vidéos
 
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -381,6 +383,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.change_etat.connect(self.etatUI)
         self.apres_echelle.connect(self.restaureEtat)
         self.echelle_orange.connect(self.attire_attention_echelle)
+        self.show_coord.connect(self.montre_volet_coord)
+        self.show_video.connect(self.montre_volet_video)
         self.exportCombo.currentIndexChanged.connect(self.export)
         self.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
         self.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
@@ -1902,6 +1906,20 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.Bouton_Echelle.setEnabled(True)
         self.Bouton_Echelle.setText(text)
         self.Bouton_Echelle.setStyleSheet("background-color:orange;")
+        return
+
+    def montre_volet_coord(self):
+        """
+        Met l'onglet des coordonnées sur le dessus
+        """
+        self.tabWidget.setCurrentIndex(2)
+        return
+
+    def montre_volet_video(self):
+        """
+        Met l'onglet des vidéos sur le dessus
+        """
+        self.tabWidget.setCurrentIndex(0)
         return
 
 def usage():

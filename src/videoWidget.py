@@ -119,7 +119,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # réplication de certains attributs de la fenêtre principale
         attributes = [
             "dbg",
-            "tabWidget",
             "graphWidget", "tableWidget", "tab_traj", "comboBox_referentiel",
             "pushButton_select_all_table", "pushButton_origine",
             "checkBox_abscisses", "checkBox_ordonnees", "checkBox_auto",
@@ -300,7 +299,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 if self.objet_courant == self.suivis[0]:
                     # le dernier objet est pointé, retour au tableau de coords
                     self.refait_point = False
-                    self.tabWidget.setCurrentIndex(2) # montre le tableau
+                    self.app.show_coord.emit()
         return
 
     def mouseMoveEvent(self, event):
@@ -907,7 +906,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.refait_point=True
         self.objet_courant = self.suivis[0]
         self.index = qpbn.index_image
-        self.tabWidget.setCurrentIndex(0) # montre le videoWidget
         self.clic_sur_video_ajuste_ui(self.index)
+        self.app.show_video.emit()
         return
 
