@@ -530,6 +530,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.dbg.p(2, "rentre dans 'clic_sur_video'")
         self.purge_defaits() # oublie les pointages à refaire
         self.clic_sur_video_ajuste_ui()
+        self.app.sync_img2others(self.index)
         return
     
     def clic_sur_video_ajuste_ui(self):
