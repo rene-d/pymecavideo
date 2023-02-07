@@ -339,10 +339,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     show_coord = pyqtSignal()               # montre l'onglet des coordonnées
     show_video = pyqtSignal()               # montre l'onglet des vidéos
     sens_axes = pyqtSignal(int, int)        # coche les cases des axes
+    stop_n = pyqtSignal(str)                # refait le texte du bouton STOP
     
     def ui_connections(self):
         """connecte les signaux de Qt"""
         self.dbg.p(2, "rentre dans 'ui_connections'")
+
+        #connexion de signaux de menus
         self.actionOuvrir_un_fichier.triggered.connect(self.openfile)
         self.actionExemples.triggered.connect(self.openexample)
         self.action_propos.triggered.connect(self.propos)
@@ -354,6 +357,25 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.actionCopier_dans_le_presse_papier.triggered.connect(
             self.presse_papier)
         self.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
+
+        # connexion de signaux de widgets
+        self.exportCombo.currentIndexChanged.connect(self.export)
+        self.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
+        self.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
+        self.checkBox_Epp.stateChanged.connect(self.affiche_tableau)
+        self.checkBox_Em.stateChanged.connect(self.affiche_tableau)
+        self.comboBox_X.currentIndexChanged.connect(self.dessine_graphe_avant)
+        self.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe_avant)
+        self.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
+        self.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
+        self.lineEdit_IPS.textChanged.connect(self.verifie_IPS)
+        self.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
+        self.pushButton_save.clicked.connect(self.enregistreChrono)
+        self.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
+        self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
+        self.spinBox_objets.valueChanged.connect(self.video.dimension_data)
+        self.pushButton_defait.clicked.connect(self.video.efface_point_precedent)
+        self.pushButton_refait.clicked.connect(self.video.refait_point_suivant)
         self.Bouton_Echelle.clicked.connect(self.demande_echelle)
         self.Bouton_lance_capture.clicked.connect(self.debut_capture)
         self.comboBox_referentiel.currentIndexChanged.connect(
@@ -374,6 +396,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
         self.pushButton_rot_droite.clicked.connect(self.tourne_droite)
         self.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
+
+        # connexion de signaux spéciaux
         self.change_axe_origine.connect(self.egalise_origine)
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
@@ -386,23 +410,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.show_coord.connect(self.montre_volet_coord)
         self.show_video.connect(self.montre_volet_video)
         self.sens_axes.connect(self.coche_axes)
-        self.exportCombo.currentIndexChanged.connect(self.export)
-        self.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
-        self.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
-        self.checkBox_Epp.stateChanged.connect(self.affiche_tableau)
-        self.checkBox_Em.stateChanged.connect(self.affiche_tableau)
-        self.comboBox_X.currentIndexChanged.connect(self.dessine_graphe_avant)
-        self.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe_avant)
-        self.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
-        self.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
-        self.lineEdit_IPS.textChanged.connect(self.verifie_IPS)
-        self.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
-        self.pushButton_save.clicked.connect(self.enregistreChrono)
-        self.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
-        self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
-        self.spinBox_objets.valueChanged.connect(self.video.dimension_data)
-        self.pushButton_defait.clicked.connect(self.video.efface_point_precedent)
-        self.pushButton_refait.clicked.connect(self.video.refait_point_suivant)
+        self.stop_n.connect(self.stop_setText)
+
         return
 
     def etatUI(self, etat):
@@ -1934,6 +1943,14 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.dbg.p(2, "rentre dans 'coche_axes'")
         self.checkBox_abscisses.setChecked(x < 0)
         self.checkBox_ordonnees.setChecked(y < 0)
+        return
+
+    def stop_setText(self, text):
+        """
+        Change le texte du bouton STOP
+        @param text le nouveau texte
+        """
+        self.pushButton_stopCalculs.setText(text)
         return
 
 def usage():

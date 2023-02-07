@@ -119,7 +119,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # réplication de certains attributs de la fenêtre principale
         attributes = [
             "dbg",
-            "pushButton_stopCalculs", "checkBox_Ec", "checkBox_Em",
+            "checkBox_Ec", "checkBox_Em",
             "checkBox_Epp", "checkBoxScale", "prefs"
         ]
         for a in attributes:
@@ -653,8 +653,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.pileDeDetections:
             # on dépile un index de détections à faire et on met à jour
             # le bouton de STOP
-            self.pushButton_stopCalculs.setText(
-                f"STOP ({self.pileDeDetections.pop(0)})")
+            self.app.stop_n.emit(f"STOP ({self.pileDeDetections.pop(0)})")
             ok, image = self.cvReader.getImage(
                 self.index, self.rotation, rgb=False)
             # puis on boucle sur les objets à suivre et on
