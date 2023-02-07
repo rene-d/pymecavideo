@@ -640,8 +640,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.spinBox_objets.setEnabled(True)
         self.tab_traj.setEnabled(0)
 
-        self.affiche_barre_statut(
-            _translate("pymecavideo", "Veuillez choisir une image (et définir l'échelle)", None))
+        self.affiche_statut.emit(
+           self.tr("Veuillez choisir une image (et définir l'échelle)"))
         self.montre_vitesses = False
         self.egalise_origine()
         return
@@ -673,8 +673,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             _translate("pymecavideo", """\
             Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
             Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",None))
-        self.affiche_barre_statut(
-            _translate("pymecavideo", "Pointage Automatique", None))
+        self.affiche_statut.emit(self.tr("Pointage Automatique"))
         self.imgControlImage(False)
         # on démarre la définition des zones à suivre
         self.video.capture_auto()
@@ -1519,8 +1518,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             ok = ok and pattern_float.match(masse_objet_raw)
             masse_objet = float(masse_objet_raw)
             if masse_objet <= 0 or not ok:
-                self.affiche_barre_statut(_translate(
-                    "pymecavideo", "Merci d'indiquer une masse valable", None))
+                self.affiche_statut.emit(self.tr(
+                    "Merci d'indiquer une masse valable"))
                 return None
             self.masse_objet = masse_objet
         return self.masse_objet
@@ -1691,15 +1690,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.dessine_graphe()
         return
 
-    def affiche_barre_statut(self, message):
-        """
-        On utilise la barre de status pour afficher les messages :
-        permet de gagner de la place en envelant le message de statut
-        @param message message à afficher
-        """
-        self.dbg.p(2, "rentre dans 'affiche_barre_statut'")
-        self.statusBar().showMessage(message)
-
     def openexample(self):
         self.dbg.p(2, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
@@ -1712,6 +1702,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             )
         )
         self.video.openTheFile(filename)
+        return
 
     def openfile(self):
         """
@@ -1739,6 +1730,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
                                                self._dir("videos", None),
                                                "*.avi")
         self.video.openTheFile(filename)
+        return
 
 
     def propos(self):
@@ -1769,6 +1761,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
             QMessageBox.warning(
                 None, "Aide",
                 _translate("pymecavideo", "Désolé pas de fichier d'aide pour le langage {0}.", None).format(lang))
+        return
 
     def verifie_IPS(self):
         self.dbg.p(2, "rentre dans 'verifie_IPS'")
@@ -1877,8 +1870,8 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         reponse = reponse.replace(",", ".")
         ok = ok and pattern_float.match(reponse) and float(reponse) > 0
         if not ok:
-            self.affiche_barre_statut(_translate(
-                "pymecavideo", "Merci d'indiquer une échelle valable : {} ne peut pas être converti en nombre.", None).format(reponse))
+            self.affiche_statut.emit(self.tr(
+                "Merci d'indiquer une échelle valable : {} ne peut pas être converti en nombre.").format(reponse))
             self.demande_echelle()
             return
         reponse = float(reponse)

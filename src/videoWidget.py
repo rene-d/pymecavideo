@@ -188,6 +188,13 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.tourne = True
         return
 
+    def enterEvent(self,event):
+        """
+        Quand la souris arrive sur la vidéo, on met des messages pertinents
+        dans la barre de statut
+        """
+        self.app.affiche_statut.emit("")
+
     def resizeEvent(self, e):
         self.dbg.p(2, "rentre dans 'resizeEvent'")
         if self.premier_resize:  # Au premier resize, la taille est changée mais pas l'origine.
@@ -342,8 +349,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.dbg.p(2, "rentre dans 'extract_image' " + 'index : ' + str(index))
         ok, image_opencv = self.cvReader.getImage(index, self.rotation)
         if not ok:
-            self.affiche_barre_statut(
-                _translate("pymecavideo", "Pymecavideo n'arrive pas à lire l'image", None))
+            self.app.affiche_statut.emit(
+                self.tr("Pymecavideo n'arrive pas à lire l'image"))
             return False, None
         self.a_une_image = ok
         self.imageExtraite = toQImage(image_opencv)
