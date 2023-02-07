@@ -73,7 +73,7 @@ class SelRectWidget(QWidget):
         if self.dragging:
             self.x_2 = p.x
             self.y_2 = p.y
-        self.app.update_zoom.emit(self.video.image, p)
+        self.app.update_zoom.emit(p)
         self.update()
         return
 

@@ -271,7 +271,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 self.objet_courant, event, index=self.index-1)
             self.objetSuivant()
             self.clic_sur_video_signal.emit()
-            self.app.update_zoom.emit(self.image, self.hotspot)
+            self.app.update_zoom.emit(self.hotspot)
             self.update()
             if self.refait_point : # on a été délégué pour corriger le tableau
                 if self.objet_courant == self.suivis[0]:
@@ -284,14 +284,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.app.etat in ("A","D", "E"):
             p = vecteur(qPoint = event.position())
             self.hotspot = p
-            self.app.update_zoom.emit(self.image, self.hotspot)
+            self.app.update_zoom.emit(self.hotspot)
         return
     
     def paintEvent(self, event):
         if self.image:
             if self.app.etat in ("A", "C", "D", "E") and \
                self.hotspot is not None:
-                self.app.update_zoom.emit(self.image, self.hotspot)
+                self.app.update_zoom.emit(self.hotspot)
             painter = QPainter()
             painter.begin(self)
             if self.image != None:
@@ -823,6 +823,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             else:
                 self.echelle_image.p1 = None
                 self.echelle_image.p2 = None
+        # choche les cases du sens des axes
+        self.app.sens_axes.emit(self.sens_X, self.sens_Y)
         return
 
     def efface_point_precedent(self):

@@ -104,10 +104,10 @@ class EchelleWidget(QWidget):
     @prop self.p2 vecteur
     ...
     """
-    def __init__(self, parent, app):
+    def __init__(self, parent):
         QWidget.__init__(self, parent)
-        self.video = parent
-        self.app = app
+        self.app = parent
+        self.video = parent.video
         self.image=None
         self.setGeometry(
             QRect(0, 0, self.video.width(), self.video.height()))
@@ -150,7 +150,7 @@ class EchelleWidget(QWidget):
 
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
-        self.video.updateZoom(p)
+        self.app.update_zoom.emit(p)
         if self.pressed:
             self.p2 = p
             self.update()

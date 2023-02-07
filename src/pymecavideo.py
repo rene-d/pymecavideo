@@ -340,7 +340,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     show_video = pyqtSignal()               # montre l'onglet des vidéos
     sens_axes = pyqtSignal(int, int)        # coche les cases des axes
     stop_n = pyqtSignal(str)                # refait le texte du bouton STOP
-    update_zoom = pyqtSignal(QPixmap, vecteur) # agrandit une portion d'image
+    update_zoom = pyqtSignal(vecteur)       # agrandit une portion d'image
     
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -392,7 +392,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.comboBoxChrono.currentIndexChanged.connect(self.chronoPhoto)
         self.pushButton_reinit.clicked.connect(self.video.reinitialise_capture)
         self.pushButton_origine.clicked.connect(
-            self.choisi_nouvelle_origine)
+            self.nouvelle_origine)
         self.checkBox_abscisses.stateChanged.connect(self.change_sens_X)
         self.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
         self.pushButton_rot_droite.clicked.connect(self.tourne_droite)
@@ -910,19 +910,25 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.radioButtonNearMouse.hide()
             self.radioButtonSpeedEveryWhere.hide()
             self.trajectoire_widget.update()
+        return
 
     def refait_echelle(self):
         # """Permet de retracer une échelle et de recalculer les points"""
         self.dbg.p(2, "rentre dans 'refait_echelle'")
         self.recalculLesCoordonnees()
+        return
 
-    def choisi_nouvelle_origine(self):
-        self.dbg.p(2, "rentre dans 'choisi_nouvelle_origine'")
+    def nouvelle_origine(self):
+        """
+        Permet de déplacer l'origine du référentiel de la caméra
+        """
+        self.dbg.p(2, "rentre dans 'nouvelle_origine'")
         nvl_origine = QMessageBox.information(
             self,
             "NOUVELLE ORIGINE",
             "Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
         ChoixOrigineWidget(parent=self.video, app=self).show()
+        return
 
     def tourne_droite(self):
         self.dbg.p(2, "rentre dans 'tourne_droite'")
@@ -1828,6 +1834,8 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.video.restaure_pointages(
             data, self.prefs.config["DEFAULT"].getint("index_depart"))
         self.affiche_echelle()  # on met à jour le widget d'échelle
+        # coche les cases pour les sens des axes
+        self.app.sens_axes.emit(self.sens_X, self.sens_Y)
         self.change_etat.emit("D")
         return
 
@@ -1862,7 +1870,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.video.echelle_image.etalonneReel(reponse)
         self.etat_ancien = self.etat # conserve pour plus tard
         self.change_etat.emit("C")
-        job = EchelleWidget(self.video, self)
+        job = EchelleWidget(self)
         job.show()
         return
     
@@ -1955,13 +1963,12 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.pushButton_stopCalculs.setText(text)
         return
 
-    def loupe(self, pixmap, position):
+    def loupe(self, position):
         """
-        Agrandit un pixmap et le met dans la zone du zoom
-        @param pixmap l'image à agrandir
+        Agrandit une partie de self.video.image et la met dans la zone du zoom
         @param position le centre de la zone à agrandir
         """
-        self.zoom_zone.fait_crop(pixmap, position)
+        self.zoom_zone.fait_crop(self.video.image, position)
         return
 
 def usage():

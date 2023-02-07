@@ -41,17 +41,18 @@ class ChoixOrigineWidget(QWidget):
             QRect(0, 0, self.parent.width(), self.parent.height()))
         self.setAutoFillBackground(False)
 
-        self.setCursor(Qt.CrossCursor)
+        self.setCursor(Qt.CursorShape.CrossCursor)
         self.cropX2 = None
         self.setMouseTracking(True)
 
     def mouseMoveEvent(self, event):
-        self.app.video.updateZoom(vecteur(event.x(), event.y()))
+        self.app.update_zoom.emit(vecteur(qPoint = event.position()))
         return
 
     def mouseReleaseEvent(self, event):
-        self.app.video.origine = vecteur(event.x(), event.y())
-        self.app.video.updateZoom()
+        p = vecteur(qPoint = event.position())
+        self.app.video.origine = p
+        self.app.update_zoom.emit(p)
 
         self.app.egalise_origine()
         self.close()
