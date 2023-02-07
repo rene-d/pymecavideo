@@ -119,7 +119,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # réplication de certains attributs de la fenêtre principale
         attributes = [
             "dbg",
-            "Bouton_Echelle", "tabWidget",
+            "tabWidget",
             "graphWidget", "tableWidget", "tab_traj", "comboBox_referentiel",
             "pushButton_select_all_table", "pushButton_origine",
             "checkBox_abscisses", "checkBox_ordonnees", "checkBox_auto",
@@ -468,7 +468,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         else:
             self.index = 1
         self.clic_sur_video_ajuste_ui(self.index)
-        self.mets_en_orange_echelle()
+        self.app.echelle_orange.emit(self.tr("Refaire l'échelle"))
         return
     
     def init_image(self):
@@ -607,13 +607,11 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.dbg.p(2, "rentre dans 'feedbackEchelle'")
         if self.echelle_trace:
             self.echelle_trace.hide()
-
         self.echelle_trace = Echelle_TraceWidget(self, p1, p2)
         # on garde les valeurs pour le redimensionnement
         self.echelle_trace.show()
         if self.echelle:
-            self.mets_en_orange_echelle()
-            self.Bouton_Echelle.setEnabled(1)
+            self.app.echelle_orange.emit(self.tr("Refaire l'échelle"))
         return
 
     def reinitialise_capture(self):
@@ -637,12 +635,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app.change_etat.emit("A")
         return
     
-    def mets_en_orange_echelle(self):
-        self.Bouton_Echelle.setEnabled(True)
-        self.Bouton_Echelle.setText("refaire l'échelle")
-        self.Bouton_Echelle.setStyleSheet("background-color:orange;")
-        return
-
     def check_uncheck_direction_axes(self):
         """
         met à jour les axes selon les sens connus

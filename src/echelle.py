@@ -168,7 +168,7 @@ class EchelleWidget(QWidget):
             self.app.affiche_echelle()
             self.app.affiche_barre_statut(self.app.tr(
                 u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
-            self.video.mets_en_orange_echelle()
+            self.app.echelle_orange.emit(self.tr("Refaire l'échelle"))
             self.video.index_du_point = 0
 
             self.video.feedbackEchelle(self.p1, self.p2)

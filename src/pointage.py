@@ -206,7 +206,7 @@ class Pointage(QObject):
         """
         @return faux si toutes les pointages sont None
         """
-        if self.dates is None:
+        if self.dates is None or not self.suivis:
             return False
         for t in self.dates:
             if self.data[t][self.suivis[0]] is not None:

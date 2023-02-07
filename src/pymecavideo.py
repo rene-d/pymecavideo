@@ -336,6 +336,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     updateProgressBar = pyqtSignal()
     change_etat = pyqtSignal(str)
     apres_echelle = pyqtSignal()
+    echelle_orange = pyqtSignal(str)
 
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -379,6 +380,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.updateProgressBar.connect(self.updatePB)
         self.change_etat.connect(self.etatUI)
         self.apres_echelle.connect(self.restaureEtat)
+        self.echelle_orange.connect(self.attire_attention_echelle)
         self.exportCombo.currentIndexChanged.connect(self.export)
         self.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
         self.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
@@ -488,6 +490,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # non encore implémentée
         self.imgno_incr.hide()
         self.spinBox.hide()
+
         return
         
     def etatA(self):
@@ -538,6 +541,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if self.video.suivis:
             self.spinBox_nb_de_points.setValue(self.video.nb_obj)
         else:
+            self.video.dimension_data.emit(1)
             self.spinBox_nb_de_points.setValue(1)
 
         # desactive d'autres widgets
@@ -1888,6 +1892,16 @@ Merci de bien vouloir le renommer avant de continuer""", None))
                 self.spinBox_image.valueChanged.disconnect()
         self.horizontalSlider.setEnabled(state)
         self.spinBox_image.setEnabled(state)
+        return
+
+    def attire_attention_echelle(self, text):
+        """
+        Signale fortement qu'il est possible de refaire l'échelle
+        @param text nouveau texte du bouton self.Bouton_Echelle
+        """
+        self.Bouton_Echelle.setEnabled(True)
+        self.Bouton_Echelle.setText(text)
+        self.Bouton_Echelle.setStyleSheet("background-color:orange;")
         return
 
 def usage():
