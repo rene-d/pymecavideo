@@ -471,7 +471,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.trajectoire_widget.chrono = False
 
         # désactive les contôles de l'image
-        self.video.active_controle_image(False)
+        self.imgControlImage(False)
 
         # marque "indéf." dans l'afficheur d'échelle à gauche
         self.affiche_echelle()
@@ -519,7 +519,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             del plotwidget
         self.init_variables(self.video.filename)
         # active les contrôle de l'image, montre l'image
-        self.video.active_controle_image(True)
+        self.imgControlImage(True)
         self.video.affiche_image()
         # réactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
@@ -617,7 +617,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",None))
         self.affiche_barre_statut(
             _translate("pymecavideo", "Pointage Automatique", None))
-        self.video.active_controle_image(False)
+        self.imgControlImage(False)
         # on démarre la définition des zones à suivre
         self.video.capture_auto()
         return
@@ -698,7 +698,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.video.affiche_point_attendu(self.video.suivis[0])
         self.video.lance_capture = True
          # les widgets de contrôle de l'image sont actifs ici
-        self.video.active_controle_image(True)
+        self.imgControlImage(True)
         
         # tous les onglets sont actifs
         for i in 1, 2, 3:
@@ -750,7 +750,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         sont inactifs, ainsi que les onglets autres que le
         premier.
         """
-        self.video.active_controle_image(False)
+        self.imgControlImage(False)
         for i in 1, 2, 3:
             self.tabWidget.setTabEnabled(i, False)        
         return
@@ -1584,17 +1584,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.demande_echelle()
         return
 
-    def affiche_image_slider(self):
-        self.dbg.p(2, "rentre dans 'affiche_image_slider'")
-        self.video.index = self.horizontalSlider.value()
-        self.affiche_image()
-
-    def affiche_image_slider_move(self):
-        """only change spinBox value"""
-        self.dbg.p(2, "rentre dans 'affiche_image_slider_move'")
-        self.spinBox_image.setValue(self.horizontalSlider.value())
-        # self.enableRefaire(0)
-
     def closeEvent(self, event):
         """
         Un crochet pour y mettre toutes les procédures à faire lors
@@ -1777,7 +1766,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.actionDefaire.setEnabled(value)
         # permet de remettre l'interface à zéro
         if not value:
-            self.video.active_controle_image()
+            self.imgControlImage(True)
         return
     
     def enableRefaire(self, value):
@@ -1854,6 +1843,50 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         job.show()
         return
     
+    def sync_spinbox2image(self):
+        """
+        Affiche l'image dpont le numéro est dans self.spinBox_image
+        """
+        self.dbg.p(2, "rentre dans 'sync_spinbox2image'")
+        self.video.index = self.spinBox_image.value()
+        self.video.affiche_image()
+        return
+
+    def sync_slider2spinbox(self):
+        """
+        recopie la valeur du slider vers le spinbox
+        """
+        self.dbg.p(2, "rentre dans 'sync_slider2spinbox'")
+        self.spinBox_image.setValue(self.horizontalSlider.value())
+        return
+        
+
+    def imgControlImage(self, state):
+        """
+        Gère les deux widgets horizontalSlider et spinBox_image
+        @param state si state == True, les deux widgets sont activés
+          et leurs signaux valueChanged sont pris en compte ;
+          sinon ils sont désactivés ainsi que les signaux valueChanged
+        """
+        self.dbg.p(2, "rentre dans 'imgControlImage'")
+        if state:
+            self.horizontalSlider.setMinimum(1)
+            self.spinBox_image.setMinimum(1)
+            if self.video.image_max:
+                self.horizontalSlider.setMaximum(int(self.video.image_max))
+                self.spinBox_image.setMaximum(int(self.video.image_max))
+            self.horizontalSlider.valueChanged.connect(
+                self.sync_slider2spinbox)
+            self.spinBox_image.valueChanged.connect(self.sync_spinbox2image)
+        else:
+            if self.horizontalSlider.receivers(self.horizontalSlider.valueChanged):
+                self.horizontalSlider.valueChanged.disconnect()
+            if self.spinBox_image.receivers(self.spinBox_image.valueChanged):
+                self.spinBox_image.valueChanged.disconnect()
+        self.horizontalSlider.setEnabled(state)
+        self.spinBox_image.setEnabled(state)
+        return
+
 def usage():
     print("""\
 Usage : pymecavideo [-d (1-3)| --debug=(1-3)] [video | mecavideo]

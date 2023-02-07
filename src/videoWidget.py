@@ -425,32 +425,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 self.deltaT = 1 / IPS
         return
     
-    def active_controle_image(self, state=True):
-        """
-        Gère les deux widgets horizontalSlider et spinBox_image
-        @param state (vrai par défaut) ; si state == True, les deux
-          widgets sont activés et leurs signaux valueChanged sont pris
-          en compte ; sinon ils sont désactivés ainsi que les signaux
-        """
-        self.dbg.p(2, "rentre dans 'active_controle_image'")
-        if state:
-            self.horizontalSlider.setMinimum(1)
-            self.spinBox_image.setMinimum(1)
-            if self.image_max:
-                self.horizontalSlider.setMaximum(int(self.image_max))
-                self.spinBox_image.setMaximum(int(self.image_max))
-            self.horizontalSlider.valueChanged.connect(
-                self.app.affiche_image_slider_move)
-            self.spinBox_image.valueChanged.connect(self.affiche_image_spinbox)
-        else:
-            if self.horizontalSlider.receivers(self.horizontalSlider.valueChanged):
-                self.horizontalSlider.valueChanged.disconnect()
-            if self.spinBox_image.receivers(self.spinBox_image.valueChanged):
-                self.spinBox_image.valueChanged.disconnect()
-        self.horizontalSlider.setEnabled(state)
-        self.spinBox_image.setEnabled(state)
-        return
-
     def rouvre(self):
         """
         Ici c'est la partie dévolue au videoWidget quand on rouvre un
@@ -826,15 +800,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.dbg.p(2, "rentre dans 'entete_fichier'")
         config = open(self.prefs.conffile).readlines()
         return "".join(["# "+l for l in config[1:]]) + "# " + msg + "\n"
-
-    def affiche_image_spinbox(self):
-        """
-        Affiche l'image dpont le numéro est dans self.spinBox_image
-        """
-        self.dbg.p(2, "rentre dans 'affiche_image_spinbox'")
-        self.index = self.spinBox_image.value()
-        self.affiche_image()
-        return
 
     def vecteursVitesse(self, echelle_vitesse):
         """
