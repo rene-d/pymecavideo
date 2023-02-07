@@ -393,6 +393,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pushButton_save.clicked.connect(self.enregistreChrono)
         self.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
         self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
+        self.spinBox_nb_de_points.valueChanged.connect(self.video.dimension_data)
         return
 
     def etatUI(self, etat):

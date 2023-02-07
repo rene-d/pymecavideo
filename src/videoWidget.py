@@ -97,6 +97,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     clic_sur_video_signal = pyqtSignal()
     selection_motif_done = pyqtSignal()
     stopCalculs = pyqtSignal()
+    dimension_data = pyqtSignal(int)
 
     def __str__(self):
         """
@@ -133,29 +134,31 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # attache la zone de zoom
         self.zoom = app.zoom_zone
         
-        # connexion de signaux de widgets
+        # connexion des signaux spéciaux
         self.clic_sur_video_signal.connect(self.clic_sur_la_video)
         self.selection_motif_done.connect(self.suiviDuMotif)
         self.stopCalculs.connect(self.stopComputing)
+        self.dimension_data.connect(self.redimensionne_data)
+        # connexion de signaux de widgets
         self.pushButton_defait.clicked.connect(self.efface_point_precedent)
         self.pushButton_refait.clicked.connect(self.refait_point_suivant)
-        self.spinBox_nb_de_points.valueChanged.connect(self.redimensionne_data)
 
         # fait un beau gros curseur
         cible_pix = QPixmap(cible_icon).scaledToHeight(32)
         self.pointageCursor = QCursor(cible_pix)
         return
     
-    def redimensionne_data(self):
+    def redimensionne_data(self, dim):
         """
-        redimensionne self.data (fonction de rappel connectée aux
-        changements de self.spinBox_nb_de_points
+        redimensionne self.data (fonction de rappel connectée au signal
+        self.dimension_data)
+        @param dim la nouvelle dimension des données
+          (en nombre d'objets à suivre)
         """
         self.dbg.p(2, "rentre dans 'redimensionne_data'")
         if self.image_max and self.deltaT:
-            self.dimensionne(
-                self.spinBox_nb_de_points.value(), self.deltaT, self.image_max)
-            self.app.cree_tableau(nb_suivis = self.nb_obj)
+            self.dimensionne(dim, self.deltaT, self.image_max)
+            # self.app.cree_tableau(nb_suivis = self.nb_obj)
         return
 
     @property
@@ -482,7 +485,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.ratio = self.largeurFilm / self.hauteurFilm
         self.calcul_deltaT()
         # on dimensionne les données pour les pointages
-        self.redimensionne_data()
+        self.redimensionne_data(self.nb_obj)
         self.affiche_image()
         return
 
@@ -631,7 +634,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.pointsProbables = {}
         self.motifs_auto = []
         # retire les objets déjà pointés
-        self.redimensionne_data()
+        self.redimensionne_data(self.nb_obj)
         self.app.change_etat.emit("A")
         return
     
