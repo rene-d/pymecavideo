@@ -1843,12 +1843,14 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         job.show()
         return
     
-    def sync_spinbox2image(self):
+    def sync_spinbox2others(self):
         """
-        Affiche l'image dpont le numéro est dans self.spinBox_image
+        Affiche l'image dont le numéro est dans self.spinBox_image et
+        synchronise self.horizontalSlider
         """
-        self.dbg.p(2, "rentre dans 'sync_spinbox2image'")
+        self.dbg.p(2, "rentre dans 'sync_spinbox2others'")
         self.video.index = self.spinBox_image.value()
+        self.horizontalSlider.setValue(self.video.index)
         self.video.affiche_image()
         return
 
@@ -1877,7 +1879,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
                 self.spinBox_image.setMaximum(int(self.video.image_max))
             self.horizontalSlider.valueChanged.connect(
                 self.sync_slider2spinbox)
-            self.spinBox_image.valueChanged.connect(self.sync_spinbox2image)
+            self.spinBox_image.valueChanged.connect(self.sync_spinbox2others)
         else:
             if self.horizontalSlider.receivers(self.horizontalSlider.valueChanged):
                 self.horizontalSlider.valueChanged.disconnect()

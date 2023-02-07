@@ -494,11 +494,11 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.index <= self.image_max:
             self.extract_image(self.index)  # 2ms
             self.afficheJusteImage()  # 4 ms
-            if self.horizontalSlider.value() != self.index:
-                self.dbg.p(2, "affiche_image " + "horizontal")
-                i = int(self.index)
-                self.horizontalSlider.setValue(i)
-                self.spinBox_image.setValue(i)  # 0.01 ms
+            #if self.horizontalSlider.value() != self.index:
+            #    self.dbg.p(2, "affiche_image " + "horizontal")
+            #    i = int(self.index)
+            #    self.horizontalSlider.setValue(i)
+            #    self.spinBox_image.setValue(i)  # 0.01 ms
         elif self.index > self.image_max:
             self.index = self.image_max
             self.lance_capture = False
