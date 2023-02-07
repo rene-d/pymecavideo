@@ -515,8 +515,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @param obj l'objet courant
         """
         self.dbg.p(2, "rentre dans 'affiche_point_attendu'")
-        self.app.affiche_barre_statut(
-            _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(obj))
+        self.app.affiche_statut.emit(self.tr("Cliquez sur l'objet : {0}").format(obj))
         return
 
     def clic_sur_la_video(self):

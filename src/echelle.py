@@ -166,15 +166,14 @@ class EchelleWidget(QWidget):
 
             epxParM = self.video.echelle_image.pxParM()
             self.app.affiche_echelle()
-            self.app.affiche_barre_statut(self.tr(
-                "Choisir le nombre d'objets à suivre puis « Démarrer l'acquisition »"))
+            self.app.affiche_statut.emit(self.tr("Échelle définie"))
             self.app.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
             self.video.index_du_point = 0
 
             self.video.feedbackEchelle(self.p1, self.p2)
             self.app.fixeLesDimensions()
             if self.video.data:  # si on a déjà pointé une position au moins
-                self.app.affiche_barre_statut(self.app.tr(
+                self.app.affiche_statut.emit(self.app.tr(
                     "Vous pouvez continuer votre acquisition"))
                 self.app.refait_echelle()
 

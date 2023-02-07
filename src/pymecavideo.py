@@ -196,6 +196,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # connections internes
         self.ui_connections()
 
+        # crée les débuts de messages pour la ligne de statut
+        self.definit_messages_statut()
+        
         self.change_etat.emit("debut") # met l'état à "debut"
 
         # traite un argument ; si ça ne va pas, s'intéresse à la
@@ -337,6 +340,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     stop_n = pyqtSignal(str)                # refait le texte du bouton STOP
     update_zoom = pyqtSignal(vecteur)       # agrandit une portion d'image
     image_n = pyqtSignal(int)               # modifie les contrôles d'image
+    affiche_statut = pyqtSignal(str)        # modifie la ligne de statut
     
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -410,6 +414,40 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.stop_n.connect(self.stop_setText)
         self.update_zoom.connect(self.loupe)
         self.image_n.connect(self.sync_img2others)
+        self.affiche_statut.connect(self.setStatus)
+        
+        return
+
+    def definit_messages_statut(self):
+        """
+        Définit le début des messages à envoyer dans la ligne de statut;
+        il s'agit de définir le dictionnaire self.roleEtat de structure
+        etat => fonction de rappel pour renvoyer une chaîne appropriée
+        """
+        def msgDebut(app):
+            return self.tr("Début : ouvrez un fichier, ou un exemple des aides")
+        def msgA(app):
+            return self.tr("Fichier vidéo : {filename} ... donnez l'échelle ou démarrez le pointage").format(filename = os.path.basename(app.video.filename))
+        def msgAB(app):
+            return self.tr("Préparation du pointage automatique : sélectionnez les objets à suivre, au nombre de {n}").format(n = app.video.nb_obj)
+        def msgB(app):
+            return self.tr("Pointage automatique en cours : il peut être interrompu par le bouton STOP")
+        def msgC(app):
+            return self.tr("Définissez l'échelle, par un tirer-glisser sur l'image")
+        def msgD(app):
+            return self.tr("Pointage manuel : cliquez sur le premier objet à suivre")
+        def msgE(app):
+            return self.tr("Pointage manuel : il reste encore des objets à pointer, on en est à {obj}").format(obj = app.video.objet_courant)
+        
+        self.roleEtat = { # résumé de ce que représente un état
+            "debut" : msgDebut,
+            "A" :     msgA,
+            "AB" :    msgAB,
+            "B" :     msgB,
+            "C" :     msgC,
+            "D" :     msgD,
+            "E" :     msgE,
+        }
         return
 
     def etatUI(self, etat):
@@ -419,7 +457,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         après l'état C, il faut tenir compte d'un ancien état, A*/D*
         """
-        fonctions = {
+        fonctions = { # fonctions de rappel pour chaque changement d'état
             "debut": self.etatDebut,
             "A":     self.etatA,
             "AB":    self.etatAB,
@@ -428,6 +466,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             "D":     self.etatD,
             "E":     self.etatE,
         }
+
         if self.etat == etat: return # inutile de changer !
         self.dbg.p(1, f"========> État précédent = {self.etat}. État suivant = {etat}")
         self.etat = etat
@@ -437,6 +476,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.etat = etat
         # appel de la fonction liée à l'état courant
         fonctions[self.etat]()
+        self.setStatus("")
         return
     
     def etatDebut(self):
@@ -738,7 +778,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.comboBox_referentiel.insertItem(-1, "camera")
         for obj in self.video.suivis:
             self.comboBox_referentiel.insertItem(-1, _translate(
-                "pymecavideo", "point N° {0}", None).format(str(obj)))
+                "pymecavideo", "objet N° {0}", None).format(str(obj)))
 
         # désactive des boutons et des cases à cocher
         for obj in self.pushButton_origine, self.checkBox_abscisses, \
@@ -1956,6 +1996,15 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         """
         self.zoom_zone.fait_crop(self.video.image, position)
         return
+
+    def setStatus(self, text):
+        """
+        Précise la ligne de statut, qui commence par une indication de l'état
+        @param text un texte pour terminer la ligne de statut
+        """
+        self.statusBar().showMessage(self.roleEtat[self.etat](self) + "| " + text)
+        return
+    
 
 def usage():
     print("""\
