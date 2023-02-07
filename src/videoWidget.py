@@ -117,7 +117,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app = app
         # réplication de certains attributs de la fenêtre principale
         attributes = [
-            "dbg", "horizontalSlider",
+            "dbg",
             "spinBox_image", "spinBox_nb_de_points", "spinBox_chrono",
             "Bouton_lance_capture", "Bouton_Echelle", "tabWidget",
             "graphWidget", "tableWidget", "tab_traj", "comboBox_referentiel",
@@ -486,27 +486,24 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.affiche_image()
         return
 
-    def affiche_image(self):
-        self.dbg.p(2, "rentre dans 'affiche_image'" + ' ' +
-                   str(self.index) + ' ' + str(self.image_max))
+    def affiche_image(self, index= None):
+        '''
+        À condition qu'on ait ouvert le fichier vidéo,
+        extrait l'image courante ou l'image spécifiée
+        par l'index, et affiche cette image
+        @param index permet de modifier l'image courante si c'est un entier
+          (None par défaut)
+        '''
         if not self.filename:
             return
+        if index is not None: self.index = index
+        self.dbg.p(2, f"rentre dans 'affiche_image' self.index = {self.index} self.image_max = {self.image_max}")
         if self.index <= self.image_max:
             self.extract_image(self.index)  # 2ms
-            self.afficheJusteImage()  # 4 ms
-            #if self.horizontalSlider.value() != self.index:
-            #    self.dbg.p(2, "affiche_image " + "horizontal")
-            #    i = int(self.index)
-            #    self.horizontalSlider.setValue(i)
-            #    self.spinBox_image.setValue(i)  # 0.01 ms
+            self.placeImage(self.imageExtraite, self.ratio)
         elif self.index > self.image_max:
             self.index = self.image_max
             self.lance_capture = False
-        return
-    
-    def afficheJusteImage(self):
-        if self.a_une_image:
-            self.placeImage(self.imageExtraite, self.ratio)
         return
     
     def init_cvReader(self):
