@@ -118,9 +118,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app = app
         # réplication de certains attributs de la fenêtre principale
         attributes = [
-            "dbg",
-            "checkBox_Ec", "checkBox_Em",
-            "checkBox_Epp", "checkBoxScale", "prefs"
+            "dbg", "prefs"
         ]
         for a in attributes:
             setattr(self, a, getattr(app,a))
