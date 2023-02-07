@@ -119,8 +119,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # réplication de certains attributs de la fenêtre principale
         attributes = [
             "dbg",
-            "pushButton_rot_droite",
-            "pushButton_rot_gauche", "pushButton_defait", "pushButton_refait",
+            "pushButton_defait", "pushButton_refait",
             "pushButton_stopCalculs", "checkBox_Ec", "checkBox_Em",
             "checkBox_Epp", "checkBoxScale", "prefs"
         ]
