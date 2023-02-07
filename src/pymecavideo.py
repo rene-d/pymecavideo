@@ -340,6 +340,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     show_video = pyqtSignal()               # montre l'onglet des vidéos
     sens_axes = pyqtSignal(int, int)        # coche les cases des axes
     stop_n = pyqtSignal(str)                # refait le texte du bouton STOP
+    update_zoom = pyqtSignal(QPixmap, vecteur) # agrandit une portion d'image
     
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -411,6 +412,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.show_video.connect(self.montre_volet_video)
         self.sens_axes.connect(self.coche_axes)
         self.stop_n.connect(self.stop_setText)
+        self.update_zoom.connect(self.loupe)
 
         return
 
@@ -1951,6 +1953,15 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         @param text le nouveau texte
         """
         self.pushButton_stopCalculs.setText(text)
+        return
+
+    def loupe(self, pixmap, position):
+        """
+        Agrandit un pixmap et le met dans la zone du zoom
+        @param pixmap l'image à agrandir
+        @param position le centre de la zone à agrandir
+        """
+        self.zoom_zone.fait_crop(pixmap, position)
         return
 
 def usage():

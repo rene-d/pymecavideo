@@ -161,17 +161,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.image = None
         return
 
-    def updateZoom(self, position = None):
-        """
-        place dans le widget de zoom une image agrandie pertinente
-        @param position l'endroit où prendre l'image à agrandir ; si
-          position == None (par défaut) ça ne fait rien
-        """
-        if position is None: return
-        self.dbg.p(2, "rentre dans 'updateZoom'")
-        self.zoom.fait_crop(self.image, position)
-        return
-    
     def placeImage(self, im, ratio):
         """
         place une image dans le widget, en conservant le ratio de cette image
@@ -186,7 +175,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.setMouseTracking(True)
         image = im.scaled(self.image_w, self.image_h)
         self.setImage(image)
-        self.updateZoom()
         self.reinit_origine()
         return image
     
@@ -283,7 +271,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 self.objet_courant, event, index=self.index-1)
             self.objetSuivant()
             self.clic_sur_video_signal.emit()
-            self.updateZoom(self.hotspot)
+            self.app.update_zoom.emit(self.image, self.hotspot)
             self.update()
             if self.refait_point : # on a été délégué pour corriger le tableau
                 if self.objet_courant == self.suivis[0]:
@@ -293,17 +281,17 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def mouseMoveEvent(self, event):
-        if self.lance_capture == True and self.auto == False:
+        if self.app.etat in ("A","D", "E"):
             p = vecteur(qPoint = event.position())
             self.hotspot = p
-            self.updateZoom(self.hotspot)
+            self.app.update_zoom.emit(self.image, self.hotspot)
         return
     
     def paintEvent(self, event):
         if self.image:
-            if self.app.etat in ("A", "C", "D", "E"):
-                self.updateZoom(self.hotspot)
-
+            if self.app.etat in ("A", "C", "D", "E") and \
+               self.hotspot is not None:
+                self.app.update_zoom.emit(self.image, self.hotspot)
             painter = QPainter()
             painter.begin(self)
             if self.image != None:
@@ -614,8 +602,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # oublie self.echelle_image
         self.clearEchelle()
         # reinitialisation du widget video
-        self.updateZoom()
-        # self.setMouseTracking(False)
         self.setCursor(Qt.CursorShape.ArrowCursor)
         self.setEnabled(True)
         self.reinit_origine()

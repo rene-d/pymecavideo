@@ -43,6 +43,7 @@ class SelRectWidget(QWidget):
         """make a rectangle near point to be tracked"""
         QWidget.__init__(self, parent)
         self.video = parent
+        self.app = self.video.app
         self.echelle = parent.image_w/parent.largeurFilm
         self.setGeometry(
             QRect(0, 0, self.video.image_w, self.video.image_h))
@@ -54,28 +55,30 @@ class SelRectWidget(QWidget):
         self.x_2 = None
         self.y_1 = None
         self.y_2 = None
+        self.dragging = False
         return
 
     def mousePressEvent(self, event):
-        self.setMouseTracking(False)
         p = vecteur(qPoint = event.position())
         self.x_1 = p.x
         self.x_2 = p.x
         self.y_1 = p.y
         self.y_2 = p.y
+        self.dragging = True
         return
 
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
 
-        if not self.hasMouseTracking():  # lancé lors de la sélection.
+        if self.dragging:
             self.x_2 = p.x
             self.y_2 = p.y
-        self.video.updateZoom(p)
+        self.app.update_zoom.emit(self.video.image, p)
         self.update()
         return
 
     def mouseReleaseEvent(self, event):
+        self.dragging = False
         self.video.motifs_auto.append(self.getMotif())
         self.video.selection_motif_done.emit()
         return
