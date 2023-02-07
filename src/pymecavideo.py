@@ -138,8 +138,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.ratio = 4/3
         self.decalh = 0
         self.decalw = 0
-        # points utilisés pour la détection automatique, définissent une zone où il est probable de trouver un objet suivi
-        self.pointsProbables = [None]
         self.dictionnairePlotWidget = {}
 
         # Mode plein écran
@@ -302,9 +300,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
         self.locals = {} # dictionnaire de variables locales, pour eval
         self.motif = []
-        # est Vraie si le fichier est odifié. permet de sauvegarder les changements
-        self.modifie = False
-        self.points = {}  # dictionnaire des points cliqués, par n d'image.
         self.trajectoire = {}  # dictionnaire des points des trajectoires
         self.index_du_point = 0
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray",
@@ -335,12 +330,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     updateProgressBar = pyqtSignal()
     change_etat = pyqtSignal(str)
     apres_echelle = pyqtSignal()
-    echelle_orange = pyqtSignal(str)        # modifie le bouton d'échelle
+    echelle_modif = pyqtSignal(str, str)    # modifie le bouton d'échelle
     show_coord = pyqtSignal()               # montre l'onglet des coordonnées
     show_video = pyqtSignal()               # montre l'onglet des vidéos
     sens_axes = pyqtSignal(int, int)        # coche les cases des axes
     stop_n = pyqtSignal(str)                # refait le texte du bouton STOP
     update_zoom = pyqtSignal(vecteur)       # agrandit une portion d'image
+    image_n = pyqtSignal(int)               # modifie les contrôles d'image
     
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -407,13 +403,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.updateProgressBar.connect(self.updatePB)
         self.change_etat.connect(self.etatUI)
         self.apres_echelle.connect(self.restaureEtat)
-        self.echelle_orange.connect(self.attire_attention_echelle)
+        self.echelle_modif.connect(self.setButtonEchelle)
         self.show_coord.connect(self.montre_volet_coord)
         self.show_video.connect(self.montre_volet_video)
         self.sens_axes.connect(self.coche_axes)
         self.stop_n.connect(self.stop_setText)
         self.update_zoom.connect(self.loupe)
-
+        self.image_n.connect(self.sync_img2others)
         return
 
     def etatUI(self, etat):
@@ -526,9 +522,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         if not self.video.echelle_image:
             self.affiche_echelle() # marque "indéf."
-            self.Bouton_Echelle.setText(_translate(
-                "pymecavideo", "Définir l'échelle", None))
-            self.Bouton_Echelle.setStyleSheet("background-color:None;")
+            self.echelle_modif.emit(self.tr("Définir l'échelle"),
+                                    "background-color:None;")
             # comme il n'y a pas d'échelle, on peut redimensionner la fenêtre
             self.defixeLesDimensions()
             if self.video.echelle_trace:
@@ -545,7 +540,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.video.affiche_image()
         # réactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
-            self.label_nb_de_points, \
+            self.label_nb_de_points, self.pushButton_reinit, \
             self.spinBox_objets, self.Bouton_Echelle, \
             self.checkBox_auto, self.Bouton_lance_capture, \
             self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
@@ -1628,25 +1623,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.prefs.save()
         return
 
-    def verifie_donnees_sauvegardees(self):
-        self.dbg.p(2, "rentre dans 'verifie_donnees_sauvegardees'")
-        if self.modifie:
-            retour = QMessageBox.warning(
-                self,
-                _translate("pymecavideo", "Les données seront perdues", None),
-                _translate(
-                    "pymecavideo", "Votre travail n'a pas été sauvegardé\nVoulez-vous les sauvegarder ?", None),
-                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-            if retour == QMessageBox.Yes:
-                self.enregistre_ui()
-                return True
-            elif retour == QMessageBox.No:
-                return True
-            elif retour == QMessageBox.Cancel:
-                return False
-        else:
-            return True
-
     def verifie_m_grapheur(self):
         m = self.lineEdit_m.text().replace(',', '.')
         if m != "":
@@ -1687,7 +1663,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def openexample(self):
         self.dbg.p(2, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
-        # self.reinitialise_tout()
         filename, hints = QFileDialog.getOpenFileName(
             self, _translate("pymecavideo", "Ouvrir une vidéo", None), dir_,
             _translate(
@@ -1874,6 +1849,16 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         job.show()
         return
     
+    def sync_img2others(self, i):
+        """
+        Fait en sorte que self.horizontalSlider et self.spinBox_image
+        aient le numéro i
+        @param i le nouvel index
+        """
+        self.spinBox_image.setValue(i)
+        self.horizontalSlider.setValue(i)
+        return
+    
     def sync_spinbox2others(self):
         """
         Affiche l'image dont le numéro est dans self.spinBox_image et
@@ -1920,14 +1905,15 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.spinBox_image.setEnabled(state)
         return
 
-    def attire_attention_echelle(self, text):
+    def setButtonEchelle(self, text, style):
         """
         Signale fortement qu'il est possible de refaire l'échelle
         @param text nouveau texte du bouton self.Bouton_Echelle
+        @param style un style CSS
         """
         self.Bouton_Echelle.setEnabled(True)
         self.Bouton_Echelle.setText(text)
-        self.Bouton_Echelle.setStyleSheet("background-color:orange;")
+        self.Bouton_Echelle.setStyleSheet(style)
         return
 
     def montre_volet_coord(self):

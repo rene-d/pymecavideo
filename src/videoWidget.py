@@ -55,16 +55,15 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     def __init__(self, parent):
         #ImageWidget.__init__(self, parent)
         Pointage.__init__(self)
-        self.app = None        # pointeur vers la fenêtre principale
-        self.zoom = None       # pointeur vers le widget de zoom
-        self.hotspot = None    # vecteur (position de la souris)
-        self.pos_zoom = vecteur(50, 50) # point initialement grossi dans le zoom
+        self.app = None                 # la fenêtre principale
+        self.dbg = None                 # le débogueur
+        self.prefs = None               # les préférences
+        self.hotspot = None             # vecteur (position de la souris)
         self.image = None               # l'image tirée du film
         self.image_w = self.width()     # deux valeurs par défaut
         self.image_h = self.height()    # pas forcément pertinentes
-        self.setMouseTracking(True)
+        self.setMouseTracking(True)     # on réagit aux mouvement de souris
         self.origine = vecteur(self.width()//2, self.height()//2)
-        self.decal = vecteur(0, 0)      # if video is not 4:3, center video
         self.couleurs = [
             "red", "blue", "cyan", "magenta", "yellow", "gray", "green"] *2
         self.tourne = False        # au cas où on fait tourner les images
@@ -80,8 +79,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.a_une_image = False   # indication quant à une image disponible
         self.imageExtraite = None  # référence de l'image courante
         self.lance_capture = False # un pointage est en cours
-        self.decal = vecteur(0,0)  # décalage des images
-        self.modifie = False       # permet de suivre les pointages manuels
         self.echelle_trace = None  # widget pour tracer l'échelle
         self.selRect = None        # un objet gérant la sélection par rectangle
         self.lance_cature = False  # devient vrai quand on commence à pointer
@@ -91,13 +88,31 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.refait_point = False  # on doit repointer une date
         self.pointageOK = False    # il est possible de faire un pointage
         self.pointageCursor = None # le curseur pour le pointage
+        
+       # fait un beau gros curseur
+        cible_pix = QPixmap(cible_icon).scaledToHeight(32)
+        self.pointageCursor = QCursor(cible_pix)
+
+        self.connecte_signaux()
         return
+
 
     # signaux de la classe
     clic_sur_video_signal = pyqtSignal()
     selection_motif_done = pyqtSignal()
     stopCalculs = pyqtSignal()
     dimension_data = pyqtSignal(int)
+
+    def connecte_signaux(self):
+        """
+        Connecte les signaux spéciaux
+        """
+        # connexion des signaux spéciaux
+        self.clic_sur_video_signal.connect(self.clic_sur_la_video)
+        self.selection_motif_done.connect(self.suiviDuMotif)
+        self.stopCalculs.connect(self.stopComputing)
+        self.dimension_data.connect(self.redimensionne_data)
+        return
 
     def __str__(self):
         """
@@ -111,31 +126,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
     
     def setApp(self, app):
         """
-        Connecte le videoWidget à sa fenêtre principale, et connecte
-        aussi les sous-widgets nécessaires, ceux que le videoWidget doit
-        pouvoir contrôler
+        Connecte le videoWidget à sa fenêtre principale, son débogueur
+        et ses préférences
         """
         self.app = app
-        # réplication de certains attributs de la fenêtre principale
-        attributes = [
-            "dbg", "prefs"
-        ]
-        for a in attributes:
-            setattr(self, a, getattr(app,a))
-        # attache la zone de zoom
-        self.zoom = app.zoom_zone
-        
-        # connexion des signaux spéciaux
-        self.clic_sur_video_signal.connect(self.clic_sur_la_video)
-        self.selection_motif_done.connect(self.suiviDuMotif)
-        self.stopCalculs.connect(self.stopComputing)
-        self.dimension_data.connect(self.redimensionne_data)
-
-        # fait un beau gros curseur
-        cible_pix = QPixmap(cible_icon).scaledToHeight(32)
-        self.pointageCursor = QCursor(cible_pix)
+        self.dbg = app.dbg
+        self.prefs = app.prefs
         return
-    
+   
     def redimensionne_data(self, dim):
         """
         redimensionne self.data (fonction de rappel connectée au signal
@@ -207,19 +205,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             y = self.origine.y*ratioh
             if not self.app.premier_chargement_fichier_mecavideo:
                 self.origine = vecteur(x, y)
-
-
-            if self.echelle_image:
-                x = self.echelle_image.p1.x*ratiow
-                y = self.echelle_image.p1.y*ratioh
-                self.echelle_image.p1 = vecteur(x, y)
-
-                x = self.echelle_image.p2.x*ratiow
-                y = self.echelle_image.p2.y*ratioh
-                self.echelle_image.p2 = vecteur(x, y)
-                
-                self.feedbackEchelle(
-                    self.echelle_image.p1, self.echelle_image.p2)
         return
 
     def storePoint(self, point):
@@ -248,10 +233,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.objet_courant = self.suivis[0]
             if self.index < self.image_max:
                 self.index +=1
-            # revient à l'état D sauf en cas de suivi automatique
+            # on revient à l'état D sauf en cas de suivi automatique
             # auquel cas l'état B perdure
             if not self.auto:
                 self.app.change_etat.emit("D")
+            else:
+                # on reste dans l'état B, néanmoins on synchronise
+                # les contrôles de l'image
+                self.app.image_n.emit(self.index)
         return
 
     def mouseReleaseEvent(self, event):
@@ -294,20 +283,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 self.app.update_zoom.emit(self.hotspot)
             painter = QPainter()
             painter.begin(self)
-            if self.image != None:
-                painter.drawPixmap(
-                    round(self.decal.x), round(self.decal.y), self.image)
+            ############################################################
+            # mise en place de l'image
+            if self.image is not None: painter.drawPixmap(0, 0, self.image)
 
             ############################################################
             # dessin de l'origine
             longueur_origine = 5
             painter.setPen(QColor("green"))
-            painter.drawLine(
-                round(self.origine.x) - longueur_origine, round(self.origine.y),
-                round(self.origine.x) + longueur_origine, round(self.origine.y))
-            painter.drawLine(
-                round(self.origine.x), round(self.origine.y) - longueur_origine,
-                round(self.origine.x), round(self.origine.y) + longueur_origine)
             painter.drawText(
                 round(self.origine.x), round(self.origine.y) + 15, "O")
             ############################################################
@@ -446,8 +429,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 self.index = self.image_max
         else:
             self.index = 1
-        self.clic_sur_video_ajuste_ui(self.index)
-        self.app.echelle_orange.emit(self.tr("Refaire l'échelle"))
+        self.clic_sur_video_ajuste_ui()
+        self.app.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
         return
     
     def init_image(self):
@@ -536,27 +519,15 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             _translate("pymecavideo", "Pointage des positions : cliquer sur le point N° {0}", None).format(obj))
         return
 
-    def clic_sur_la_video(self, interactif=True):
+    def clic_sur_la_video(self):
         self.dbg.p(2, "rentre dans 'clic_sur_video'")
-        if self.index <= self.image_max:
-            # si on n'atteint pas encore la fin de la vidéo
-            self.purge_defaits() # oublie les pointages à refaire
-            if interactif:
-                self.modifie = True
-            self.clic_sur_video_ajuste_ui(self.objet_courant)
-        if self.index > self.image_max:
-            self.lance_capture = False
-            self.setCursor(Qt.CrossCursor)
-            self.affiche_barre_statut(_translate(
-                "pymecavideo", "Vous avez atteint la fin de la vidéo", None))
-            self.index = self.image_max
-            self.app.recalculLesCoordonnees()
+        self.purge_defaits() # oublie les pointages à refaire
+        self.clic_sur_video_ajuste_ui()
         return
     
-    def clic_sur_video_ajuste_ui(self, objet_courant):
+    def clic_sur_video_ajuste_ui(self):
         """
         Ajuste l'interface utilisateur pour attendre un nouveau clic
-        @param point_attendu le numéro du point qui est à cliquer
         """
         self.dbg.p(2, "rentre dans 'clic_sur_video_ajuste_ui'")
         self.affiche_image()
@@ -590,7 +561,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # on garde les valeurs pour le redimensionnement
         self.echelle_trace.show()
         if self.echelle:
-            self.app.echelle_orange.emit(self.tr("Refaire l'échelle"))
+            self.app.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
         return
 
     def reinitialise_capture(self):
@@ -601,6 +572,12 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.dbg.p(2, "rentre dans 'reinitialise_capture'")
         # oublie self.echelle_image
         self.clearEchelle()
+        if self.echelle_trace is not None:
+            self.echelle_trace.hide()
+        self.echelle_trace = None
+        self.app.echelle_modif.emit(self.tr("Définir l'échelle"),
+                                    "background-color:None;")
+
         # reinitialisation du widget video
         self.setCursor(Qt.CursorShape.ArrowCursor)
         self.setEnabled(True)
@@ -609,6 +586,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.motifs_auto = []
         # retire les objets déjà pointés
         self.redimensionne_data(self.nb_obj)
+        self.sens_X = self.sens_Y = 1
+        self.app.sens_axes.emit(self.sens_X, self.sens_Y)
         self.app.change_etat.emit("A")
         return
     
@@ -714,7 +693,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 origine = self.origine
             ).replace(".",sep_decimal)
             outfile.write(donnees)
-        self.modifie = False
         return
 
     def savePrefs(self):
@@ -842,7 +820,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         else:
             self.purge_defaits() # si on a retiré le dernier pointage visible
             if self.index > 1: self.index -= 1
-        self.clic_sur_video_ajuste_ui(self.index)
+        self.clic_sur_video_ajuste_ui()
         return
     
     def refait_point_suivant(self):
@@ -855,7 +833,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app.recalculLesCoordonnees()
         if self.index < self.image_max:
             self.index += 1
-        self.clic_sur_video_ajuste_ui(self.index)
+        self.clic_sur_video_ajuste_ui()
         return
 
     def refait_point_depuis_tableau(self, qpbn ):
@@ -868,7 +846,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.refait_point=True
         self.objet_courant = self.suivis[0]
         self.index = qpbn.index_image
-        self.clic_sur_video_ajuste_ui(self.index)
+        self.clic_sur_video_ajuste_ui()
         self.app.show_video.emit()
         return
 

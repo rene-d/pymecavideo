@@ -118,10 +118,6 @@ class Pointage(QObject):
         self.echelle_image = echelle()
         return
     
-    def setEchelle(self, echelle):
-        self.echelle = echelle
-        return
-    
     def dimensionne(self, n_suivis, deltaT, n_images):
         """
         Crée les structures de données quand on en connaît par avance
@@ -404,53 +400,3 @@ class Pointage(QObject):
         return [self.data[t][obj] for t in self.dates
                 if self.data[t][obj] is not None]
     
-def test():
-    """
-    Vérification que la structure de données et OK
-    """
-    p = Pointage()
-    p.dimensionne(3, 0.040, 5) # 3 objets, 25 images par s, 5 images
-    assert(p.data == {
-        0.000: {1: None, 2: None, 3: None}, 
-        0.040: {1: None, 2: None, 3: None}, 
-        0.080: {1: None, 2: None, 3: None}, 
-        0.120: {1: None, 2: None, 3: None}, 
-        0.160: {1: None, 2: None, 3: None}, 
-    })
-    for i in range(5):
-        p.pointe(1, vecteur(i, i), index=i)
-        p.pointe(2, vecteur(i, 2*i), date = i * 0.040)
-    assert(p.data == {
-        0.000: {1: vecteur(0,0), 2: vecteur(0,0), 3: None}, 
-        0.040: {1: vecteur(1,1), 2: vecteur(1,2), 3: None}, 
-        0.080: {1: vecteur(2,2), 2: vecteur(2,4), 3: None}, 
-        0.120: {1: vecteur(3,3), 2: vecteur(3,6), 3: None}, 
-        0.160: {1: vecteur(4,4), 2: vecteur(4,8), 3: None}, 
-    })
-    assert(p.position(1, date=.08) == vecteur(2,2))
-    assert(p.position(2, index=3)  == vecteur(3,6))
-    assert(p.trajectoire(1) == [vecteur(i,i) for i in range(5)])
-    assert(p.trajectoire(2) == [vecteur(i,2*i) for i in range(5)])
-    assert(p.trajectoire(2, mode="dico") == {i*.04: vecteur(i,2*i) for i in range(5)})
-    p.setEchelle(50) # 50 pixels par mètre
-    assert(p.trajectoire(2, mode="dico", unite="m") == {i*.04: vecteur(i/50,2*i/50) for i in range(5)})
-    assert(str(p) == """\
-t;x1;y1;x2;y2;x3;y3
-0.000;0.000;0.000;0.000;0.000
-0.040;1.000;1.000;1.000;2.000
-0.080;2.000;2.000;2.000;4.000
-0.120;3.000;3.000;3.000;6.000
-0.160;4.000;4.000;4.000;8.000
-""")
-    assert(p.__str__(unite="m") == """\
-t;x1;y1;x2;y2;x3;y3
-0.000;0.000;0.000;0.000;0.000
-0.040;0.020;0.020;0.020;0.040
-0.080;0.040;0.040;0.040;0.080
-0.120;0.060;0.060;0.060;0.120
-0.160;0.080;0.080;0.080;0.160
-""")
-    return
-    
-if __name__ == "__main__":
-    test()

@@ -92,14 +92,6 @@ EXPORT_FORMATS = {
         'modules': ['pandas'],
         'propose_ouverture': False,
         'un_point': False},
-
-    7: {'nom': _translate("export", 'Qtiplot/Scidavis'),
-        'filtre': _translate("export", 'Fichier Qtiplot (*.qti)'),
-        'extension': 'qti',
-        'class': 'Qtiplot',
-        'modules': None,
-        'propose_ouverture': True,
-        'un_point': False},
 }
 
 # Dictionnaire contenant les textes des QMessageBox information, warning...
@@ -195,87 +187,6 @@ class FichierCSV:
                         else:
                             rowdata.append('')
                     csvwriter.writerow(rowdata)
-
-
-class Qtiplot:
-    """
-    Une classe pour exporter des fichiers de type Qtiplot
-    """
-    from string import Template
-
-    qtiFileTemplate = Template("""\
-QtiPlot 0.9.0 project file
-<scripting-lang>	muParser
-<windows>	1
-$table
-<open>1</open>
-""")
-
-    tableTemplate = Template("""\
-<table>
-Table1	$ligs	$cols	$date
-geometry	0	0	664	258	active
-header$headers
-ColWidth$colWidths
-<com>
-</com>
-ColType$colTypes
-ReadOnlyColumn$colRo
-HiddenColumn$colHidden
-Comments$comments
-WindowLabel		2
-<data>
-$data
-</data>
-</table>
-""")
-
-    def __init__(self, app, filepath):
-        """
-        Crée l'objet
-        @param app l'application de pymecavideo
-        """
-        self.app = app
-        dic = {}
-        dic['date'] = time.strftime("%d/%m/%y %H:%M")
-        n = len(app.points.keys())
-        if n < 30:
-            n = 30
-        dic['ligs'] = str(n)
-        dic['cols'] = str(1 + 2 * app.nb_de_points)
-        dic['headers'] = '\tt-s[X]'
-        dic['colWidths'] = '\t100'
-        dic['colTypes'] = '\t0;0/13'
-        dic['colRo'] = '\t0'
-        dic['colHidden'] = '\t0'
-        dic['comments'] = '\t'
-        for i in range(app.nb_de_points):
-            dic['headers'] += '\tX%s-m[Y]\tY%s-m[Y]' % (i + 1, i + 1)
-            dic['colWidths'] += "\t100\t100"
-            dic['colTypes'] += "\t0;0/13\t0;0/13"
-            dic['colRo'] += '\t0\t0'
-            dic['colHidden'] += '\t0\t0'
-            dic['comments'] += '\t\t'
-        # deux bizarreries : tabulations supplémentaires
-        dic['colWidths'] += '\t'
-        dic['comments'] += '\t'
-        dic['data'] = ''
-        ligne = 0
-        dt = app.deltaT
-        for k in app.points.keys():
-            data = app.points[k]
-            dic['data'] += '%i\t%f' % (ligne, dt * ligne)
-            for vect in data[1:]:
-                vect = app.pointEnMetre(vect)
-                dic['data'] += '\t%f\t%f' % (vect.x, vect.y)
-            dic['data'] += '\n'
-            ligne += 1
-        # suppression du dernier retour à la ligne
-        dic['data'] = dic['data'][:-1]
-        self.table = self.tableTemplate.substitute(dic)
-        self.qtifile = self.qtiFileTemplate.substitute({'table': self.table})
-        with open(filepath, 'w') as f:
-            f.write(self.qtifile)
 
 
 class Calc():
