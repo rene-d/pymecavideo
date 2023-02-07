@@ -1845,7 +1845,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.video.echelle_image.etalonneReel(reponse)
         self.etat_ancien = self.etat # conserve pour plus tard
         self.change_etat.emit("C")
-        job = EchelleWidget(self)
+        job = EchelleWidget(self.video)
         job.show()
         return
     

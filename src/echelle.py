@@ -106,8 +106,8 @@ class EchelleWidget(QWidget):
     """
     def __init__(self, parent):
         QWidget.__init__(self, parent)
-        self.app = parent
-        self.video = parent.video
+        self.app = parent.app
+        self.video = parent
         self.image=None
         self.setGeometry(
             QRect(0, 0, self.video.width(), self.video.height()))
@@ -166,8 +166,8 @@ class EchelleWidget(QWidget):
 
             epxParM = self.video.echelle_image.pxParM()
             self.app.affiche_echelle()
-            self.app.affiche_barre_statut(self.app.tr(
-                u"Choisir le nombre de points puis « Démarrer l'acquisition » "))
+            self.app.affiche_barre_statut(self.tr(
+                "Choisir le nombre d'objets à suivre puis « Démarrer l'acquisition »"))
             self.app.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
             self.video.index_du_point = 0
 

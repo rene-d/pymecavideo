@@ -588,6 +588,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.redimensionne_data(self.nb_obj)
         self.sens_X = self.sens_Y = 1
         self.app.sens_axes.emit(self.sens_X, self.sens_Y)
+        self.app.defixeLesDimensions()
         self.app.change_etat.emit("A")
         return
     
