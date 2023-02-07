@@ -119,7 +119,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # réplication de certains attributs de la fenêtre principale
         attributes = [
             "dbg",
-            "tableWidget", "tab_traj", "comboBox_referentiel",
+            "tab_traj", "comboBox_referentiel",
             "pushButton_select_all_table", "pushButton_origine",
             "checkBox_abscisses", "checkBox_ordonnees", "checkBox_auto",
             "pushButton_rot_droite",
@@ -870,8 +870,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.dbg.p(2, "rentre dans 'efface_point_precedent'")
         if inhibe("defaire",100): return # corrige un bug de Qt 5.15
         if not self.peut_defaire(): return
-        # efface la dernière entrée dans le tableau
-        self.tableWidget.removeRow(self.derniere_image() - 1)
         self.defaire()
         # dernière image à afficher
         der = self.derniere_image()
