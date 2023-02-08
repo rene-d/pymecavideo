@@ -395,6 +395,9 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
             self.cvReader.recupere_avi_infos(self.rotation)
         self.ratio = self.largeurFilm / self.hauteurFilm
+        # réapplique la préférence de deltat, comme openCV peut se tromper
+        self.deltaT = float(self.prefs.config["DEFAULT"]["deltat"])
+        self.framerate = round(1/self.deltaT)
         return
 
     def restaure_pointages(self, data, premiere_image_pointee) :

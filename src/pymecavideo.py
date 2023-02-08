@@ -1800,6 +1800,9 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         
         # donne la main au videoWidget pour préparer les pointages
         self.video.rouvre()
+        # corrige éventuellement le nombre d'images par seconde à afficher
+        self.lineEdit_IPS.setText(f"{self.video.framerate}")
+        
         lignes_data = [l for l in lignes if l[0] != "#" and len(l.strip()) > 0]
         # on trouve les données en coupant là où il y a des séparations
         # par des espaces ou des tabulations, on ne conserve pas la
