@@ -590,6 +590,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
             obj.setEnabled(True)
 
+        # si une échelle est définie, on interdit les boutons de rotation
+        if not self.video.echelle_image:
+            for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche :
+                obj.setEnabled(False)
         # ajuste le nombre d'objets suivis
         if self.video.suivis:
             self.spinBox_objets.setValue(self.video.nb_obj)
@@ -1085,11 +1089,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.tourne = tourne  # n'est utilisée que ici et dans video
         if tourne:  # on vient de cliquer sur tourner. rien n'est changé.
             self.dbg.p(2, "Dans 'redimensionneFenetre', tourne")
+            self.video.remontre_image()
+            rect = self.video.geometry()
             largeur = self.video.width()
             hauteur = self.video.height()
             self.video.origine = self.video.origine.rotate(
                 self.increment, largeur, hauteur)
-            self.video.setGeometry(0, 0, hauteur, largeur)
+            #self.video.setGeometry(rect.x(), rect.y(), hauteur, largeur)
             self.tourne = False
 
         self.dbg.p(2, "MAJ de video")

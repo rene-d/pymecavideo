@@ -578,7 +578,10 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.echelle_trace = None
         self.app.echelle_modif.emit(self.tr("Définir l'échelle"),
                                     "background-color:None;")
-
+        # rotation à zéro
+        self.rotation  = 0
+        self.index = 1
+        self.remontre_image()
         # reinitialisation du widget video
         self.setCursor(Qt.CursorShape.ArrowCursor)
         self.setEnabled(True)
@@ -591,6 +594,21 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app.sens_axes.emit(self.sens_X, self.sens_Y)
         self.app.defixeLesDimensions()
         self.app.change_etat.emit("A")
+        return
+
+    def remontre_image(self):
+        """
+        Il peut être nécessaire de remontrer l'image après un changement
+        de self.rotation
+        """
+        self.extract_image(self.index)
+        self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
+            self.cvReader.recupere_avi_infos(self.rotation)
+        if self.rotation % 180 == 0: # image droite ou renversée
+            self.ratio = self.largeurFilm / self.hauteurFilm
+        else: # image tournée à gauche ou à droite
+            self.ratio = self.hauteurFilm / self.largeurFilm
+        self.affiche_image()
         return
     
     def suiviDuMotif(self):
