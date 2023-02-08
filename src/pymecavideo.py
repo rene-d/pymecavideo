@@ -903,6 +903,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.trajectoire_widget.chrono = 0
         self.redimensionneFenetre()
         self.update()
+        return
 
     def fixeLesDimensions(self):
         self.setMinimumWidth(self.width())
@@ -1095,15 +1096,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             hauteur = self.video.height()
             self.video.origine = self.video.origine.rotate(
                 self.increment, largeur, hauteur)
-            #self.video.setGeometry(rect.x(), rect.y(), hauteur, largeur)
             self.tourne = False
-
-        self.dbg.p(2, "MAJ de video")
-        self.video.maj()
+        else:
+            self.video.affiche_image()
         self.trajectoire_widget.maj()
-        self.video.affiche_image()
-
-        self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget")
         return
 
     def enterEvent(self, e):

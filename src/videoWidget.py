@@ -183,11 +183,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.origine = vecteur(self.image_w//2, self.image_h//2)
         return
 
-    def maj(self, tourne=False):
-        if tourne:
-            self.tourne = True
-        return
-
     def enterEvent(self,event):
         """
         Quand la souris arrive sur la vidéo, on met des messages pertinents
