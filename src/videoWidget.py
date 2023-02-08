@@ -315,8 +315,16 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             painter.drawPolyline(p1, p2, p3, p4, p2)
             painter.rotate(self.sens_X * self.sens_Y * (-90))
             painter.drawPolyline(p1, p2, p3, p4, p2)
+            painter.end()
             ############################################################
-
+            # dessine l'échelle
+            painter = QPainter()
+            painter.begin(self)
+            painter.setPen(QColor("red"))
+            painter.drawLine(round(self.echelle_image.p1.x),
+                             round(self.echelle_image.p1.y),
+                             round(self.echelle_image.p2.x),
+                             round(self.echelle_image.p2.y))
             painter.end()
         return
 
@@ -813,7 +821,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             else:
                 self.echelle_image.p1 = None
                 self.echelle_image.p2 = None
-        # choche les cases du sens des axes
+        # coche les cases du sens des axes
         self.app.sens_axes.emit(self.sens_X, self.sens_Y)
         return
 
