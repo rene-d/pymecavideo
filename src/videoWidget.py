@@ -66,7 +66,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.origine = vecteur(self.width()//2, self.height()//2)
         self.couleurs = [
             "red", "blue", "cyan", "magenta", "yellow", "gray", "green"] *2
-        self.tourne = False        # au cas où on fait tourner les images
         self.premier_resize = True # devient faux après redimensionnement
         self.rotation = 0          # permet de retourner une vidéo mal prise
         self.image_max = None      # numéro de la dernière image de la vidéo
@@ -198,12 +197,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.reinit_origine()
 
         if e.oldSize() != QSize(-1, -1):
-            if not self.tourne:
-                ratiow = self.width()/e.oldSize().width()
-                ratioh = self.height()/e.oldSize().height()
-            else:
-                ratiow = self.width()/e.oldSize().height()
-                ratioh = self.height()/e.oldSize().width()
+            ratiow = self.width()/e.oldSize().width()
+            ratioh = self.height()/e.oldSize().height()
             x = self.origine.x*ratiow
             y = self.origine.y*ratioh
             if not self.app.premier_chargement_fichier_mecavideo:
@@ -801,6 +796,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.sens_X = d.getint("sens_x")
         self.sens_Y = d.getint("sens_y")
         self.rotation = d.getint("rotation")
+        print("GRRRR dans apply_preferences, self.rotation =", self.rotation)
         self.origine = self.prefs.config.getvecteur("DEFAULT", "origine")
         self.reinitialise_capture()
         if rouvre:

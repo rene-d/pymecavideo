@@ -590,7 +590,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # si une échelle est définie, on interdit les boutons de rotation
         # sinon on autorise ces boutons
         rotation_possible = not self.video.echelle_image
-        print("GRRRR dans etatA, rotation_possible =", rotation_possible)
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche :
             obj.setEnabled(rotation_possible)
                 
@@ -973,16 +972,17 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     def tourne_image(self, sens):
         self.dbg.p(2, "rentre dans 'tourne_image'")
         if sens == "droite":
-            self.increment = 90
+            increment = 90
         elif sens == "gauche":
-            self.increment = -90
-        self.video.rotation = (self.video.rotation + self.increment) % 360
+            increment = -90
+        self.video.rotation = (self.video.rotation + increment) % 360
         self.dbg.p(2, "Dans 'tourne_image' self rotation vaut" +
                    str(self.video.rotation))
 
         # gestion de l'origine et de l'échelle :
         self.dbg.p(3, f"Dans 'tourne_image' avant de tourner, self.origine {self.video.origine}, largeur video {self.video.width()}, hauteur video {self.video.height()}")
         self.redimensionneSignal.emit(True)
+        return
 
     def change_sens_X(self):
         self.dbg.p(2, "rentre dans 'change_sens_X'")
@@ -1084,11 +1084,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if tourne:  # on vient de cliquer sur tourner. rien n'est changé.
             self.dbg.p(2, "Dans 'redimensionneFenetre', tourne")
             self.video.remontre_image()
-            rect = self.video.geometry()
-            largeur = self.video.width()
-            hauteur = self.video.height()
-            self.video.origine = self.video.origine.rotate(
-                self.increment, largeur, hauteur)
             self.tourne = False
         else:
             self.video.affiche_image()
@@ -1738,12 +1733,17 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.dbg.p(2, "rentre dans 'verifie_IPS'")
         # si ce qui est rentré n'est pas un entier
         if not self.lineEdit_IPS.text().isdigit() and len(self.lineEdit_IPS.text()) > 0:
-            retour = QMessageBox.warning(
+            QMessageBox.warning(
                 self,
-                _translate(
-                    "pymecavideo", "Le nombre d'images par seconde doit être un entier", None),
-                _translate("pymecavideo", "merci de recommencer", None),
-                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+                self.tr("Le nombre d'images par seconde doit être un entier"),
+                self.tr("merci de recommencer"))
+        else:
+            # la vérification est OK, donc on modifie l'intervalle de temps
+            # et on refait le tableau de données sans changer le nombre
+            # d'objets
+            self.video.framerate = int(self.lineEdit_IPS.text())
+            self.video.deltaT = 1 / self.video.framerate
+            self.video.redimensionne_data(self.video.nb_obj)
         return
     
     def affiche_echelle(self):
@@ -1800,9 +1800,11 @@ Merci de bien vouloir le renommer avant de continuer""", None))
                                            for l in lignes_config]
         self.prefs.config.read_string("".join(lignes_config))
         self.apply_preferences(rouvre=True)
+        print("GRRRR dans fp.rouvre après self.apply_preferences(rouvre=True), self.video.rotation =", self.video.rotation)
         
         # donne la main au videoWidget pour préparer les pointages
         self.video.rouvre()
+        print("GRRRR dans fp.rouvre après self.video.rouvre(), self.video.rotation =", self.video.rotation)
         lignes_data = [l for l in lignes if l[0] != "#" and len(l.strip()) > 0]
         # on trouve les données en coupant là où il y a des séparations
         # par des espaces ou des tabulations, on ne conserve pas la
@@ -1814,7 +1816,8 @@ Merci de bien vouloir le renommer avant de continuer""", None))
             data, self.prefs.config["DEFAULT"].getint("index_depart"))
         self.affiche_echelle()  # on met à jour le widget d'échelle
         # coche les cases pour les sens des axes
-        self.app.sens_axes.emit(self.sens_X, self.sens_Y)
+        self.sens_axes.emit(self.video.sens_X, self.video.sens_Y)
+        print("GRRRR dans fp.rouvre, self.video.rotation =", self.video.rotation)
         self.change_etat.emit("D")
         return
 
