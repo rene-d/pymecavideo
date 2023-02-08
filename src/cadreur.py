@@ -137,7 +137,7 @@ class Cadreur(QObject):
     def rotateImage(self, img, angle):
         if angle == 90:
             return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-        elif angle == -90:
+        elif angle == 270:
             return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         elif angle == 180:
             return cv2.rotate(img, cv2.ROTATE_180)
@@ -241,7 +241,7 @@ class openCvReader:
         """
         récupère un array numpy
         @param index le numéro de l'image, commence à 1.
-        @param angle 0, 90, 18 ou -90 : rotation de l'image (0 par défaut)
+        @param angle 0, 90, 18 ou 270 : rotation de l'image (0 par défaut)
         @apame rgb (vrai par defaut) s'il est faux l'image est au format BGR
         @return le statut, l'image trouvée au format d'openCV
         """
@@ -266,7 +266,7 @@ class openCvReader:
     def rotateImage(self, img, angle):
         if angle == 90:
             return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-        elif angle == -90:
+        elif angle == 270:
             return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         elif angle == 180:
             return cv2.rotate(img, cv2.ROTATE_180)

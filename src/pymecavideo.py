@@ -972,21 +972,15 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(2, "rentre dans 'tourne_droite'")
         self.tourne_image("gauche")
 
-    def tourne_image(self, sens=None):
+    def tourne_image(self, sens):
         self.dbg.p(2, "rentre dans 'tourne_image'")
         if sens == "droite":
             self.increment = 90
         elif sens == "gauche":
             self.increment = -90
-        else:
-            self.increment = 0
-        self.rotation += self.increment
-        if self.rotation > 180:
-            self.rotation = self.rotation-360  # arrive pour 270° par exemple
-        elif self.rotation <= -180:
-            self.rotation = self.rotation+360
+        self.video.rotation = (self.video.rotation + self.increment) % 360
         self.dbg.p(2, "Dans 'tourne_image' self rotation vaut" +
-                   str(self.rotation))
+                   str(self.video.rotation))
 
         # gestion de l'origine et de l'échelle :
         self.dbg.p(3, f"Dans 'tourne_image' avant de tourner, self.origine {self.video.origine}, largeur video {self.video.width()}, hauteur video {self.video.height()}")
@@ -1095,10 +1089,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             hauteur = self.video.height()
             self.video.origine = self.video.origine.rotate(
                 self.increment, largeur, hauteur)
-            self.video.echelle_image.p1 = self.video.echelle_image.p1.rotate(
-                self.increment, largeur, hauteur)
-            self.video.echelle_image.p2 = self.video.echelle_image.p2.rotate(
-                self.increment, largeur, hauteur)
             self.video.setGeometry(0, 0, hauteur, largeur)
             self.tourne = False
 
@@ -1109,20 +1099,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         self.dbg.p(2, "On fixe les tailles de centralwidget et tabWidget")
         return
-
-    def widthForHeight_video(self, h):
-        # calcule self.largeur et self.hauteur si la hauteur est prédominante
-        # si la hauteur est trop petite, ne permet plus de redimensionnement
-        self.dbg.p(2, "retre dans 'widthForHeight'")
-        self.dbg.p(2, "argument h : %s" % (str(h)))
-        return round(h*self.ratio)
-
-    def heightForWidth_video(self, w):
-        # calcul self.largeur et self.hauteur
-        # si la largeur est trop petite, ne permet plus de redimensionnement
-        self.dbg.p(2, "retre dans 'heightForWidth'")
-        self.dbg.p(2, "argument w : %s" % (str(w)))
-        return round(w/self.ratio)
 
     def enterEvent(self, e):
         self.gardeLargeur()
