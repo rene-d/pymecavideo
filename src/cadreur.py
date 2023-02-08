@@ -241,7 +241,7 @@ class openCvReader:
         """
         récupère un array numpy
         @param index le numéro de l'image, commence à 1.
-        @param angle 0, 90, 18 ou 270 : rotation de l'image (0 par défaut)
+        @param angle 0, 90, 180 ou 270 : rotation de l'image (0 par défaut)
         @apame rgb (vrai par defaut) s'il est faux l'image est au format BGR
         @return le statut, l'image trouvée au format d'openCV
         """
@@ -284,7 +284,7 @@ class openCvReader:
 
             largeur = self.capture.get(cv2.CAP_PROP_FRAME_WIDTH)
             hauteur = self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT)
-            if abs(angle) == 90:  # on a retourné la vidéo
+            if angle % 180 == 90:  # la vidéo est tournée à droite ou à gauche
                 largeur, hauteur = hauteur, largeur
         except:
             print("could not retrieve informations from the video file.")

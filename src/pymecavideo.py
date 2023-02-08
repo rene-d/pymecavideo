@@ -170,8 +170,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         self.args = args
 
-        self.cvReader = None
-
         self.platform = platform.system()
 
         # initialise les répertoires

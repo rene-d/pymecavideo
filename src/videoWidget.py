@@ -599,10 +599,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.extract_image(self.index)
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
             self.cvReader.recupere_avi_infos(self.rotation)
-        if self.rotation % 180 == 0: # image droite ou renversée
-            self.ratio = self.largeurFilm / self.hauteurFilm
-        else: # image tournée à gauche ou à droite
-            self.ratio = self.hauteurFilm / self.largeurFilm
+        self.ratio = self.largeurFilm / self.hauteurFilm
         self.affiche_image()
         return
     
