@@ -793,12 +793,11 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             # si le fichier video n'existe pas, inutile d'aller plus
             # loin dans la restauration des données !
             return
+        self.reinitialise_capture()
         self.sens_X = d.getint("sens_x")
         self.sens_Y = d.getint("sens_y")
         self.rotation = d.getint("rotation")
-        print("GRRRR dans apply_preferences, self.rotation =", self.rotation)
         self.origine = self.prefs.config.getvecteur("DEFAULT", "origine")
-        self.reinitialise_capture()
         if rouvre:
             # dans ce cas on est en train de réouvrir un fichier pymecavideo
             # et on considère plus de données

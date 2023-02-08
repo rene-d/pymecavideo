@@ -1079,12 +1079,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def redimensionneFenetre(self, tourne=False):
         self.dbg.p(2, "rentre dans 'redimensionneFenetre'")
-
-        self.tourne = tourne  # n'est utilisée que ici et dans video
         if tourne:  # on vient de cliquer sur tourner. rien n'est changé.
             self.dbg.p(2, "Dans 'redimensionneFenetre', tourne")
             self.video.remontre_image()
-            self.tourne = False
         else:
             self.video.affiche_image()
         self.trajectoire_widget.maj()
@@ -1800,11 +1797,9 @@ Merci de bien vouloir le renommer avant de continuer""", None))
                                            for l in lignes_config]
         self.prefs.config.read_string("".join(lignes_config))
         self.apply_preferences(rouvre=True)
-        print("GRRRR dans fp.rouvre après self.apply_preferences(rouvre=True), self.video.rotation =", self.video.rotation)
         
         # donne la main au videoWidget pour préparer les pointages
         self.video.rouvre()
-        print("GRRRR dans fp.rouvre après self.video.rouvre(), self.video.rotation =", self.video.rotation)
         lignes_data = [l for l in lignes if l[0] != "#" and len(l.strip()) > 0]
         # on trouve les données en coupant là où il y a des séparations
         # par des espaces ou des tabulations, on ne conserve pas la
@@ -1817,7 +1812,6 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.affiche_echelle()  # on met à jour le widget d'échelle
         # coche les cases pour les sens des axes
         self.sens_axes.emit(self.video.sens_X, self.video.sens_Y)
-        print("GRRRR dans fp.rouvre, self.video.rotation =", self.video.rotation)
         self.change_etat.emit("D")
         return
 
