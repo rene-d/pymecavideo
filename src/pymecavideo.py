@@ -589,7 +589,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             obj.setEnabled(True)
 
         # si une échelle est définie, on interdit les boutons de rotation
-        if not self.video.echelle_image:
+        if self.video.echelle_image:
             for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche :
                 obj.setEnabled(False)
         # ajuste le nombre d'objets suivis
