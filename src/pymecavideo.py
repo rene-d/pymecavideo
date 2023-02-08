@@ -577,8 +577,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.imgControlImage(True)
         self.video.affiche_image()
         # réactive plusieurs widgets
-        for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
-            self.label_nb_de_points, self.pushButton_reinit, \
+        for obj in self.label_nb_de_points, self.pushButton_reinit, \
             self.spinBox_objets, self.Bouton_Echelle, \
             self.checkBox_auto, self.Bouton_lance_capture, \
             self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
@@ -589,9 +588,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             obj.setEnabled(True)
 
         # si une échelle est définie, on interdit les boutons de rotation
-        if self.video.echelle_image:
-            for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche :
-                obj.setEnabled(False)
+        # sinon on autorise ces boutons
+        rotation_possible = not self.video.echelle_image
+        print("GRRRR dans etatA, rotation_possible =", rotation_possible)
+        for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche :
+            obj.setEnabled(rotation_possible)
+                
         # ajuste le nombre d'objets suivis
         if self.video.suivis:
             self.spinBox_objets.setValue(self.video.nb_obj)
@@ -620,13 +622,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             plotItem.setTitle('')
             plotItem.hideAxis('bottom')
             plotItem.hideAxis('left')
-        ### Réactive conditionnellement les boutons de rotation
-        if self.video.a_une_image:
-            self.pushButton_rot_droite.setEnabled(True)
-            self.pushButton_rot_gauche.setEnabled(True)
-        else:
-            self.pushButton_rot_droite.setEnabled(False)
-            self.pushButton_rot_gauche.setEnabled(False)
  
         """
         Prépare une session de pointage, au niveau de la
@@ -1355,11 +1350,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         if grandeurX == 't':
             X = self.video.dates
-        elif grandeurX != "Choisir ...":
+        elif grandeurX in self.locals :
             X = self.locals[grandeurX]
         if grandeurY == 't':
             Y = self.video.dates
-        elif grandeurY != "Choisir ...":
+        elif grandeurY in  self.locals :
             Y = self.locals[grandeurY]
         # on retire toutes les parties non définies
         # zip (*[liste de tuples]) permet de "dézipper"

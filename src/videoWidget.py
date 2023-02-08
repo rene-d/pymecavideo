@@ -495,6 +495,11 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         goOn = self.init_cvReader()
         if goOn:  # le fichier vidéo est OK, et son format est reconnu
             self.init_image()
+            # s'il y avait déjà une échelle, il faut l'oublier,
+            # quitter l'état A pour y revenir
+            if self.echelle_image:
+                self.clearEchelle()
+                self.app.change_etat.emit("Debut")
             self.app.change_etat.emit("A")
         else:
             QMessageBox.warning(
