@@ -584,8 +584,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.echelle_trace = None
         self.app.echelle_modif.emit(self.tr("Définir l'échelle"),
                                     "background-color:None;")
-        # rotation à zéro
-        self.rotation  = 0
         self.index = 1
         self.remontre_image()
         # reinitialisation du widget video
@@ -802,6 +800,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.dbg.p(2, "rentre dans 'VideoWidget.apply_preferences'")
         d = self.prefs.config["DEFAULT"]
         self.filename = d["lastvideo"]
+        self.rotation = d.getint("rotation")
         if os.path.isfile(self.filename):
             self.openTheFile(self.filename)
         else:
@@ -811,7 +810,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.reinitialise_capture()
         self.sens_X = d.getint("sens_x")
         self.sens_Y = d.getint("sens_y")
-        self.rotation = d.getint("rotation")
         self.origine = self.prefs.config.getvecteur("DEFAULT", "origine")
         if rouvre:
             # dans ce cas on est en train de réouvrir un fichier pymecavideo

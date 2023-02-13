@@ -611,8 +611,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Prépare une session de pointage, au niveau de la
         fenêtre principale, et met à jour les préférences
         """
-        self.prefs.defaults['lastVideo'] = self.video.filename
-        self.prefs.defaults['videoDir'] = os.path.dirname(self.video.filename)
+        d = self.prefs.defaults
+        d['lastVideo'] = self.video.filename
+        d['videoDir'] = os.path.dirname(self.video.filename)
+        d['rotation'] = str(self.video.rotation)
         self.prefs.save()
 
         self.spinBox_image.setMinimum(1)
@@ -1607,6 +1609,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             del plotwidget
         d = self.prefs.config["DEFAULT"]
         d["taille"] = f"({self.size().width()},{self.size().height()})"
+        d["rotation"] = str(self.video.rotation)
         self.prefs.save()
         return
 
