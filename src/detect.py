@@ -49,21 +49,19 @@ def time_it(func):
 
 
 # @time_it
-def filter_picture(part, image, echelle, zone_proche=None):
+def filter_picture(part, image, zone_proche=None):
     """
     Trouve la position d'une image partielle dans une image donnée
     @param part une images partielle (au format d'openCV)
     @param image une image où chercher (même format)
-    @param echelle est le ratio largeur d'image affichée / largeur du film
     @param zone_proche un vecteur près duquel pourrait bien se trouver
       l'image recherchée ; peut être None, auquel cas on recherche dans
       toute l'image (ACTUELLEMENT ON N'EN TIENT PAS COMPTE)
-    @return les coordonnées d'un point, dans les dimensions de l'image du
-      videowidget, résultant du suivi automatique du motif partiel dans l'image.
+    @return les coordonnées d'un point, résultant du suivi automatique
+      du motif partiel dans l'image.
     """
     point = detect_part(part, image, zone_proche)  # TODO 130ms
-    return (echelle*(point[0]+part.shape[0]/2),
-            echelle*(point[1]+part.shape[1]/2))
+    return point
 
 # @time_it
 
@@ -103,24 +101,28 @@ def detect_part(part, image, point=None):
     @return l'emplacement où se trouve le motif recherché
     """
     import numpy as np
-    # méthode 1 :
-    # cv2.TM_CCOEFF  Pour AMELIORER la vitesse, une possiblité est de réduire "image"
-    result = cv2.matchTemplate(image, part, cv2.TM_SQDIFF)
 
-    ##########################################################
-    # À ce point, result est une carte des coïncidences possibles
-    # entre le motif "part" et l'image complète "image"
-    # iI faudrait donner un peu plus de vraisemblance aux coïncidences
-    # proches du dernier point détecté.
-    ##########################################################
     if point:
-        flou = 2
-        vraisemblable = gaussMatrix(result.shape, point, np.amax(
-            result), flou*(part.shape[0]+part.shape[1]), inverse=True)
-        result = result+vraisemblable
+        # on choisit un rayon assez petit par rapport à la taille de l'image
+        # afin de faire la première recherche dans une zone assez resserrée
+        r = (image.shape[0]+image.shape[1]) // 10
+        centre = (point[0] + part.shape[0] // 2, point[1] + part.shape[1] // 2)
+        hg = (centre[0] - r, centre[1] - r) # haut gauche
+        bd = (centre[0] + r, centre[1] + r) # bas droite
+        extrait = image[hg[1]:bd[1], hg[0]:bd[0], :]
+        # on vérifie que l'extrait soit assez grand
+        if extrait.shape[0] > part.shape[0] and \
+           extrait.shape[1] > part.shape[1]:
+            matched = cv2.matchTemplate(extrait, part, cv2.TM_SQDIFF)
+            m, M, minloc, maxloc = cv2.minMaxLoc(matched)
+            # si le minimum `m` est assez bas, on considère qu'on a trouvé
+            tolerance = 120 * part.shape[0] * part.shape[1]
+            if m < tolerance:
+                return (minloc[0]+hg[0], minloc[1]+hg[1])
 
-    ########## ceci minimise les chances de trouver loin ###########
-    m, M, minloc, maxloc = cv2.minMaxLoc(result)
+    ####### si ça n'a pas marché on recherche dans toute l'image ########
+    matched = cv2.matchTemplate(image, part, cv2.TM_SQDIFF)
+    m, M, minloc, maxloc = cv2.minMaxLoc(matched)
     return minloc
 
 

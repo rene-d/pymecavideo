@@ -649,10 +649,14 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 self.indexMotif = i
                 part = self.motifs_auto[self.indexMotif]
                 zone_proche = self.pointsProbables.get(self.objet_courant, None)
-                echelle = self.image_w / self.largeurFilm
-                point = filter_picture(part, image, echelle, zone_proche)
+                point = filter_picture(part, image, zone_proche)
                 self.pointsProbables[self.objet_courant] = point
-                self.storePoint(vecteur(point[0], point[1]))
+                echelle = self.image_w / self.largeurFilm
+                # on convertit selon l'échelle, et on recentre la détection
+                # par rapport au motif `part`
+                self.storePoint(vecteur(
+                    echelle*(point[0]+part.shape[1]/2),
+                    echelle*(point[1]+part.shape[0]/2)))
                 # le point étant détecté, on passe à l'objet suivant
                 # et si nécessaire à l'image suivante
                 self.objetSuivant()
