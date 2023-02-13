@@ -19,17 +19,12 @@ all: $(GRAPHS_SVG) $(DOC_DEV_HTML) $(COMPILED_TRANSLATIONS) helpfiles
 %.html : %.md $(GRAPHS_SVG)
 	pandoc --standalone $< -o $@
 
-pymecavideo_project.pro:  $(GUIS) $(SOURCES)
-	@echo "# this file is generated automatically, do not edit it." > $@
-	@echo "FORMS        = $(GUIS)" >> $@
-	@echo "SOURCES      = $(SOURCES)" >> $@
-	@echo "TRANSLATIONS = $(TRANSLATIONS)" >> $@
+$(TRANSLATIONS): $(SOURCES) $(GUIS)
+	for t in $(TRANSLATIONS); do \
+	  LC_ALL=en_US.UTF-8 pylupdate6 --ts $$t $(SOURCES) $(GUIS); \
+	done
 
-$(TRANSLATIONS): pymecavideo_project.pro
-	LC_ALL=en_US.UTF-8 pylupdate5 -translate-function _translate \
-	  pymecavideo_project.pro
-
-%.qm: %.ts pymecavideo_project.pro
+%.qm: %.ts
 	lrelease ../data/lang/*.ts 2>&1 | grep -A2 "Updating"
 
 

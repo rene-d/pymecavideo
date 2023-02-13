@@ -186,9 +186,6 @@ def GetChildStdErr():
     else:
         return None, 0
 
-def _translate(context, text, disambig):
-    return QApplication.translate(context, text, disambig)
-
 cible_icon = os.path.join(ICON_PATH, "curseur_cible.svg")
 
 inhibitions = []; # liste de mots-clés pour inhiber des actions trop rapides

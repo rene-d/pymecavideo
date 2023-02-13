@@ -9,7 +9,7 @@ import subprocess
 from globdef import HOME_PATH, VIDEO_PATH, CONF_PATH, \
     ICON_PATH, LANG_PATH, \
     DATA_PATH, HELP_PATH, DOCUMENT_PATH, \
-    _translate, pattern_float
+    pattern_float
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, QVBoxLayout, QTableWidgetSelectionRange, QDialog, QPushButton
 from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QShortcut, QScreen, QAction
 from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, QTimer
@@ -214,8 +214,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     50,
                     lambda: QMessageBox.information(
                         self,
-                        _translate("pymecavideo", "Argument non pris en compte", None),
-                        _translate("pymecavideo", "Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.", None).format(filename=filename)))
+                        self.tr("Argument non pris en compte"),
+                        self.tr("Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.").format(filename=filename)))
                 
         return OK
 
@@ -243,8 +243,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 50,
                 lambda: QMessageBox.information(
                     self,
-                    _translate("pymecavideo", "Configuration trop ancienne", None),
-                    _translate("pymecavideo", "La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte", None).format(version = version, min_version = self.min_version)))
+                    self.tr("Configuration trop ancienne"),
+                    self.tr("La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte").format(version = version, min_version = self.min_version)))
             return
         # le fichier de configuration a la bonne version, on applique ses
         # données
@@ -653,7 +653,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         QMessageBox.information(
             None, "Capture Automatique",
-            _translate("pymecavideo", """\
+            self.tr("""\
             Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
             Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",None))
         self.affiche_statut.emit(self.tr("Pointage Automatique"))
@@ -759,8 +759,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.comboBox_referentiel.clear()
         self.comboBox_referentiel.insertItem(-1, "camera")
         for obj in self.video.suivis:
-            self.comboBox_referentiel.insertItem(-1, _translate(
-                "pymecavideo", "objet N° {0}", None).format(str(obj)))
+            self.comboBox_referentiel.insertItem(
+                -1, self.tr("objet N° {0}").format(str(obj)))
 
         # désactive des boutons et des cases à cocher
         for obj in self.pushButton_origine, self.checkBox_abscisses, \
@@ -823,14 +823,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         base_name = os.path.splitext(os.path.basename(self.filename))[0]
         defaultName = os.path.join(DOCUMENT_PATH, base_name)
         fichier = QFileDialog.getSaveFileName(self,
-                                              _translate(
-                                                  "pymecavideo", "Enregistrer comme image", None),
-                                              defaultName, _translate("pymecavideo", "fichiers images(*.png *.jpg)", None))
+                                              self.tr("Enregistrer comme image"),
+                                              defaultName, self.tr("fichiers images(*.png *.jpg)"))
         try :
             self.pixmapChrono.save(fichier[0])
         except Exception as err:
             self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Echec de l'enregistrement du fichier:<b>\n{0}</b>", None).format(
+            QMessageBox.critical(None, self.tr("Erreur lors de l'enregistrement"), self.tr("Echec de l'enregistrement du fichier:<b>\n{0}</b>").format(
                     fichier[0]))
 
     def chronoPhoto(self):
@@ -1057,9 +1056,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         dir_ = DOCUMENT_PATH
         fichier, _ = QFileDialog.getOpenFileName(
             self,
-            _translate("pymecavideo", "Ouvrir un projet Pymecavideo", None),
+            self.tr("Ouvrir un projet Pymecavideo"),
             dir_,
-            _translate("pymecavideo", "Projet Pymecavideo (*.mecavideo)", None))
+            self.tr("Projet Pymecavideo (*.mecavideo)"))
         if fichier != "":
             self.rouvre(fichier)
         return
@@ -1271,9 +1270,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.comboBox_X.clear()
             self.comboBox_Y.clear()
             self.comboBox_X.insertItem(-1,
-                                        _translate("pymecavideo", "Choisir ...", None))
+                                        self.tr("Choisir ..."))
             self.comboBox_Y.insertItem(-1,
-                                        _translate("pymecavideo", "Choisir ...", None))
+                                        self.tr("Choisir ..."))
             self.comboBox_X.addItem('t')
             self.comboBox_Y.addItem('t')
             for grandeur in self.locals.keys():
@@ -1399,10 +1398,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if hasattr (self, 'pg_exporter'):
             base_name = os.path.splitext(os.path.basename(self.filename))[0]
             defaultName = os.path.join(DOCUMENT_PATH, base_name+'.png')
-            fichier = QFileDialog.getSaveFileName(self,
-                                              _translate(
-                                                  "pymecavideo", "Enregistrer le graphique", None),
-                                              defaultName, _translate("pymecavideo", "fichiers images(*.png)", None))
+            fichier = QFileDialog.getSaveFileName(
+                self,
+                self.tr("Enregistrer le graphique"),
+                defaultName, self.tr("fichiers images(*.png)"))
             self.pg_exporter.export(fichier[0])
 
     def tracer_trajectoires(self, newValue):
@@ -1458,11 +1457,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if self.masse_objet == 0:
             masse_objet_raw, ok = QInputDialog.getText(
                 None,
-                _translate(
-                    "pymecavideo", "Masse de l'objet", None),
-                _translate("pymecavideo",
-                           "Quelle est la masse de l'objet ? (en kg)",
-                           None),
+                self.tr("Masse de l'objet"),
+                self.tr("Quelle est la masse de l'objet ? (en kg)"),
                 text ="1.0")
             masse_objet_raw = masse_objet_raw.replace(",", ".")
             ok = ok and pattern_float.match(masse_objet_raw)
@@ -1619,9 +1615,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             if not pattern_float.match(m):
                 QMessageBox.critical(
                     self,
-                    _translate("pymecavideo", "MAUVAISE VALEUR !", None),
-                    _translate(
-                        "pymecavideo", "La valeur rentrée (m = {}) n'est pas compatible avec le calcul", None).format(m))
+                    self.tr("MAUVAISE VALEUR !"),
+                    self.tr("La valeur rentrée (m = {}) n'est pas compatible avec le calcul").format(m))
             else:
                 self.affiche_grapheur()
                 self.dessine_graphe()
@@ -1633,9 +1628,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             if not pattern_float.match(g):
                 QMessageBox.critical(
                     self,
-                    _translate("pymecavideo", "MAUVAISE VALEUR !", None),
-                    _translate(
-                        "pymecavideo", "La valeur rentrée (g = {}) n'est pas compatible avec le calcul", None).format(g))
+                    self.tr("MAUVAISE VALEUR !"),
+                    self.tr("La valeur rentrée (g = {}) n'est pas compatible avec le calcul").format(g))
             else:
                 self.affiche_grapheur()
                 self.dessine_graphe()
@@ -1645,13 +1639,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(2, "rentre dans 'openexample'")
         dir_ = "%s" % (self._dir("videos"))
         filename, hints = QFileDialog.getOpenFileName(
-            self, _translate("pymecavideo", "Ouvrir une vidéo", None), dir_,
-            _translate(
-                "pymecavideo",
-                "fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)",
-                None
-            )
-        )
+            self,
+            self.tr("Ouvrir une vidéo"), dir_,
+            self.tr("fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)"))
         self.video.openTheFile(filename)
         return
 
@@ -1662,22 +1652,21 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(2, "rentre dans 'openfile'")
         dir_ = self._dir("videos")
         filename, hints = QFileDialog.getOpenFileName(
-            self, _translate("pymecavideo", "Ouvrir une vidéo", None),
+            self,
+            self.tr("Ouvrir une vidéo"),
             dir_,
-            _translate("pymecavideo",
-                       "fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)",
-                       None))
+            self.tr("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)"))
         self.video.openTheFile(filename)
         self.video.reinitialise_capture()
         return
     
     def renomme_le_fichier(self):
         self.dbg.p(2, "rentre dans 'renomme_le_fichier'")
-        renomme_fichier = QMessageBox.warning(self, _translate("pymecavideo", "Nom de fichier non conforme", None),
-                                              _translate("pymecavideo", """\
+        renomme_fichier = QMessageBox.warning(self, self.tr("Nom de fichier non conforme"),
+                                              self.tr("""\
 Le nom de votre fichier contient des caractères accentués ou des espaces.
-Merci de bien vouloir le renommer avant de continuer""", None))
-        filename = QFileDialog.getOpenFileName(self, _translate("pymecavideo", "Ouvrir une vidéo"),
+Merci de bien vouloir le renommer avant de continuer"""))
+        filename = QFileDialog.getOpenFileName(self, self.tr("Ouvrir une vidéo"),
                                                self._dir("videos", None),
                                                "*.avi")
         self.video.openTheFile(filename)
@@ -1711,7 +1700,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         else:
             QMessageBox.warning(
                 None, "Aide",
-                _translate("pymecavideo", "Désolé pas de fichier d'aide pour le langage {0}.", None).format(lang))
+                self.tr("Désolé pas de fichier d'aide pour le langage {0}.").format(lang))
         return
 
     def verifie_IPS(self):
@@ -1738,7 +1727,7 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.dbg.p(2, "rentre dans 'affiche_echelle'")
         if self.video.echelle_image.isUndef():
             self.echelleEdit.setText(
-                _translate("pymecavideo", "indéf.", None))
+                self.tr("indéf."))
         else:
             epxParM = self.video.echelle_image.pxParM()
             if epxParM > 20:
@@ -1823,8 +1812,8 @@ Merci de bien vouloir le renommer avant de continuer""", None))
         self.dbg.p(2, "rentre dans 'demande_echelle'")
         reponse, ok = QInputDialog.getText(
             None,
-            _translate("pymecavideo", "Définir léchelle", None),
-            _translate("pymecavideo", "Quelle est la longueur en mètre de votre étalon sur l'image ?", None),
+            self.tr("Définir léchelle"),
+            self.tr("Quelle est la longueur en mètre de votre étalon sur l'image ?"),
             text = f"{self.video.echelle_image.longueur_reelle_etalon:.3f}")
         reponse = reponse.replace(",", ".")
         ok = ok and pattern_float.match(reponse) and float(reponse) > 0

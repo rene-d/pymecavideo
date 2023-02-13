@@ -37,7 +37,7 @@ from vecteur import vecteur
 from echelle import Echelle_TraceWidget
 from image_widget import ImageWidget
 from pointage import Pointage
-from globdef import _translate, cible_icon, DOCUMENT_PATH, inhibe
+from globdef import cible_icon, DOCUMENT_PATH, inhibe
 from cadreur import openCvReader
 from toQimage import toQImage
 from suivi_auto import SelRectWidget
@@ -483,8 +483,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         time.sleep(0.1)
         if not self.cvReader.ok:
             QMessageBox.warning(None, "Format vidéo non pris en charge",
-                                _translate("pymecavideo", """\le format de cette vidéo n'est pas pris en charge par pymecavideo""",
-                                           None))
+                                self.tr("Le format de cette vidéo n'est pas pris en charge par pymecavideo"))
         else:
             return True
 
@@ -510,8 +509,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         else:
             QMessageBox.warning(
                 None,
-                _translate("pymecavideo", "Erreur lors de la lecture du fichier", None),
-                _translate("pymecavideo", "Le fichier<b>{0}</b> ...\nn'est peut-être pas dans un format vidéo supporté.", None).format(
+                self.tr("Erreur lors de la lecture du fichier"),
+                self.tr("Le fichier<b>{0}</b> ...\nn'est peut-être pas dans un format vidéo supporté.").format(
                     filename))
         return
     
@@ -685,12 +684,12 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             defaultName = os.path.join(DOCUMENT_PATH, base_name+'.mecavideo')
             fichier = QFileDialog.getSaveFileName(
                 self,
-                _translate("pymecavideo", "Enregistrer le projet pymecavideo", None),
+                self.tr("Enregistrer le projet pymecavideo"),
                 defaultName,
-                _translate("pymecavideo", "Projet pymecavideo (*.mecavideo)", None))
+                self.tr("Projet pymecavideo (*.mecavideo)"))
             self.enregistre(fichier[0])
         else :
-            QMessageBox.critical(None, _translate("pymecavideo", "Erreur lors de l'enregistrement", None), _translate("pymecavideo", "Il manque les données, ou l'échelle", None))
+            QMessageBox.critical(None, self.tr("Erreur lors de l'enregistrement"), self.tr("Il manque les données, ou l'échelle"))
         return
     
     def enregistre(self, fichier):
@@ -709,8 +708,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         # pour le fichier pymecavideo
         self.savePrefs()
         with open(fichier, 'w') as outfile:
-            message = _translate(
-                "pymecavideo", "temps en seconde, positions en mètre", None)
+            message = self.tr("temps en seconde, positions en mètre")
             outfile.write(self.entete_fichier(message))
             donnees = self.csv_string(
                 sep = "\t", unite = "m",

@@ -31,8 +31,6 @@ import sys
 import os, time
 DBG = Dbg(0)
 
-_translate = QCoreApplication.translate
-
 # On prévient si l'enregistrement est un succès ?
 INFO_OK = False
 
@@ -45,48 +43,48 @@ INFO_OK = False
 # modules (list of str) : liste des modules non standards nécessaires ou None
 # un_point (bool) : nécessite un seul point cliqué ou pas
 EXPORT_FORMATS = {
-    1: {'nom': _translate("export", 'Libre/OpenOffice Calc'),
-        'filtre': _translate("export", 'Feuille de calcul OpenDocument (*.ods)'),
+    1: {'nom': QCoreApplication.translate("export", 'Libre/OpenOffice Calc'),
+        'filtre': QCoreApplication.translate("export", 'Feuille de calcul OpenDocument (*.ods)'),
         'extension': 'ods',
         'class': 'Calc',
         'modules': ['odf'],
         'propose_ouverture': True,
         'un_point': False},
 
-    2: {'nom': _translate("export", 'Python (source)'),
-        'filtre': _translate("export", 'Fichier Python (*.py)'),
+    2: {'nom': QCoreApplication.translate("export", 'Python (source)'),
+        'filtre': QCoreApplication.translate("export", 'Fichier Python (*.py)'),
         'extension': 'py',
         'class': 'PythonSource',
         'modules': None,
         'propose_ouverture': True,
         'un_point': True},
 
-    3: {'nom': _translate("export", 'Python (Numpy)'),
-        'filtre': _translate("export", 'Fichier Numpy (*.npy)'),
+    3: {'nom': QCoreApplication.translate("export", 'Python (Numpy)'),
+        'filtre': QCoreApplication.translate("export", 'Fichier Numpy (*.npy)'),
         'extension': 'npy',
         'class': 'PythonNumpy',
         'modules': ['numpy'],
         'propose_ouverture': False,
         'un_point': True},
     
-    4: {'nom' : _translate("export",'Jupyter Notebook'),
-        'filtre' : _translate("export",'Notebook (*.ipynb)'),
+    4: {'nom' : QCoreApplication.translate("export",'Jupyter Notebook'),
+        'filtre' : QCoreApplication.translate("export",'Notebook (*.ipynb)'),
         'extension' : 'ipynb',
         'class' : 'PythonNotebook',
         'modules' : ['nbformat'],
         'propose_ouverture' : False,
         'un_point' : True},
     
-    5: {'nom': _translate("export", 'Fichier CSV'),
-        'filtre': _translate("export", 'Fichier CSV (*.csv, *.txt)'),
+    5: {'nom': QCoreApplication.translate("export", 'Fichier CSV'),
+        'filtre': QCoreApplication.translate("export", 'Fichier CSV (*.csv, *.txt)'),
         'extension': 'csv',
         'class': 'FichierCSV',
         'modules': None,
         'propose_ouverture': True,
         'un_point': False},
 
-    6: {'nom': _translate("export", 'Pandas Dataframe'),
-        'filtre': _translate("export", 'Dataframe (*.pkl)'),
+    6: {'nom': QCoreApplication.translate("export", 'Pandas Dataframe'),
+        'filtre': QCoreApplication.translate("export", 'Dataframe (*.pkl)'),
         'extension': 'pkl',
         'class': 'DataframePandas',
         'modules': ['pandas'],
@@ -96,17 +94,17 @@ EXPORT_FORMATS = {
 
 # Dictionnaire contenant les textes des QMessageBox information, warning...
 EXPORT_MESSAGES = {
-    0: {'titre': _translate("export", "Erreur lors de l'exportation"),
-        'texte': _translate("export", "Echec de l'enregistrement du fichier:<b>\n{0}</b>")},
+    0: {'titre': QCoreApplication.translate("export", "Erreur lors de l'exportation"),
+        'texte': QCoreApplication.translate("export", "Echec de l'enregistrement du fichier:<b>\n{0}</b>")},
 
-    1: {'titre': _translate("export", "Impossible de créer le fichier"),
-        'texte': _translate("export", "L'export n'est possible que pour 1 seul point cliqué.")},
+    1: {'titre': QCoreApplication.translate("export", "Impossible de créer le fichier"),
+        'texte': QCoreApplication.translate("export", "L'export n'est possible que pour 1 seul point cliqué.")},
 
-    2: {'titre': _translate("export", "Exportation terminée"),
-        'texte': _translate("export", "Fichier:\n<b>{0}</b>\nenregistré avec succès.")},
+    2: {'titre': QCoreApplication.translate("export", "Exportation terminée"),
+        'texte': QCoreApplication.translate("export", "Fichier:\n<b>{0}</b>\nenregistré avec succès.")},
 
-    3: {'titre': _translate("export", "Impossible de créer le fichier"),
-        'texte': _translate("export", "Le module <b>{0}</b> n'est pas installé.")},
+    3: {'titre': QCoreApplication.translate("export", "Impossible de créer le fichier"),
+        'texte': QCoreApplication.translate("export", "Le module <b>{0}</b> n'est pas installé.")},
 }
 
 
@@ -127,8 +125,8 @@ class DataframePandas:
         df.to_pickle(filepath)
         QMessageBox.information(
             None,
-            _translate("export_pandas", "Fichier Pandas sauvegardé"),
-            _translate(
+            QCoreApplication.translate("export_pandas", "Fichier Pandas sauvegardé"),
+            QCoreApplication.translate(
             "export_pandas", """Pour ouvrir ce fichier depuis Python, taper :\n\nimport pandas as pd\ndf = pd.read_pickle("{}")""".format(os.path.basename(filepath))))
 
     def write_qtable_to_df(self, table):
@@ -527,8 +525,8 @@ class PythonNumpy:
         np.save(filepath, export)
         QMessageBox.information(
             None,
-            _translate("export_numpy", "Fichier Numpy sauvegardé"),
-            _translate("export_numpy",
+            QCoreApplication.translate("export_numpy", "Fichier Numpy sauvegardé"),
+            QCoreApplication.translate("export_numpy",
                        """Pour ouvrir ce fichier depuis Python, taper :
 
 import numpy as np\nt,x1,y1 ... = np.load("{}")""".format(
