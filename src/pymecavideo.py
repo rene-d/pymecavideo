@@ -17,7 +17,6 @@ from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, QSize, Q
 import getopt
 import traceback
 import time
-import functools
 import numpy as np
 import math
 import tempfile
@@ -102,20 +101,6 @@ app = QApplication(sys.argv)
 
 #import qtiplotexport
 
-
-def time_it(func):
-    """Timestamp decorator for dedicated functions"""
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start = time.time()
-        result = func(*args, **kwargs)
-        elapsed = time.time() - start
-        mlsec = repr(elapsed).split('.')[1][:3]
-        readable = time.strftime(
-            "%H:%M:%S.{}".format(mlsec), time.gmtime(elapsed))
-        print('Function "{}": {} sec'.format(func.__name__, readable))
-        return result
-    return wrapper
 
 from interfaces.Ui_pymecavideo import Ui_pymecavideo
 

@@ -30,23 +30,6 @@ import numpy as np
 from globdef import *
 from vecteur import vecteur
 
-import functools
-
-
-def time_it(func):
-    """Timestamp decorator for dedicated functions"""
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start = time.time()
-        result = func(*args, **kwargs)
-        elapsed = time.time() - start
-        mlsec = repr(elapsed).split('.')[1][:3]
-        readable = time.strftime(
-            "%H:%M:%S.{}".format(mlsec), time.gmtime(elapsed))
-        print('Function "{}": {} sec'.format(func.__name__, readable))
-        return result
-    return wrapper
-
 
 # @time_it
 def filter_picture(part, image, zone_proche=None):
@@ -66,45 +49,21 @@ def filter_picture(part, image, zone_proche=None):
 # @time_it
 
 
-def gaussMatrix(forme, sommet, hauteur, largeur, inverse=False):
-    """
-    renvoie une matrice de valeurs qui forment un pic gaussien autour
-    d'un sommet de coordonnées données, variant entre 0 et hauteur. Si
-    inverse est vrai, le sommet est à zéro, et la valeur s'approche de 
-    "hauteur" quand on s'éloigne du sommet.
-    @param forme les paramètres de forme de la matrice (lignes, colonnes)
-    @param sommet coordonnées du sommet
-    @param hauteur la hauteur au sommet
-    @param largeur la distance par rapport au sommet, à mi-hauteur
-    @param inverse doit être vrai si on veur inverser la gaussienne
-    """
-    x = np.arange(0, forme[1], 1)
-    y = np.arange(0, forme[0], 1)
-    y = y[:, np.newaxis]
-    result = np.exp(-4 * np.log(2) *
-                    ((x-sommet[0])**2 + (y-sommet[1])**2) / largeur**2)
-    if inverse:
-        maxv = hauteur*np.ones_like(result)
-        result = maxv-result
-    return result
 
 # @time_it
-
-
 def detect_part(part, image, point=None):
     """
     Détecte une image partielle dans une image complète
     @param part l'image partielle, le motif à trouver
     @param image l'image totale où l'on cherche le motif.
     @param point s'il est défini, un point près duquel il est plus probable
-    de trouver ce qu'on cherche
+      de trouver ce qu'on cherche ; ce point est en haut à gauche de l'image
+      partielle
     @return l'emplacement où se trouve le motif recherché
     """
-    import numpy as np
-
     if point:
         # on choisit un rayon assez petit par rapport à la taille de l'image
-        # afin de faire la première recherche dans une zone assez resserrée
+        # afin de faire la première recherche dans un extrait de l'image
         r = (image.shape[0]+image.shape[1]) // 10
         centre = (point[0] + part.shape[0] // 2, point[1] + part.shape[1] // 2)
         hg = (centre[0] - r, centre[1] - r) # haut gauche
@@ -124,20 +83,3 @@ def detect_part(part, image, point=None):
     matched = cv2.matchTemplate(image, part, cv2.TM_SQDIFF)
     m, M, minloc, maxloc = cv2.minMaxLoc(matched)
     return minloc
-
-
-
-def QImage2CVImage(incomingImage):
-    '''  Converts a QImage into an opencv MAT format  '''
-
-    # conversion au format QImage.Format_RGB32 (0xRRGGBBff)
-    incomingImage = incomingImage.convertToFormat(4)
-
-    width = incomingImage.width()
-    height = incomingImage.height()
-
-    ptr = incomingImage.bits()
-    ptr.setsize(incomingImage.sizeInBytes())
-    arr = np.array(ptr).reshape(height, width, 4)[:,:,:3]
-    # on ne conserve pas l'opacité, donc le format devient RGB24 (0xRRGGBB)
-    return arr

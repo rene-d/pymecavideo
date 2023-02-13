@@ -224,3 +224,19 @@ def inhibe(motcle, duree):
 # https://stackoverflow.com/questions/12929308/python-regular-expression-that-matches-floating-point-numbers
 
 pattern_float = re.compile(r'^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$')
+
+import functools
+def time_it(func):
+    """Timestamp decorator for dedicated functions"""
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        elapsed = time.time() - start
+        mlsec = repr(elapsed).split('.')[1][:3]
+        readable = time.strftime(
+            "%H:%M:%S.{}".format(mlsec), time.gmtime(elapsed))
+        print('Function "{}": {} sec'.format(func.__name__, readable))
+        return result
+    return wrapper
+
