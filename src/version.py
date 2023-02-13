@@ -43,7 +43,7 @@ class version:
 ###############################################################
 # la version courante, à incrémenter lors de changements
 ###############################################################
-Version = version(7, 3, '.0-1')
+Version = version(8, 1, '.0-1')
 ###############################################################
 # incrémentation automatique pour une distribution debian
 ###############################################################
