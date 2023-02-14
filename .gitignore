@@ -7,17 +7,16 @@ etats_pymecavideo.html
 *.pyc
 Ui_*
 *_rc.py
-*.1
-*.xhtml
+
 
 # debuild
 debian/files
 debian/*debhelper*
 debian/*substvars
+debian/python3-mecavideo/
 data/help/*w32.png
 build/
-debian/python3-mecavideo/
+pymecavideo.egg-info/
 
 # quilt
 .pc/
-pymecavideo.egg-info/

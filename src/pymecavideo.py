@@ -1690,7 +1690,7 @@ Merci de bien vouloir le renommer avant de continuer"""))
     def aide(self):
         self.dbg.p(2, "rentre dans 'aide'")
         lang = locale.getdefaultlocale()[0][0:2]
-        helpfile = "%s/help-%s.xhtml" % (self._dir("help"), lang)
+        helpfile = "%s/help-%s.html" % (self._dir("help"), lang)
         if os.path.exists(helpfile):
             command = "firefox --new-window %s" % helpfile
             status = subprocess.call(command, shell=True)

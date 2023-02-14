@@ -1,0 +1,75 @@
+'\" t
+.\"     Title: PYMECAVIDEO
+.\"    Author: [see the "AUTEUR" section]
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 4 f\('evrier 2023
+.\"    Manual: Pymecavideo
+.\"    Source: Pymecavideo
+.\"  Language: French
+.\"
+.TH "PYMECAVIDEO" "1" "4 f\('evrier 2023" "Pymecavideo" "Pymecavideo"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NOM"
+pymecavideo.fr \- programme p\('edagogique pour l\*(Aqenseignement de la m\('ecanique
+.SH "SYNOPSIS"
+.HP \w'\fBpymecavideo\fR\ 'u
+\fBpymecavideo\fR [{\fB\-d\fR\ |\ \fB\-\-debug=\fR}\ \fIverbosit\('e\ (niveau\ de\ 1\ \(`a\ 3)\fR] [\fB\fIfichier\&.{avi|mpg|\&.\&.\&.}\ |\ fichier\&.mecavideo\fR\fR]
+.SH "DESCRIPTION"
+.PP
+\fBpymecavideo\fR
+est un programme servant \(`a suivre la cin\('ematique d\*(Aqun ensemble de points dans une s\('erie d\*(Aqimages d\*(Aqune vid\('eo\&. La taille de l\*(Aqimage peut \(^etre modifi\('ee, ensuite on passe au suivi des points et on peut exporter dans un fichier les dates et les coordonn\('ees des points, afin de les analyser avec un autre logiciel\&.
+.PP
+On peut avoir plus d\*(Aqinformation sous forme de fichiers HTML dans le r\('epertoire
+/usr/share/doc/python\-mecavideo/html\&. On peut assi acc\('eder \(`a cette information depuis l\*(Aqinterface utilisateur de
+\fBpymecavideo\fR
+par le menu Aide \-> Aide\&.
+.SH "OPTIONS"
+.PP
+\fB\-d \fR\fB\fIniveau\fR\fR, \fB\-\-debug=\fR\fB\fIniveau\fR\fR
+.RS 4
+D\('eclare le niveau de verbosit\('e pour d\('eboguer l\*(Aqapplication\&. Ce niveau vaut z\('ero par d\('efaut (pas d\*(Aq\('emission de messages), et il peut valoir entre 1 et 3\&.
+.RE
+.SH "ARGUMENTS"
+.PP
+\fB\fIfichier\&.{avi|mpg|\&.\&.\&.}\fR\fR
+.RS 4
+Param\(`etre optionnel\ \&: d\('efinit une vid\('eo \(`a charger au d\('ebut\&. Ou encore \&.\&.\&.
+.RE
+.PP
+\fB\fIfichier\&.mecavideo\fR\fR
+.RS 4
+Param\(`etre optionnel\ \&: permet la r\('eouverture d\*(Aqun fichier enregistr\('e par pymecavideo\&.
+.RE
+.SH "AUTEUR"
+.PP
+Cette page de manuel a \('et\('e \('ecrite par Georges Khaznadar
+<georgesk@debian\&.org>
+pour le syst\(`eme
+Debian(TM)
+(mais peut \(^etre utilis\('ee pour d\*(Aqautres)\&. Vous avez la permission de la copier, de la distribuer et/ou de la modifier sous les termes de la licence
+GNU
+General Public License, Version 3 ou toute autre version sup\('erieure publi\('ee par la Free Software Foundation\&.
+.PP
+Dans le cas des syst\(`emes Debian, le texte complet de la licence GNU General Public License se trouve dans le fichier /usr/share/common\-licenses/GPL\-3\&.
+.SH "COPYRIGHT"
+.br
+Copyright \(co 2007-2023 Georges Khaznadar
+.br

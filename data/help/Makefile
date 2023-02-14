@@ -1,7 +1,7 @@
-SOURCES=$(shell ls *.xml)
+SOURCES=$(shell ls *.md)
 SOURCES_W32 = $(shell ls *.svg) # image sources (width 32 px)
 GENERATED_W32 = $(patsubst %.svg, %-w32.png, $(SOURCES_W32)) # generated images
-TARGETS=$(SOURCES:.xml=.xhtml) 
+TARGETS=$(SOURCES:.md=.html)
 
 all: $(TARGETS) images help-fr.html
 
@@ -17,13 +17,7 @@ images: $(GENERATED_W32)
 	  inkscape --export-png=$@ --export-width=32 $<; \
 	fi
 
-
-%.xhtml : %.xml
-	@echo "$<   => $@"
-	@xsltproc --nonet /usr/share/xml/docbook/stylesheet/nwalsh/xhtml/docbook.xsl $< > $@
-	@sed 's%</head>%<link rel="stylesheet" type="text/css" href="help.css" /></head>%' $@ > $@.tmp && mv $@.tmp $@
-
 clean:
-	rm -f *~ *.xhtml
+	rm -f *~ *.html
 	rm -f $(GENERATED_W32)
 

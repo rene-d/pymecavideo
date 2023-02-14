@@ -1,27 +1,29 @@
 DESTDIR =
-HELPFILES = $(shell ls data/help/help-*.xhtml data/help/*.png)
-MAN_LANG = fr
+HELPFILES = $(shell ls -d data/help/help-*.html data/help/*.png data/help/*.svg data/help/*.css data/help/static)
 PACKAGE = python3-mecavideo
+MANPAGES_LANG_SRC = $(shell ls pymecavideo.??.xml)
+MANPAGES_LANG  = $(patsubst %.xml, %.1, $(MANPAGES_LANG_SRC))
 
-all: manpage
-	for d in src; do DESTDIR=$(DESTDIR) $(MAKE) -C $$d $@ ; done
+all:
+	for d in src data/help; do \
+	  DESTDIR=$(DESTDIR) $(MAKE) -C $$d $@ ;\
+	done
 
-manpage: pymecavideo.1
-	for l in $(MAN_LANG); do $(MAKE) pymecavideo.$$l.1; done
-
-%.1 : %.xml
-	xsltproc --nonet /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl $<
+manpages: pymecavideo.1  $(MANPAGES_LANG)
 
 pymecavideo.1: manpage.xml
 	xsltproc --nonet /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl manpage.xml
 
+%.1 : %.xml
+	xsltproc --nonet /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl $<
+
 clean:
 	rm -rf build
-	rm -f video_*.jpg *~ src/Ui_* src/*.pyc *.txt *.1 data/lang/*.qm
-	make -C data/help clean
+	rm -f video_*.jpg src/interfaces/Ui_* src/interfaces/*_rc.py
+	rm -f data/lang/*.qm
+	find . -name __pycache__ -o -name "*~" | xargs rm -rf
 
 install-for-debian: all install-bin install-man install-help install-media fix-install
-#	cp src/testfilm.py $(DESTDIR)/usr/share/$(PACKAGE)
 
 install-bin:
 	install -m 755 pymecavideo $(DESTDIR)/usr/bin
@@ -29,15 +31,17 @@ install-bin:
 install-man:
 	mkdir -p $(DESTDIR)/usr/share/man/man1
 	gzip -c9 pymecavideo.1 > $(DESTDIR)/usr/share/man/man1/pymecavideo.1.gz
-	for l in $(MAN_LANG); do \
-	  mkdir -p $(DESTDIR)/usr/share/man/$$l/man1; \
-	  sed "s/pymecavideo.$$l/pymecavideo/" pymecavideo.$$l.1 | gzip -c9 > $(DESTDIR)/usr/share/man/$$l/man1/pymecavideo.1.gz; \
+	for f in $(MANPAGES_LANG); do \
+	  lang=$$(echo $$f | sed 's/.*\.\(.*\)\..*/\1/'); \
+	  mkdir -p $(DESTDIR)/usr/share/man/$$lang/man1; \
+	  sed "s/pymecavideo.$$lang/pymecavideo/" pymecavideo.$$lang.1 | \
+	     gzip -c9 > $(DESTDIR)/usr/share/man/$$lang/man1/pymecavideo.1.gz; \
 	done
 
 install-help:
 	mkdir -p $(DESTDIR)/usr/share/doc/$(PACKAGE)/html
 	for f in $(HELPFILES); do \
-	  cp $$f $(DESTDIR)/usr/share/doc/$(PACKAGE)/html; \
+	  cp -a $$f $(DESTDIR)/usr/share/doc/$(PACKAGE)/html; \
 	done
 
 install-media:
@@ -56,4 +60,4 @@ fix-install:
 	find $(DESTDIR)/usr/share/$(PACKAGE) -name COPYING -exec rm {} \;
 	find $(DESTDIR)/usr/share/$(PACKAGE) -type f -exec chmod 644 {} \;
 
-.PHONY: clean all install-for-debian install-bin install-man install-help install-media fix-install helpfiles
+.PHONY: clean all install-for-debian install-bin install-man install-help install-media fix-install helpfiles manpages
