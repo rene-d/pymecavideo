@@ -1,9 +1,12 @@
 SOURCES=$(shell ls *.xml)
-SOURCES_W32 = win.svg tux.svg # image sources (width 32 px)
+SOURCES_W32 = $(shell ls *.svg) # image sources (width 32 px)
 GENERATED_W32 = $(patsubst %.svg, %-w32.png, $(SOURCES_W32)) # generated images
-TARGETS=$(SOURCES:.xml=.xhtml)
+TARGETS=$(SOURCES:.xml=.xhtml) 
 
-all: $(TARGETS) images
+all: $(TARGETS) images help-fr.html
+
+%.html: %.md
+	pandoc --css help-style.css --css static/jquery-ui/themes/base/jquery-ui.css --standalone $< -o $@
 
 images: $(GENERATED_W32)
 
