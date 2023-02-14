@@ -44,6 +44,117 @@ to capture a video</translation>
   <context>
     <name>Dialog</name>
     <message>
+      <location filename="../../src/interfaces/csv_dialog.ui" line="0" />
+      <source>Options de l'export CSV</source>
+      <translation>Options for the CSV export</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/csv_dialog.ui" line="0" />
+      <source>Séparateur décimal :</source>
+      <translation>Decimal separator:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/csv_dialog.ui" line="0" />
+      <source>Point (.)</source>
+      <translation>Dot (.)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/csv_dialog.ui" line="0" />
+      <location filename="../../src/interfaces/csv_dialog.ui" line="0" />
+      <source>Virgule (,)</source>
+      <translation>Comma (,)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/csv_dialog.ui" line="0" />
+      <source>Séparateur de champ :</source>
+      <translation>Field separator:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/csv_dialog.ui" line="0" />
+      <source>Point-virgule (;)</source>
+      <translation>Semicolon (,)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/csv_dialog.ui" line="0" />
+      <source>Tabulation (t)</source>
+      <translation>Tab (\t)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/csv_dialog.ui" line="0" />
+      <source>Ajouter les grandeurs comme en-tête</source>
+      <translation>Add quantities to the header</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/jupyter_dialog.ui" line="0" />
+      <source>Choix des représentations graphiques</source>
+      <translation>Choice of graphics</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/jupyter_dialog.ui" line="0" />
+      <source>Chronogramme des positions</source>
+      <translation>Chronogram of spots</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/jupyter_dialog.ui" line="0" />
+      <source>Vecteurs vitesse</source>
+      <translation>Velocity vectors</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/jupyter_dialog.ui" line="0" />
+      <source>Vecteurs variation de vitesse</source>
+      <translation>Velocity variation vectors</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/jupyter_dialog.ui" line="0" />
+      <source>Vecteurs accélération</source>
+      <translation>Acceleration vectors</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/jupyter_dialog.ui" line="0" />
+      <source>Énergies</source>
+      <translation>Energies</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/python_dialog.ui" line="0" />
+      <source>Choix pour l'export Python</source>
+      <translation>Choices for the Python export</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/python_dialog.ui" line="0" />
+      <source>Insérer les lignes pour le calcul de vitesse</source>
+      <translation>Insert lines to compute the speed</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/python_dialog.ui" line="0" />
+      <source>Insérer les lignes pour l'affichage des vecteurs vitesse</source>
+      <translation>Insert lines to display velocity vectors</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/python_dialog.ui" line="0" />
+      <source>Insérer les lignes pour le calcul des accélérations</source>
+      <translation>Insert lines to compute acceleration</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/python_dialog.ui" line="0" />
+      <source>Insérer les lignes pour le calcul des vecteurs accélération</source>
+      <translation>Insert lines to display acceleration vectors</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/ralenti_dialog.ui" line="0" />
+      <source>Vidéo recalculée</source>
+      <translation>computed video</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/ralenti_dialog.ui" line="0" />
+      <source>Ralenti : 1/1</source>
+      <translation>Slow motion: 1/1</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/ralenti_dialog.ui" line="0" />
+      <source>Fermer</source>
+      <translation>Close</translation>
+    </message>
+    <message>
       <source>Préférences de pyMecaVideo</source>
       <translation type="vanished">Preferences for Pymecavideo</translation>
     </message>
@@ -62,94 +173,6 @@ to capture a video</translation>
     <message>
       <source>Niveau de verbosité (débogage)</source>
       <translation type="vanished">Verbosity level (debugging)</translation>
-    </message>
-    <message>
-      <source>Options de l'export CSV</source>
-      <translation type="vanished">Options for the CSV export</translation>
-    </message>
-    <message>
-      <source>Séparateur décimal :</source>
-      <translation type="vanished">Decimal separator:</translation>
-    </message>
-    <message>
-      <source>Point (.)</source>
-      <translation type="vanished">Dot (.)</translation>
-    </message>
-    <message>
-      <source>Virgule (,)</source>
-      <translation type="vanished">Comma (,)</translation>
-    </message>
-    <message>
-      <source>Séparateur de champ :</source>
-      <translation type="vanished">Field separator:</translation>
-    </message>
-    <message>
-      <source>Point-virgule (;)</source>
-      <translation type="vanished">Semicolon (,)</translation>
-    </message>
-    <message>
-      <source>Tabulation (t)</source>
-      <translation type="vanished">Tab (\t)</translation>
-    </message>
-    <message>
-      <source>Ajouter les grandeurs comme en-tête</source>
-      <translation type="vanished">Add quantities to the header</translation>
-    </message>
-    <message>
-      <source>Choix des représentations graphiques</source>
-      <translation type="vanished">Choice of graphics</translation>
-    </message>
-    <message>
-      <source>Chronogramme des positions</source>
-      <translation type="vanished">Chronogram of spots</translation>
-    </message>
-    <message>
-      <source>Vecteurs vitesse</source>
-      <translation type="vanished">Velocity vectors</translation>
-    </message>
-    <message>
-      <source>Vecteurs variation de vitesse</source>
-      <translation type="vanished">Velocity variation vectors</translation>
-    </message>
-    <message>
-      <source>Vecteurs accélération</source>
-      <translation type="vanished">Acceleration vectors</translation>
-    </message>
-    <message>
-      <source>Énergies</source>
-      <translation type="vanished">Energies</translation>
-    </message>
-    <message>
-      <source>Choix pour l'export Python</source>
-      <translation type="vanished">Choices for the Python export</translation>
-    </message>
-    <message>
-      <source>Insérer les lignes pour le calcul de vitesse</source>
-      <translation type="vanished">Insert lines to compute the speed</translation>
-    </message>
-    <message>
-      <source>Insérer les lignes pour l'affichage des vecteurs vitesse</source>
-      <translation type="vanished">Insert lines to display velocity vectors</translation>
-    </message>
-    <message>
-      <source>Insérer les lignes pour le calcul des accélérations</source>
-      <translation type="vanished">Insert lines to compute acceleration</translation>
-    </message>
-    <message>
-      <source>Insérer les lignes pour le calcul des vecteurs accélération</source>
-      <translation type="vanished">Insert lines to display acceleration vectors</translation>
-    </message>
-    <message>
-      <source>Vidéo recalculée</source>
-      <translation type="vanished">computed video</translation>
-    </message>
-    <message>
-      <source>Ralenti : 1/1</source>
-      <translation type="vanished">Slow motion: 1/1</translation>
-    </message>
-    <message>
-      <source>Fermer</source>
-      <translation type="vanished">Close</translation>
     </message>
   </context>
   <context>
@@ -822,6 +845,443 @@ successfully saved.</translation>
   <context>
     <name>pymecavideo</name>
     <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>PyMecavideo : étude d'enregistrements vidéo</source>
+      <translation>PyMecavideo: studying video records</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Pointage</source>
+      <translation>SpottingSpotting</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Zoom</source>
+      <translation>Zoom</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Définir Échelle</source>
+      <translation>Define the scale</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>indéf.</source>
+      <translation>undef.</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>px/m</source>
+      <translation>px/m</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Points à&lt;br&gt;étudier :</source>
+      <translation>Points to 
+study:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Suivi automatique</source>
+      <translation>Auto Spot</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Démarrer</source>
+      <translation>Start</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>STOP</source>
+      <translation>STOP</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Tout réinitialiser</source>
+      <translation>Reinitialize</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Changer d'origine</source>
+      <translation>Change the origin</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Abscisses
+vers la gauche</source>
+      <translation>Abcissa
+to the left</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Ordonnées
+vers le bas</source>
+      <translation>Ordinate
+to the bottom</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>IPS :</source>
+      <translation>FPS:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Le nombre d'images par seconde est détecté automatiquement. Enter la valeur manuellement si la détection échoue.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The framerate has been detected automatically. Enter the value manually if the autodetection failed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Incrémenter le compteur d'image à chaque pointage</source>
+      <translation>Increment the image counter at every spotting</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Incr :</source>
+      <translation>Incr:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Tourner l'image de 90° vers la gauche</source>
+      <translation>Turn the image 90 degrees left</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Tourner l'image de 90° vers la droite</source>
+      <translation>Turn the image 90 degrees right</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Image n°</source>
+      <translation>Image #</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Efface le point précédent</source>
+      <translation>Delete the previous point</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Rétablit le point suivant</source>
+      <translation>Restore the next point</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Trajectoires</source>
+      <translation>Trajectories</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Trajectoire</source>
+      <translation>Trajectory</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Chronophotographie</source>
+      <translation>Chronophotography</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Chronogramme</source>
+      <translation>Chronogram</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>vecteur vitesse ...</source>
+      <translation>Velocity vector ...</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Montrer les
+vecteurs vitesse</source>
+      <translation>Show
+velocity vectors</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Près de la souris</source>
+      <translation>Near the
+mouse</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Partout</source>
+      <translation>Everywhere</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Échelle de vitesses</source>
+      <translation>Scale for speed</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>px pour 1 m/s</source>
+      <translation>px for 1 m/s</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Chronophotographie ...</source>
+      <translation>Chronophotography ...</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Enregistrer comme image</source>
+      <translation>Save as image</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Enregistrer</source>
+      <translation>Save</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Changement de référentiel :</source>
+      <translation>Change the referential:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Voir la vidéo</source>
+      <translation>tch the video</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Coordonnées</source>
+      <translation>Coordinates</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Tableau des dates et des coordonnées</source>
+      <translation>Table of dates and coordinates</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Copier les mesures dans le presse papier</source>
+      <translation>Copy data to the clipboard</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Changer d'échelle</source>
+      <translation>Change the scale</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Ajouter les énergies :</source>
+      <translation>Add energies:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Cinétique (échelle obligatoire)</source>
+      <translation>Cinetic (scale is mandatory)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Potentielle de pesanteur</source>
+      <translation>Potential of weight</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Mécanique</source>
+      <translation>Mechanic</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Intensité de la pesanteur :</source>
+      <translation>gravity:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>g (N/kg)</source>
+      <translation>g (N/kg)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>9.8</source>
+      <translation>9.8</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Grapheur</source>
+      <translation>Plotter</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Données et grandeurs à représenter</source>
+      <translation>Data and quantities to plot</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Masse (kg)</source>
+      <translation>Mass (kg)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>1.0</source>
+      <translation>1.0</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Intensité de la pesanteur g (N/kg)</source>
+      <translation>Gravity g (N/kg)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Tracer :</source>
+      <translation>Plot:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>En fonction de :</source>
+      <translation>As a function of:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Avec le style :</source>
+      <translation>Styled like:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Points seuls</source>
+      <translation>Plain Dots</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Points et lignes</source>
+      <translation>Dots and Lines</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Lignes seules</source>
+      <translation>Lines</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Fichier</source>
+      <translation>&amp;File</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>E&amp;xporter vers ...</source>
+      <translation>E&amp;xport to ...</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Aide</source>
+      <translation>&amp;Help</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Edition</source>
+      <translation>&amp;Edit</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Ouvrir une vidéo</source>
+      <translation>&amp;Open a video</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>avanceimage</source>
+      <translation>imgforward</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>reculeimage</source>
+      <translation>imgbackward</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Quitter</source>
+      <translation>&amp;Quit</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Enregistrer le projet mecavideo</source>
+      <translation>&amp;Save the project (mecavideo)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enregistre les données du projet pour pouvoir être réouvert dans PyMecaVideo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+      <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the project's data so thei can be reopened later with PyMecaVideo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>À &amp;propos</source>
+      <translation>&amp;About</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Exemples ...</source>
+      <translation>&amp;Examples ...</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Ouvrir un projet &amp;mecavideo</source>
+      <translation>Open a &amp;mecavideo project</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Préférences</source>
+      <translation>&amp;Preferences</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Copier dans le presse-papier</source>
+      <translation>&amp;Copy to the clipboard</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Défaire</source>
+      <translation>&amp;Undo</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Refaire</source>
+      <translation>&amp;Redo</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Refaire</source>
+      <translation>Redo</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>LibreOffice &amp;Calc</source>
+      <translation>LibreOffice &amp;Calc</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Qti&amp;plot</source>
+      <translation>Qti&amp;plot</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Sci&amp;davis</source>
+      <translation>Sci&amp;davis</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Python (source)</source>
+      <translation>&amp;Python (source)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>&amp;Fichier numpy</source>
+      <translation>&amp;Numpy file</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Fichier Numpy</source>
+      <translation>Numpy file</translation>
+    </message>
+    <message>
       <source>PyMecaVideo, analyse mécanique des vidéos</source>
       <translation type="vanished">PyMecaVideo; analysing mechanics in videos</translation>
     </message>
@@ -842,28 +1302,12 @@ successfully saved.</translation>
       <translation type="vanished">Define the scale</translation>
     </message>
     <message>
-      <source>Image n°</source>
-      <translation type="vanished">Image #</translation>
-    </message>
-    <message>
       <source>Nombre de points à étudier</source>
       <translation type="vanished">Number of points to study</translation>
     </message>
     <message>
-      <source>indéf.</source>
-      <translation type="vanished">undef.</translation>
-    </message>
-    <message>
-      <source>px/m</source>
-      <translation type="vanished">px/m</translation>
-    </message>
-    <message>
       <source>Démarrer l'acquisition</source>
       <translation type="vanished">Start acquisition</translation>
-    </message>
-    <message>
-      <source>Tout réinitialiser</source>
-      <translation type="vanished">Reinitialize</translation>
     </message>
     <message>
       <source>efface le point précédent</source>
@@ -906,18 +1350,6 @@ successfully saved.</translation>
       <translation type="vanished">Scale for velocities:</translation>
     </message>
     <message>
-      <source>px pour 1 m/s</source>
-      <translation type="vanished">px for 1 m/s</translation>
-    </message>
-    <message>
-      <source>Coordonnées</source>
-      <translation type="vanished">Coordinates</translation>
-    </message>
-    <message>
-      <source>Copier les mesures dans le presse papier</source>
-      <translation type="vanished">Copy data to the clipboard</translation>
-    </message>
-    <message>
       <source>Fichier</source>
       <translation type="vanished">File</translation>
     </message>
@@ -932,14 +1364,6 @@ successfully saved.</translation>
     <message>
       <source>Ouvrir une vidéo</source>
       <translation type="vanished">Open a video</translation>
-    </message>
-    <message>
-      <source>avanceimage</source>
-      <translation type="vanished">imgforward</translation>
-    </message>
-    <message>
-      <source>reculeimage</source>
-      <translation type="vanished">imgbackward</translation>
     </message>
     <message>
       <source>Quitter</source>
@@ -974,16 +1398,8 @@ successfully saved.</translation>
       <translation type="vanished">Acquire vIdeo</translation>
     </message>
     <message>
-      <source>Zoom</source>
-      <translation type="vanished">Zoom</translation>
-    </message>
-    <message>
       <source>Acquisition</source>
       <translation type="vanished">Acquisition</translation>
-    </message>
-    <message>
-      <source>Démarrer</source>
-      <translation type="vanished">Start</translation>
     </message>
     <message>
       <source>efface la série précédente</source>
@@ -1002,18 +1418,10 @@ automatique</source>
 tracking</translation>
     </message>
     <message>
-      <source>Changer d'origine</source>
-      <translation type="vanished">Change the origin</translation>
-    </message>
-    <message>
       <source>Abscisses 
 vers la gauche</source>
       <translation type="vanished">Abscissa to the left
 </translation>
-    </message>
-    <message>
-      <source>Trajectoires</source>
-      <translation type="vanished">Trajectories</translation>
     </message>
     <message>
       <source>Montrer 
@@ -1034,16 +1442,8 @@ mouse</translation>
       <translation type="vanished">everywhere</translation>
     </message>
     <message>
-      <source>Échelle de vitesses</source>
-      <translation type="vanished">Scale for speed</translation>
-    </message>
-    <message>
       <source>Voir un graphique</source>
       <translation type="vanished">See a plot</translation>
-    </message>
-    <message>
-      <source>Enregistrer comme image</source>
-      <translation type="vanished">Save as image</translation>
     </message>
     <message>
       <source>fichiers images(*.png *.jpg)</source>
@@ -1164,182 +1564,6 @@ PLease rename it before going on</translation>
       <translation type="vanished">MainWindow</translation>
     </message>
     <message>
-      <source>Pointage</source>
-      <translation type="vanished">SpottingSpotting</translation>
-    </message>
-    <message>
-      <source>Suivi automatique</source>
-      <translation type="vanished">Auto Spot</translation>
-    </message>
-    <message>
-      <source>STOP</source>
-      <translation type="vanished">STOP</translation>
-    </message>
-    <message>
-      <source>Abscisses
-vers la gauche</source>
-      <translation type="vanished">Abcissa
-to the left</translation>
-    </message>
-    <message>
-      <source>IPS :</source>
-      <translation type="vanished">FPS:</translation>
-    </message>
-    <message>
-      <source>Incr :</source>
-      <translation type="vanished">Incr:</translation>
-    </message>
-    <message>
-      <source>Trajectoire</source>
-      <translation type="vanished">Trajectory</translation>
-    </message>
-    <message>
-      <source>Chronophotographie</source>
-      <translation type="vanished">Chronophotography</translation>
-    </message>
-    <message>
-      <source>Chronogramme</source>
-      <translation type="vanished">Chronogram</translation>
-    </message>
-    <message>
-      <source>vecteur vitesse ...</source>
-      <translation type="vanished">Velocity vector ...</translation>
-    </message>
-    <message>
-      <source>Montrer les
-vecteurs vitesse</source>
-      <translation type="vanished">Show
-velocity vectors</translation>
-    </message>
-    <message>
-      <source>Partout</source>
-      <translation type="vanished">Everywhere</translation>
-    </message>
-    <message>
-      <source>Chronophotographie ...</source>
-      <translation type="vanished">Chronophotography ...</translation>
-    </message>
-    <message>
-      <source>Enregistrer</source>
-      <translation type="vanished">Save</translation>
-    </message>
-    <message>
-      <source>Potentielle de pesanteur</source>
-      <translation type="vanished">Potential of weight</translation>
-    </message>
-    <message>
-      <source>g (N/kg)</source>
-      <translation type="vanished">g (N/kg)</translation>
-    </message>
-    <message>
-      <source>9.8</source>
-      <translation type="vanished">9.8</translation>
-    </message>
-    <message>
-      <source>Grapheur</source>
-      <translation type="vanished">Plotter</translation>
-    </message>
-    <message>
-      <source>Masse (kg)</source>
-      <translation type="vanished">Mass (kg)</translation>
-    </message>
-    <message>
-      <source>1.0</source>
-      <translation type="vanished">1.0</translation>
-    </message>
-    <message>
-      <source>Tracer :</source>
-      <translation type="vanished">Plot:</translation>
-    </message>
-    <message>
-      <source>En fonction de :</source>
-      <translation type="vanished">As a function of:</translation>
-    </message>
-    <message>
-      <source>Avec le style :</source>
-      <translation type="vanished">Styled like:</translation>
-    </message>
-    <message>
-      <source>Points seuls</source>
-      <translation type="vanished">Plain Dots</translation>
-    </message>
-    <message>
-      <source>Points et lignes</source>
-      <translation type="vanished">Dots and Lines</translation>
-    </message>
-    <message>
-      <source>Lignes seules</source>
-      <translation type="vanished">Lines</translation>
-    </message>
-    <message>
-      <source>&amp;Fichier</source>
-      <translation type="vanished">&amp;File</translation>
-    </message>
-    <message>
-      <source>E&amp;xporter vers ...</source>
-      <translation type="vanished">E&amp;xport to ...</translation>
-    </message>
-    <message>
-      <source>&amp;Aide</source>
-      <translation type="vanished">&amp;Help</translation>
-    </message>
-    <message>
-      <source>&amp;Edition</source>
-      <translation type="vanished">&amp;Edit</translation>
-    </message>
-    <message>
-      <source>&amp;Quitter</source>
-      <translation type="vanished">&amp;Quit</translation>
-    </message>
-    <message>
-      <source>&amp;Enregistrer le projet mecavideo</source>
-      <translation type="vanished">&amp;Save the project (mecavideo)</translation>
-    </message>
-    <message>
-      <source>&amp;Exemples ...</source>
-      <translation type="vanished">&amp;Examples ...</translation>
-    </message>
-    <message>
-      <source>Ouvrir un projet &amp;mecavideo</source>
-      <translation type="vanished">Open a &amp;mecavideo project</translation>
-    </message>
-    <message>
-      <source>&amp;Copier dans le presse-papier</source>
-      <translation type="vanished">&amp;Copy to the clipboard</translation>
-    </message>
-    <message>
-      <source>&amp;Refaire</source>
-      <translation type="vanished">&amp;Redo</translation>
-    </message>
-    <message>
-      <source>Refaire</source>
-      <translation type="vanished">Redo</translation>
-    </message>
-    <message>
-      <source>LibreOffice &amp;Calc</source>
-      <translation type="vanished">LibreOffice &amp;Calc</translation>
-    </message>
-    <message>
-      <source>Qti&amp;plot</source>
-      <translation type="vanished">Qti&amp;plot</translation>
-    </message>
-    <message>
-      <source>Sci&amp;davis</source>
-      <translation type="vanished">Sci&amp;davis</translation>
-    </message>
-    <message>
-      <source>&amp;Python (source)</source>
-      <translation type="vanished">&amp;Python (source)</translation>
-    </message>
-    <message>
-      <source>&amp;Fichier numpy</source>
-      <translation type="vanished">&amp;Numpy file</translation>
-    </message>
-    <message>
-      <source>Fichier Numpy</source>
-      <translation type="vanished">Numpy file</translation>
-    </message>
-    <message>
       <source>Configuration trop ancienne</source>
       <translation type="vanished">Obsolete configuration file</translation>
     </message>
@@ -1410,114 +1634,6 @@ You can stop the capture at any moment by clicking the STOP button</translation>
     <message>
       <source>Il manque les données, ou l'échelle</source>
       <translation type="vanished">Some data, or the scale, are missing</translation>
-    </message>
-    <message>
-      <source>PyMecavideo : étude d'enregistrements vidéo</source>
-      <translation type="vanished">PyMecavideo: studying video records</translation>
-    </message>
-    <message>
-      <source>Définir Échelle</source>
-      <translation type="vanished">Define the scale</translation>
-    </message>
-    <message>
-      <source>Points à&lt;br&gt;étudier :</source>
-      <translation type="vanished">Points to 
-study:</translation>
-    </message>
-    <message>
-      <source>Ordonnées
-vers le bas</source>
-      <translation type="vanished">Ordinate
-to the bottom</translation>
-    </message>
-    <message>
-      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Le nombre d'images par seconde est détecté automatiquement. Enter la valeur manuellement si la détection échoue.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The framerate has been detected automatically. Enter the value manually if the autodetection failed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-      <source>Incrémenter le compteur d'image à chaque pointage</source>
-      <translation type="vanished">Increment the image counter at every spotting</translation>
-    </message>
-    <message>
-      <source>Tourner l'image de 90° vers la gauche</source>
-      <translation type="vanished">Turn the image 90 degrees left</translation>
-    </message>
-    <message>
-      <source>Tourner l'image de 90° vers la droite</source>
-      <translation type="vanished">Turn the image 90 degrees right</translation>
-    </message>
-    <message>
-      <source>Efface le point précédent</source>
-      <translation type="vanished">Delete the previous point</translation>
-    </message>
-    <message>
-      <source>Rétablit le point suivant</source>
-      <translation type="vanished">Restore the next point</translation>
-    </message>
-    <message>
-      <source>Près de la souris</source>
-      <translation type="vanished">Near the
-mouse</translation>
-    </message>
-    <message>
-      <source>Changement de référentiel :</source>
-      <translation type="vanished">Change the referential:</translation>
-    </message>
-    <message>
-      <source>Voir la vidéo</source>
-      <translation type="vanished">tch the video</translation>
-    </message>
-    <message>
-      <source>Tableau des dates et des coordonnées</source>
-      <translation type="vanished">Table of dates and coordinates</translation>
-    </message>
-    <message>
-      <source>Changer d'échelle</source>
-      <translation type="vanished">Change the scale</translation>
-    </message>
-    <message>
-      <source>Ajouter les énergies :</source>
-      <translation type="vanished">Add energies:</translation>
-    </message>
-    <message>
-      <source>Cinétique (échelle obligatoire)</source>
-      <translation type="vanished">Cinetic (scale is mandatory)</translation>
-    </message>
-    <message>
-      <source>Mécanique</source>
-      <translation type="vanished">Mechanic</translation>
-    </message>
-    <message>
-      <source>Intensité de la pesanteur :</source>
-      <translation type="vanished">gravity:</translation>
-    </message>
-    <message>
-      <source>Données et grandeurs à représenter</source>
-      <translation type="vanished">Data and quantities to plot</translation>
-    </message>
-    <message>
-      <source>Intensité de la pesanteur g (N/kg)</source>
-      <translation type="vanished">Gravity g (N/kg)</translation>
-    </message>
-    <message>
-      <source>&amp;Ouvrir une vidéo</source>
-      <translation type="vanished">&amp;Open a video</translation>
-    </message>
-    <message>
-      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enregistre les données du projet pour pouvoir être réouvert dans PyMecaVideo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-      <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the project's data so thei can be reopened later with PyMecaVideo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-      <source>À &amp;propos</source>
-      <translation type="vanished">&amp;About</translation>
-    </message>
-    <message>
-      <source>&amp;Préférences</source>
-      <translation type="vanished">&amp;Preferences</translation>
-    </message>
-    <message>
-      <source>&amp;Défaire</source>
-      <translation type="vanished">&amp;Undo</translation>
     </message>
   </context>
   <context>
