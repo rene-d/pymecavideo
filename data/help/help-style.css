@@ -217,6 +217,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 img.leftalign{
     float: left;
+    margin-right: 10px;
 }
 
 span.term{
@@ -286,4 +287,12 @@ span.symbol {
 code {
     color: maroon;
     background: lightyellow;
+}
+
+li.tocli {
+    padding-bottom: 10px;
+}
+
+div.tocdiv {
+    padding: 1em 0.7em !important;
 }

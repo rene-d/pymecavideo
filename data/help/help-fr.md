@@ -19,9 +19,10 @@ mesure physique.
 
 <div id = "toc" class="accordian"></div>
 
+# Introduction{.toc}
 ## PyMecaVideo, pourquoi faire ?{.toc}
 
-![](snap1.png){.leftalign}
+![](snap1.png){.leftalign width="350"}
 
 Il est possible de faire des mesures physiques à l'aide d'images, dans
 certaines conditions. [ PyMecaVideo]{.symbol} facilite les mesures
@@ -40,7 +41,7 @@ exploitables à l'aide de logiciels d'analyse standard.
 ## Téléchargement et installation{.toc}
 
 
-[![](snap2-mini.png){.leftalign}](http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo)
+[![](snap2.png){.leftalign width=350}](http://outilsphysiques.tuxfamily.org/pmwiki.php/Oppl/Pymecavideo)
 Les sources de [ PyMecaVideo]{.symbol} sont disponibles parmi
 [les « Outils Physiques Pour Linux » hébergés sur le site
 *tuxfamily.org*](http://outilsphysiques.tuxfamily.org/wiki/index.php?title=Accueil). 
@@ -58,7 +59,7 @@ préférée.  Actuellement on trouve des paquets pour Debian et Ubuntu, disponib
 officiels de ces distributions.
 
 ## Lancement de PyMecaVideo{.toc}
-![](snap3-mini.png){.leftalign}
+![](snap3.png){.leftalign width="350"}
 
 Quand l'installation est faite à partir d'un paquet approprié,
 il est possible de lancer [PyMecaVideo]{.symbol} de diverses façons : 
@@ -102,19 +103,19 @@ La préparation de la vidéo commence dès la prise de vues. Les
 points-clés sont les suivants :
 
 -   Choisir un bon éclairage. Les éclairages fluorescents posent parfois
-    problème, car leur intensité varie très rapidement, et cela peut
-    donner quelquefois naissance à des phénomènes stroboscopiques.
+    problème, car leur intensité varie à des fréquences proches de celle
+	de la vidéo, et cela peut engendrer quelquefois des phénomènes stroboscopiques.
     D'autre part, pour les caméras vidéo disposant de bons
     automatismes, un éclairage suffisant facilite le choix de temps de
-    pose courts, qui sont favorables à l'acquisition de données.
+    pose courts, plus favorables à l'acquisition de données.
 
--   La scène doit posséder un bon contraste. En particulier les points à
-    suivre doivent se distinguer aisément de leur environnement, par la clarté, 
-	sinon par la couleur.
+-   La scène doit posséder un bon contraste. En particulier les objets
+    à suivre doivent se distinguer aisément de leur environnement, par
+    la clarté, sinon par la couleur.
 
--   Il faut penser à laisser dans le cadre un objet de taille connue, dans le même
-    plan focal que la scène à filmer. Il est bon de documenter la
-    dimension de l'objet-étalon.
+-   Il faut penser à laisser dans le cadre un objet de taille connue,
+    dans le même plan focal que la scène à filmer. Il est bon de
+    documenter la dimension de l'objet-étalon.
 
 -   L'axe optique de la caméra doit être perpendiculaire au plan dans
     lequel se déplace l'objet étudié. Il doit pointer environ vers le
@@ -144,7 +145,8 @@ graphique quand [PyMecaVideo]{.symbol} est lancé, par le menu
 Fichier ↦ Ouvrir une vidéo, ou encore si on veut une des vidéos
 d'exemple, par le menu Aide ↦ Exemples \...
 
-### Régler l'échelle{.toc}
+# L'onglet Pointage{.toc}
+## Régler l'échelle{.toc}
 
 ![](snap4.png){.leftalign}
 
@@ -164,10 +166,10 @@ de l'objet-étalon.
 
 ![](snap7.png){.leftalign}
 
-Quand l'échelle est définie, le bouton précédent devient « Changer d'échelle » :
+Quand l'échelle est définie, le bouton précédent devient « Refaire l'échelle » :
 on peut donc recommencer à saisir l'échelle à nouveau.
 
-### Choix du nombre d'objets à étudier{.toc}
+## Choix du nombre d'objets à étudier{.toc}
 
 Par défaut, on étudie le mouvement d'un seul objet, le référentiel
 étant celui de la caméra.
@@ -176,30 +178,29 @@ Par défaut, on étudie le mouvement d'un seul objet, le référentiel
 
 Il est possible de faire porter l'étude sur deux objets ou plus. Un des
 objets de la série pourra plus tard être utilisé comme nouvelle origine
-du référentiel à volonté.
+du référentiel pour recalculer une vidéo.
 
 Pour étudier plus d'un objet, il faut modifier la valeur affichée dans
-la boîte intitulée « Nombre d'objets à étudier »
+la zone intitulée « Objets à étudier : »
 
-### Pointer les positions{.toc}
+## Pointer les positions{.toc}
 
 ![](snap6.png){.leftalign}
 
 On peut décider de ne pas commencer le pointage dès la première image.
 Dans ce cas, il faut choisir manuellement l'image initiale à l'aide du
 curseur en haut à gauche, ou du champ de sélection de numéro d'image.
-Le pointage commence quand on clique sur le bouton « Démarrer
-l'acquisition ».
+Le pointage commence quand on clique sur le bouton « Démarrer ».
 
 ![](snap9.png){.leftalign}
 
-Quand l'acquisition est en cours, une petite phrase au-dessus de la
-vidéo rappelle le numéro du point qu'on est censé cliquer en suivant.
-Les traces des points cliqués dans les images précédentes de la vidéo
-apparaissent en couleurs. Les couleurs doivent se suivre sans
+Quand l'acquisition est en cours, une petite phrase dans la ligne de
+statut, en bas de la fenêtre, rappelle le numéro du point qu'on est
+censé cliquer en suivant.  Les traces des points précédemment cliqués
+apparaissent en couleurs. Les points de couleur doivent se suivre sans
 discontinuité, sinon c'est la marque d'une faute de pointage.
 
-#### Défaire et refaire{.toc}
+### Défaire et refaire{.toc}
 
 ![](snap10.png){.leftalign}
 
@@ -216,35 +217,15 @@ Il est possible d'arrêter le pointage à tout moment, éventuellement
 avant la fin de la séquence vidéo.
 
 
-### Enregistrer le travail{.toc}
+## Enregistrer le travail{.toc}
 
 Après que des points aient été repérés, il devient possible
-d'enregistrer le travail grâce au menu Fichier ↦ Enregistrer les
-données. On choisit alors un fichier de type `.csv`{.computeroutput},
-`.dat`{.computeroutput},`.txt`{.computeroutput} ou
-`.asc`{.computeroutput}<sup id="a2">[2](#f2)</sup>
+d'enregistrer le travail grâce au menu Fichier ↦ Enregistrer le projet
+mecavideo. On choisit alors un fichier de type
+`.mecavideo`{.computeroutput}<sup id="a2">[2](#f2)</sup>
 
-*NB :* en même temps que le fichier que vous choisissez est
-enregistré, un autre le sera automatiquement. Si vous choisissez par
-exemple d'enregistrer un fichier de nom `data.csv`{.computeroutput}, un
-autre fichier de nom `data.csv.mecavideo`{.computeroutput} sera
-enregistré. Voici les caractéristiques de ces deux fichiers :
 
--   Le fichier choisi explicitement (de nom `data.csv`{.computeroutput}
-    par exemple) contient les données en unités seconde pour le temps et
-    mètre pour les distances. C'est ce fichier qui est pertinent pour
-    un traitement des données physiques à l'aide de logiciels
-    d'analyse.
-
--   Le fichier créé en plus (de nom
-    `data.csv.mecavideo`{.computeroutput} pour l'exemple) contient des
-    données différentes : ce sont uniquement des nombres entiers pour
-    les positions, c'est à dire qu'on enregistre les lieux des
-    pointages en unité pixel. De plus, les données permettant de
-    reconstituer l'échelle font partie de ce fichier. Ce dernier
-    fichier est plutôt destiné à l'usage interne de l'application.
-
-### Le volet des trajectoires{.toc}
+# Le volet des trajectoires{.toc}
 
 ![](snap12.png){.leftalign}
 
@@ -253,7 +234,7 @@ des trajectoires. Celui-ci permet d'attirer l'attention plus
 précisément sur le mouvement et la vitesse des objets étudiés, en
 faisant apparaître ceux-ci sans la vidéo où on les avait capturés.
 
-#### Représentation absolue ou relative{.toc}
+## Représentation absolue ou relative{.toc}
 
 
 ![](snap11.png){.leftalign}
@@ -262,19 +243,120 @@ Sitôt que plus d'un point fait partie de l'étude, il est possible de
 faire afficher les positions et les vitesses de plusieurs façons : soit
 les positions et les vitesses « absolues », c'est-à-dire relatives au
 référentiel de la caméra, soit les positions et les vitesses
-« relatives » par rapport à un des points étudiés, choisi comme origine
+« relatives » par rapport à un des objets étudiés, choisi comme origine
 d'un nouveau référentiel.
 
 
-#### L'échelle pour les vecteurs vitesse{.toc}
+## L'échelle pour les vecteurs vitesse{.toc}
 
 ![](snap13.png){.leftalign}
 
-L'échelle des vecteurs vitesse se règle à l'aide d'une zone de saisie
-intitulée « Échelle de vitesses ». Modifiez sa valeur et appuyez sur la
-touche Entrée pour obtenir une autre taille des vecteurs vitesse.
+Si on active la case à cocher « Montrer les vecteurs vitesse », il
+convient de choisir une échelle appropriée.  L'échelle des vecteurs
+vitesse se règle à l'aide d'une zone de saisie intitulée « Échelle de
+vitesses ».
 
-### Les préférences de PyMecaVideo{.toc}
+Modifiez sa valeur et appuyez sur la touche Entrée pour obtenir une
+autre taille des vecteurs vitesse.
+
+Les boutons radio « Près de la souris » et « Partout » permettent d'obtenir
+le tracé des vecteurs vitesse au survol des points par la souris, ou alors
+à *chaque emplacement* où un vecteur vitesse peut être calculé.
+
+## Créer une vidéo de synthèse{.toc}
+
+![](snap15.png){.leftalign}
+
+Dans le volet des trajectoire, sitôt que le référentiel n'est plus la
+caméra, le bouton « Voir la vidéo » est activé. Cela permet de voir le
+film tel qu'il aurait été si la caméra avait été solidaire de l'objet
+sélectionné comme origine du référentiel.
+
+Quand le visionneur de vidéo intégré se lance, il possède un curseur qui
+permet de ralentir plus ou moins le déroulement de la vidéo de synthèse.
+
+### Exemple de vidéo de synthèse{.toc}
+
+
+Les vidéos de synthèse sont intéressantes quand on choisit comme origine
+de référentiel un point qui se déplace en ligne droite à vitesse
+constante.
+
+Par exemple, on peut étudier simultanément deux points, dans une vidéo
+d'un cycliste laissant tomber un objet : un point du cadre du vélo
+(P~1~) et un point de l'objet qui tombe (P~2~). Dans le référentiel
+terrestre, celui de la caméra si on est en plan fixe, la trajectoire de
+P~2~ est une parabole. Mais dans le référentiel galiléen d'origine
+P~1~, le point P~2~ est en chute libre sans vitesse initiale.
+
+Dans ces circonstances, la vidéo de synthèse obtenue après avoir choisi
+de représenter le volet des trajectoires à partir de l'origine P~1~
+montre bien une chute libre.
+
+*NB.* : quand on choisit de réaliser une vidéo de synthèse, il faut
+garder présent à l'esprit que les images seront en fait découpées à
+l'intérieur des images déjà existantes. Il faut donc éviter de traiter
+des images où le point utilisé comme origine s'approche trop du bord
+de l'image, parce que ça diminue la taille du gabarit de découpe qui
+produit la vidéo de synthèse.
+
+# Le volet des coordonnées{.toc}
+
+![](snap16.png){.leftalign}
+
+Le troisième volet de PyMecaVideo est le volet des
+coordonnées. Il présente un tableau dont la première colonne représente
+des dates en seconde, et les suivantes des coordonnées en mètre des
+points étudiés. Ce tableau est juste là pour démystifier le
+fonctionnement de [PyMecaVideo]{.symbol}, montrer qu'il ne s'agit que de
+traitement numérique.
+
+Il est possible d'ajouter des colonnes calculées dans le tableau, si
+on coche les cases des énergie **Cinétique**, **Potentielle**, **Mécanique** ;
+enfin, la dernière colonne de ce tableau contient un bouton ornée de l'icône
+de [PyMecaVideo]{.symbol}, qui permet de pointer à nouveau (à la main) les
+objets correspondant à une ligne défectueuse. On peut aussi pointer les objets
+des lignes vides immédiatement voisines d'un pointage déjà fait.
+
+## Exporter des données vers d'autres applications{.toc}
+
+![](snap17.png){.leftalign}
+
+Le bouton « Copier les données vers le presse-papiers » permet
+d'exporter la totalité du tableau vers le presse-papiers. Il est aussi
+possible de sélectionner (de mettre en surbrillance) une partie du tableau
+pour que cette partie soit automatiquement copiée vers le
+presse-papiers. La partie sélectionnée peut aussi être tirée-glissée
+vers d'autres applications. Si ces applications sont capables de
+récupérer les données et d'en faire usage, elles accepteront
+l'exportation. C'est le cas des traitements de texte et des tableurs
+les plus courants.
+
+## Les logiciels de traitement des données{.toc}
+
+![](snap18.png){.leftalign}
+
+Le volet « coordonnées » de Pymecavideo permet des exportation
+automatiques vers divers logiciels de traitement de données, 
+grâce au menu déroulant « Exporter vers... ». Les exportations automatiques
+permettent l'ouverture des logiciels choisis, avec les données prêtes à
+l'utilisation. Le tableau suivant signale les logiciels supportés,
+ainsi que leur disponibilité sous GNU/Linux et sous
+[Windows]{.trademark}™.
+
+
+**Tableau 1. Logiciels libres de traitement des données**
+
+|  Logiciel |   Description |
+|-----------|---------------|
+| ![](tux-w32.png){width="32"} ![](win-w32.png){width="32"} LibreOffice **[Calc](http://fr.openoffice.org/docs/Calc.html)** | Un tableur populaire, plutôt destiné à la bureautique |
+|  ![](tux-w32.png){width="32"} ![](win-w32.png){width="32"} Python (source) | L'export se fait sous forme de fichier source Python ; il suffit de le reprendre avec un éditeur approprié |
+|  ![](tux-w32.png){width="32"} ![](win-w32.png){width="32"} Python (numpy) | L'export se fait sous forme de fichier de donnée optimisé pour l'usage avec Python/numpy ; une suggestion est faite pour utiliser ce format |
+|  ![](tux-w32.png){width="32"} ![](win-w32.png){width="32"} Jupyter notebook | Le format notebook (bloc-note) de Jupyter est exploitable par un serveur Jupyter. Ce serveur peut être installé sur l'ordinateur local, ou accessible à travers Internet ; les blocs-notes de Jupyter sont riches de possibilités éducatives |
+|  ![](tux-w32.png){width="32"} ![](win-w32.png){width="32"} fichier CSV | Le format CSV (champs séparés par des « virgules » est un format texte universel, reconnu par tous les logiciels de traitement de données. Ici, le séparateur de champs est la tabulation, le séparateur décimal est une virgule |
+|  ![](tux-w32.png){width="32"} ![](win-w32.png){width="32"} Pandas Dataframe | Pandas est un module pour Python3, qui est dédié au traitement de grandes séries de données, ce qui est à peu près le cas de `numpy` aussi. Le fichier exporté est à un format spécial pour `pandas` et une suggestion est faite pour l'utiliser |
+
+# Les préférences de PyMecaVideo{.toc}
 
 À chaque fermeture de l'application, [ PyMecaVideo]{.symbol} enregistre un fichier de préférences,
 nommé `pymecavideo.conf`.
@@ -301,7 +383,7 @@ deltat = 0.01
 nb_obj = 1
 ```
 
-L'emplacement de ce fichier sous Linux est sous le répertoire caché 
+L'emplacement de ce fichier sous GNU/Linux est sous le répertoire caché 
 `.local/share/pymecavideo` du dossier personnel ; sous Windows il est
 placé dans le dossier `C:\Users\<USER>\AppData\Local\pymecavideo`.
 
@@ -309,119 +391,26 @@ Ces préférences comprennent le nom du dernier fichier vidéo ouvert, la
 taille de la fenêtre de l'application, la place de l'étalon utilisé pour l'échelle
 si celui-ci a été défini, la position et les sens du repère, etc.
 
-### Créer une vidéo de synthèse{.toc}
-
-![](snap15.png){.leftalign}
-
-Dans le volet des trajectoire, on trouve deux boutons commandant la
-fabrication d'une vidéo « de synthèse », qui permet de revoir le film
-tel qu'il aurait été si la caméra avait été solidaire du point
-sélectionné comme origine du référentiel.
-
-Le bouton du dessous (Vidéo normale .. par défaut) sert à spécifier un
-déroulement normal pour la vidéo de synthèse, ou un ralenti par un
-facteur numérique de 2, 4 ou 8. Le bouton du dessus « Vidéo calculée »
-déclenche un calcul assez long, la génération de la vidéo de synthèse.
-Dès que cette vidéo est calculée, on la voit apparaître en boucle dans
-une nouvelle fenêtre. Le logiciel utilisé pour afficher cette vidéo est
-vlc, xine ou mplayer selon le choix réalisé dans les préférences de
-PyMecaVideo.
-
-#### Exemple de vidéo de synthèse{.toc}
 
 
-Les vidéos de synthèse sont intéressantes quand on choisit comme origine
-de référentiel un point qui se déplace en ligne droite à vitesse
-constante.
-
-Par exemple, on peut étudier simultanément deux points, dans une vidéo
-d'un cycliste laissant tomber un objet : un point du cadre du vélo
-(P~1~) et un point de l'objet qui tombe (P~2~). Dans le référentiel
-terrestre, celui de la caméra si on est en plan fixe, la trajectoire de
-P~2~ est une parabole. Mais dans le référentiel galiléen d'origine
-P~1~, le point P~2~ est en chute libre sans vitesse initiale.
-
-Dans ces circonstances, la vidéo de synthèse obtenue après avoir choisi
-de représenter le volet des trajectoires à partir de l'origine P~1~
-montre bien une chute libre.
-
-*NB.* : quand on choisit de réaliser une vidéo de synthèse,
-il faut garder présent à l'esprit que les images seront en fait
-découpées à l'intérieur des images déjà existantes. Il faut donc éviter
-de traiter des images où le point qui utilisé comme origine se trouve
-trop près d'un bord de l'image, parce que ça diminue la taille du
-gabarit de découpe utilisé pour produire la vidéo de synthèse.
-
-### Le volet des coordonnées{.toc}
-
-![](snap16.png){.leftalign}
-
-Le troisième et dernier volet de PyMecaVideo est le volet des
-coordonnées. Il présente un tableau dont la première colonne représente
-des dates en seconde, et les suivantes des coordonnées en mètre des
-points étudiés. Ce tableau est juste là pour démystifier le
-fonctionnement de PyMecaVideo, montrer qu'il ne s'agit que de
-traitement numérique.
-
-Cependant, ce volet des coordonnées est le lieu utile pour envoyer les
-données de PyMecaVideo vers d'autres applications qui serviront à les
-analyser.
-
-### Exporter des données vers d'autres applications{.toc}
-
-![](snap17.png){.leftalign}
-
-Le bouton « Copier les données vers le presse-papiers » permet
-d'exporter la totalité du tableau vers le presse-papiers. De même, il
-suffit de sélectionner (de mettre en surbrillance) une partie du tableau
-pour que cette partie soit automatiquement copiée vers le
-presse-papiers. La partie sélectionnée peut aussi être tirée-glissée
-vers d'autres applications. Si ces applications sont capables de
-récupérer les données et d'en faire usage, elles accepteront
-l'exportation. C'est le cas des traitements de texte et des tableurs
-les plus courants.
-
-## Les logiciels de traitement des données{.toc}
-
-![](snap16.png){.leftalign}
-
-Le volet « coordonnées » de Pymecavideo permet des exportation
-automatiques vers divers logiciels de traitement de données, en plus du
-simple export vers le presse-papiers. Les exportations automatiques
-permettent l'ouverture des logiciels choisis, avec les données prêtes à
-l'utilisation. Le tableau suivant signale les logiciels supportés,
-ainsi que leur disponibilité sous GNU/Linux et sous
-[Windows]{.trademark}™.
-
-
-**Tableau 1. Logiciels libres de traitement des données**
-
-|  Logiciel |   Description |
-|-----------|---------------|
-| ![](tux-w32.png){width="32"} ![](win-w32.png){width="32"} LibreOffice **[Calc](http://fr.openoffice.org/docs/Calc.html)** | Un tableur populaire, plutôt destiné à la bureautique |
-| ![](tux-w32.png){width="32"} **[Qtiplot](http://soft.proindependent.com/qtiplot_fr.html)** | Un véritable outil de traitement de données, très riche en fonctionnalités |
-| ![](tux-w32.png){width="32"} **[SciDavis](http://scidavis.sourceforge.net/)**  | Un autre outil de traitement de données, aussi riche en fonctionnalités |
-
-
-
-## Comment contribuer {.toc}
+# Comment contribuer {.toc}
 
 -   **En rapportant les bogues** aux auteurs. Celles-ci
-    peuvent être de diverses natures : disfonction du logiciel, mauvaise
+    peuvent être de diverses natures : dysfonctionnement du logiciel, mauvaise
     présentation de l'interface, souhait d'amélioration, etc.
 
     Dans chaque cas, soyez très précis : un rapport de bogue ne permet à
     l'auteur de réagir que si celui-ci donne une description détaillée.
     Aussi, n'hésitez pas à jeter un coup d'œil dans les sources du
-    logiciel : vous les avez à disposition ! en fait, plus d'un
+    logiciel : elles sont à votre disposition ! en fait, plus d'un
     contributeur s'est déjà joint aux auteurs, à l'occasion d'un
-    rapport de bogue, pour lequel il apportait la solution (une
+    rapport de bogue, pour lequel il apportait la solution (par une
     modification de la source).
 
     Les sources de Pymecavideo sont en langage Python, et en général
     assez bien commentées pour être largement compréhensibles.
 
--   Pubiez des **vidéos pédagogiques sous licences libres** !
+-   Publiez des **vidéos pédagogiques sous licences libres** !
     Les vidéos déjà utilisables ne manquent pas, mais beaucoup d'entre
     elles sont publiées sans que leur licence permette vraiment de les
     réutiliser librement.
@@ -434,16 +423,18 @@ ainsi que leur disponibilité sous GNU/Linux et sous
     constructive, abonnez vous à
     [`<pymecavideo@lists.tuxfamily.org>`{.email}](mailto:pymecavideo-request@lists.tuxfamily.org?subject=subscribe)
 
-::: appendix
-## A. Notice légale concernant PyMecaVideo 
+
+# A. Notice légale concernant PyMecaVideo 
 
 ## Auteurs
 
-© 2007-2010, [[Jean-Baptiste]{.firstname} [Butet]{.surname}]{.author}
-`<ashashiwa@gmail.com>`{.email} : initiateur du projet PyMecaVideo
+© 2007-2022, [[Jean-Baptiste]{.firstname} [Butet]{.surname}]{.author}
+`<ashashiwa@gmail.com>`{.email} : initiateur du projet PyMecaVideo,
+premier auteur du code source
 
-© 2008-2018, [[Georges]{.firstname} [Khaznadar]{.surname}]{.author}
-`<georgesk@debian.org>`{.email} : contribution, empaquetage Debian
+© 2008-2023, [[Georges]{.firstname} [Khaznadar]{.surname}]{.author}
+`<georgesk@debian.org>`{.email} : documentation, empaquetage Debian,
+réorganisations du code et extensions
 
 © 2008-2010, [[Benoît]{.firstname} [Markey]{.surname}]{.author}
 `<markey@free.fr>`{.email} : vidéos d'exemple
@@ -453,12 +444,12 @@ ainsi que leur disponibilité sous GNU/Linux et sous
 contributions
 
 
-## Licence du programme
+# Licence du programme
 
 Le programme est sous licence libre, vous pouvez le copier, le
 distribuer et le modifier, dans le respect de la licence
 [GPL-V3](http://www.gnu.org/licenses/quick-guide-gplv3.fr.html)
-:::
+
 
 ## Licence des exemples
 
@@ -473,7 +464,7 @@ travaux dérivés.
 
 
 ------------------------------------------------------------------------
-### Notes
+# Notes
 
 <div class="footnote">
 <b id="f1">1</b> [↩](#a1)
@@ -489,38 +480,46 @@ Attention : le format `.avi`{.computeroutput} du fichier est un format
 conteneur, qui autorise différents codecs. On ne peut donc pas se baser
 sur le nom complet du fichier pour deviner le codec de celui-ci. Pour
 déterminer le codec d'un fichier vidéo, vous pouvez utiliser la
-commande `file`{.computeroutput}, par exemple :
+commande `file`{.computeroutput} en ligne de commande pour GNU/Linux,
+par exemple :
 
 ``` programlisting
 $ file video/g1.avi
 video/g1.avi: RIFF (little-endian) data, AVI, 400 x 300, 25.00 fps, video: DivX 5
 ```
 
+L'exemple ci-dessus montre que le conteneur `AVI` encapsule une vidéo dont le
+codeur/décodeur (codec) est `DivX` version 5.
+
 </div>
 
 <div class="footnote">
 <b id="f2">2</b> [↩](#a2)
-Les types de fichiers `.csv`{.computeroutput},
-`.dat`{.computeroutput},`.txt`{.computeroutput} ou
-`.asc`{.computeroutput} sont par convention réservés à des fichiers de
-données à un format texte pur, c'est à dire humainement lisible.
+Le type de fichiers `.mecavideo`{.computeroutput} équivaut à un
+type de fichier `.csv`{.computeroutput}, c'est à dire qui contient des
+données à un format texte pur, humainement lisible ; les lignes qui ne
+commencent pas par le caractère `#` sont des champs numériques, séparés
+par des tabulations (nombres au format français).
+
 Essayez d'ouvrir un fichier que vous produirez ainsi à l'aide d'un
 éditeur de texte, vous vous rendrez compte de sa structure, claire et
-simple à comprendre.
+simple à comprendre : après un rappel des préférences courantes, il
+y a la liste des objets pointés, avec le temps en seconde et les
+coordonnées en mètre.
 </div>
 
 <script>
 var h = $(".toc");
 var ul = $("<ul>",{"class": "toclist"});
 var h3 = $("<h3>").append($("<a>",{href:"#"}).text("Table des matières"));
-var d = $("<div>").append(ul)
+var d = $("<div>",{"class": "tocdiv"}).append(ul)
 $("#toc").append(h3).append(d);
 h.each(function(i, v){
   var self = $(v)
   console.log(self);
   var a = $("<a>",{href: "#"+self.attr("id")}).text(self.text());
   var tag = self.prop("tagName");
-  var li = $("<li>",{"class": tag}).append(a);
+  var li = $("<li>",{"class": tag + " tocli"}).append(a);
   ul.append(li);
 });
 $("div.accordian").accordion({
