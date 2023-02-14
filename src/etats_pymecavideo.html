@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="© 2023 Georges Khaznadar georgesk@debian.org" />
+  <title>Diagramme d’états pour l’UI</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Diagramme d’états pour l’UI</h1>
+<p class="author">© 2023 Georges Khaznadar <a
+href="mailto:georgesk@debian.org"
+class="email">georgesk@debian.org</a></p>
+<p class="date">27/01/2023</p>
+</header>
+<h1 id="un-diagramme-détats-pour-linterface-graphique-de-pymecavideo">Un
+diagramme d’états pour l’interface graphique de Pymecavideo</h1>
+<p>Les premières versions de Pymecavidéo contenaient du code qui
+mélangeai de façon confuse les actions à faire et la façon dont
+l’interface doit se présenter à l’utilisateur. Il en est résulté des
+incohérences, difficiles à rattraper, et aussi des régressions après une
+amélioration ponctuelle, qui touchait à l’interface par effet de
+bord.</p>
+<p>Pour y remédier, la fenêtre principale aura une propriété
+<code>etat</code>, et disposera d’un <code>SLOT</code>
+<code>change_etat</code> ; on pourra émettre des signaux pour rappeler
+ce <code>SLOT</code> ; à chaque fois que la propriété <code>etat</code>
+prend une nouvelle valeur, des modifications sont faites dans
+l’interface utilisateur. Il y a sept états :</p>
+<ol type="1">
+<li>début</li>
+<li>A</li>
+<li>AB</li>
+<li>B</li>
+<li>C</li>
+<li>D</li>
+<li>E</li>
+</ol>
+<figure>
+<img src="./etats_pymecavideo.svg" alt="Graphe des états" />
+<figcaption aria-hidden="true">Graphe des états</figcaption>
+</figure>
+<h2 id="létat-de-début">L’état de début</h2>
+<p>On y arrive quand on lance pymecavideo, et qu’aucune vidéo n’est
+passée, ni par argument, ni par le fichier de configuration.</p>
+<p>Tous les onglets sont désactivés ; idéalement, une aide pour dire
+d’aller chercher un fichier vidéo apparaît.</p>
+<h2 id="létat-a">L’état A</h2>
+<p>Une vidéo est connue et on en affiche une image.</p>
+<p>Le premier onglet est actif, on voit une image de la vidéo, les
+contrôles pour se déplacer dans le film sont actifs, on peut modifier le
+nombre d’objets à pointer, Le bouton Démarrer est visible et actif.</p>
+<p>Inutile de montrer le bouton de réinitialisation</p>
+<p>Sur l’image de la vidéo, le curseur est ordinaire.</p>
+<h2 id="létat-ab">L’état AB</h2>
+<p>On y arrive en cliquant sur le bouton démarrer, si la case à cocher
+« pointage auto » était cochée. On doit définir, par tirer-glisser à la
+souris, autant de zones rectangulaires à suivre qu’il y a d’objets à
+pointer.</p>
+<p>Le premier onglet est actif, mais tous les widgets de contrôle y sont
+inactifs.</p>
+<h2 id="létat-b">L’état B</h2>
+<p>On y arrive en cliquant sur le bouton démarrer, si la case à cocher
+« pointage auto » était cochée, après passage par l’état AB.</p>
+<p>Une acquisition automatique est en cours.</p>
+<p>Le premier onglet est actif, on voit une image de la vidéo, les
+contrôles pour se déplacer dans le film sont désactivés, on ne peut pas
+modifier le nombre d’objets à pointer, Le bouton Démarrer est caché,
+remplacé par un bouton STOP.</p>
+<h2 id="létat-c">L’état C</h2>
+<p>L’échelle est en cours de définition.</p>
+<p>Le premier onglet est actif, mais tous les boutons qu’on peut y voir
+sont inactifs jusqu’à la fin de la définition de l’échelle.</p>
+<p>Cet état peut se situer entre A et A, ou entre D et D.</p>
+<h2 id="létat-d">L’état D</h2>
+<p>On a « démarré », et une pointage manuel est possible. Tous les
+onglets sont actifs.</p>
+<p>Les contrôles pour changer d’image sont actifs, et le seul autre
+bouton actif sur le premier onglet est celui qui permet de changer
+d’échelle.</p>
+<p>Le pointage n’est possible que dans deux cas :</p>
+<ul>
+<li>quand aucune image n’a été pointée</li>
+<li>quand le pointage à venir est voisin de pointages existants : sur
+une image déjà pointée, ou juste avant, ou juste après.</li>
+</ul>
+<p>Quand le pointage est possible et seulement alors, le curseur de
+souris a la forme d’une grosse cible ; idéalement il identifie aussi
+l’objet à pointer.</p>
+<h2 id="létat-e">L’état E</h2>
+<p>On est en train de pointer une série d’objets. Le curseur de souris a
+la forme d’une grosse cible ; idéalement il identifie aussi l’objet à
+pointer.</p>
+<p>Durant ce pointage, les contrôles de changement d’image sont
+inactifs, ainsi que les onglets autres que le premier.</p>
+</body>
+</html>

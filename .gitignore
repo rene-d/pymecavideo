@@ -1,13 +1,9 @@
 *~
 \#*
 *.qm
-pymecavideo_project.pro
-etats_pymecavideo.svg
-etats_pymecavideo.html
-*.pyc
 Ui_*
 *_rc.py
-
+__pycache__/
 
 # debuild
 debian/files
