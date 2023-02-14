@@ -255,7 +255,7 @@
                <item>
                 <widget class="QLabel" name="label_nb_de_points">
                  <property name="text">
-                  <string>Points à&lt;br&gt;étudier :</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Objets à&lt;br/&gt;étudier :&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                 </widget>
                </item>

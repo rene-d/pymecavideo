@@ -711,7 +711,7 @@ enregistré avec succès.</source>
     </message>
     <message>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Points à&lt;br&gt;étudier :</source>
+      <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Objets à&lt;br/&gt;étudier :&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
       <translation type="unfinished" />
     </message>
     <message>
