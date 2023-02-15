@@ -502,7 +502,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             # quitter l'état A pour y revenir
             if self.echelle_image:
                 self.clearEchelle()
-                self.app.change_etat.emit("Debut")
+                self.app.change_etat.emit("debut")
             self.app.change_etat.emit("A")
         else:
             QMessageBox.warning(
