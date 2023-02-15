@@ -150,6 +150,8 @@ class EchelleWidget(QWidget):
 
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
+        xy = self.video.coords(p)
+        self.app.afficheXY.emit(*xy)
         self.app.update_zoom.emit(p)
         if self.pressed:
             self.p2 = p
@@ -192,12 +194,6 @@ class Echelle_TraceWidget(QWidget):
         self.p1 = p1
         self.p2 = p2
         self.setMouseTracking(True)
-
-    def mouseMoveEvent(self, event):
-        event.ignore()
-
-    def mouseReleaseEvent(self, event):
-        event.ignore()
 
     def maj(self):
         self.setGeometry(
