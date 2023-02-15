@@ -57,7 +57,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         Pointage.__init__(self)
         self.app = None                 # la fenêtre principale
         self.dbg = None                 # le débogueur
-        self.prefs = None               # les préférences
         self.hotspot = None             # vecteur (position de la souris)
         self.image = None               # l'image tirée du film
         self.image_w = self.width()     # deux valeurs par défaut
@@ -130,7 +129,6 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         """
         self.app = app
         self.dbg = app.dbg
-        self.prefs = app.prefs
         return
    
     def redimensionne_data(self, dim):
@@ -396,7 +394,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.cvReader.recupere_avi_infos(self.rotation)
         self.ratio = self.largeurFilm / self.hauteurFilm
         # réapplique la préférence de deltat, comme openCV peut se tromper
-        self.deltaT = float(self.prefs.config["DEFAULT"]["deltat"])
+        self.deltaT = float(self.app.prefs.config["DEFAULT"]["deltat"])
         self.framerate = round(1/self.deltaT)
         return
 
@@ -497,8 +495,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if not filename :
             return
         self.filename = filename
-        goOn = self.init_cvReader()
-        if goOn:  # le fichier vidéo est OK, et son format est reconnu
+        if self.init_cvReader():
+            # le fichier vidéo est OK, et son format est reconnu
             self.init_image()
             # s'il y avait déjà une échelle, il faut l'oublier,
             # quitter l'état A pour y revenir
@@ -719,7 +717,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         return
 
     def savePrefs(self):
-        d = self.prefs.defaults
+        d = self.app.prefs.defaults
         d['version'] = f"pymecavideo {Version}"
         d['proximite'] = str(self.app.radioButtonNearMouse.isChecked())
         d['lastvideo'] = self.filename
@@ -739,7 +737,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             if self.echelle_image else "None"
         d['deltat'] = str(self.deltaT)
         d['nb_obj'] = str(len(self.suivis))
-        self.prefs.save()
+        self.app.prefs.save()
         
     def entete_fichier(self, msg=""):
         """
@@ -751,7 +749,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @return le texte de l'en-tête (multi-ligne)
         """
         self.dbg.p(2, "rentre dans 'entete_fichier'")
-        config = open(self.prefs.conffile).readlines()
+        config = open(self.app.prefs.conffile).readlines()
         return "".join(["# "+l for l in config[1:]]) + "# " + msg + "\n"
 
     def vecteursVitesse(self, echelle_vitesse):
@@ -796,7 +794,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
           il est faux par défaut
         """
         self.dbg.p(2, "rentre dans 'VideoWidget.apply_preferences'")
-        d = self.prefs.config["DEFAULT"]
+        d = self.app.prefs.config["DEFAULT"]
         self.filename = d["lastvideo"]
         self.rotation = d.getint("rotation")
         if os.path.isfile(self.filename):
@@ -808,16 +806,16 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.reinitialise_capture()
         self.sens_X = d.getint("sens_x")
         self.sens_Y = d.getint("sens_y")
-        self.origine = self.prefs.config.getvecteur("DEFAULT", "origine")
+        self.origine = self.app.prefs.config.getvecteur("DEFAULT", "origine")
         if rouvre:
-            # dans ce cas on est en train de réouvrir un fichier pymecavideo
+            # on est en train de réouvrir un fichier pymecavideo
             # et on considère plus de données
             #!!!! self.premiere_image_pointee = d.getint("index_depart")
             self.deltatT = d.getfloat("deltat")
             self.dimensionne(d.getint("nb_obj"), self.deltaT, self.image_max)
             self.echelle_image.longueur_reelle_etalon = d.getfloat('etalon_m')
-            p1 = self.prefs.config.getvecteur("DEFAULT", "etalon_org")
-            p2 = self.prefs.config.getvecteur("DEFAULT", "etalon_ext")
+            p1 = self.app.prefs.config.getvecteur("DEFAULT", "etalon_org")
+            p2 = self.app.prefs.config.getvecteur("DEFAULT", "etalon_ext")
             if p1 != vecteur(0,0) and p2 != vecteur(0,0):
                 self.echelle_image.p1 = p1
                 self.echelle_image.p2 = p2
