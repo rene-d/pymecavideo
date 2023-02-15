@@ -497,70 +497,70 @@ Voulez-vous les sauvegarder ?</source>
   <context>
     <name>VideoPointeeWidget</name>
     <message>
-      <location filename="../../src/videoWidget.py" line="343" />
+      <location filename="../../src/videoWidget.py" line="345" />
       <source>Pymecavideo n'arrive pas à lire l'image</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="568" />
-      <location filename="../../src/videoWidget.py" line="433" />
+      <location filename="../../src/videoWidget.py" line="570" />
+      <location filename="../../src/videoWidget.py" line="435" />
       <source>Refaire l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="484" />
+      <location filename="../../src/videoWidget.py" line="486" />
       <source>Le format de cette vidéo n'est pas pris en charge par pymecavideo</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="510" />
+      <location filename="../../src/videoWidget.py" line="512" />
       <source>Erreur lors de la lecture du fichier</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="511" />
+      <location filename="../../src/videoWidget.py" line="513" />
       <source>Le fichier&lt;b&gt;{0}&lt;/b&gt; ...
 n'est peut-être pas dans un format vidéo supporté.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="522" />
+      <location filename="../../src/videoWidget.py" line="524" />
       <source>Cliquez sur l'objet : {0}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="582" />
+      <location filename="../../src/videoWidget.py" line="584" />
       <source>Définir l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="685" />
+      <location filename="../../src/videoWidget.py" line="687" />
       <source>Enregistrer le projet pymecavideo</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="687" />
+      <location filename="../../src/videoWidget.py" line="689" />
       <source>Projet pymecavideo (*.mecavideo)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="690" />
+      <location filename="../../src/videoWidget.py" line="692" />
       <source>Erreur lors de l'enregistrement</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="690" />
+      <location filename="../../src/videoWidget.py" line="692" />
       <source>Il manque les données, ou l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="709" />
+      <location filename="../../src/videoWidget.py" line="711" />
       <source>temps en seconde, positions en mètre</source>
       <translation type="unfinished">tiempo en segundos, posición en metros</translation>
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="880" />
-      <location filename="../../src/videoWidget.py" line="880" />
+      <location filename="../../src/videoWidget.py" line="887" />
+      <location filename="../../src/videoWidget.py" line="887" />
       <source>indéf.</source>
       <translation type="unfinished">indéf.</translation>
     </message>

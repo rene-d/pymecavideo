@@ -72,7 +72,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>168</width>
+             <width>171</width>
              <height>629</height>
             </rect>
            </property>
@@ -90,6 +90,9 @@
             <item>
              <widget class="QWidget" name="widget_4" native="true">
               <layout class="QFormLayout" name="formLayout">
+               <property name="horizontalSpacing">
+                <number>6</number>
+               </property>
                <property name="verticalSpacing">
                 <number>0</number>
                </property>
@@ -107,6 +110,12 @@
                </property>
                <item row="0" column="0">
                 <widget class="QLineEdit" name="editXYpx">
+                 <property name="minimumSize">
+                  <size>
+                   <width>127</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="frame">
                   <bool>true</bool>
                  </property>
@@ -117,20 +126,56 @@
                </item>
                <item row="0" column="1">
                 <widget class="QLabel" name="label_4">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>20</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>(px) </string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                  </property>
                 </widget>
                </item>
                <item row="1" column="1">
                 <widget class="QLabel" name="label_5">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>20</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="text">
                   <string>(m)</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                  </property>
                 </widget>
                </item>
                <item row="1" column="0">
                 <widget class="QLineEdit" name="editXYm">
+                 <property name="minimumSize">
+                  <size>
+                   <width>127</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>

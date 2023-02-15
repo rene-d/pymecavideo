@@ -76,6 +76,15 @@ class vecteur:
         self.value = (self.value[0], - self.value[1])
         return
     
+    def redresse(self, video):
+        """
+        ajuste les signes des coordonnées
+        @param video un objet qui a les propriétés sens_X et sens_Y (+-1)
+        """
+        self.value = (video.sens_X * self.value[0],
+                      - video.sens_Y * self.value[1])
+        return
+    
     def __getitem__(self, i):
         # print "Utilisation de vecteur.__getitem__ déconseillée"
         return self.value[i]

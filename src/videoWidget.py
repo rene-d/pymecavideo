@@ -269,6 +269,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         if self.app.etat in ("A", "D", "E"):
             p = vecteur(qPoint = event.position())
             self.hotspot = p
+            xy = self.coords(p)
+            self.app.afficheXY.emit(*xy)
             self.app.update_zoom.emit(self.hotspot)
         return
     
@@ -876,6 +878,11 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @param p un point, vecteur de coordonnées entières
         @return les valeurs de x, y en px et puis en mètre (formatées :.2e)
         """
+        # on se rapporte à l'origine du repère
+        p = p - self.origine
+        # et aux sens des axes
+        p.redresse(self)
+        
         if not self.echelle_image:
             return int(p.x), int(p.y), self.tr("indéf."), self.tr("indéf.")
         return int(p.x), int(p.y), \
