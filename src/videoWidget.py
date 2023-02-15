@@ -224,19 +224,21 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         i = self.suivis.index(self.objet_courant)
         if i < self.nb_obj - 1 :
             self.objet_courant = self.suivis[i+1]
+            self.app.zoomLabel.setText(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.objet_courant))
         else:
             # on passe à l'image suivante, et on revient au premier objet
             self.objet_courant = self.suivis[0]
             if self.index < self.image_max:
                 self.index +=1
             # on revient à l'état D sauf en cas de suivi automatique
-            # auquel cas l'état B perdure
+            # auquel cas l'état E perdure
             if not self.auto:
                 self.app.change_etat.emit("D")
             else:
-                # on reste dans l'état B, néanmoins on synchronise
+                # on reste dans l'état E, néanmoins on synchronise
                 # les contrôles de l'image
                 self.app.image_n.emit(self.index)
+        
         return
 
     def mouseReleaseEvent(self, event):
