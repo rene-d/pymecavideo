@@ -33,6 +33,9 @@ class version:
         self.mineur = mineur
         self.nuance = nuance
 
+    def __lt__(self, other):
+        return (self.majeur < other.majeur) or (self.mineur < other.mineur)
+
     def __str__(self):
         return "%s.%s%s" % (self.majeur, self.mineur, self.nuance)
 
@@ -43,7 +46,7 @@ class version:
 ###############################################################
 # la version courante, à incrémenter lors de changements
 ###############################################################
-Version = version(8, 0, '~rc1-1')
+Version = version(8, 0, '~rc2-1')
 ###############################################################
 # incrémentation automatique pour une distribution debian
 ###############################################################

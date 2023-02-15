@@ -28,6 +28,7 @@ import pyqtgraph.exporters
 
 from export import Export, EXPORT_FORMATS
 from toQimage import toQImage
+import version
 from version import Version
 from dbg import Dbg
 from preferences import Preferences
@@ -117,7 +118,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         QWidget.__init__(self, parent)
         self.etat = None
         self.etat_ancien = None
-        self.min_version = "7.3.0-1" # version minimale du fichier de conf.
+        # version minimale du fichier de configuration :
+        self.min_version = version.version(7, 3, ".0-1")
         self.hauteur = 1
         self.largeur = 0
         self.ratio = 4/3
@@ -232,12 +234,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # de réouverture d'un fichier pymecavideo, qui contient les préférences
         if not rouvre:
             self.prefs = Preferences(self)
-        m = re.match(r"pymecavideo (.*)",
+        m = re.match(r"pymecavideo (\d+)\.(\d+)(.*)",
                      self.prefs.config["DEFAULT"]["version"])
         if m:
-            version = m.group(1)
+            version = version.version(
+                int(m.group(1)), int(m.group(2)), m.group(3))
         else:
-            version = "0"
+            version = version.version(0,0)
         if version < self.min_version:
             QTimer.singleShot(
                 50,
@@ -246,6 +249,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     self.tr("Configuration trop ancienne"),
                     self.tr("La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte").format(version = version, min_version = self.min_version)))
             return
+        elif version < Version
+            QTimer.singleShot(
+                50,
+                lambda: QMessageBox.information(
+                    self,
+                    self.tr("Configuration ancienne"),
+                    self.tr("La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.").format(version = version, min_version = self.min_version)))
         # le fichier de configuration a la bonne version, on applique ses
         # données
         taille = self.prefs.config.getvecteur("DEFAULT", "taille")
