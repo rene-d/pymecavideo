@@ -28,8 +28,7 @@ import pyqtgraph.exporters
 
 from export import Export, EXPORT_FORMATS
 from toQimage import toQImage
-import version
-from version import Version
+from version import version, Version
 from dbg import Dbg
 from preferences import Preferences
 from cadreur import Cadreur, openCvReader
@@ -119,7 +118,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.etat = None
         self.etat_ancien = None
         # version minimale du fichier de configuration :
-        self.min_version = version.version(7, 3, ".0-1")
+        self.min_version = version(7, 3, ".0-1")
         self.hauteur = 1
         self.largeur = 0
         self.ratio = 4/3
@@ -237,25 +236,24 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         m = re.match(r"pymecavideo (\d+)\.(\d+)(.*)",
                      self.prefs.config["DEFAULT"]["version"])
         if m:
-            version = version.version(
-                int(m.group(1)), int(m.group(2)), m.group(3))
+            thisversion = version(int(m.group(1)), int(m.group(2)), m.group(3))
         else:
-            version = version.version(0,0)
-        if version < self.min_version:
+            thisversion = version(0,0)
+        if thisversion < self.min_version:
             QTimer.singleShot(
                 50,
                 lambda: QMessageBox.information(
                     self,
                     self.tr("Configuration trop ancienne"),
-                    self.tr("La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte").format(version = version, min_version = self.min_version)))
+                    self.tr("La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte").format(version = thisversion, min_version = self.min_version)))
             return
-        elif version < Version
+        elif thisversion < Version:
             QTimer.singleShot(
                 50,
                 lambda: QMessageBox.information(
                     self,
                     self.tr("Configuration ancienne"),
-                    self.tr("La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.").format(version = version, min_version = self.min_version)))
+                    self.tr("La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.").format(version = thisversion, min_version = self.min_version)))
         # le fichier de configuration a la bonne version, on applique ses
         # données
         taille = self.prefs.config.getvecteur("DEFAULT", "taille")
