@@ -871,3 +871,13 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.app.show_video.emit()
         return
 
+    def coords(self, p):
+        """
+        @param p un point, vecteur de coordonnées entières
+        @return les valeurs de x, y en px et puis en mètre (formatées :4f)
+        """
+        if not self.echelle_image:
+            return int(p.x), int(p.y), self.tr("indéf."), self.tr("indéf.")
+        return int(p.x), int(p.y), \
+            f"{p.x/self.echelle_image.pxParM():4f}", \
+            f"{p.y/self.echelle_image.pxParM():4f}"

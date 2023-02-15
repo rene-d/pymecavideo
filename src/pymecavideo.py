@@ -324,6 +324,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     update_zoom = pyqtSignal(vecteur)       # agrandit une portion d'image
     image_n = pyqtSignal(int)               # modifie les contrôles d'image
     affiche_statut = pyqtSignal(str)        # modifie la ligne de statut
+    afficheXY = pyqtSignal(int, int, str, str) # position de la souris
     
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -398,8 +399,22 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.update_zoom.connect(self.loupe)
         self.image_n.connect(self.sync_img2others)
         self.affiche_statut.connect(self.setStatus)
+        self.afficheXY.connect(self.affiche_xy)
         
         return
+
+    def affiche_xy(self, xpx, ypx, xm, ym):
+        """
+        affiche les coordonnées du point central du zoom
+        @param xpx abscisse en pixel (int)
+        @param ypx ordonnée en pixel (int)
+        @param xm abscisse en mètre (str)
+        @param ym ordonnée en mètre (str)
+        """
+        self.editXYpx.setText(f"{xpx}, {ypx}")
+        self.editXYm.setText(f"{xm}, {ym}")
+        return
+        
 
     def definit_messages_statut(self):
         """
@@ -455,7 +470,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.etat = etat
         if self.etat not in fonctions:
             raise Exception(
-                f"L'état doit être {', '.join(list(fonctions.keys()))}")
+                f"L'état doit être {', '.join(list(fonctions.keys()))}, or il est « {repr(self.etat)} »")
         self.etat = etat
         # appel de la fonction liée à l'état courant
         fonctions[self.etat]()
@@ -1789,6 +1804,7 @@ Merci de bien vouloir le renommer avant de continuer"""))
                 for l in lignes_data][1:]
         self.video.restaure_pointages(
             data, self.prefs.config["DEFAULT"].getint("index_depart"))
+        self.sync_img2others(self.video.index)
         self.affiche_echelle()  # on met à jour le widget d'échelle
         # coche les cases pour les sens des axes
         self.sens_axes.emit(self.video.sens_X, self.video.sens_Y)

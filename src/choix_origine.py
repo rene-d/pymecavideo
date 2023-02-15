@@ -46,7 +46,10 @@ class ChoixOrigineWidget(QWidget):
         self.setMouseTracking(True)
 
     def mouseMoveEvent(self, event):
-        self.app.update_zoom.emit(vecteur(qPoint = event.position()))
+        p = vecteur(qPoint = event.position())
+        self.app.update_zoom.emit(p)
+        xy = self.app.video.coords(p)
+        self.app.afficheXY.emit(*xy)
         return
 
     def mouseReleaseEvent(self, event):
