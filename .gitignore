@@ -16,3 +16,7 @@ pymecavideo.egg-info/
 
 # quilt
 .pc/
+
+#pybuild
+.pybuild/
+dist/

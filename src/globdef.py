@@ -118,8 +118,8 @@ APP_PATH = PATH
 if sys.platform == 'win32':
     DATA_PATH = os.path.join(APP_PATH, "data")
 else:
-    DATA_PATH = testerDossier((os.path.join("..", "data"),
-                               '/usr/share/python3-mecavideo/', '/usr/share/pymecavideo/'))
+    DATA_PATH = testerDossier(
+        (os.path.join("..", "data"), '/usr/share/pymecavideo/data',))
 
 # CONF_PATH
 CONF_PATH = os.path.join(
