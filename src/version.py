@@ -34,7 +34,8 @@ class version:
         self.nuance = nuance
 
     def __lt__(self, other):
-        return (self.majeur < other.majeur) or (self.mineur < other.mineur)
+        return (self.majeur < other.majeur) or \
+            (self.majeur == other.majeur and self.mineur < other.mineur)
 
     def __str__(self):
         return "%s.%s%s" % (self.majeur, self.mineur, self.nuance)
@@ -42,23 +43,41 @@ class version:
     def __repr__(self):
         return self.__str__()
 
+def str2version(chaine):
+    """
+    extrait la version d'une chaîne de caractères
+    """
+    m = re.match(r"(\d+)\.(\d+)(.*)", chaine)
+    if m:
+        return version(int(m.group(1)), int(m.group(2)), m.group(3))
+    return version(0, 0)
+
+def versionFromDebianChangelog():
+    """
+    Renvoie une version selon le contenu éventuel d'un fichier
+    /usr/share/doc/python3-mecavideo/changelog.Debian.gz
+    """
+    packageName = "python3-mecavideo"
+    changelog = os.path.join("/usr/share/doc", packageName, "changelog.Debian.gz")
+    if os.path.exists(changelog):
+        with gzip.open(changelog) as chlog:
+            firstline = chlog.readline().strip().decode("utf-8")
+            m = re.match(r"^pymecavideo \((.*)\).*$", firstline)
+            if m:
+                return str2version(m.group(1))
+    return None
+    
 
 ###############################################################
 # la version courante, à incrémenter lors de changements
 ###############################################################
-Version = version(8, 0, '~rc2-1')
+Version = version(8, 1, '~rc2-1')
+
 ###############################################################
 # incrémentation automatique pour une distribution debian
 ###############################################################
-packageName = "python3-mecavideo"
-changelog = os.path.join("/usr/share/doc", packageName, "changelog.Debian.gz")
-if os.path.exists(changelog):
-    with gzip.open(changelog) as chlog:
-        firstline = chlog.readline().strip().decode("utf-8")
-        m = re.match(r"^pymecavideo \((.*)\).*$", firstline)
-        if m:
-            Version = m.group(1)
-
+v = versionFromDebianChangelog()
+if v: Version = v
 
 if __name__ == "__main__":
     print(Version)

@@ -466,12 +466,13 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             return
         if index is not None: self.index = index
         self.dbg.p(2, f"rentre dans 'affiche_image' self.index = {self.index} self.image_max = {self.image_max}")
-        if self.index <= self.image_max:
-            self.extract_image(self.index)  # 2ms
-            self.placeImage(self.imageExtraite, self.ratio)
-        elif self.index > self.image_max:
-            self.index = self.image_max
-            self.lance_capture = False
+        if self.index is not None and self.image_max is not None:
+            if self.index <= self.image_max:
+                self.extract_image(self.index)  # 2ms
+                self.placeImage(self.imageExtraite, self.ratio)
+            elif self.index > self.image_max:
+                self.index = self.image_max
+                self.lance_capture = False
         return
     
     def init_cvReader(self):
