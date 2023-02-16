@@ -69,7 +69,7 @@ class Preferences (QObject):
         d['niveauDbg'] = "0"         # niveau des messages de débogage
         d['sens_X']    = "1"         # sens dee abscisses
         d['sens_Y']    = "1"         # sens dee ordonnées
-        d['taille'] = "(640,480)"    # dimension de la fenêtre principale
+        d['taille_image'] = "(320,240)" # dimension de l'image de vidéo
         d['rotation']  = "0"         # rotation de l'image
         d['origine'] = "(320,240)"   # origine pour les pointages
         d['index_depart'] = "1"      # première image pointée

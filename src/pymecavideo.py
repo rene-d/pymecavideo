@@ -25,6 +25,7 @@ import re
 import magic
 import pyqtgraph as pg
 import pyqtgraph.exporters
+import math
 
 from export import Export, EXPORT_FORMATS
 from toQimage import toQImage
@@ -124,6 +125,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.ratio = 4/3
         self.decalh = 0
         self.decalw = 0
+        self.wanted_image_size = vecteur()
         self.dictionnairePlotWidget = {}
 
         # Mode plein écran
@@ -256,9 +258,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     self.tr("La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.").format(version = thisversion, Version = Version)))
         # le fichier de configuration a la bonne version, on applique ses
         # données
-        taille = self.prefs.config.getvecteur("DEFAULT", "taille")
-        rect = self.geometry()
-        self.setGeometry(rect.x(), rect.y(), int(taille.x), int(taille.y))
+        self.wanted_image_size = self.prefs.config.getvecteur(
+            "DEFAULT", "taille_image")
+        self.adjust4image.emit()
+       
         d = self.prefs.config["DEFAULT"]
         self.radioButtonNearMouse.setChecked(d["proximite"] == "True")
         self.video.apply_preferences(rouvre = rouvre)
@@ -333,6 +336,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     image_n = pyqtSignal(int)               # modifie les contrôles d'image
     affiche_statut = pyqtSignal(str)        # modifie la ligne de statut
     afficheXY = pyqtSignal(int, int, str, str) # position de la souris
+    adjust4image = pyqtSignal()             # adapte la taille à l'image
     
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -408,9 +412,57 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.image_n.connect(self.sync_img2others)
         self.affiche_statut.connect(self.setStatus)
         self.afficheXY.connect(self.affiche_xy)
+        self.adjust4image.connect(self.ajuste_pour_image)
         
         return
 
+    def ajuste_pour_image(self):
+        """
+        ajuste progressivement la taille de la fenêtre principale
+        jusqu'à ce que l'image soit à la taille voulue, c'est à dire
+        self.wanted_image_size
+        """
+        delai = 50 # 20 ajustements par seconde
+        w1, h1 = self.width(), self.height()
+        self.defixeLesDimensions()
+        
+        def modifie(x, y):
+            """
+            fabrique une fonction qui modifie la taille de la fenêtre
+            principale de (x,y), et relance la recherched e taille idéale
+            """
+            def m():
+                self.resize(w1 + x, h1 + y)
+                self.update()
+                self.adjust4image.emit()
+                return
+            return m
+        
+        # taille de l'image actuellement
+        w, h = int(self.video.size().width()),  int(self.video.size().height())
+        # taille visée
+        w0 , h0 = int(self.wanted_image_size.x), int(self.wanted_image_size.y)
+        # erreurs de taille de la fenêtre
+        deltaw, deltah = w0 - w, h0 - h
+        # modifications à apporter à la taille de la fenêtre
+        w2, h2 = 0, 0 
+        # on divise par deux l'erreur à compenser, en prenant soin
+        # de ne jamais obtenir zéro ; ça doit faire au moins +-1
+        if deltaw :
+            w2 = int(abs(deltaw)/deltaw*math.ceil(abs(deltaw/2)))
+        if deltah:
+            h2 = int(abs(deltah)/deltah*math.ceil(abs(deltah/2)))
+        if w2 or h2:
+            # enfin on prévoit de modifier la fenêtre dans le bons sens
+            QTimer.singleShot(delai, modifie(w2, h2))
+            return
+        else:
+            # fini : il n'y a plus besoin de modifier la taille de la fenêtre
+            if self.etat not in ("debut", "A"):
+                self.fixeLesDimensions()
+        
+        return
+    
     def affiche_xy(self, xpx, ypx, xm, ym):
         """
         affiche les coordonnées du point central du zoom
@@ -571,6 +623,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         self.setWindowTitle(self.tr("Pymecavideo : {filename}").format(
             filename = os.path.basename(self.video.filename)))
+        self.video.objet_courant = 1
         self.zoomLabel.setText(self.tr("Zoom autour de x, y ="))
         if not self.video.echelle_image:
             self.affiche_echelle() # marque "indéf."
@@ -643,6 +696,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         d = self.prefs.defaults
         d['lastVideo'] = self.video.filename
         d['videoDir'] = os.path.dirname(self.video.filename)
+        d["taille_image"] = f"({self.video.size().width()},{self.video.size().height()})"
         d['rotation'] = str(self.video.rotation)
         self.prefs.save()
 
@@ -928,9 +982,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         il s'y ajoute bien sûr les contraintes des widgets définis
         par l'interface utilisateur qui est créée à l'aide de designer.
         """
-        self.setMinimumWidth(640)
+        self.setMinimumWidth(0)
         self.setMaximumWidth(16000000)
-        self.setMinimumHeight(480)
+        self.setMinimumHeight(0)
         self.setMaximumHeight(16000000)
         pass
 
@@ -1637,7 +1691,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             plotwidget.close()
             del plotwidget
         d = self.prefs.config["DEFAULT"]
-        d["taille"] = f"({self.size().width()},{self.size().height()})"
+        d["taille_image"] = f"({self.video.size().width()},{self.video.size().height()})"
         d["rotation"] = str(self.video.rotation)
         self.prefs.save()
         return

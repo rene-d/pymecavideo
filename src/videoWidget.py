@@ -730,7 +730,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         d['niveaudbg'] = str(self.dbg.verbosite)
         d['sens_x'] = str(self.sens_X)
         d['sens_y'] = str(self.sens_Y)
-        d['taille'] = str((self.app.size().width(),self.app.size().height()))
+        d["taille_image"] = f"({self.size().width()},{self.size().height()})"
         d['rotation'] = str(self.rotation)
         d['origine'] = f"({round(self.origine.x)}, {round(self.origine.y)})"
         d['index_depart'] = str(self.premiere_image())
