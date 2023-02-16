@@ -50,7 +50,9 @@ class SelRectWidget(QWidget):
         self.setAutoFillBackground(False)
         cible_pix = QPixmap(cible_icon).scaledToHeight(32)
         cible_cursor = QCursor(cible_pix)
-        self.setCursor(cible_cursor)        
+        self.setCursor(cible_cursor)
+        # ??? si on active le moustracking, pas de dessin du rectangle ???
+        # self.setMouseTracking(True)
         self.x_1 = None
         self.x_2 = None
         self.y_1 = None
@@ -65,15 +67,16 @@ class SelRectWidget(QWidget):
         self.y_1 = p.y
         self.y_2 = p.y
         self.dragging = True
+        self.update()
         return
 
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
+        self.app.update_zoom.emit(p)
 
         if self.dragging:
             self.x_2 = p.x
             self.y_2 = p.y
-        self.app.update_zoom.emit(p)
         self.update()
         return
 
@@ -81,6 +84,7 @@ class SelRectWidget(QWidget):
         self.dragging = False
         self.video.motifs_auto.append(self.getMotif())
         self.video.selection_motif_done.emit()
+        self.update()
         return
 
     def getMotif(self):
@@ -106,8 +110,12 @@ class SelRectWidget(QWidget):
             painter = QPainter()
             painter.begin(self)
             painter.setPen(QColor("green"))
+            # entoure la zone sélectionnée d'un rectangle
             painter.drawRect(round(self.x_1), round(self.y_1),
                              round(self.x_2 - self.x_1),
                              round(self.y_2 - self.y_1))
+            # puis trace les diagonales
+            painter.drawLine(round(self.x_1), round(self.y_1),round(self.x_2), round(self.y_2))
+            painter.drawLine(round(self.x_1), round(self.y_2),round(self.x_2), round(self.y_1))
             painter.end()
         return
