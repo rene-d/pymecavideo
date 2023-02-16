@@ -510,6 +510,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             "E":     self.etatE,
         }
 
+        print("GRRRR dans l'état", self.etat, "cherche à entrer dans l'état", etat)
         if self.etat == etat: return # inutile de changer !
         self.dbg.p(1, f"========> État précédent = {self.etat}. État suivant = {etat}")
         self.etat = etat
