@@ -72,118 +72,11 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>171</width>
-             <height>629</height>
+             <width>168</width>
+             <height>577</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
-            <item>
-             <widget class="QLabel" name="zoomLabel">
-              <property name="text">
-               <string> Zoom autour de x, y =</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QWidget" name="widget_4" native="true">
-              <layout class="QFormLayout" name="formLayout">
-               <property name="horizontalSpacing">
-                <number>6</number>
-               </property>
-               <property name="verticalSpacing">
-                <number>0</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QLineEdit" name="editXYpx">
-                 <property name="minimumSize">
-                  <size>
-                   <width>127</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="frame">
-                  <bool>true</bool>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLabel" name="label_4">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>20</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>(px) </string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLabel" name="label_5">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>20</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>(m)</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLineEdit" name="editXYm">
-                 <property name="minimumSize">
-                  <size>
-                   <width>127</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
             <item>
              <widget class="QWidget" name="widget_3" native="true">
               <property name="sizePolicy">
@@ -274,6 +167,9 @@
                       <height>100</height>
                      </size>
                     </property>
+                    <property name="toolTip">
+                     <string>Zoom ⨯2 autour du curseur de la souris</string>
+                    </property>
                    </widget>
                   </item>
                  </layout>
@@ -296,7 +192,164 @@
              </widget>
             </item>
             <item>
+             <widget class="QLabel" name="zoomLabel">
+              <property name="text">
+               <string> Zoom autour de x, y =</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_4" native="true">
+              <layout class="QGridLayout" name="gridLayout_2">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="horizontalSpacing">
+                <number>6</number>
+               </property>
+               <property name="verticalSpacing">
+                <number>0</number>
+               </property>
+               <item row="1" column="2">
+                <widget class="QLineEdit" name="editYpx">
+                 <property name="toolTip">
+                  <string>Ordonnée (pixel)</string>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLineEdit" name="editXpx">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Abscisse (pixel)</string>
+                 </property>
+                 <property name="frame">
+                  <bool>true</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QLineEdit" name="editYm">
+                 <property name="toolTip">
+                  <string>Ordonnée (m)</string>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLineEdit" name="editXm">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Abscisse (m)</string>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QLabel" name="label_4">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>20</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>(px) </string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="3">
+                <widget class="QLabel" name="label_5">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>20</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>(m)</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>,</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>,</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="Bouton_Echelle">
+              <property name="toolTip">
+               <string>Définition de l'échelle, par tirer-glisser sur l'image</string>
+              </property>
               <property name="text">
                <string>Définir Échelle</string>
               </property>
@@ -322,6 +375,9 @@
                </property>
                <item>
                 <widget class="QLineEdit" name="echelleEdit">
+                 <property name="toolTip">
+                  <string>L'échelle, en pixel par mètre</string>
+                 </property>
                  <property name="text">
                   <string>indéf.</string>
                  </property>
@@ -350,6 +406,13 @@
              </widget>
             </item>
             <item>
+             <widget class="Line" name="line_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QWidget" name="widget_6" native="true">
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <property name="leftMargin">
@@ -366,13 +429,19 @@
                </property>
                <item>
                 <widget class="QLabel" name="label_nb_de_points">
+                 <property name="toolTip">
+                  <string>Nombre d'objets à suivre</string>
+                 </property>
                  <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Objets à&lt;br/&gt;étudier :&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>Objets :</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QSpinBox" name="spinBox_objets">
+                 <property name="toolTip">
+                  <string>Nombre d'objets à suivre</string>
+                 </property>
                  <property name="minimum">
                   <number>1</number>
                  </property>
@@ -381,20 +450,27 @@
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QCheckBox" name="checkBox_auto">
+                 <property name="toolTip">
+                  <string>Activation du pointage automatique</string>
+                 </property>
+                 <property name="text">
+                  <string>suivi
+auto.</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="checkBox_auto">
-              <property name="text">
-               <string>Suivi automatique</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="Bouton_lance_capture">
+              <property name="toolTip">
+               <string>Commencer le suivi des objets (manuel ou automatique)</string>
+              </property>
               <property name="text">
-               <string>Démarrer</string>
+               <string>Démarrer le pointage</string>
               </property>
              </widget>
             </item>
@@ -402,6 +478,12 @@
              <widget class="QPushButton" name="pushButton_stopCalculs">
               <property name="enabled">
                <bool>false</bool>
+              </property>
+              <property name="toolTip">
+               <string>Arrêt du suivi automatique</string>
+              </property>
+              <property name="statusTip">
+               <string/>
               </property>
               <property name="text">
                <string>STOP</string>
@@ -414,19 +496,18 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_reinit">
+              <property name="toolTip">
+               <string>Supprimer tous les pointages et l'échelle</string>
+              </property>
+              <property name="statusTip">
+               <string>Supprimer tous les pointages et l'échelle</string>
+              </property>
               <property name="styleSheet">
                <string notr="true">QPushButton{color: red;}
 QPushButton:disabled{color: #c0c0c0;}</string>
               </property>
               <property name="text">
                <string>Tout réinitialiser</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_origine">
-              <property name="text">
-               <string>Changer d'origine</string>
               </property>
              </widget>
             </item>
@@ -438,19 +519,74 @@ QPushButton:disabled{color: #c0c0c0;}</string>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="checkBox_abscisses">
+             <widget class="QPushButton" name="pushButton_origine">
+              <property name="toolTip">
+               <string>On peut déplacer l'origine du repère</string>
+              </property>
+              <property name="statusTip">
+               <string/>
+              </property>
               <property name="text">
-               <string>Abscisses
-vers la gauche</string>
+               <string>Changer d'origine</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="checkBox_ordonnees">
-              <property name="text">
-               <string>Ordonnées
-vers le bas</string>
+             <widget class="QWidget" name="widget_14" native="true">
+              <property name="toolTip">
+               <string>Orientation des axes</string>
               </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_17">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>Axes : </string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="checkBox_ordonnees">
+                 <property name="font">
+                  <font>
+                   <pointsize>18</pointsize>
+                  </font>
+                 </property>
+                 <property name="toolTip">
+                  <string>Ordonnées vers le bas de l'écran</string>
+                 </property>
+                 <property name="text">
+                  <string>↧</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="checkBox_abscisses">
+                 <property name="font">
+                  <font>
+                   <pointsize>18</pointsize>
+                  </font>
+                 </property>
+                 <property name="toolTip">
+                  <string>Abscisses vers la gauche de l'écran</string>
+                 </property>
+                 <property name="text">
+                  <string>↤</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
             <item>
@@ -462,6 +598,12 @@ vers le bas</string>
             </item>
             <item>
              <widget class="QWidget" name="widget_7" native="true">
+              <property name="toolTip">
+               <string>Le nombre d'images par seconde est détecté automatiquement. Entrer la valeur manuellement si la détection échoue.</string>
+              </property>
+              <property name="statusTip">
+               <string/>
+              </property>
               <layout class="QHBoxLayout" name="horizontalLayout_7">
                <property name="leftMargin">
                 <number>0</number>
@@ -503,7 +645,10 @@ vers le bas</string>
                   </size>
                  </property>
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Le nombre d'images par seconde est détecté automatiquement. Enter la valeur manuellement si la détection échoue.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string/>
+                 </property>
+                 <property name="statusTip">
+                  <string/>
                  </property>
                 </widget>
                </item>
@@ -653,16 +798,26 @@ vers le bas</string>
               </item>
               <item>
                <widget class="QLabel" name="label">
+                <property name="toolTip">
+                 <string>Choix de l'image dans le film</string>
+                </property>
                 <property name="text">
                  <string>Image n°</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="spinBox_image"/>
+               <widget class="QSpinBox" name="spinBox_image">
+                <property name="toolTip">
+                 <string>Choix de l'image dans le film</string>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QSlider" name="horizontalSlider">
+                <property name="toolTip">
+                 <string>Choix de l'image dans le film</string>
+                </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -718,6 +873,12 @@ vers le bas</string>
                <width>0</width>
                <height>0</height>
               </size>
+             </property>
+             <property name="toolTip">
+              <string>Zone d'affichage et de pointage ; peut être redimensionnée dans l'état « initial » seulement</string>
+             </property>
+             <property name="toolTipDuration">
+              <number>1500</number>
              </property>
             </widget>
            </item>

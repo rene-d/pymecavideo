@@ -419,8 +419,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         @param xm abscisse en mètre (str)
         @param ym ordonnée en mètre (str)
         """
-        self.editXYpx.setText(f"{xpx}, {ypx}")
-        self.editXYm.setText(f"{xm}, {ym}")
+        self.editXpx.setText(f"{xpx}")
+        self.editYpx.setText(f"{ypx}")
+        self.editXm.setText(f"{xm}")
+        self.editYm.setText(f"{ym}")
         return
         
 
@@ -433,7 +435,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         def msgDebut(app):
             return self.tr("Début : ouvrez un fichier, ou un exemple des aides")
         def msgA(app):
-            return self.tr("Fichier vidéo : {filename} ... donnez l'échelle ou démarrez le pointage").format(filename = os.path.basename(app.video.filename))
+            return self.tr("Fichier vidéo : {filename} ... définissez l'échelle ou démarrez le pointage | Il est possible de redimensionner la fenêtre").format(filename = os.path.basename(app.video.filename))
         def msgAB(app):
             return self.tr("Préparation du pointage automatique : sélectionnez les objets à suivre, au nombre de {n}").format(n = app.video.nb_obj)
         def msgB(app):
@@ -494,7 +496,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Tous les onglets sont désactivés ; idéalement, une aide
         pour dire d’aller chercher un fichier vidéo apparaît.
         """
-        self.zoomLabel.setText(self.tr(" Zoom autour de x, y ="))
+        self.zoomLabel.setText(self.tr("Zoom autour de x, y ="))
         # désactivation de widgets
         for obj in self.actionDefaire, self.actionRefaire, \
             self.actionCopier_dans_le_presse_papier, self.menuE_xporter_vers, \
@@ -567,7 +569,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         Sur l’image de la vidéo, le curseur est ordinaire.
         """
-        self.zoomLabel.setText(self.tr(" Zoom autour de x, y ="))
+        self.setWindowTitle(self.tr("Pymecavideo : {filename}").format(
+            filename = os.path.basename(self.video.filename)))
+        self.zoomLabel.setText(self.tr("Zoom autour de x, y ="))
         if not self.video.echelle_image:
             self.affiche_echelle() # marque "indéf."
             self.echelle_modif.emit(self.tr("Définir l'échelle"),
@@ -664,7 +668,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Le premier onglet est actif, mais tous les widgets de
         contrôle y sont inactifs.
         """
-        self.zoomLabel.setText(self.tr(" Zoom autour de x, y ="))
+        self.zoomLabel.setText(self.tr("Zoom autour de x, y ="))
         # désactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
             self.label_nb_de_points, \
@@ -715,7 +719,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Cet état peut se situer entre A et A, ou entre D et D,
         selon la valeur de self.etat_ancien.
         """
-        self.zoomLabel.setText(self.tr(" Zoom autour de x, y ="))
+        self.zoomLabel.setText(self.tr("Zoom autour de x, y ="))
         # désactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
             self.label_nb_de_points, \
