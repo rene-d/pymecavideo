@@ -150,8 +150,6 @@ class EchelleWidget(QWidget):
 
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
-        xy = self.video.coords(p)
-        self.app.afficheXY.emit(*xy)
         self.app.update_zoom.emit(p)
         if self.pressed:
             self.p2 = p

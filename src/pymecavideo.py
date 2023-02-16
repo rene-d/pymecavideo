@@ -335,7 +335,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     update_zoom = pyqtSignal(vecteur)       # agrandit une portion d'image
     image_n = pyqtSignal(int)               # modifie les contrôles d'image
     affiche_statut = pyqtSignal(str)        # modifie la ligne de statut
-    afficheXY = pyqtSignal(int, int, str, str) # position de la souris
     adjust4image = pyqtSignal()             # adapte la taille à l'image
     
     def ui_connections(self):
@@ -411,7 +410,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.update_zoom.connect(self.loupe)
         self.image_n.connect(self.sync_img2others)
         self.affiche_statut.connect(self.setStatus)
-        self.afficheXY.connect(self.affiche_xy)
         self.adjust4image.connect(self.ajuste_pour_image)
         
         return
@@ -462,21 +460,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.fixeLesDimensions()
         
         return
-    
-    def affiche_xy(self, xpx, ypx, xm, ym):
-        """
-        affiche les coordonnées du point central du zoom
-        @param xpx abscisse en pixel (int)
-        @param ypx ordonnée en pixel (int)
-        @param xm abscisse en mètre (str)
-        @param ym ordonnée en mètre (str)
-        """
-        self.editXpx.setText(f"{xpx}")
-        self.editYpx.setText(f"{ypx}")
-        self.editXm.setText(f"{xm}")
-        self.editYm.setText(f"{ym}")
-        return
-        
 
     def definit_messages_statut(self):
         """
@@ -2024,6 +2007,11 @@ Merci de bien vouloir le renommer avant de continuer"""))
         @param position le centre de la zone à agrandir
         """
         self.zoom_zone.fait_crop(self.video.image, position)
+        xpx, ypx, xm, ym = self.video.coords(position)
+        self.editXpx.setText(f"{xpx}")
+        self.editYpx.setText(f"{ypx}")
+        self.editXm.setText(f"{xm}")
+        self.editYm.setText(f"{ym}")
         return
 
     def setStatus(self, text):

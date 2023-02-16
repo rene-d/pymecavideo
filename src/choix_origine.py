@@ -48,8 +48,6 @@ class ChoixOrigineWidget(QWidget):
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
         self.app.update_zoom.emit(p)
-        xy = self.app.video.coords(p)
-        self.app.afficheXY.emit(*xy)
         return
 
     def mouseReleaseEvent(self, event):
