@@ -552,6 +552,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         self.auto = True # inhibe le pointage à la souris !
         # recouvre l'image avec le widget selRect pour définir des
         # rectangles pour chaque motif à suivre
+        self.app.zoomLabel.setText(self.tr("Zone à suivre n° {zone} x, y =").format(zone=self.suivis[0]))
         self.selRect = SelRectWidget(self)
         self.selRect.show()
         return
@@ -623,6 +624,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
                 self.pileDeDetections.append(i)
             self.dbg.p(3, "self.pileDeDetections : %s" % self.pileDeDetections)
             self.app.change_etat.emit("B")
+        else:
+            self.app.zoomLabel.setText(self.tr("Zone à suivre n° {zone} x, y =").format(zone=self.suivis[len(self.motifs_auto)]))
         return
 
     # @time_it
@@ -643,9 +646,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             # puis on boucle sur les objets à suivre et on
             # détecte leurs positions
             # Ça pourrait bien se faire dans des threads, en parallèle !!!
-            for i in range(self.nb_obj):
+            for i, part in enumerate(self.motifs_auto):
                 self.indexMotif = i
-                part = self.motifs_auto[self.indexMotif]
                 zone_proche = self.pointsProbables.get(self.objet_courant, None)
                 point = filter_picture(part, image, zone_proche)
                 self.pointsProbables[self.objet_courant] = point
