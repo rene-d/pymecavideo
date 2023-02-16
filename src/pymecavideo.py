@@ -333,9 +333,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     sens_axes = pyqtSignal(int, int)        # coche les cases des axes
     stop_n = pyqtSignal(str)                # refait le texte du bouton STOP
     update_zoom = pyqtSignal(vecteur)       # agrandit une portion d'image
+    label_zoom = pyqtSignal(str)            # change le label du zoom
     image_n = pyqtSignal(int)               # modifie les contrôles d'image
     affiche_statut = pyqtSignal(str)        # modifie la ligne de statut
     adjust4image = pyqtSignal()             # adapte la taille à l'image
+    
     
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -411,9 +413,18 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.image_n.connect(self.sync_img2others)
         self.affiche_statut.connect(self.setStatus)
         self.adjust4image.connect(self.ajuste_pour_image)
+        self.label_zoom.connect(self.labelZoom)
         
         return
 
+    def labelZoom(self, label):
+        """
+        Met à jour le label au-dessus du zoom
+        @param label le nouveau label
+        """
+        self.zoomLabel.setText(label)
+        return
+    
     def ajuste_pour_image(self):
         """
         ajuste progressivement la taille de la fenêtre principale
@@ -531,7 +542,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Tous les onglets sont désactivés ; idéalement, une aide
         pour dire d’aller chercher un fichier vidéo apparaît.
         """
-        self.zoomLabel.setText(self.tr("Zoom autour de x, y ="))
+        self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
         # désactivation de widgets
         for obj in self.actionDefaire, self.actionRefaire, \
             self.actionCopier_dans_le_presse_papier, self.menuE_xporter_vers, \
@@ -607,7 +618,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.setWindowTitle(self.tr("Pymecavideo : {filename}").format(
             filename = os.path.basename(self.video.filename)))
         self.video.objet_courant = 1
-        self.zoomLabel.setText(self.tr("Zoom autour de x, y ="))
+        self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
         if not self.video.echelle_image:
             self.affiche_echelle() # marque "indéf."
             self.echelle_modif.emit(self.tr("Définir l'échelle"),
@@ -705,7 +716,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Le premier onglet est actif, mais tous les widgets de
         contrôle y sont inactifs.
         """
-        self.zoomLabel.setText(self.tr("Zoom autour de x, y ="))
+        self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
         # désactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
             self.label_nb_de_points, \
@@ -756,7 +767,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         Cet état peut se situer entre A et A, ou entre D et D,
         selon la valeur de self.etat_ancien.
         """
-        self.zoomLabel.setText(self.tr("Zoom autour de x, y ="))
+        self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
         # désactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
             self.label_nb_de_points, \
@@ -792,7 +803,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         curseur de souris a la forme d’une grosse cible ;
         idéalement il identifie aussi l’objet à pointer.
         """
-        self.zoomLabel.setText(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.video.suivis[0]))
+        self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.video.suivis[0]))
         # empêche de redimensionner la fenêtre
         self.fixeLesDimensions()
         # prépare le widget video
@@ -859,7 +870,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         sont inactifs, ainsi que les onglets autres que le
         premier.
         """
-        self.zoomLabel.setText(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.video.objet_courant))
+        self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.video.objet_courant))
         self.imgControlImage(False)
         for i in 1, 2, 3:
             self.tabWidget.setTabEnabled(i, False)        
