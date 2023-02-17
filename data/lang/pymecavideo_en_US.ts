@@ -679,41 +679,41 @@ PLease rename it before going on</translation>
       <translation>Pymecavideo cannot read the image</translation>
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="574" />
+      <location filename="../../src/videoWidget.py" line="573" />
       <location filename="../../src/videoWidget.py" line="437" />
       <source>Refaire l'échelle</source>
       <translation>Redo the scale</translation>
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="489" />
+      <location filename="../../src/videoWidget.py" line="488" />
       <source>Le format de cette vidéo n'est pas pris en charge par pymecavideo</source>
       <translation>The format of this video is not compatible with pymecavideo</translation>
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="515" />
+      <location filename="../../src/videoWidget.py" line="514" />
       <source>Erreur lors de la lecture du fichier</source>
       <translation>Error while reading the file</translation>
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="516" />
+      <location filename="../../src/videoWidget.py" line="515" />
       <source>Le fichier&lt;b&gt;{0}&lt;/b&gt; ...
 n'est peut-être pas dans un format vidéo supporté.</source>
       <translation>The file&lt;b&gt;{0}&lt;/b&gt; ...
 is maybe in an unsupported video format.</translation>
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="527" />
+      <location filename="../../src/videoWidget.py" line="526" />
       <source>Cliquez sur l'objet : {0}</source>
       <translation>Clic on the object: {0}</translation>
     </message>
     <message>
       <location filename="../../src/videoWidget.py" line="630" />
-      <location filename="../../src/videoWidget.py" line="557" />
+      <location filename="../../src/videoWidget.py" line="556" />
       <source>Zone à suivre n° {zone} x, y =</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/videoWidget.py" line="588" />
+      <location filename="../../src/videoWidget.py" line="587" />
       <source>Définir l'échelle</source>
       <translation>Define the scale</translation>
     </message>
@@ -902,6 +902,239 @@ successfully saved.</translation>
       <location filename="../../src/export.py" line="128" />
       <source>Fichier Pandas sauvegardé</source>
       <translation>Pandas file saved</translation>
+    </message>
+  </context>
+  <context>
+    <name>pointageWidget</name>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Pointage</source>
+      <translation type="unfinished">SpottingSpotting</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Zoom ⨯2 autour du curseur de la souris</source>
+      <translation type="unfinished">Zoom ⨯2 around the mouse's cursor</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source> Zoom autour de x, y =</source>
+      <translation type="unfinished"> Zoom near x, y =</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Ordonnée (pixel)</source>
+      <translation type="unfinished">Ordinate (pixel)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Abscisse (pixel)</source>
+      <translation type="unfinished">Abscissa (pixel)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Ordonnée (m)</source>
+      <translation type="unfinished">Ordinate (m)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Abscisse (m)</source>
+      <translation type="unfinished">Abscissa (m)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>(px) </source>
+      <translation type="unfinished">(px) </translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>(m)</source>
+      <translation type="unfinished">(m)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>,</source>
+      <translation type="unfinished">,</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Définition de l'échelle, par tirer-glisser sur l'image</source>
+      <translation type="unfinished">Define the scale, by dragging on the image</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Définir Échelle</source>
+      <translation type="unfinished">Define the scale</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>L'échelle, en pixel par mètre</source>
+      <translation type="unfinished">The scale, in pixel per metre</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>indéf.</source>
+      <translation type="unfinished">undef.</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>px/m</source>
+      <translation type="unfinished">px/m</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Nombre d'objets à suivre</source>
+      <translation type="unfinished">Number of objects to spot</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Objets :</source>
+      <translation type="unfinished">Objects:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Activation du pointage automatique</source>
+      <translation type="unfinished">Activate the automatic spotting</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>suivi
+auto.</source>
+      <translation type="unfinished">auto.
+spot.</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Commencer le suivi des objets (manuel ou automatique)</source>
+      <translation type="unfinished">Start spotting the objects (manual or automatic)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Démarrer le pointage</source>
+      <translation type="unfinished">Start spotting</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Arrêt du suivi automatique</source>
+      <translation type="unfinished">Stop the automatic spotting</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>STOP</source>
+      <translation type="unfinished">STOP</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Supprimer tous les pointages et l'échelle</source>
+      <translation type="unfinished">Delete all the spots and the scale</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Tout réinitialiser</source>
+      <translation type="unfinished">Reinitialize</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>On peut déplacer l'origine du repère</source>
+      <translation type="unfinished">One can move the origin of the referential</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Changer d'origine</source>
+      <translation type="unfinished">Change the origin</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Orientation des axes</source>
+      <translation type="unfinished">Directions of axis</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Axes : </source>
+      <translation type="unfinished">Axis: </translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Ordonnées vers le bas de l'écran</source>
+      <translation type="unfinished">Ordinate to the bottom of the screen</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>↧</source>
+      <translation type="unfinished">↧</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Abscisses vers la gauche de l'écran</source>
+      <translation type="unfinished">Abscissa to the left of the screen</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>↤</source>
+      <translation type="unfinished">↤</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Le nombre d'images par seconde est détecté automatiquement. Entrer la valeur manuellement si la détection échoue.</source>
+      <translation type="unfinished">The framerate has been detected automatically. Enter the value manually if the autodetection failed.</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>IPS :</source>
+      <translation type="unfinished">FPS:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Incrémenter le compteur d'image à chaque pointage</source>
+      <translation type="unfinished">Increment the image counter at every spotting</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Incr :</source>
+      <translation type="unfinished">Incr:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Tourner l'image de 90° vers la gauche</source>
+      <translation type="unfinished">Turn the image 90 degrees left</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Tourner l'image de 90° vers la droite</source>
+      <translation type="unfinished">Turn the image 90 degrees right</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Choix de l'image dans le film</source>
+      <translation type="unfinished">Choose the image in the film</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Image n°</source>
+      <translation type="unfinished">Image #</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Efface le point précédent</source>
+      <translation type="unfinished">Delete the previous point</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Rétablit le point suivant</source>
+      <translation type="unfinished">Restore the next point</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Zone d'affichage et de pointage ; peut être redimensionnée dans l'état « initial » seulement</source>
+      <translation type="unfinished">Area of display and spotting; can be resized only in the "initial" state</translation>
     </message>
   </context>
   <context>

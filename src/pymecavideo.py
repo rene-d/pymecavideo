@@ -344,7 +344,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     affiche_statut = pyqtSignal(str)        # modifie la ligne de statut
     adjust4image = pyqtSignal()             # adapte la taille à l'image
     hide_imgdim = pyqtSignal()              # cache la dimension de l'image
-    update_imgedit = pyqtSignal(int, int, int) # met à jour cette dimension
     
     
     def ui_connections(self):
@@ -423,20 +422,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.adjust4image.connect(self.ajuste_pour_image)
         self.label_zoom.connect(self.labelZoom)
         self.hide_imgdim.connect(self.cache_imgdim)
-        self.update_imgedit.connect(self.affiche_imgsize)
         
         return
 
-    def affiche_imgsize(self, w, h, r):
-        """
-        Affiche la taille de l'image
-        @param w largeur de l'image
-        @param h hauteur de l'image
-        @param r rotation de l'image
-        """
-        self.imgdimEdit.setText(f"{w} x {h} ({r}°)")
-        return
-    
     def cache_imgdim(self):
         """
         Cache le widget d'affichage de la dimension de l'image
