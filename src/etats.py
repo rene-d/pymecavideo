@@ -20,7 +20,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt6.QtCore import QObject
+from PyQt6.QtCore import Qt, QObject, pyqtSignal
+
+import os
+
 class Etats(QObject):
     """
     Une classe qui permet de définir les états de l'application:
@@ -29,38 +32,6 @@ class Etats(QObject):
 
     def __init__(self):
         QObject.__init__(self)
-        return
-    
-    def definit_messages_statut(self):
-        """
-        Définit le début des messages à envoyer dans la ligne de statut;
-        il s'agit de définir le dictionnaire self.roleEtat de structure
-        etat => fonction de rappel pour renvoyer une chaîne appropriée
-        """
-        def msgDebut(app):
-            return self.tr("Début : ouvrez un fichier, ou un exemple des aides")
-        def msgA(app):
-            return self.tr("Fichier vidéo : {filename} ... définissez l'échelle ou démarrez le pointage | Il est possible de redimensionner la fenêtre").format(filename = os.path.basename(app.pointage.filename))
-        def msgAB(app):
-            return self.tr("Préparation du pointage automatique : sélectionnez les objets à suivre, au nombre de {n}").format(n = app.pointage.nb_obj)
-        def msgB(app):
-            return self.tr("Pointage automatique en cours : il peut être interrompu par le bouton STOP")
-        def msgC(app):
-            return self.tr("Définissez l'échelle, par un tirer-glisser sur l'image")
-        def msgD(app):
-            return self.tr("Pointage manuel : cliquez sur le premier objet à suivre")
-        def msgE(app):
-            return self.tr("Pointage manuel : il reste encore des objets à pointer, on en est à {obj}").format(obj = app.pointage.objet_courant)
-        
-        self.roleEtat = { # résumé de ce que représente un état
-            "debut" : msgDebut,
-            "A" :     msgA,
-            "AB" :    msgAB,
-            "B" :     msgB,
-            "C" :     msgC,
-            "D" :     msgD,
-            "E" :     msgE,
-        }
         return
 
     def etatUI(self, etat):
@@ -89,7 +60,6 @@ class Etats(QObject):
         self.etat = etat
         # appel de la fonction liée à l'état courant
         fonctions[self.etat]()
-        self.setStatus("")
         return
     
     def etatDebut(self):
@@ -103,44 +73,19 @@ class Etats(QObject):
         """
         self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
         # désactivation de widgets
-        for obj in self.actionDefaire, self.actionRefaire, \
-            self.actionCopier_dans_le_presse_papier, self.menuE_xporter_vers, \
-            self.actionSaveData, self.widget_chronophoto, self.pointage.spinBox_image, \
-            self.pointage.pushButton_rot_droite, self.pointage.pushButton_rot_gauche, \
-            self.pointage.pushButton_stopCalculs, \
-            self.button_video, self.pointage.label_nb_de_points, \
-            self.pointage.spinBox_objets, self.pointage.Bouton_Echelle, \
-            self.pointage.checkBox_auto, self.pointage.Bouton_lance_capture, \
-            self.pointage.pushButton_reinit, self.pointage.pushButton_origine, \
-            self.pointage.pushButton_defait, self.pointage.pushButton_refait, \
-            self.pointage.checkBox_abscisses, self.pointage.checkBox_ordonnees, \
-            self.pointage.label_IPS, self.pointage.lineEdit_IPS :
+        for obj in self.spinBox_image, \
+            self.pushButton_rot_droite, self.pushButton_rot_gauche, \
+            self.pushButton_stopCalculs, \
+            self.label_nb_de_points, \
+            self.spinBox_objets, self.Bouton_Echelle, \
+            self.checkBox_auto, self.Bouton_lance_capture, \
+            self.pushButton_reinit, self.pushButton_origine, \
+            self.pushButton_defait, self.pushButton_refait, \
+            self.checkBox_abscisses, self.checkBox_ordonnees, \
+            self.label_IPS, self.lineEdit_IPS :
             
             obj.setEnabled(False)
             
-        # décochage de widgets
-        for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
-            obj.setChecked(False)
-        
-        # activation de widgets
-        for obj in self.tabWidget, self.actionExemples:
-
-            obj.setEnabled(True)
-
-        # on cache certains widgets
-        for obj in self.radioButtonNearMouse, \
-            self.radioButtonSpeedEveryWhere, self.pointage.pushButton_stopCalculs:
-
-            obj.hide()
-
-        # organisation des onglets
-        self.tabWidget.setCurrentIndex(0)       # montre l'onglet video
-        for i in range(1,4):
-            self.tabWidget.setTabEnabled(i, False)  # autres onglets inactifs
-
-         # initialisation de self.trajectoire_widget
-        self.trajectoire_widget.chrono = False
-
         # désactive les contôles de l'image
         self.imgControlImage(False)
 
@@ -148,17 +93,14 @@ class Etats(QObject):
         self.affiche_echelle()
 
         # mise à jour de styles
-        self.pointage.Bouton_Echelle.setStyleSheet("background-color:None;")
+        self.Bouton_Echelle.setStyleSheet("background-color:None;")
 
-        # autorise le redimensionnement de la fenêtre principale
-        self.OKRedimensionnement.emit()
-
+        self.pushButton_stopCalculs.hide()
         # inactive le spinner pour les incréments de plus d'une image
         # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
         # non encore implémentée
-        self.pointage.imgno_incr.hide()
-        self.pointage.spinBox.hide()
-
+        self.imgno_incr.hide()
+        self.spinBox.hide()
         return
         
     def etatA(self):
@@ -174,95 +116,60 @@ class Etats(QObject):
 
         Sur l’image de la vidéo, le curseur est ordinaire.
         """
-        self.setWindowTitle(self.tr("Pymecavideo : {filename}").format(
-            filename = os.path.basename(self.pointage.filename)))
-        self.pointage.objet_courant = 1
+        self.objet_courant = 1
         self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
-        if not self.pointage.echelle_image:
+        if not self.echelle_image:
             self.affiche_echelle() # marque "indéf."
             self.echelle_modif.emit(self.tr("Définir l'échelle"),
                                     "background-color:None;")
-            # comme il n'y a pas d'échelle, on peut redimensionner la fenêtre
-            self.OKRedimensionnement.emit()
-            if self.pointage.echelle_trace:
-                self.pointage.echelle_trace.hide()
-        # ferme les widget d'affichages des x, y, v du 2eme onglet
-        # si elles existent
-        for plotwidget in self.dictionnairePlotWidget.values():
-            plotwidget.parentWidget().close()
-            plotwidget.close()
-            del plotwidget
-        self.init_variables(self.pointage.filename)
+            if self.echelle_trace:
+                self.echelle_trace.hide()
         # active les contrôle de l'image, montre l'image
         self.imgControlImage(True)
-        self.pointage.affiche_image()
+        self.affiche_image()
         # réactive plusieurs widgets
-        for obj in self.pointage.label_nb_de_points, self.pointage.pushButton_reinit, \
-            self.pointage.spinBox_objets, self.pointage.Bouton_Echelle, \
-            self.pointage.checkBox_auto, self.pointage.Bouton_lance_capture, \
-            self.pointage.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
-            self.pointage.checkBox_abscisses, self.pointage.checkBox_ordonnees, \
-            self.pointage.label_IPS, self.pointage.lineEdit_IPS, \
-            self.menuE_xporter_vers, self.actionSaveData :
+        for obj in self.label_nb_de_points, self.pushButton_reinit, \
+            self.spinBox_objets, self.Bouton_Echelle, \
+            self.checkBox_auto, self.Bouton_lance_capture, \
+            self.pushButton_origine, \
+            self.checkBox_abscisses, self.checkBox_ordonnees, \
+            self.label_IPS, self.lineEdit_IPS, self.spinBox_objets :
 
             obj.setEnabled(True)
 
         # si une échelle est définie, on interdit les boutons de rotation
         # sinon on autorise ces boutons
-        rotation_possible = not self.pointage.echelle_image
-        for obj in self.pointage.pushButton_rot_droite, self.pointage.pushButton_rot_gauche :
+        rotation_possible = not self.echelle_image
+        for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche :
             obj.setEnabled(rotation_possible)
                 
         # ajuste le nombre d'objets suivis
-        if self.pointage.suivis:
-            self.pointage.spinBox_objets.setValue(self.pointage.nb_obj)
+        if self.suivis:
+            self.spinBox_objets.setValue(self.nb_obj)
         else:
-            self.pointage.dimension_data.emit(1)
-            self.pointage.spinBox_objets.setValue(1)
+            self.dimension_data.emit(1)
+            self.spinBox_objets.setValue(1)
 
         # desactive d'autres widgets
-        self.pointage.pushButton_stopCalculs.setEnabled(False)
-        self.pointage.pushButton_stopCalculs.hide()
+        self.pushButton_stopCalculs.setEnabled(False)
+        self.pushButton_stopCalculs.hide()
         self.enableDefaire(False)
         self.enableRefaire(False)
-        self.pointage.checkBox_abscisses.setCheckState(Qt.CheckState.Unchecked)
-        self.pointage.checkBox_ordonnees.setCheckState(Qt.CheckState.Unchecked)
-        self.pointage.checkBox_auto.setCheckState(Qt.CheckState.Unchecked)
-        for i in 1, 2, 3:
-            self.tabWidget.setTabEnabled(i, False)
-        self.checkBox_Ec.setChecked(False)
-        self.checkBox_Em.setChecked(False)
-        self.checkBox_Epp.setChecked(False)
-        
-        # désactive le grapheur si existant
-        if self.graphWidget:
-            plotItem = self.graphWidget.getPlotItem()
-            plotItem.clear()
-            plotItem.setTitle('')
-            plotItem.hideAxis('bottom')
-            plotItem.hideAxis('left')
- 
+        self.checkBox_abscisses.setCheckState(Qt.CheckState.Unchecked)
+        self.checkBox_ordonnees.setCheckState(Qt.CheckState.Unchecked)
+        self.checkBox_auto.setCheckState(Qt.CheckState.Unchecked)
+       
         """
         Prépare une session de pointage, au niveau de la
         fenêtre principale, et met à jour les préférences
         """
         d = self.prefs.defaults
-        d['lastVideo'] = self.pointage.filename
-        d['videoDir'] = os.path.dirname(self.pointage.filename)
-        d["taille_image"] = f"({self.pointage.image_w},{self.pointage.image_h})"
-        d['rotation'] = str(self.pointage.rotation)
+        d['lastVideo'] = self.filename
+        d['videoDir'] = os.path.dirname(self.filename)
+        d["taille_image"] = f"({self.video.image_w},{self.video.image_h})"
+        d['rotation'] = str(self.video.rotation)
         self.prefs.save()
-
-        self.pointage.spinBox_image.setMinimum(1)
-        self.pointage.spinBox_image.setValue(1)
-        self.spinBox_chrono.setMaximum(self.pointage.image_max)
-        self.pointage.spinBox_objets.setEnabled(True)
-        self.tab_traj.setEnabled(0)
-
-        self.affiche_statut.emit(
-           self.tr("Veuillez choisir une image (et définir l'échelle)"))
-        self.montre_vitesses = False
-        self.egalise_origine()
+            
         return
 
     def etatAB(self):
@@ -279,7 +186,7 @@ class Etats(QObject):
         # désactive plusieurs widgets
         for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
             self.label_nb_de_points, \
-            self.spinBox_objets, self.pointage.Bouton_Echelle, \
+            self.spinBox_objets, self.Bouton_Echelle, \
             self.checkBox_auto, self.Bouton_lance_capture, \
             self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
             self.checkBox_abscisses, self.checkBox_ordonnees, \
@@ -296,7 +203,7 @@ class Etats(QObject):
         self.affiche_statut.emit(self.tr("Pointage Automatique"))
         self.imgControlImage(False)
         # on démarre la définition des zones à suivre
-        self.pointage.capture_auto()
+        self.capture_auto()
         return
         
     def etatB(self):
@@ -312,7 +219,7 @@ class Etats(QObject):
         self.pushButton_stopCalculs.show()
         self.update()
         # initialise la détection des points
-        self.pointage.detecteUnPoint()
+        self.detecteUnPoint()
         return
     
     def etatC(self):
@@ -328,14 +235,13 @@ class Etats(QObject):
         """
         self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
         # désactive plusieurs widgets
-        for obj in self.pointage.pushButton_rot_droite, self.pointage.pushButton_rot_gauche, \
-            self.pointage.label_nb_de_points, \
-            self.pointage.spinBox_objets, self.pointage.Bouton_Echelle, \
-            self.pointage.checkBox_auto, self.pointage.Bouton_lance_capture, \
-            self.pointage.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
-            self.pointage.checkBox_abscisses, self.pointage.checkBox_ordonnees, \
-            self.pointage.label_IPS, self.pointage.lineEdit_IPS, \
-            self.menuE_xporter_vers, self.actionSaveData :
+        for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
+            self.label_nb_de_points, \
+            self.spinBox_objets, self.Bouton_Echelle, \
+            self.checkBox_auto, self.Bouton_lance_capture, \
+            self.pushButton_origine, \
+            self.checkBox_abscisses, self.checkBox_ordonnees, \
+            self.label_IPS, self.lineEdit_IPS:
 
             obj.setEnabled(False)
         
@@ -362,20 +268,20 @@ class Etats(QObject):
         curseur de souris a la forme d’une grosse cible ;
         idéalement il identifie aussi l’objet à pointer.
         """
-        self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.pointage.suivis[0]))
+        self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.suivis[0]))
         # empêche de redimensionner la fenêtre
-        self.stopRedimensionnement.emit()
+        self.app.stopRedimensionnement.emit()
         # prépare le widget video
-        self.pointage.setFocus()
-        if self.pointage.echelle_trace: self.pointage.echelle_trace.lower()
+        self.setFocus()
+        if self.echelle_trace: self.echelle_trace.lower()
         # on cache le bouton STOP
-        self.pointage.pushButton_stopCalculs.setEnabled(False)
-        self.pointage.pushButton_stopCalculs.hide()
+        self.pushButton_stopCalculs.setEnabled(False)
+        self.pushButton_stopCalculs.hide()
         # on force extract_image afin de mettre à jour le curseur de la vidéo
-        self.pointage.extract_image(self.pointage.horizontalSlider.value())
+        self.extract_image(self.horizontalSlider.value())
         
-        self.pointage.affiche_point_attendu(self.pointage.suivis[0])
-        self.pointage.lance_capture = True
+        self.affiche_point_attendu(self.suivis[0])
+        self.lance_capture = True
          # les widgets de contrôle de l'image sont actifs ici
         self.imgControlImage(True)
         
@@ -387,7 +293,7 @@ class Etats(QObject):
         # boutons pour les énergies !
         for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
             obj.setChecked(False)
-            obj.setEnabled(bool(self.pointage.echelle_image))
+            obj.setEnabled(bool(self.echelle_image))
             
         # mise à jour des menus
         self.actionSaveData.setEnabled(True)
@@ -397,26 +303,26 @@ class Etats(QObject):
 
         self.comboBox_referentiel.clear()
         self.comboBox_referentiel.insertItem(-1, "camera")
-        for obj in self.pointage.suivis:
+        for obj in self.suivis:
             self.comboBox_referentiel.insertItem(
                 -1, self.tr("objet N° {0}").format(str(obj)))
 
         # désactive des boutons et des cases à cocher
-        for obj in self.pointage.pushButton_origine, self.pointage.checkBox_abscisses, \
-            self.pointage.checkBox_ordonnees, self.pointage.checkBox_auto, \
-            self.pointage.Bouton_lance_capture, self.pointage.pushButton_rot_droite, \
-            self.pointage.pushButton_rot_gauche :
+        for obj in self.pushButton_origine, self.checkBox_abscisses, \
+            self.checkBox_ordonnees, self.checkBox_auto, \
+            self.Bouton_lance_capture, self.pushButton_rot_droite, \
+            self.pushButton_rot_gauche :
 
             obj.setEnabled(False)
 
         # si aucune échelle n'a été définie, on place l'étalon à 1 px pour 1 m.
-        if self.pointage.echelle_image.mParPx() == 1:
-            self.pointage.echelle_image.longueur_reelle_etalon = 1
-            self.pointage.echelle_image.p1 = vecteur(0, 0)
-            self.pointage.echelle_image.p2 = vecteur(0, 1)
+        if self.echelle_image.mParPx() == 1:
+            self.echelle_image.longueur_reelle_etalon = 1
+            self.echelle_image.p1 = vecteur(0, 0)
+            self.echelle_image.p2 = vecteur(0, 1)
 
         # active le bouton de réinitialisation
-        self.pointage.pushButton_reinit.setEnabled(True)
+        self.pushButton_reinit.setEnabled(True)
         return
 
     def etatE(self):
@@ -429,7 +335,7 @@ class Etats(QObject):
         sont inactifs, ainsi que les onglets autres que le
         premier.
         """
-        self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.pointage.objet_courant))
+        self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.objet_courant))
         self.imgControlImage(False)
         for i in 1, 2, 3:
             self.tabWidget.setTabEnabled(i, False)        
@@ -441,5 +347,34 @@ class Etats(QObject):
         """
         self.change_etat.emit(self.etat_ancien)
         return
-        
+
+    def definit_messages_statut(self):
+        """
+        Définit les correspondances en état et message de barre de statut
+        """
+        # les fonction qui permettent d'avoir les débuts de messages de statut
+        def msgDebut(app):
+            return self.tr("Début : ouvrez un fichier, ou un exemple des aides")
+        def msgA(app):
+            if app.filename is None: return ""
+            return self.tr("Fichier vidéo : {filename} ... définissez l'échelle ou démarrez le pointage | Il est possible de redimensionner la fenêtre").format(filename = os.path.basename(app.filename))
+        def msgAB(app):
+            return self.tr("Préparation du pointage automatique : sélectionnez les objets à suivre, au nombre de {n}").format(n = app.nb_obj)
+        def msgB(app):
+            return self.tr("Pointage automatique en cours : il peut être interrompu par le bouton STOP")
+        def msgC(app):
+            return self.tr("Définissez l'échelle, par un tirer-glisser sur l'image")
+        def msgD(app):
+            return self.tr("Pointage manuel : cliquez sur le premier objet à suivre")
+        def msgE(app):
+            return self.tr("Pointage manuel : il reste encore des objets à pointer, on en est à {obj}").format(obj = app.objet_courant)
+        return { # résumé de ce que représente un état
+            "debut" : msgDebut,
+            "A" :     msgA,
+            "AB" :    msgAB,
+            "B" :     msgB,
+            "C" :     msgC,
+            "D" :     msgD,
+            "E" :     msgE,
+        }
     

@@ -75,20 +75,13 @@ class echelle(QObject):
         else:
             return 1
 
-    def applique_echelle(self, pos_echelle):
-        """
-        les positions pos sont en pixels, ça renvoie une liste
-        de positions (vecteurs) en mètre. L'origine est en (0, self.app.hauteur)
-        """
-        return [(vecteur(0, self.app.hauteur) - p) * self.mParPx()
-                for p in pos_echelle]
-
     def etalonneReel(self, l):
         """
         Définit la longueur en mètre de l'étalon
         @param l longueur en mètre
         """
         self.longueur_reelle_etalon = float(l)
+        return
 
 
 class EchelleWidget(QWidget):
@@ -106,8 +99,9 @@ class EchelleWidget(QWidget):
     """
     def __init__(self, parent):
         QWidget.__init__(self, parent)
-        self.app = parent.app
-        self.video = parent
+        self.app = parent.app         # la fenêtre principale
+        self.video = parent.video     # l'afficheur de vidéo
+        self.pw = parent              # le widget de l'onglet de pointage
         self.image=None
         self.setGeometry(
             QRect(0, 0, self.video.width(), self.video.height()))
@@ -123,10 +117,6 @@ class EchelleWidget(QWidget):
         self.cropX2 = None
         self.setMouseTracking(True)
         self.pressed = False
-        # origine definition is optionnal but hide scale if defined first
-        if self.app.origine_trace:
-            self.app.origine_trace.lower()
-            self.app.echelle_trace.hide()
         return
 
     def paintEvent(self, event):
@@ -150,7 +140,7 @@ class EchelleWidget(QWidget):
 
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
-        self.app.update_zoom.emit(p)
+        self.pw.update_zoom.emit(p)
         if self.pressed:
             self.p2 = p
             self.update()
@@ -161,24 +151,24 @@ class EchelleWidget(QWidget):
         self.pressed = False
         if event.button() == Qt.MouseButton.LeftButton and self.p1.x >= 0:
             self.p2 = p
-            self.video.echelle_image.p1 = self.p1.copy()
-            self.video.echelle_image.p2 = self.p2.copy()
+            self.pw.echelle_image.p1 = self.p1.copy()
+            self.pw.echelle_image.p2 = self.p2.copy()
 
-            epxParM = self.video.echelle_image.pxParM()
-            self.app.affiche_echelle()
+            epxParM = self.pw.echelle_image.pxParM()
+            self.pw.affiche_echelle()
             self.app.affiche_statut.emit(self.tr("Échelle définie"))
-            self.app.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
-            self.video.index_du_point = 0
+            self.pw.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
+            self.pw.index_du_point = 0
 
-            self.video.feedbackEchelle(self.p1, self.p2)
+            self.pw.feedbackEchelle(self.p1, self.p2)
             self.app.stopRedimensionnement.emit()
-            if self.video.data:  # si on a déjà pointé une position au moins
+            if self.pw.data:  # si on a déjà pointé une position au moins
                 self.app.affiche_statut.emit(self.app.tr(
                     "Vous pouvez continuer votre acquisition"))
-                self.app.refait_echelle()
+                self.app.recalculLesCoordonnees()
 
         self.close()
-        self.app.apres_echelle.emit()
+        self.pw.apres_echelle.emit()
         return
 
 class Echelle_TraceWidget(QWidget):

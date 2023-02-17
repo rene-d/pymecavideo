@@ -37,7 +37,7 @@ from vecteur import vecteur
 from echelle import Echelle_TraceWidget
 from image_widget import ImageWidget
 from pointage import Pointage
-from globdef import cible_icon, DOCUMENT_PATH, inhibe
+from globdef import cible_icon, DOCUMENT_PATH, inhibe, pattern_float
 from cadreur import openCvReader
 from toQimage import toQImage
 from suivi_auto import SelRectWidget
@@ -49,6 +49,7 @@ import interfaces.icon_rc
 from interfaces.Ui_pointage import Ui_pointageWidget
 from pointage import Pointage
 from etats import Etats
+from echelle import EchelleWidget, echelle
 
 class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     """
@@ -71,8 +72,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         
         self.app = None                 # la fenêtre principale
         self.dbg = None                 # le débogueur
-        self.etat = None
-        self.etat_ancien = None
+        self.etat = "A"                 # état initial ; défférent de "debut"
+        self.etat_ancien = None         # état précédent
         self.hotspot = None             # vecteur (position de la souris)
         self.image = None               # l'image tirée du film
         self.origine = vecteur(self.width()//2, self.height()//2)
@@ -94,8 +95,9 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.refait_point = False  # on doit repointer une date
         self.pointageOK = False    # il est possible de faire un pointage
         self.pointageCursor = None # le curseur pour le pointage
-        
-       # fait un beau gros curseur
+        self.filename = None       # nom du fichier video
+
+        # fait un beau gros curseur
         cible_pix = QPixmap(cible_icon).scaledToHeight(32)
         self.pointageCursor = QCursor(cible_pix)
 
@@ -105,14 +107,26 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
 
     ########### signaux #####################
     update_imgedit = pyqtSignal(int, int, int) # met à jour la dimension d'image
-    dimension_data = pyqtSignal(int)
-    stopCalculs = pyqtSignal()
+    update_origine = pyqtSignal(float, float)  # met à jour l'origine
+    dimension_data = pyqtSignal(int)           # redimensionne les données
+    stopCalculs = pyqtSignal()                 # arrete le pointage auto
+    label_zoom = pyqtSignal(str)               # change le label du zoom
+    change_etat = pyqtSignal(str)              # gère l'aspect selon l'état
+    update_zoom = pyqtSignal(vecteur)          # agrandit une portion d'image
+    echelle_modif = pyqtSignal(str, str)       # modifie le bouton d'échelle
+    apres_echelle = pyqtSignal()               # après dénition de l'échelle
     
     ########### connexion des signaux #######
     def connecte_signaux(self):
         self.update_imgedit.connect(self.affiche_imgsize)
+        self.update_origine.connect(self.updateOrigine)
         self.dimension_data.connect(self.redimensionne_data)
         self.stopCalculs.connect(self.stopComputing)
+        self.label_zoom.connect(self.labelZoom)
+        self.change_etat.connect(self.etatUI)
+        self.update_zoom.connect(self.loupe)
+        self.echelle_modif.connect(self.setButtonEchelle)
+        self.apres_echelle.connect(self.restaureEtat)
         return
 
     def connecte_ui(self):
@@ -138,16 +152,27 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
 
     def setApp(self, app):
         """
-        Crée une relation avec la fenêtre principale, et son débogueur
+        Crée une relation avec la fenêtre principale, son débogueur et
+        ses préférences
         @param app le fenêtre principale (QMainWindoWidget)
         """
         self.app = app
         self.dbg = app.dbg
-        self.video.setApp(app)
+        self.prefs = app.prefs
+        self.video.setParent(self)
         self.zoom_zone.setApp(app)
         return
 
 
+    def updateOrigine(self, rx, ry):
+        """
+        Met à jour l'origine
+        @param rx ratio horizontal
+        @param ry ratio vertical
+        """
+        self.origine = vecteur(self.origine.x * rx, self.origine.y * ry)
+        return
+    
     def affiche_imgsize(self, w, h, r):
         """
         Affiche la taille de l'image
@@ -280,8 +305,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         # qu'il n'y ait encore aucun pointage, ou que l'index soit
         # connexe aux pointages existants
         self.pointageOK = \
-            self.app.etat in ("D", "E") and \
-            (not self or index in range(self.premiere_image() - 1, \
+            self.etat in ("D", "E") and \
+            (not self.video or index in range(self.premiere_image() - 1, \
                                         self.derniere_image() + 2))
         if self.pointageOK:
             # beau gros curseur seulement si le pointage est licite ;
@@ -309,9 +334,9 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             if not ips_from_line_edit:
                 self.deltaT = 1 / self.framerate
                 # mets à jour le widget contenant les IPS
-                self.app.pointage.lineEdit_IPS.setText(str(self.framerate))
+                self.lineEdit_IPS.setText(str(self.framerate))
             else:
-                IPS = int(self.app.lineEdit_IPS.text())
+                IPS = int(self.lineEdit_IPS.text())
                 self.framerate = IPS
                 self.deltaT = 1 / IPS
         return
@@ -355,7 +380,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             None,
             self.tr("Définir léchelle"),
             self.tr("Quelle est la longueur en mètre de votre étalon sur l'image ?"),
-            text = f"{self.pointage.video.echelle_image.longueur_reelle_etalon:.3f}")
+            text = f"{self.echelle_image.longueur_reelle_etalon:.3f}")
         reponse = reponse.replace(",", ".")
         ok = ok and pattern_float.match(reponse) and float(reponse) > 0
         if not ok:
@@ -364,10 +389,10 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             self.demande_echelle()
             return
         reponse = float(reponse)
-        self.pointage.video.echelle_image.etalonneReel(reponse)
+        self.echelle_image.etalonneReel(reponse)
         self.etat_ancien = self.etat # conserve pour plus tard
         self.change_etat.emit("C")
-        job = EchelleWidget(self.pointage.video)
+        job = EchelleWidget(self)
         job.show()
         return
     
@@ -377,7 +402,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
 
         Passe à l'état D ou AB, selon self.checkBox_auto
         """
-        prochain_etat = "AB" if self.pointage.checkBox_auto.isChecked() else "D"
+        prochain_etat = "AB" if self.checkBox_auto.isChecked() else "D"
         self.change_etat.emit(prochain_etat)
         return
     
@@ -390,23 +415,23 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             self,
             "NOUVELLE ORIGINE",
             "Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
-        ChoixOrigineWidget(parent=self.pointage.video, app=self).show()
+        ChoixOrigineWidget(parent=self.video, app=self).show()
         return
 
     def change_sens_X(self):
         self.dbg.p(2, "rentre dans 'change_sens_X'")
         if self.checkBox_abscisses.isChecked():
-            self.pointage.video.sens_X = -1
+            self.video.sens_X = -1
         else:
-            self.pointage.video.sens_X = 1
+            self.video.sens_X = 1
         self.change_axe_origine.emit()
 
     def change_sens_Y(self):
         self.dbg.p(2, "rentre dans 'change_sens_Y'")
         if self.checkBox_ordonnees.isChecked():
-            self.pointage.video.sens_Y = -1
+            self.video.sens_Y = -1
         else:
-            self.pointage.video.sens_Y = 1
+            self.video.sens_Y = 1
         self.change_axe_origine.emit()
 
     def tourne_droite(self):
@@ -423,12 +448,12 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             increment = 90
         elif sens == "gauche":
             increment = -90
-        self.pointage.video.rotation = (self.pointage.video.rotation + increment) % 360
+        self.video.rotation = (self.video.rotation + increment) % 360
         self.dbg.p(2, "Dans 'tourne_image' self rotation vaut" +
-                   str(self.pointage.video.rotation))
+                   str(self.video.rotation))
 
         # gestion de l'origine et de l'échelle :
-        self.dbg.p(3, f"Dans 'tourne_image' avant de tourner, self.origine {self.pointage.video.origine}, largeur video {self.pointage.video.width()}, hauteur video {self.pointage.video.height()}")
+        self.dbg.p(3, f"Dans 'tourne_image' avant de tourner, self.origine {self.video.origine}, largeur video {self.video.width()}, hauteur video {self.video.height()}")
         self.redimensionneSignal.emit(True)
         return
 
@@ -446,7 +471,9 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.dbg.p(2, f"rentre dans 'affiche_image' self.index = {self.index} self.image_max = {self.image_max}")
         if self.index <= self.image_max:
             self.extract_image(self.index)  # 2ms
-            self.placeImage(self.imageExtraite, self.ratio)
+            self.video.placeImage(
+                self.imageExtraite, self.ratio, self.largeurFilm)
+            self.reinit_origine()
         elif self.index > self.image_max:
             self.index = self.image_max
             self.lance_capture = False
@@ -456,7 +483,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         """
         Replace l'origine au centre de l'image
         """
-        self.origine = vecteur(self.image_w//2, self.image_h//2)
+        self.origine = vecteur(self.video.image_w//2, self.video.image_h//2)
         return
 
     def reinitialise_capture(self):
@@ -470,7 +497,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         if self.echelle_trace is not None:
             self.echelle_trace.hide()
         self.echelle_trace = None
-        self.app.echelle_modif.emit(self.tr("Définir l'échelle"),
+        self.echelle_modif.emit(self.tr("Définir l'échelle"),
                                     "background-color:None;")
         self.index = 1
         self.remontre_image()
@@ -601,5 +628,155 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.pileDeDetections = []  # vide la liste des points à détecter encore
         # la routine self.detecteUnPoint reviendra à l'état D après que
         # le dernier objet aura été détecté
+        return
+
+    def labelZoom(self, label):
+        """
+        Met à jour le label au-dessus du zoom
+        @param label le nouveau label
+        """
+        self.zoomLabel.setText(label)
+        return
+    
+    def imgControlImage(self, state):
+        """
+        Gère les deux widgets horizontalSlider et spinBox_image
+        @param state si state == True, les deux widgets sont activés
+          et leurs signaux valueChanged sont pris en compte ;
+          sinon ils sont désactivés ainsi que les signaux valueChanged
+        """
+        self.dbg.p(2, "rentre dans 'imgControlImage'")
+        if state:
+            self.horizontalSlider.setMinimum(1)
+            self.spinBox_image.setMinimum(1)
+            if self.image_max:
+                self.horizontalSlider.setMaximum(int(self.image_max))
+                self.spinBox_image.setMaximum(int(self.image_max))
+            self.horizontalSlider.valueChanged.connect(
+                self.sync_slider2spinbox)
+            self.spinBox_image.valueChanged.connect(self.sync_spinbox2others)
+        else:
+            if self.horizontalSlider.receivers(self.horizontalSlider.valueChanged):
+                self.horizontalSlider.valueChanged.disconnect()
+            if self.spinBox_image.receivers(self.spinBox_image.valueChanged):
+                self.spinBox_image.valueChanged.disconnect()
+        self.horizontalSlider.setEnabled(state)
+        self.spinBox_image.setEnabled(state)
+        return
+
+    def affiche_echelle(self):
+        """
+        affiche l'échelle courante pour les distances sur l'image
+        """
+        self.dbg.p(2, "rentre dans 'affiche_echelle'")
+        if self.echelle_image.isUndef():
+            self.echelleEdit.setText(
+                self.tr("indéf."))
+        else:
+            epxParM = self.echelle_image.pxParM()
+            if epxParM > 20:
+                self.echelleEdit.setText("%.1f" % epxParM)
+            else:
+                self.echelleEdit.setText("%8e" % epxParM)
+        self.echelleEdit.show()
+        self.Bouton_Echelle.show()
+        return
+
+    def enableDefaire(self, value):
+        """
+        Contrôle la possibilité de défaire un clic
+        @param value booléen
+        """
+        self.dbg.p(2, "rentre dans 'enableDefaire, %s'" % (str(value)))
+        self.pushButton_defait.setEnabled(value)
+        self.app.actionDefaire.setEnabled(value)
+        # permet de remettre l'interface à zéro
+        if not value:
+            self.imgControlImage(True)
+        return
+    
+    def enableRefaire(self, value):
+        """
+        Contrôle la possibilité de refaire un clic
+        @param value booléen
+        """
+        self.dbg.p(2, "rentre dans 'enableRefaire, %s'" % (value))
+        self.pushButton_refait.setEnabled(value)
+        self.app.actionRefaire.setEnabled(value)
+        return
+
+    def loupe(self, position):
+        """
+        Agrandit une partie de self.video.image et la met dans la zone du zoom
+        @param position le centre de la zone à agrandir
+        """
+        self.zoom_zone.fait_crop(self.video.image, position)
+        xpx, ypx, xm, ym = self.coords(position)
+        self.editXpx.setText(f"{xpx}")
+        self.editYpx.setText(f"{ypx}")
+        self.editXm.setText(f"{xm}")
+        self.editYm.setText(f"{ym}")
+        return
+
+    def coords(self, p):
+        """
+        @param p un point, vecteur de coordonnées entières
+        @return les valeurs de x, y en px et puis en mètre (formatées :.2e)
+        """
+        # on se rapporte à l'origine du repère
+        p = p - self.origine
+        # et aux sens des axes
+        p.redresse(self)
+        
+        if not self.echelle_image:
+            return int(p.x), int(p.y), self.tr("indéf."), self.tr("indéf.")
+        return int(p.x), int(p.y), \
+            f"{p.x/self.echelle_image.pxParM():.2e}", \
+            f"{p.y/self.echelle_image.pxParM():.2e}"
+
+    def setButtonEchelle(self, text, style):
+        """
+        Signale fortement qu'il est possible de refaire l'échelle
+        @param text nouveau texte du bouton self.Bouton_Echelle
+        @param style un style CSS
+        """
+        self.Bouton_Echelle.setEnabled(True)
+        self.Bouton_Echelle.setText(text)
+        self.Bouton_Echelle.setStyleSheet(style)
+        return
+
+    def sync_slider2spinbox(self):
+        """
+        recopie la valeur du slider vers le spinbox
+        """
+        self.dbg.p(2, "rentre dans 'sync_slider2spinbox'")
+        self.spinBox_image.setValue(self.horizontalSlider.value())
+        return
+        
+
+    def sync_spinbox2others(self):
+        """
+        Affiche l'image dont le numéro est dans self.pointage.spinBox_image et
+        synchronise self.horizontalSlider
+        """
+        self.dbg.p(2, "rentre dans 'sync_spinbox2others'")
+        self.index = self.spinBox_image.value()
+        self.horizontalSlider.setValue(self.index)
+        self.affiche_image()
+        return
+
+    def feedbackEchelle(self, p1, p2):
+        """
+        affiche une trace au-dessus du self.job, qui reflète les positions
+        retenues pour l'échelle
+        """
+        self.dbg.p(2, "rentre dans 'feedbackEchelle'")
+        if self.echelle_trace:
+            self.echelle_trace.hide()
+        self.echelle_trace = Echelle_TraceWidget(self, p1, p2)
+        # on garde les valeurs pour le redimensionnement
+        self.echelle_trace.show()
+        if self.echelle:
+            self.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
         return
 

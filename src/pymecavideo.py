@@ -38,7 +38,6 @@ from trajectoire_widget import TrajectoireWidget
 from grandeurs import grandeurs
 from glob import glob
 from vecteur import vecteur
-from echelle import EchelleWidget, echelle
 
 import interfaces.icon_rc
 
@@ -126,6 +125,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.wanted_image_size = vecteur() # taille souhaitée pour l'image
         self.nb_ajuste_image = 20          # nombre d'itérations pour y parvenir
         self.imgdim_hide = time.time() + 2 # moment pour cacher la taille
+        self.roleEtat = None               # dict. état => message de statut
         self.dictionnairePlotWidget = {}
 
         # Mode plein écran
@@ -135,8 +135,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         g = QApplication.instance().screens()[0].geometry()
         self.height_screen, self.width_screen = g.height(), g.width()
 
-        self.origine_trace = None
-        
         self.setupUi(self)
 
         self.dbg = Dbg(0)
@@ -182,7 +180,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.ui_connections()
 
         # crée les débuts de messages pour la ligne de statut
-        self.definit_messages_statut()
+        self.roleEtat = self.pointage.definit_messages_statut()
         
         self.change_etat.emit("debut") # met l'état à "debut"
 
@@ -293,7 +291,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.index_max = 1
         self.repere = 0
         self.masse_objet = 0
-        self.premier_chargement_fichier_mecavideo = False #gere l'origine au premier chargement
         # contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
         self.locals = {} # dictionnaire de variables locales, pour eval
         self.motif = []
@@ -321,23 +318,19 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     ############ les signaux spéciaux #####################
     change_axe_origine = pyqtSignal()
     selection_done = pyqtSignal()
-    stopRedimensionnement = pyqtSignal()
-    OKRedimensionnement = pyqtSignal()
     redimensionneSignal = pyqtSignal(bool)
     updateProgressBar = pyqtSignal()
     change_etat = pyqtSignal(str)
-    apres_echelle = pyqtSignal()
-    echelle_modif = pyqtSignal(str, str)    # modifie le bouton d'échelle
     show_coord = pyqtSignal()               # montre l'onglet des coordonnées
     show_video = pyqtSignal()               # montre l'onglet des vidéos
     sens_axes = pyqtSignal(int, int)        # coche les cases des axes
     stop_n = pyqtSignal(str)                # refait le texte du bouton STOP
-    update_zoom = pyqtSignal(vecteur)       # agrandit une portion d'image
-    label_zoom = pyqtSignal(str)            # change le label du zoom
     image_n = pyqtSignal(int)               # modifie les contrôles d'image
     adjust4image = pyqtSignal()             # adapte la taille à l'image
     hide_imgdim = pyqtSignal()              # cache la dimension de l'image
     affiche_statut = pyqtSignal(str)        # modifie la ligne de statut
+    stopRedimensionnement = pyqtSignal()    # fixe la taille de la fenêtre
+    OKRedimensionnement = pyqtSignal()      # libère la taille de la fenêtre
     
     
     def ui_connections(self):
@@ -385,35 +378,23 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         # connexion de signaux spéciaux
         self.change_axe_origine.connect(self.egalise_origine)
-        self.stopRedimensionnement.connect(self.fixeLesDimensions)
-        self.OKRedimensionnement.connect(self.defixeLesDimensions)
         self.redimensionneSignal.connect(self.redimensionneFenetre)
         self.updateProgressBar.connect(self.updatePB)
-        self.change_etat.connect(self.etatUI)
-        self.apres_echelle.connect(self.restaureEtat)
-        self.echelle_modif.connect(self.setButtonEchelle)
+        self.change_etat.connect(self.changeEtat)
         self.show_coord.connect(self.montre_volet_coord)
         self.show_video.connect(self.montre_volet_video)
         self.sens_axes.connect(self.coche_axes)
         self.stop_n.connect(self.stop_setText)
-        self.update_zoom.connect(self.loupe)
         self.image_n.connect(self.sync_img2others)
         self.affiche_statut.connect(self.setStatus)
         self.adjust4image.connect(self.ajuste_pour_image)
-        self.label_zoom.connect(self.labelZoom)
         self.hide_imgdim.connect(self.cache_imgdim)
         self.affiche_statut.connect(self.setStatus)
+        self.stopRedimensionnement.connect(self.fixeLesDimensions)
+        self.OKRedimensionnement.connect(self.defixeLesDimensions)
         
         return
 
-    def setStatus(self, text):
-        """
-        Précise la ligne de statut, qui commence par une indication de l'état
-        @param text un texte pour terminer la ligne de statut
-        """
-        self.statusBar().showMessage(self.roleEtat[self.etat](self) + "| " + text)
-        return
-    
     def cache_imgdim(self):
         """
         Cache le widget d'affichage de la dimension de l'image
@@ -423,14 +404,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.pointage.imgdimEdit.hide()
         else:
             QTimer.singleShot(200, self.cache_imgdim)
-        return
-    
-    def labelZoom(self, label):
-        """
-        Met à jour le label au-dessus du zoom
-        @param label le nouveau label
-        """
-        self.pointage.zoomLabel.setText(label)
         return
     
     def ajuste_pour_image(self):
@@ -456,7 +429,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             return m
         
         # taille de l'image actuellement
-        w, h = int(self.pointage.size().width()),  int(self.pointage.size().height())
+        w, h = int(self.pointage.video.size().width()),  int(self.pointage.video.size().height())
         # taille visée
         w0 , h0 = int(self.wanted_image_size.x), int(self.wanted_image_size.y)
         # erreurs de taille de la fenêtre
@@ -478,7 +451,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             return
         else:
             # fini : il n'y a plus besoin de modifier la taille de la fenêtre
-            if self.etat not in ("debut", "A"):
+            if self.pointage.etat not in ("debut", "A"):
                 self.stopRedimensionnement.emit()
         
         return
@@ -563,24 +536,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.update()
         return
 
-    def fixeLesDimensions(self):
-        self.setMinimumWidth(self.width())
-        self.setMaximumWidth(self.width())
-        self.setMaximumHeight(self.height())
-        self.setFixedSize(QSize(self.width(), self.height()))
-
-    def defixeLesDimensions(self):
-        """
-        donne une taille minimale à la fenêtre, 640 x 480 ; 
-        il s'y ajoute bien sûr les contraintes des widgets définis
-        par l'interface utilisateur qui est créée à l'aide de designer.
-        """
-        self.setMinimumWidth(0)
-        self.setMaximumWidth(16000000)
-        self.setMinimumHeight(0)
-        self.setMaximumHeight(16000000)
-        pass
-
     def updatePB(self):
         self.qmsgboxencode.updateProgressBar()
 
@@ -607,12 +562,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.radioButtonNearMouse.hide()
             self.radioButtonSpeedEveryWhere.hide()
             self.trajectoire_widget.update()
-        return
-
-    def refait_echelle(self):
-        # """Permet de retracer une échelle et de recalculer les points"""
-        self.dbg.p(2, "rentre dans 'refait_echelle'")
-        self.recalculLesCoordonnees()
         return
 
     def presse_papier(self):
@@ -1241,8 +1190,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             plotwidget.close()
             del plotwidget
         d = self.prefs.config["DEFAULT"]
-        d["taille_image"] = f"({self.pointage.image_w},{self.pointage.image_h})"
-        d["rotation"] = str(self.pointage.rotation)
+        d["taille_image"] = f"({self.pointage.video.image_w},{self.pointage.video.image_h})"
+        d["rotation"] = str(self.pointage.video.rotation)
         self.prefs.save()
         return
 
@@ -1340,47 +1289,6 @@ Merci de bien vouloir le renommer avant de continuer"""))
                 self.tr("Désolé pas de fichier d'aide pour le langage {0}.").format(lang))
         return
 
-    def affiche_echelle(self):
-        """
-        affiche l'échelle courante pour les distances sur l'image
-        """
-        self.dbg.p(2, "rentre dans 'affiche_echelle'")
-        if self.pointage.echelle_image.isUndef():
-            self.pointage.echelleEdit.setText(
-                self.tr("indéf."))
-        else:
-            epxParM = self.pointage.echelle_image.pxParM()
-            if epxParM > 20:
-                self.pointage.echelleEdit.setText("%.1f" % epxParM)
-            else:
-                self.pointage.echelleEdit.setText("%8e" % epxParM)
-        self.pointage.echelleEdit.show()
-        self.pointage.Bouton_Echelle.show()
-        return
-
-    def enableDefaire(self, value):
-        """
-        Contrôle la possibilité de défaire un clic
-        @param value booléen
-        """
-        self.dbg.p(2, "rentre dans 'enableDefaire, %s'" % (str(value)))
-        self.pointage.pushButton_defait.setEnabled(value)
-        self.actionDefaire.setEnabled(value)
-        # permet de remettre l'interface à zéro
-        if not value:
-            self.imgControlImage(True)
-        return
-    
-    def enableRefaire(self, value):
-        """
-        Contrôle la possibilité de refaire un clic
-        @param value booléen
-        """
-        self.dbg.p(2, "rentre dans 'enableRefaire, %s'" % (value))
-        self.pointage.pushButton_refait.setEnabled(value)
-        self.actionRefaire.setEnabled(value)
-        return
-
     def rouvre(self, fichier):
         """
         Rouvre un fichier pymecavideo précédemment enregistré
@@ -1426,63 +1334,6 @@ Merci de bien vouloir le renommer avant de continuer"""))
         self.pointage.horizontalSlider.setValue(i)
         return
     
-    def sync_spinbox2others(self):
-        """
-        Affiche l'image dont le numéro est dans self.pointage.spinBox_image et
-        synchronise self.pointage.horizontalSlider
-        """
-        self.dbg.p(2, "rentre dans 'sync_spinbox2others'")
-        self.pointage.index = self.pointage.spinBox_image.value()
-        self.pointage.horizontalSlider.setValue(self.pointage.index)
-        self.pointage.affiche_image()
-        return
-
-    def sync_slider2spinbox(self):
-        """
-        recopie la valeur du slider vers le spinbox
-        """
-        self.dbg.p(2, "rentre dans 'sync_slider2spinbox'")
-        self.pointage.spinBox_image.setValue(self.pointage.horizontalSlider.value())
-        return
-        
-
-    def imgControlImage(self, state):
-        """
-        Gère les deux widgets horizontalSlider et spinBox_image
-        @param state si state == True, les deux widgets sont activés
-          et leurs signaux valueChanged sont pris en compte ;
-          sinon ils sont désactivés ainsi que les signaux valueChanged
-        """
-        self.dbg.p(2, "rentre dans 'imgControlImage'")
-        if state:
-            self.pointage.horizontalSlider.setMinimum(1)
-            self.pointage.spinBox_image.setMinimum(1)
-            if self.pointage.image_max:
-                self.pointage.horizontalSlider.setMaximum(int(self.pointage.image_max))
-                self.pointage.spinBox_image.setMaximum(int(self.pointage.image_max))
-            self.pointage.horizontalSlider.valueChanged.connect(
-                self.sync_slider2spinbox)
-            self.pointage.spinBox_image.valueChanged.connect(self.sync_spinbox2others)
-        else:
-            if self.pointage.horizontalSlider.receivers(self.pointage.horizontalSlider.valueChanged):
-                self.pointage.horizontalSlider.valueChanged.disconnect()
-            if self.pointage.spinBox_image.receivers(self.pointage.spinBox_image.valueChanged):
-                self.pointage.spinBox_image.valueChanged.disconnect()
-        self.pointage.horizontalSlider.setEnabled(state)
-        self.pointage.spinBox_image.setEnabled(state)
-        return
-
-    def setButtonEchelle(self, text, style):
-        """
-        Signale fortement qu'il est possible de refaire l'échelle
-        @param text nouveau texte du bouton self.pointage.Bouton_Echelle
-        @param style un style CSS
-        """
-        self.pointage.Bouton_Echelle.setEnabled(True)
-        self.pointage.Bouton_Echelle.setText(text)
-        self.pointage.Bouton_Echelle.setStyleSheet(style)
-        return
-
     def montre_volet_coord(self):
         """
         Met l'onglet des coordonnées sur le dessus
@@ -1516,27 +1367,124 @@ Merci de bien vouloir le renommer avant de continuer"""))
         self.pushButton_stopCalculs.setText(text)
         return
 
-    def loupe(self, position):
-        """
-        Agrandit une partie de self.pointage.image et la met dans la zone du zoom
-        @param position le centre de la zone à agrandir
-        """
-        self.pointage.zoom_zone.fait_crop(self.pointage.image, position)
-        xpx, ypx, xm, ym = self.pointage.coords(position)
-        self.pointage.editXpx.setText(f"{xpx}")
-        self.pointage.editYpx.setText(f"{ypx}")
-        self.pointage.editXm.setText(f"{xm}")
-        self.pointage.editYm.setText(f"{ym}")
-        return
-
     def setStatus(self, text):
         """
         Précise la ligne de statut, qui commence par une indication de l'état
         @param text un texte pour terminer la ligne de statut
         """
-        self.statusBar().showMessage(self.roleEtat[self.etat](self) + "| " + text)
+        if self.roleEtat is None: return
+        self.statusBar().showMessage(self.roleEtat[self.pointage.etat](self) + "| " + text)
         return
-    
+
+    def changeEtat(self, etat):
+        """
+        changement d'état : fait ce qu'il faut faire au niveau de la fenêtre
+        principale puis renvoie aux autres widgets actifs
+        """
+        if etat == "debut":
+            for obj in self.actionDefaire, self.actionRefaire, \
+                self.actionCopier_dans_le_presse_papier, \
+                self.menuE_xporter_vers, self.button_video, \
+                self.actionSaveData, self.widget_chronophoto :
+
+                obj.setEnabled(False)
+            # décochage de widgets
+            print("BUG renvoyer self.checkBox_Ec, self.checkBox_Em, self.checkBox_Ep ailleurs")
+            for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
+                obj.setChecked(False)
+            self.actionExemples.setEnabled(True)
+            self.tabWidget.setEnabled(True)
+            # organisation des onglets
+            self.tabWidget.setCurrentIndex(0)       # montre l'onglet video
+            for i in range(1,4):
+                self.tabWidget.setTabEnabled(i, False)  # autres onglets inactifs
+
+            # initialisation de self.trajectoire_widget
+            self.trajectoire_widget.chrono = False
+
+            # on cache certains widgets
+            print("BUG renvoyer self.radioButtonNearMouse self.radioButtonSpeedEveryWhere ailleurs")
+            for obj in self.radioButtonNearMouse, \
+                self.radioButtonSpeedEveryWhere:
+                obj.hide()
+            # autorise le redimensionnement de la fenêtre principale
+            self.OKRedimensionnement.emit()
+
+        elif etat == "A":
+            if self.pointage.filename is None: return
+            self.setWindowTitle(self.tr("Pymecavideo : {filename}").format(
+                filename = os.path.basename(self.pointage.filename)))
+            if not self.pointage.echelle_image:
+                # sans échelle, on peut redimensionner la fenêtre
+                self.OKRedimensionnement.emit()
+            # ferme les widget d'affichages des x, y, v du 2eme onglet
+            # si elles existent
+            for plotwidget in self.dictionnairePlotWidget.values():
+                plotwidget.parentWidget().close()
+                plotwidget.close()
+                del plotwidget
+            for obj in self.menuE_xporter_vers, self.actionSaveData, \
+                self.actionCopier_dans_le_presse_papier:
+                obj.setEnabled(True)
+            for i in 1, 2, 3:
+                self.tabWidget.setTabEnabled(i, False)
+                
+            print("BUG pour A au sujet de self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp, self.spinBox_chrono")
+            self.checkBox_Ec.setChecked(False)
+            self.checkBox_Em.setChecked(False)
+            self.checkBox_Epp.setChecked(False)
+            self.spinBox_chrono.setMaximum(self.pointage.image_max)
+            
+            print("BUG pour A au sujet du grapheur")
+            # désactive le grapheur si existant
+            if self.graphWidget:
+                plotItem = self.graphWidget.getPlotItem()
+                plotItem.clear()
+                plotItem.setTitle('')
+                plotItem.hideAxis('bottom')
+                plotItem.hideAxis('left')
+                
+            self.affiche_statut.emit(
+               self.tr("Veuillez choisir une image (et définir l'échelle)"))
+            self.montre_vitesses = False
+            self.egalise_origine()
+            self.init_variables(self.pointage.filename)
+            
+        elif etat == "AB":
+            pass
+        elif etat == "B":
+            pass
+        elif etat == "C":
+            for obj in self.actionCopier_dans_le_presse_papier, \
+                self.menuE_xporter_vers, self.actionSaveData:
+                obj.setEnabled(False)
+
+        elif etat == "D":
+            pass
+        elif etat == "E":
+            pass
+        self.setStatus("")
+        self.pointage.change_etat.emit(etat)
+        return
+
+    def fixeLesDimensions(self):
+        self.setMinimumWidth(self.width())
+        self.setMaximumWidth(self.width())
+        self.setMaximumHeight(self.height())
+        self.setFixedSize(QSize(self.width(), self.height()))
+        return
+
+    def defixeLesDimensions(self):
+        """
+        donne une taille minimale à la fenêtre, 640 x 480 ; 
+        il s'y ajoute bien sûr les contraintes des widgets définis
+        par l'interface utilisateur qui est créée à l'aide de designer.
+        """
+        self.setMinimumWidth(0)
+        self.setMaximumWidth(16000000)
+        self.setMinimumHeight(0)
+        self.setMaximumHeight(16000000)
+        return
 
 def usage():
     print("""\

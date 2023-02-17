@@ -59,7 +59,6 @@ class VideoPointeeWidget(ImageWidget):
         self.image_w = self.width()     # deux valeurs par défaut
         self.image_h = self.height()    # pas forcément pertinentes
         self.rotation = 0          # permet de retourner une vidéo mal prise
-        self.premier_resize = True # devient faux après redimensionnement
 
         self.connecte_signaux()
         return
@@ -102,29 +101,14 @@ class VideoPointeeWidget(ImageWidget):
         self.image = None
         return
 
-    def enterEvent(self,event):
-        """
-        Quand la souris arrive sur la vidéo, on met des messages pertinents
-        dans la barre de statut
-        """
-        self.pw.affiche_statut.emit("")
-        return
-
     def resizeEvent(self, e):
         self.dbg.p(2, "rentre dans 'resizeEvent'")
-        self.pw.pointage.update_imgedit.emit(
+        self.pw.update_imgedit.emit(
             self.image_w, self.image_h, self.rotation)
-        if self.premier_resize:  # Au premier resize, la taille est changée mais pas l'origine.
-            self.premier_resize = False
-            self.reinit_origine()
-
         if e.oldSize() != QSize(-1, -1):
             ratiow = self.width()/e.oldSize().width()
             ratioh = self.height()/e.oldSize().height()
-            x = self.origine.x*ratiow
-            y = self.origine.y*ratioh
-            if not self.pw.premier_chargement_fichier_mecavideo:
-                self.origine = vecteur(x, y)
+            self.pw.update_origine.emit(ratiow, ratioh)
         return
 
     def storePoint(self, point):
@@ -209,11 +193,11 @@ class VideoPointeeWidget(ImageWidget):
             ############################################################
             # dessine les pointages passés
             self.dbg.p(
-                5, "In videoWidget, paintEvent, self.data :%s" % self.data)
-            if self.data:
-                for date in self.data:
-                    for obj in self.data[date]:
-                        point = self.data[date][obj]
+                5, "In videoWidget, paintEvent, self.pw.data :%s" % self.pw.data)
+            if self.pw.data:
+                for date in self.pw.data:
+                    for obj in self.pw.data[date]:
+                        point = self.pw.data[date][obj]
                         if point:
                             painter.setPen(QColor(self.couleurs[int(obj)-1]))
                             painter.setFont(QFont("", 10))
@@ -228,27 +212,17 @@ class VideoPointeeWidget(ImageWidget):
             # dessine le repere
             painter.setPen(QColor("green"))
             painter.drawText(
-                round(self.origine.x) + 5, round(self.origine.y) + 15, "O")
+                round(self.pw.origine.x) + 5, round(self.pw.origine.y) + 15, "O")
             painter.translate(0, 0)
-            painter.translate(round(self.origine.x), round(self.origine.y))
-            p1 = QPoint(round(self.sens_X * (-40)), 0)
-            p2 = QPoint(round(self.sens_X * (40)), 0)
-            p3 = QPoint(round(self.sens_X * (36)), 2)
-            p4 = QPoint(round(self.sens_X * (36)), -2)
+            painter.translate(round(self.pw.origine.x), round(self.pw.origine.y))
+            p1 = QPoint(round(self.pw.sens_X * (-40)), 0)
+            p2 = QPoint(round(self.pw.sens_X * (40)), 0)
+            p3 = QPoint(round(self.pw.sens_X * (36)), 2)
+            p4 = QPoint(round(self.pw.sens_X * (36)), -2)
             painter.scale(1, 1)
             painter.drawPolyline(p1, p2, p3, p4, p2)
-            painter.rotate(self.sens_X * self.sens_Y * (-90))
+            painter.rotate(self.pw.sens_X * self.pw.sens_Y * (-90))
             painter.drawPolyline(p1, p2, p3, p4, p2)
-            painter.end()
-            ############################################################
-            # dessine l'échelle
-            painter = QPainter()
-            painter.begin(self)
-            painter.setPen(QColor("red"))
-            painter.drawLine(round(self.echelle_image.p1.x),
-                             round(self.echelle_image.p1.y),
-                             round(self.echelle_image.p2.x),
-                             round(self.echelle_image.p2.y))
             painter.end()
         return
 
@@ -257,6 +231,8 @@ class VideoPointeeWidget(ImageWidget):
         Ici c'est la partie dévolue au videoWidget quand on rouvre un
         fichier pymecavideox
         """
+        # !!!! il faudrait rétablir l'échelle (p,p2), pas sur le videoWidget
+        # !!!! mais dans une instance de Echelle_TraceWidget
         self.pw.sens_axes.emit(self.sens_X, self.sens_Y)
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
             self.cvReader.recupere_avi_infos(self.rotation)
@@ -341,21 +317,6 @@ class VideoPointeeWidget(ImageWidget):
         self.pw.zoomLabel.setText(self.tr("Zone à suivre n° {zone} x, y =").format(zone=self.suivis[0]))
         self.selRect = SelRectWidget(self)
         self.selRect.show()
-        return
-
-    def feedbackEchelle(self, p1, p2):
-        """
-        affiche une trace au-dessus du self.job, qui reflète les positions
-        retenues pour l'échelle
-        """
-        self.dbg.p(2, "rentre dans 'feedbackEchelle'")
-        if self.echelle_trace:
-            self.echelle_trace.hide()
-        self.echelle_trace = Echelle_TraceWidget(self, p1, p2)
-        # on garde les valeurs pour le redimensionnement
-        self.echelle_trace.show()
-        if self.echelle:
-            self.pw.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
         return
 
     def suiviDuMotif(self):
@@ -478,36 +439,20 @@ class VideoPointeeWidget(ImageWidget):
         self.pw.show_video.emit()
         return
 
-    def coords(self, p):
-        """
-        @param p un point, vecteur de coordonnées entières
-        @return les valeurs de x, y en px et puis en mètre (formatées :.2e)
-        """
-        # on se rapporte à l'origine du repère
-        p = p - self.origine
-        # et aux sens des axes
-        p.redresse(self)
-        
-        if not self.echelle_image:
-            return int(p.x), int(p.y), self.tr("indéf."), self.tr("indéf.")
-        return int(p.x), int(p.y), \
-            f"{p.x/self.echelle_image.pxParM():.2e}", \
-            f"{p.y/self.echelle_image.pxParM():.2e}"
-
-    def placeImage(self, im, ratio):
+    def placeImage(self, im, ratio, largeurFilm):
         """
         place une image dans le widget, en conservant le ratio de cette image
         @param im une image
         @param ratio le ratio à respecter
+        @param largeurFilm la largeur originale de la video en pixel
         @return l'image, redimensionnée selon le ratio
         """
         self.dbg.p(2, "rentre dans 'placeImage'")
         self.image_w = min(self.width(), round(self.height() * ratio))
         self.image_h = round(self.image_w / ratio)
-        self.echelle = self.image_w / self.largeurFilm
+        self.echelle = self.image_w / largeurFilm
         self.setMouseTracking(True)
         image = im.scaled(self.image_w, self.image_h)
-        self.video.setImage(image)
-        self.reinit_origine()
+        self.setImage(image)
         return image
     
