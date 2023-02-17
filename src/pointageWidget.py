@@ -64,7 +64,7 @@ class PointageWidget(QWidget, Ui_pointageWidget):
         QWidget.__init__(self, parent)
         Ui_pointageWidget.__init__(self)
         self.setupUi(self)
-        self.video.setApp(self)
+        self.app = None
         self.zoom_zone.setApp(self)
         self.connecte_signaux()
         return
@@ -75,6 +75,17 @@ class PointageWidget(QWidget, Ui_pointageWidget):
     def connecte_signaux(self):
         self.update_imgedit.connect(self.affiche_imgsize)
         return
+
+    def setApp(self, app):
+        """
+        Crée une relation avec la fenêtre principale
+        @param app le fenêtre principale (QMainWindoWidget)
+        """
+        self.app = app
+        self.video.setApp(app)
+        self.zoom_zone.setApp(app)
+        return
+
 
     def affiche_imgsize(self, w, h, r):
         """

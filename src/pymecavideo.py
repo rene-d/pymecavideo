@@ -151,16 +151,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         # définition des widgets importants
         self.graphWidget = None
-        self.pointage.zoom_zone.setApp(self)
+        self.pointage.setApp(self)
         self.trajectoire_widget.setApp(self)
 
         # on cache le widget des dimensions de l'image
         self.hide_imgdim.emit()
         
-        # on passe la main au videowidget pour faire les liaisons aux
-        # autres widgets de la fenêtre principale
-        self.pointage.video.setApp(self)
-
         self.args = args
 
         self.platform = platform.system()
@@ -800,13 +796,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
         # désactive plusieurs widgets
-        for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
-            self.label_nb_de_points, \
-            self.spinBox_objets, self.pointage.Bouton_Echelle, \
-            self.checkBox_auto, self.Bouton_lance_capture, \
-            self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
-            self.checkBox_abscisses, self.checkBox_ordonnees, \
-            self.label_IPS, self.lineEdit_IPS, \
+        for obj in self.pointage.pushButton_rot_droite, self.pointage.pushButton_rot_gauche, \
+            self.pointage.label_nb_de_points, \
+            self.pointage.spinBox_objets, self.pointage.Bouton_Echelle, \
+            self.pointage.checkBox_auto, self.pointage.Bouton_lance_capture, \
+            self.pointage.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
+            self.pointage.checkBox_abscisses, self.pointage.checkBox_ordonnees, \
+            self.pointage.label_IPS, self.pointage.lineEdit_IPS, \
             self.menuE_xporter_vers, self.actionSaveData :
 
             obj.setEnabled(False)
