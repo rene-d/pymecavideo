@@ -71,7 +71,7 @@ def versionFromDebianChangelog():
 ###############################################################
 # la version courante, à incrémenter lors de changements
 ###############################################################
-Version = version(8, 1, '~rc2-1')
+Version = version(8, 1, '~rc3-1')
 
 ###############################################################
 # incrémentation automatique pour une distribution debian
