@@ -462,17 +462,16 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         @param index permet de modifier l'image courante si c'est un entier
           (None par défaut)
         '''
-        if not self.filename:
-            return
         if index is not None: self.index = index
+        if not self.filename or self.index is None or self.image_max is None:
+            return
         self.dbg.p(2, f"rentre dans 'affiche_image' self.index = {self.index} self.image_max = {self.image_max}")
-        if self.index is not None and self.image_max is not None:
-            if self.index <= self.image_max:
-                self.extract_image(self.index)  # 2ms
-                self.placeImage(self.imageExtraite, self.ratio)
-            elif self.index > self.image_max:
-                self.index = self.image_max
-                self.lance_capture = False
+        if self.index <= self.image_max:
+            self.extract_image(self.index)  # 2ms
+            self.placeImage(self.imageExtraite, self.ratio)
+        elif self.index > self.image_max:
+            self.index = self.image_max
+            self.lance_capture = False
         return
     
     def init_cvReader(self):
