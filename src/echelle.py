@@ -171,7 +171,7 @@ class EchelleWidget(QWidget):
             self.video.index_du_point = 0
 
             self.video.feedbackEchelle(self.p1, self.p2)
-            self.app.fixeLesDimensions()
+            self.app.stopRedimensionnement.emit()
             if self.video.data:  # si on a déjà pointé une position au moins
                 self.app.affiche_statut.emit(self.app.tr(
                     "Vous pouvez continuer votre acquisition"))

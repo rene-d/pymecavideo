@@ -464,7 +464,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         delai = 50 # 20 ajustements par seconde
         w1, h1 = self.width(), self.height()
-        self.defixeLesDimensions()
+        self.OKRedimensionnement.emit()
         
         def modifie(x, y):
             """
@@ -502,7 +502,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         else:
             # fini : il n'y a plus besoin de modifier la taille de la fenêtre
             if self.etat not in ("debut", "A"):
-                self.fixeLesDimensions()
+                self.stopRedimensionnement.emit()
         
         return
 
@@ -626,7 +626,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.Bouton_Echelle.setStyleSheet("background-color:None;")
 
         # autorise le redimensionnement de la fenêtre principale
-        self.defixeLesDimensions()
+        self.OKRedimensionnement.emit()
 
         # inactive le spinner pour les incréments de plus d'une image
         # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
@@ -658,7 +658,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.echelle_modif.emit(self.tr("Définir l'échelle"),
                                     "background-color:None;")
             # comme il n'y a pas d'échelle, on peut redimensionner la fenêtre
-            self.defixeLesDimensions()
+            self.OKRedimensionnement.emit()
             if self.video.echelle_trace:
                 self.video.echelle_trace.hide()
         # ferme les widget d'affichages des x, y, v du 2eme onglet
@@ -839,7 +839,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.video.suivis[0]))
         # empêche de redimensionner la fenêtre
-        self.fixeLesDimensions()
+        self.stopRedimensionnement.emit()
         # prépare le widget video
         self.video.setFocus()
         if self.video.echelle_trace: self.video.echelle_trace.lower()
