@@ -127,6 +127,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.decalw = 0
         self.wanted_image_size = vecteur() # taille souhaitée pour l'image
         self.nb_ajuste_image = 20          # nombre d'itérations pour y parvenir
+        self.imgdim_hide = time.time() + 2 # moment pour cacher la taille
         self.dictionnairePlotWidget = {}
 
         # Mode plein écran
@@ -153,6 +154,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.zoom_zone.setApp(self)
         self.trajectoire_widget.setApp(self)
 
+        # on cache le widget des dimensions de l'image
+        self.hide_imgdim.emit()
+        
         # on passe la main au videowidget pour faire les liaisons aux
         # autres widgets de la fenêtre principale
         self.video.setApp(self)
@@ -339,6 +343,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     image_n = pyqtSignal(int)               # modifie les contrôles d'image
     affiche_statut = pyqtSignal(str)        # modifie la ligne de statut
     adjust4image = pyqtSignal()             # adapte la taille à l'image
+    hide_imgdim = pyqtSignal()              # cache la dimension de l'image
+    update_imgedit = pyqtSignal(int, int, int) # met à jour cette dimension
     
     
     def ui_connections(self):
@@ -416,9 +422,32 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.affiche_statut.connect(self.setStatus)
         self.adjust4image.connect(self.ajuste_pour_image)
         self.label_zoom.connect(self.labelZoom)
+        self.hide_imgdim.connect(self.cache_imgdim)
+        self.update_imgedit.connect(self.affiche_imgsize)
         
         return
 
+    def affiche_imgsize(self, w, h, r):
+        """
+        Affiche la taille de l'image
+        @param w largeur de l'image
+        @param h hauteur de l'image
+        @param r rotation de l'image
+        """
+        self.imgdimEdit.setText(f"{w} x {h} ({r}°)")
+        return
+    
+    def cache_imgdim(self):
+        """
+        Cache le widget d'affichage de la dimension de l'image
+        quand son temps de présentation est révolu
+        """
+        if time.time() > self.imgdim_hide:
+            self.imgdimEdit.hide()
+        else:
+            QTimer.singleShot(200, self.cache_imgdim)
+        return
+    
     def labelZoom(self, label):
         """
         Met à jour le label au-dessus du zoom
@@ -695,7 +724,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         d = self.prefs.defaults
         d['lastVideo'] = self.video.filename
         d['videoDir'] = os.path.dirname(self.video.filename)
-        d["taille_image"] = f"({self.video.size().width()},{self.video.size().height()})"
+        d["taille_image"] = f"({self.video.image_w},{self.video.image_h})"
         d['rotation'] = str(self.video.rotation)
         self.prefs.save()
 
@@ -1170,6 +1199,14 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
     def resizeEvent(self, event):
         self.dbg.p(2, "rentre dans 'resizeEvent'")
+        
+        # on montre la taille de l'image
+        self.imgdimEdit.show()
+        # pour deux secondes de plus
+        self.imgdim_hide = time.time() + 2
+        # et on en programme l'extinction
+        self.hide_imgdim.emit()
+        
         self.redimensionneFenetre(tourne=False)
         return super(FenetrePrincipale, self).resizeEvent(event)
 
@@ -1690,7 +1727,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             plotwidget.close()
             del plotwidget
         d = self.prefs.config["DEFAULT"]
-        d["taille_image"] = f"({self.video.size().width()},{self.video.size().height()})"
+        d["taille_image"] = f"({self.video.image_w},{self.video.image_h})"
         d["rotation"] = str(self.video.rotation)
         self.prefs.save()
         return

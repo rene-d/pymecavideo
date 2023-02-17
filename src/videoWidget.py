@@ -190,6 +190,8 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
     def resizeEvent(self, e):
         self.dbg.p(2, "rentre dans 'resizeEvent'")
+        self.app.update_imgedit.emit(
+            self.image_w, self.image_h, self.rotation)
         if self.premier_resize:  # Au premier resize, la taille est changée mais pas l'origine.
             self.premier_resize = False
             self.reinit_origine()
@@ -730,7 +732,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         d['niveaudbg'] = str(self.dbg.verbosite)
         d['sens_x'] = str(self.sens_X)
         d['sens_y'] = str(self.sens_Y)
-        d["taille_image"] = f"({self.size().width()},{self.size().height()})"
+        d["taille_image"] = f"({self.image_w},{self.image_h})"
         d['rotation'] = str(self.rotation)
         d['origine'] = f"({round(self.origine.x)}, {round(self.origine.y)})"
         d['index_depart'] = str(self.premiere_image())
