@@ -30,6 +30,31 @@ from globdef import cible_icon
 
 import os.path
 
+class MonRect:
+    def __init__(self, x1 = None, y1 = None, x2 = None, y2 = None):
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+        return
+
+    def coords(self):
+        return self.x1, self.y1, self.x2, self.y2
+
+    def paint(self, painter):
+        """
+        méthode de dessin
+        @param painter un QPainter actif
+        """
+        # trace un rectangle
+        painter.drawRect(round(self.x1), round(self.y1),
+                         round(self.x2 - self.x1),
+                         round(self.y2 - self.y1))
+        # puis trace les diagonales
+        painter.drawLine(round(self.x1), round(self.y1),round(self.x2), round(self.y2))
+        painter.drawLine(round(self.x1), round(self.y2),round(self.x2), round(self.y1))
+        return
+    
 
 class SelRectWidget(QWidget):
     """
@@ -52,19 +77,13 @@ class SelRectWidget(QWidget):
         cible_cursor = QCursor(cible_pix)
         self.setCursor(cible_cursor)
         self.setMouseTracking(True)
-        self.x_1 = None
-        self.x_2 = None
-        self.y_1 = None
-        self.y_2 = None
+        self.rects = []
         self.dragging = False
         return
 
     def mousePressEvent(self, event):
         p = vecteur(qPoint = event.position())
-        self.x_1 = p.x
-        self.x_2 = p.x
-        self.y_1 = p.y
-        self.y_2 = p.y
+        self.rects.append(MonRect(p.x, p.y, p.x, p.y))
         self.dragging = True
         self.update()
         return
@@ -74,8 +93,8 @@ class SelRectWidget(QWidget):
         self.app.update_zoom.emit(p)
 
         if self.dragging:
-            self.x_2 = p.x
-            self.y_2 = p.y
+            self.rects[-1].x2 = p.x
+            self.rects[-1].y2 = p.y
         self.update()
         return
 
@@ -95,26 +114,24 @@ class SelRectWidget(QWidget):
         # on a un rectangle délimité par un pointage sur le videoWidget
         # qui a pu être redimensionné ; il faut en déduire un rectangle
         # dans l'image vidéo originale, d'où la division par self.echelle
-        x = round(min(self.x_1, self.x_2) / self.echelle)
-        y = round(min(self.y_1, self.y_2) / self.echelle)
-        w = round(abs(self.x_2 - self.x_1) / self.echelle)
-        h = round(abs(self.y_2 - self.y_1) / self.echelle)
+        x1, y1, x2, y2 = self.rects[-1].coords()
+        x = round(min(x1, x2) / self.echelle)
+        y = round(min(y1, y2) / self.echelle)
+        w = round(abs(x2-x1) / self.echelle)
+        h = round(abs(y2-y1) / self.echelle)
         # on récupère la bonne image du film et on la découpe
         ok, image_opencv = self.video.cvReader.getImage(
             self.video.index, self.video.rotation, rgb=False)
         return image_opencv[y:y+h,x:x+w]
 
     def paintEvent(self, event):
-        if self.x_1 is not None:
+        if self.rects:
             painter = QPainter()
             painter.begin(self)
+            for rect in self.rects[:-1]:
+                painter.setPen(QColor("red"))
+                rect.paint(painter)
             painter.setPen(QColor("green"))
-            # entoure la zone sélectionnée d'un rectangle
-            painter.drawRect(round(self.x_1), round(self.y_1),
-                             round(self.x_2 - self.x_1),
-                             round(self.y_2 - self.y_1))
-            # puis trace les diagonales
-            painter.drawLine(round(self.x_1), round(self.y_1),round(self.x_2), round(self.y_2))
-            painter.drawLine(round(self.x_1), round(self.y_2),round(self.x_2), round(self.y_1))
+            self.rects[-1].paint(painter)
             painter.end()
         return

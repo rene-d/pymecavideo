@@ -125,7 +125,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.ratio = 4/3
         self.decalh = 0
         self.decalw = 0
-        self.wanted_image_size = vecteur()
+        self.wanted_image_size = vecteur() # taille souhaitée pour l'image
+        self.nb_ajuste_image = 20          # nombre d'itérations pour y parvenir
         self.dictionnairePlotWidget = {}
 
         # Mode plein écran
@@ -260,6 +261,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # données
         self.wanted_image_size = self.prefs.config.getvecteur(
             "DEFAULT", "taille_image")
+        self.nb_ajuste_image = 20 # pas plus de 20 itérations
         self.adjust4image.emit()
        
         d = self.prefs.config["DEFAULT"]
@@ -463,7 +465,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             h2 = int(abs(deltah)/deltah*math.ceil(abs(deltah/2)))
         if w2 or h2:
             # enfin on prévoit de modifier la fenêtre dans le bons sens
-            QTimer.singleShot(delai, modifie(w2, h2))
+            self.nb_ajuste_image -= 1
+            if self.nb_ajuste_image:
+                #seulement si on a encore droit à une itération
+                QTimer.singleShot(delai, modifie(w2, h2))
             return
         else:
             # fini : il n'y a plus besoin de modifier la taille de la fenêtre

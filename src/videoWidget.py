@@ -224,7 +224,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
         i = self.suivis.index(self.objet_courant)
         if i < self.nb_obj - 1 :
             self.objet_courant = self.suivis[i+1]
-            self.app.zoomLabel.setText(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.objet_courant))
+            self.app.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.objet_courant))
         else:
             # on passe à l'image suivante, et on revient au premier objet
             self.objet_courant = self.suivis[0]
@@ -625,7 +625,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             self.dbg.p(3, "self.pileDeDetections : %s" % self.pileDeDetections)
             self.app.change_etat.emit("B")
         else:
-            self.app.zoomLabel.setText(self.tr("Zone à suivre n° {zone} x, y =").format(zone=self.suivis[len(self.motifs_auto)]))
+            self.app.label_zoom.emit(self.tr("Zone à suivre n° {zone} x, y =").format(zone=self.suivis[len(self.motifs_auto)]))
         return
 
     # @time_it

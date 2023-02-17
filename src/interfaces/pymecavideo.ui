@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1041</width>
-    <height>534</height>
+    <width>992</width>
+    <height>529</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -79,7 +79,7 @@
              <x>0</x>
              <y>0</y>
              <width>168</width>
-             <height>577</height>
+             <height>583</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -727,6 +727,19 @@ QPushButton:disabled{color: #c0c0c0;}</string>
                </item>
               </layout>
              </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </widget>
@@ -1600,7 +1613,7 @@ vecteurs vitesse</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1041</width>
+     <width>992</width>
      <height>22</height>
     </rect>
    </property>
