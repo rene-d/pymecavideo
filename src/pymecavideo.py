@@ -116,8 +116,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         QMainWindow.__init__(self, parent)
         Ui_pymecavideo.__init__(self)
         QWidget.__init__(self, parent)
-        self.etat = None
-        self.etat_ancien = None
         # version minimale du fichier de configuration :
         self.min_version = version(7, 3, ".0-1")
         self.hauteur = 1
@@ -207,7 +205,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             mt = mime.from_file(filename)
             if mt.startswith("video/"):
                 OK = True
-                self.pointage.video.openTheFile(filename)
+                self.pointage.openTheFile(filename)
             elif mt == "text/plain":
                 signature = open(filename).read(24)
                 if signature.startswith("# version = pymecavideo"):
@@ -266,7 +264,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
        
         d = self.prefs.config["DEFAULT"]
         self.radioButtonNearMouse.setChecked(d["proximite"] == "True")
-        self.pointage.video.apply_preferences(rouvre = rouvre)
+        self.pointage.apply_preferences(rouvre = rouvre)
         return
 
     def hasHeightForWidth(self):
@@ -307,7 +305,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.point_attendu = 0
         self.nb_clics = 0
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre
-        self.pointage.video.index = 1  # image à afficher
+        self.pointage.index = 1  # image à afficher
         self.chronoImg = 0
         self.filename = filename
         self.stdout_file = os.path.join(CONF_PATH, "stdout")
@@ -351,10 +349,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.actionExemples.triggered.connect(self.openexample)
         self.action_propos.triggered.connect(self.propos)
         self.actionAide.triggered.connect(self.aide)
-        #self.actionDefaire.triggered.connect(self.pointage.video.efface_point_precedent)
-        self.actionRefaire.triggered.connect(self.pointage.video.refait_point_suivant)
+        #self.actionDefaire.triggered.connect(self.pointage.efface_point_precedent)
+        self.actionRefaire.triggered.connect(self.pointage.refait_point_suivant)
         self.actionQuitter.triggered.connect(self.close)
-        self.actionSaveData.triggered.connect(self.pointage.video.enregistre_ui)
+        self.actionSaveData.triggered.connect(self.pointage.enregistre_ui)
         self.actionCopier_dans_le_presse_papier.triggered.connect(
             self.presse_papier)
         self.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
@@ -369,16 +367,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe_avant)
         self.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
         self.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
-        self.pointage.lineEdit_IPS.textChanged.connect(self.verifie_IPS)
         self.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
         self.pushButton_save.clicked.connect(self.enregistreChrono)
         self.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
         self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
-        self.pointage.spinBox_objets.valueChanged.connect(self.pointage.video.dimension_data)
-        self.pointage.pushButton_defait.clicked.connect(self.pointage.video.efface_point_precedent)
-        self.pointage.pushButton_refait.clicked.connect(self.pointage.video.refait_point_suivant)
-        self.pointage.Bouton_Echelle.clicked.connect(self.demande_echelle)
-        self.pointage.Bouton_lance_capture.clicked.connect(self.debut_capture)
         self.comboBox_referentiel.currentIndexChanged.connect(
             self.tracer_trajectoires)
         self.tabWidget.currentChanged.connect(self.choix_onglets)
@@ -390,20 +382,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.button_video.clicked.connect(self.montre_video)
         self.pushButton_select_all_table.clicked.connect(self.presse_papier)
         self.comboBoxChrono.currentIndexChanged.connect(self.chronoPhoto)
-        self.pointage.pushButton_reinit.clicked.connect(self.pointage.video.reinitialise_capture)
-        self.pointage.pushButton_origine.clicked.connect(
-            self.nouvelle_origine)
-        self.pointage.checkBox_abscisses.stateChanged.connect(self.change_sens_X)
-        self.pointage.checkBox_ordonnees.stateChanged.connect(self.change_sens_Y)
-        self.pointage.pushButton_rot_droite.clicked.connect(self.tourne_droite)
-        self.pointage.pushButton_rot_gauche.clicked.connect(self.tourne_gauche)
 
         # connexion de signaux spéciaux
         self.change_axe_origine.connect(self.egalise_origine)
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
         self.redimensionneSignal.connect(self.redimensionneFenetre)
-        self.pointage.pushButton_stopCalculs.clicked.connect(self.pointage.video.stopCalculs)
         self.updateProgressBar.connect(self.updatePB)
         self.change_etat.connect(self.etatUI)
         self.apres_echelle.connect(self.restaureEtat)
@@ -472,7 +456,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             return m
         
         # taille de l'image actuellement
-        w, h = int(self.pointage.video.size().width()),  int(self.pointage.video.size().height())
+        w, h = int(self.pointage.size().width()),  int(self.pointage.size().height())
         # taille visée
         w0 , h0 = int(self.wanted_image_size.x), int(self.wanted_image_size.y)
         # erreurs de taille de la fenêtre
@@ -499,426 +483,14 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         
         return
 
-    def definit_messages_statut(self):
-        """
-        Définit le début des messages à envoyer dans la ligne de statut;
-        il s'agit de définir le dictionnaire self.roleEtat de structure
-        etat => fonction de rappel pour renvoyer une chaîne appropriée
-        """
-        def msgDebut(app):
-            return self.tr("Début : ouvrez un fichier, ou un exemple des aides")
-        def msgA(app):
-            return self.tr("Fichier vidéo : {filename} ... définissez l'échelle ou démarrez le pointage | Il est possible de redimensionner la fenêtre").format(filename = os.path.basename(app.pointage.video.filename))
-        def msgAB(app):
-            return self.tr("Préparation du pointage automatique : sélectionnez les objets à suivre, au nombre de {n}").format(n = app.pointage.video.nb_obj)
-        def msgB(app):
-            return self.tr("Pointage automatique en cours : il peut être interrompu par le bouton STOP")
-        def msgC(app):
-            return self.tr("Définissez l'échelle, par un tirer-glisser sur l'image")
-        def msgD(app):
-            return self.tr("Pointage manuel : cliquez sur le premier objet à suivre")
-        def msgE(app):
-            return self.tr("Pointage manuel : il reste encore des objets à pointer, on en est à {obj}").format(obj = app.pointage.video.objet_courant)
-        
-        self.roleEtat = { # résumé de ce que représente un état
-            "debut" : msgDebut,
-            "A" :     msgA,
-            "AB" :    msgAB,
-            "B" :     msgB,
-            "C" :     msgC,
-            "D" :     msgD,
-            "E" :     msgE,
-        }
-        return
-
-    def etatUI(self, etat):
-        """
-        Mise en place d'un état de l'interface utilisateur, voir la
-        documentation dans le fichier etat_pymecavideo.html
-
-        après l'état C, il faut tenir compte d'un ancien état, A*/D*
-        """
-        fonctions = { # fonctions de rappel pour chaque changement d'état
-            "debut": self.etatDebut,
-            "A":     self.etatA,
-            "AB":    self.etatAB,
-            "B":     self.etatB,
-            "C":     self.etatC,
-            "D":     self.etatD,
-            "E":     self.etatE,
-        }
-
-        if self.etat == etat: return # inutile de changer !
-        self.dbg.p(1, f"========> État précédent = {self.etat}. État suivant = {etat}")
-        self.etat = etat
-        if self.etat not in fonctions:
-            raise Exception(
-                f"L'état doit être {', '.join(list(fonctions.keys()))}, or il est « {repr(self.etat)} »")
-        self.etat = etat
-        # appel de la fonction liée à l'état courant
-        fonctions[self.etat]()
-        self.setStatus("")
-        return
-    
-    def etatDebut(self):
-        """
-        On y arrive quand on lance pymecavideo, et qu’aucune vidéo
-        n’est passée, ni par argument, ni par le fichier de
-        configuration.
-
-        Tous les onglets sont désactivés ; idéalement, une aide
-        pour dire d’aller chercher un fichier vidéo apparaît.
-        """
-        self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
-        # désactivation de widgets
-        for obj in self.actionDefaire, self.actionRefaire, \
-            self.actionCopier_dans_le_presse_papier, self.menuE_xporter_vers, \
-            self.actionSaveData, self.widget_chronophoto, self.pointage.spinBox_image, \
-            self.pointage.pushButton_rot_droite, self.pointage.pushButton_rot_gauche, \
-            self.pointage.pushButton_stopCalculs, \
-            self.button_video, self.pointage.label_nb_de_points, \
-            self.pointage.spinBox_objets, self.pointage.Bouton_Echelle, \
-            self.pointage.checkBox_auto, self.pointage.Bouton_lance_capture, \
-            self.pointage.pushButton_reinit, self.pointage.pushButton_origine, \
-            self.pointage.pushButton_defait, self.pointage.pushButton_refait, \
-            self.pointage.checkBox_abscisses, self.pointage.checkBox_ordonnees, \
-            self.pointage.label_IPS, self.pointage.lineEdit_IPS :
-            
-            obj.setEnabled(False)
-            
-        # décochage de widgets
-        for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
-            obj.setChecked(False)
-        
-        # activation de widgets
-        for obj in self.tabWidget, self.actionExemples:
-
-            obj.setEnabled(True)
-
-        # on cache certains widgets
-        for obj in self.radioButtonNearMouse, \
-            self.radioButtonSpeedEveryWhere, self.pointage.pushButton_stopCalculs:
-
-            obj.hide()
-
-        # organisation des onglets
-        self.tabWidget.setCurrentIndex(0)       # montre l'onglet video
-        for i in range(1,4):
-            self.tabWidget.setTabEnabled(i, False)  # autres onglets inactifs
-
-         # initialisation de self.trajectoire_widget
-        self.trajectoire_widget.chrono = False
-
-        # désactive les contôles de l'image
-        self.imgControlImage(False)
-
-        # marque "indéf." dans l'afficheur d'échelle à gauche
-        self.affiche_echelle()
-
-        # mise à jour de styles
-        self.pointage.Bouton_Echelle.setStyleSheet("background-color:None;")
-
-        # autorise le redimensionnement de la fenêtre principale
-        self.OKRedimensionnement.emit()
-
-        # inactive le spinner pour les incréments de plus d'une image
-        # voir la demande de Isabelle.Vigneau@ac-versailles.fr, 15 Sep 2022
-        # non encore implémentée
-        self.pointage.imgno_incr.hide()
-        self.pointage.spinBox.hide()
-
-        return
-        
-    def etatA(self):
-        """
-        Une vidéo est connue et on en affiche une image.
-
-        Le premier onglet est actif, on voit une image de la
-        vidéo, les contrôles pour se déplacer dans le film sont
-        actifs, on peut modifier le nombre d’objets à pointer, Le
-        bouton Démarrer est visible et actif.
-
-        Inutile de montrer le bouton de réinitialisation
-
-        Sur l’image de la vidéo, le curseur est ordinaire.
-        """
-        self.setWindowTitle(self.tr("Pymecavideo : {filename}").format(
-            filename = os.path.basename(self.pointage.video.filename)))
-        self.pointage.video.objet_courant = 1
-        self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
-        if not self.pointage.video.echelle_image:
-            self.affiche_echelle() # marque "indéf."
-            self.echelle_modif.emit(self.tr("Définir l'échelle"),
-                                    "background-color:None;")
-            # comme il n'y a pas d'échelle, on peut redimensionner la fenêtre
-            self.OKRedimensionnement.emit()
-            if self.pointage.video.echelle_trace:
-                self.pointage.video.echelle_trace.hide()
-        # ferme les widget d'affichages des x, y, v du 2eme onglet
-        # si elles existent
-        for plotwidget in self.dictionnairePlotWidget.values():
-            plotwidget.parentWidget().close()
-            plotwidget.close()
-            del plotwidget
-        self.init_variables(self.pointage.video.filename)
-        # active les contrôle de l'image, montre l'image
-        self.imgControlImage(True)
-        self.pointage.video.affiche_image()
-        # réactive plusieurs widgets
-        for obj in self.pointage.label_nb_de_points, self.pointage.pushButton_reinit, \
-            self.pointage.spinBox_objets, self.pointage.Bouton_Echelle, \
-            self.pointage.checkBox_auto, self.pointage.Bouton_lance_capture, \
-            self.pointage.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
-            self.pointage.checkBox_abscisses, self.pointage.checkBox_ordonnees, \
-            self.pointage.label_IPS, self.pointage.lineEdit_IPS, \
-            self.menuE_xporter_vers, self.actionSaveData :
-
-            obj.setEnabled(True)
-
-        # si une échelle est définie, on interdit les boutons de rotation
-        # sinon on autorise ces boutons
-        rotation_possible = not self.pointage.video.echelle_image
-        for obj in self.pointage.pushButton_rot_droite, self.pointage.pushButton_rot_gauche :
-            obj.setEnabled(rotation_possible)
-                
-        # ajuste le nombre d'objets suivis
-        if self.pointage.video.suivis:
-            self.pointage.spinBox_objets.setValue(self.pointage.video.nb_obj)
-        else:
-            self.pointage.video.dimension_data.emit(1)
-            self.pointage.spinBox_objets.setValue(1)
-
-        # desactive d'autres widgets
-        self.pointage.pushButton_stopCalculs.setEnabled(False)
-        self.pointage.pushButton_stopCalculs.hide()
-        self.enableDefaire(False)
-        self.enableRefaire(False)
-        self.pointage.checkBox_abscisses.setCheckState(Qt.CheckState.Unchecked)
-        self.pointage.checkBox_ordonnees.setCheckState(Qt.CheckState.Unchecked)
-        self.pointage.checkBox_auto.setCheckState(Qt.CheckState.Unchecked)
-        for i in 1, 2, 3:
-            self.tabWidget.setTabEnabled(i, False)
-        self.checkBox_Ec.setChecked(False)
-        self.checkBox_Em.setChecked(False)
-        self.checkBox_Epp.setChecked(False)
-        
-        # désactive le grapheur si existant
-        if self.graphWidget:
-            plotItem = self.graphWidget.getPlotItem()
-            plotItem.clear()
-            plotItem.setTitle('')
-            plotItem.hideAxis('bottom')
-            plotItem.hideAxis('left')
- 
-        """
-        Prépare une session de pointage, au niveau de la
-        fenêtre principale, et met à jour les préférences
-        """
-        d = self.prefs.defaults
-        d['lastVideo'] = self.pointage.video.filename
-        d['videoDir'] = os.path.dirname(self.pointage.video.filename)
-        d["taille_image"] = f"({self.pointage.video.image_w},{self.pointage.video.image_h})"
-        d['rotation'] = str(self.pointage.video.rotation)
-        self.prefs.save()
-
-        self.pointage.spinBox_image.setMinimum(1)
-        self.pointage.spinBox_image.setValue(1)
-        self.spinBox_chrono.setMaximum(self.pointage.video.image_max)
-        self.pointage.spinBox_objets.setEnabled(True)
-        self.tab_traj.setEnabled(0)
-
-        self.affiche_statut.emit(
-           self.tr("Veuillez choisir une image (et définir l'échelle)"))
-        self.montre_vitesses = False
-        self.egalise_origine()
-        return
-
-    def etatAB(self):
-        """
-        On y arrive en cliquant sur le bouton démarrer, si la case
-        à cocher « pointage auto » était cochée. On doit définir,
-        par tirer-glisser à la souris, autant de zones
-        rectangulaires à suivre qu’il y a d’objets à pointer.
-
-        Le premier onglet est actif, mais tous les widgets de
-        contrôle y sont inactifs.
-        """
-        self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
-        # désactive plusieurs widgets
-        for obj in self.pushButton_rot_droite, self.pushButton_rot_gauche, \
-            self.label_nb_de_points, \
-            self.spinBox_objets, self.pointage.Bouton_Echelle, \
-            self.checkBox_auto, self.Bouton_lance_capture, \
-            self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
-            self.checkBox_abscisses, self.checkBox_ordonnees, \
-            self.label_IPS, self.lineEdit_IPS, \
-            self.menuE_xporter_vers, self.actionSaveData :
-
-            obj.setEnabled(False)
-
-        QMessageBox.information(
-            None, "Capture Automatique",
-            self.tr("""\
-            Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
-            Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",None))
-        self.affiche_statut.emit(self.tr("Pointage Automatique"))
-        self.imgControlImage(False)
-        # on démarre la définition des zones à suivre
-        self.pointage.video.capture_auto()
-        return
-        
-    def etatB(self):
-        """
-        On y arrive quand les zones rectangulaires à suivre sont
-        définies.
-
-        Le premier onglet est actif, mais tous les widgets de contrôle
-        y sont inactifs et on fait apparaître le bouton STOP
-        """
-        self.pushButton_stopCalculs.setText("STOP")
-        self.pushButton_stopCalculs.setEnabled(True)
-        self.pushButton_stopCalculs.show()
-        self.update()
-        # initialise la détection des points
-        self.pointage.video.detecteUnPoint()
-        return
-    
-    def etatC(self):
-        """
-        L’échelle est en cours de définition.
-
-        Le premier onglet est actif, mais tous les boutons qu’on
-        peut y voir sont inactifs jusqu’à la fin de la définition
-        de l’échelle.
-
-        Cet état peut se situer entre A et A, ou entre D et D,
-        selon la valeur de self.etat_ancien.
-        """
-        self.label_zoom.emit(self.tr("Zoom autour de x, y ="))
-        # désactive plusieurs widgets
-        for obj in self.pointage.pushButton_rot_droite, self.pointage.pushButton_rot_gauche, \
-            self.pointage.label_nb_de_points, \
-            self.pointage.spinBox_objets, self.pointage.Bouton_Echelle, \
-            self.pointage.checkBox_auto, self.pointage.Bouton_lance_capture, \
-            self.pointage.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
-            self.pointage.checkBox_abscisses, self.pointage.checkBox_ordonnees, \
-            self.pointage.label_IPS, self.pointage.lineEdit_IPS, \
-            self.menuE_xporter_vers, self.actionSaveData :
-
-            obj.setEnabled(False)
-        
-        return
-        
-    def etatD(self):
-        """
-        Une vidéo est connue et on en affiche une image.
-        Le pointage a été démarré, manuellement, ou un pointage
-        automatique vient de finir.Tous les onglets sont actifs.
-
-        Les contrôles pour changer d’image sont actifs, et le seul
-        autre bouton actif sur le premier onglet est celui qui
-        permet de changer d’échelle. Dans tous les cas, le bouton STOP
-        y est caché
-
-        Le pointage n’est possible que dans deux cas :
-
-        quand aucune image n’a été pointée quand le pointage à
-        venir est voisin de pointages existants : sur une image
-        déjà pointée, ou juste avant, ou juste après.
-
-        Quand le pointage est possible et seulement alors, le
-        curseur de souris a la forme d’une grosse cible ;
-        idéalement il identifie aussi l’objet à pointer.
-        """
-        self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.pointage.video.suivis[0]))
-        # empêche de redimensionner la fenêtre
-        self.stopRedimensionnement.emit()
-        # prépare le widget video
-        self.pointage.video.setFocus()
-        if self.pointage.video.echelle_trace: self.pointage.video.echelle_trace.lower()
-        # on cache le bouton STOP
-        self.pointage.pushButton_stopCalculs.setEnabled(False)
-        self.pointage.pushButton_stopCalculs.hide()
-        # on force extract_image afin de mettre à jour le curseur de la vidéo
-        self.pointage.video.extract_image(self.pointage.horizontalSlider.value())
-        
-        self.pointage.video.affiche_point_attendu(self.pointage.video.suivis[0])
-        self.pointage.video.lance_capture = True
-         # les widgets de contrôle de l'image sont actifs ici
-        self.imgControlImage(True)
-        
-        # tous les onglets sont actifs
-        for i in 1, 2, 3:
-            self.tabWidget.setTabEnabled(i, True)
-            
-        # comme l'onglet 2 est actif, il faut s'occuper du statut des
-        # boutons pour les énergies !
-        for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
-            obj.setChecked(False)
-            obj.setEnabled(bool(self.pointage.video.echelle_image))
-            
-        # mise à jour des menus
-        self.actionSaveData.setEnabled(True)
-        self.actionCopier_dans_le_presse_papier.setEnabled(True)
-        self.comboBox_referentiel.setEnabled(True)
-        self.pushButton_select_all_table.setEnabled(True)
-
-        self.comboBox_referentiel.clear()
-        self.comboBox_referentiel.insertItem(-1, "camera")
-        for obj in self.pointage.video.suivis:
-            self.comboBox_referentiel.insertItem(
-                -1, self.tr("objet N° {0}").format(str(obj)))
-
-        # désactive des boutons et des cases à cocher
-        for obj in self.pointage.pushButton_origine, self.pointage.checkBox_abscisses, \
-            self.pointage.checkBox_ordonnees, self.pointage.checkBox_auto, \
-            self.pointage.Bouton_lance_capture, self.pointage.pushButton_rot_droite, \
-            self.pointage.pushButton_rot_gauche :
-
-            obj.setEnabled(False)
-
-        # si aucune échelle n'a été définie, on place l'étalon à 1 px pour 1 m.
-        if self.pointage.video.echelle_image.mParPx() == 1:
-            self.pointage.video.echelle_image.longueur_reelle_etalon = 1
-            self.pointage.video.echelle_image.p1 = vecteur(0, 0)
-            self.pointage.video.echelle_image.p2 = vecteur(0, 1)
-
-        # active le bouton de réinitialisation
-        self.pointage.pushButton_reinit.setEnabled(True)
-        return
-
-    def etatE(self):
-        """
-        On est en train de pointer une série d’objets pour la même date.
-        Le curseur de souris a la forme d’une grosse cible ;
-        idéalement il identifie aussi l’objet à pointer.
-
-        Durant ce pointage, les contrôles de changement d’image
-        sont inactifs, ainsi que les onglets autres que le
-        premier.
-        """
-        self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.pointage.video.objet_courant))
-        self.imgControlImage(False)
-        for i in 1, 2, 3:
-            self.tabWidget.setTabEnabled(i, False)        
-        return
-        
-    def restaureEtat(self):
-        """
-        Restauration de l'état A ou D après (re)définition de l'échelle
-        """
-        self.change_etat.emit(self.etat_ancien)
-        return
-        
-    
     def egalise_origine(self):
         """
         harmonise l'origine : recopie celle de la vidéo vers le
         widget des trajectoires et redessine les deux.
         """
-        self.trajectoire_widget.origine_mvt = self.pointage.video.origine
+        self.trajectoire_widget.origine_mvt = self.pointage.origine
         self.trajectoire_widget.update()
-        self.pointage.video.update()
+        self.pointage.update()
         return
     
     def changeChronoImg(self,img):
@@ -955,7 +527,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.trajectoire_widget.setEnabled(False)
             self.widget_speed.setEnabled(False)
             self.checkBoxVectorSpeed.setChecked(False)
-            self.spinBox_chrono.setMaximum(int(self.pointage.video.image_max))
+            self.spinBox_chrono.setMaximum(int(self.pointage.image_max))
             self.spinBox_chrono.setMinimum(1)
 
         elif self.comboBoxChrono.currentIndex() == 2 :
@@ -974,10 +546,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                        (photo_chrono))
             if photo_chrono == 'chronophotographie':  # on extrait le première image que l'on rajoute au widget
                 self.trajectoire_widget.chrono = 1  # 1 pour chronophotographie
-                ok, img = self.pointage.video.cvReader.getImage(
-                    self.chronoImg, self.pointage.video.rotation)
+                ok, img = self.pointage.cvReader.getImage(
+                    self.chronoImg, self.pointage.rotation)
                 self.imageChrono = toQImage(img).scaled(
-                    self.pointage.video.width(), self.pointage.video.height(), Qt.KeepAspectRatio)
+                    self.pointage.width(), self.pointage.height(), Qt.KeepAspectRatio)
                 self.trajectoire_widget.setImage(
                     QPixmap.fromImage(self.imageChrono))
             else:
@@ -1042,57 +614,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(2, "rentre dans 'refait_echelle'")
         self.recalculLesCoordonnees()
         return
-
-    def nouvelle_origine(self):
-        """
-        Permet de déplacer l'origine du référentiel de la caméra
-        """
-        self.dbg.p(2, "rentre dans 'nouvelle_origine'")
-        nvl_origine = QMessageBox.information(
-            self,
-            "NOUVELLE ORIGINE",
-            "Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
-        ChoixOrigineWidget(parent=self.pointage.video, app=self).show()
-        return
-
-    def tourne_droite(self):
-        self.dbg.p(2, "rentre dans 'tourne_droite'")
-        self.tourne_image("droite")
-
-    def tourne_gauche(self):
-        self.dbg.p(2, "rentre dans 'tourne_droite'")
-        self.tourne_image("gauche")
-
-    def tourne_image(self, sens):
-        self.dbg.p(2, "rentre dans 'tourne_image'")
-        if sens == "droite":
-            increment = 90
-        elif sens == "gauche":
-            increment = -90
-        self.pointage.video.rotation = (self.pointage.video.rotation + increment) % 360
-        self.dbg.p(2, "Dans 'tourne_image' self rotation vaut" +
-                   str(self.pointage.video.rotation))
-
-        # gestion de l'origine et de l'échelle :
-        self.dbg.p(3, f"Dans 'tourne_image' avant de tourner, self.origine {self.pointage.video.origine}, largeur video {self.pointage.video.width()}, hauteur video {self.pointage.video.height()}")
-        self.redimensionneSignal.emit(True)
-        return
-
-    def change_sens_X(self):
-        self.dbg.p(2, "rentre dans 'change_sens_X'")
-        if self.checkBox_abscisses.isChecked():
-            self.pointage.video.sens_X = -1
-        else:
-            self.pointage.video.sens_X = 1
-        self.change_axe_origine.emit()
-
-    def change_sens_Y(self):
-        self.dbg.p(2, "rentre dans 'change_sens_Y'")
-        if self.checkBox_ordonnees.isChecked():
-            self.pointage.video.sens_Y = -1
-        else:
-            self.pointage.video.sens_Y = 1
-        self.change_axe_origine.emit()
 
     def presse_papier(self):
         """Sélectionne la totalité du tableau de coordonnées
@@ -1175,9 +696,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(2, "rentre dans 'redimensionneFenetre'")
         if tourne:  # on vient de cliquer sur tourner. rien n'est changé.
             self.dbg.p(2, "Dans 'redimensionneFenetre', tourne")
-            self.pointage.video.remontre_image()
+            self.pointage.remontre_image()
         else:
-            self.pointage.video.affiche_image()
+            self.pointage.affiche_image()
         self.trajectoire_widget.maj()
         return
 
@@ -1229,9 +750,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # on met des titres aux colonnes.
         self.tableWidget.setHorizontalHeaderItem(
             0, QTableWidgetItem('t (s)'))
-        self.tableWidget.setRowCount(len(self.pointage.video.data))
+        self.tableWidget.setRowCount(len(self.pointage.data))
         for i in range(nb_suivis):
-            unite = "m" if self.pointage.video.echelle_image \
+            unite = "m" if self.pointage.echelle_image \
                 else "px"
             self.tableWidget.setHorizontalHeaderItem(
                 1 + (2+colonnes_sup) * i, QTableWidgetItem(
@@ -1266,7 +787,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         redéfinit l'échelle
         """
         self.dbg.p(2, "rentre dans 'recalculLesCoordonnees'")
-        nb_suivis = self.pointage.video.nb_obj
+        nb_suivis = self.pointage.nb_obj
 
         def cb_temps(i, t):
             # marque la date dans la colonne de gauche
@@ -1284,7 +805,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             return
 
         # dans le tableau, l'unité est le mètre.
-        self.pointage.video.iteration_data(cb_temps, cb_point, unite = "m")
+        self.pointage.iteration_data(cb_temps, cb_point, unite = "m")
         return
 
     def montre_video(self):
@@ -1292,7 +813,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         ref = self.comboBox_referentiel.currentText().split(" ")[-1]
         if len(ref) == 0 or ref == "camera":
             return
-        c = Cadreur(int(ref), self.pointage.video)
+        c = Cadreur(int(ref), self.pointage)
         c.montrefilm()
         return
 
@@ -1325,12 +846,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         m = self.lineEdit_m.text().replace(',', '.')
         g = self.lineEdit_g.text().replace(',', '.')
         if not pattern_float.match(m) or not pattern_float.match(g): return 
-        deltaT = self.pointage.video.deltaT
+        deltaT = self.pointage.deltaT
         m = float(m)
         g = float(g)
 
         # initialisation de self.locals avec des listes vides
-        for obj in self.pointage.video.suivis:
+        for obj in self.pointage.suivis:
             for gr in grandeurs:
                 self.locals[gr+str(obj)] = []
 
@@ -1348,12 +869,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.locals["Ec"+str(obj)].append(
                 0.5 * m * v.norme ** 2 if v else None)
             self.locals["Epp"+str(obj)].append(
-                self.pointage.video.sens_Y * m * g * p.y if p else None)
+                self.pointage.sens_Y * m * g * p.y if p else None)
             return
-        self.pointage.video.iteration_data(None, cb_points, unite="m")
+        self.pointage.iteration_data(None, cb_points, unite="m")
 
         # on complète le remplissage de self.locals
-        for obj in self.pointage.video.suivis:
+        for obj in self.pointage.suivis:
             # énergie mécanique
             self.locals["Em"+str(obj)] = \
                 [ec + epp if ec is not None and epp is not None else None
@@ -1443,11 +964,11 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if grandeurX == "Choisir ..." or grandeurY == "Choisir ...": return
 
         if grandeurX == 't':
-            X = self.pointage.video.dates
+            X = self.pointage.dates
         elif grandeurX in self.locals :
             X = self.locals[grandeurX]
         if grandeurY == 't':
-            Y = self.pointage.video.dates
+            Y = self.pointage.dates
         elif grandeurY in  self.locals :
             Y = self.locals[grandeurY]
         # on retire toutes les parties non définies
@@ -1530,7 +1051,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         """
         self.dbg.p(2, "rentre dans 'tracer_trajectoires'")
-        self.trajectoire_widget.origine_mvt = self.pointage.video.origine
+        self.trajectoire_widget.origine_mvt = self.pointage.origine
         if newValue == "absolu":
             ref = 0 # la caméra
             # mets à jour le comboBox referentiel :
@@ -1549,7 +1070,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         if ref != 0:
             self.button_video.setEnabled(1)
             self.trajectoire_widget.chrono = False
-            origine = vecteur(self.pointage.video.width() // 2, self.pointage.video.height() // 2)
+            origine = vecteur(self.pointage.width() // 2, self.pointage.height() // 2)
             self.trajectoire_widget.origine = origine
             self.trajectoire_widget.origine_mvt = origine
             self.trajectoire_widget.referentiel = ref
@@ -1600,7 +1121,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 numero = ligne + 1))
         b.setFlat(True)
         b.clicked.connect(lambda state: \
-                          self.pointage.video.refait_point_depuis_tableau( b ))
+                          self.pointage.refait_point_depuis_tableau( b ))
         b.index_image = ligne + 1
         return b
     
@@ -1613,7 +1134,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         # active ou désactive les checkbox énergies
         # (n'ont un intérêt que si l'échelle est déterminée)
-        if self.pointage.video.echelle_image:
+        if self.pointage.echelle_image:
             self.checkBox_Ec.setEnabled(True)
             self.checkBox_Epp.setEnabled(True)
             if self.checkBox_Ec.isChecked() and self.checkBox_Epp.isChecked():
@@ -1631,13 +1152,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.masse_objet = self.masse(1)
             self.checkBox_Ec.setChecked(self.masse_objet != 0)
         # initialise tout le tableau (nb de colonnes, unités etc.)
-        self.cree_tableau(nb_suivis = self.pointage.video.nb_obj)
+        self.cree_tableau(nb_suivis = self.pointage.nb_obj)
         # le compte de colonnes supplémentaires pour chaque objet
         colonnes_sup = self.checkBox_Ec.isChecked() + \
             self.checkBox_Epp.isChecked() + \
             self.checkBox_Em.isChecked()
         # le numéro de la dernière colonne où on peut refaire les points
-        colonne_refait_points = self.pointage.video.nb_obj * (2 + colonnes_sup) + 1
+        colonne_refait_points = self.pointage.nb_obj * (2 + colonnes_sup) + 1
 
         def cb_temps(i, t):
             # marque la date dans la colonne de gauche
@@ -1680,31 +1201,31 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     col += 1
                 # dernière colonne : un bouton pour refaire le pointage
                 # n'existe que s'il y a eu un pointage
-                derniere = self.pointage.video.nb_obj * (2 + colonnes_sup) +1
+                derniere = self.pointage.nb_obj * (2 + colonnes_sup) +1
                 self.tableWidget.setCellWidget(
                     i, derniere, self.bouton_refaire(i))
             return
         
-        self.pointage.video.iteration_data(
+        self.pointage.iteration_data(
             cb_temps, cb_point,
-            unite = "m" if self.pointage.video.echelle_image else "px")
+            unite = "m" if self.pointage.echelle_image else "px")
         
         # rajoute des boutons pour refaire le pointage
         # au voisinage immédiat des zones de pointage
-        colonne = self.pointage.video.nb_obj * (2 + colonnes_sup) +1
-        if self.pointage.video.premiere_image() is None: return
-        if self.pointage.video.premiere_image() > 1:
-            i = self.pointage.video.premiere_image() - 2
+        colonne = self.pointage.nb_obj * (2 + colonnes_sup) +1
+        if self.pointage.premiere_image() is None: return
+        if self.pointage.premiere_image() > 1:
+            i = self.pointage.premiere_image() - 2
             self.tableWidget.setCellWidget(i, colonne, self.bouton_refaire(i))
-        if self.pointage.video.derniere_image() < len(self.pointage.video):
-            i = self.pointage.video.derniere_image()
+        if self.pointage.derniere_image() < len(self.pointage):
+            i = self.pointage.derniere_image()
             self.tableWidget.setCellWidget(i, colonne, self.bouton_refaire(i))
         return
 
     def recommence_echelle(self):
         self.dbg.p(2, "rentre dans 'recommence_echelle'")
         self.tabWidget.setCurrentIndex(0)
-        self.pointage.video.echelle_image = echelle()
+        self.pointage.echelle_image = echelle()
         self.affiche_echelle()
         self.demande_echelle()
         return
@@ -1720,8 +1241,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             plotwidget.close()
             del plotwidget
         d = self.prefs.config["DEFAULT"]
-        d["taille_image"] = f"({self.pointage.video.image_w},{self.pointage.video.image_h})"
-        d["rotation"] = str(self.pointage.video.rotation)
+        d["taille_image"] = f"({self.pointage.image_w},{self.pointage.image_h})"
+        d["rotation"] = str(self.pointage.rotation)
         self.prefs.save()
         return
 
@@ -1758,7 +1279,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self,
             self.tr("Ouvrir une vidéo"), dir_,
             self.tr("fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)"))
-        self.pointage.video.openTheFile(filename)
+        self.pointage.openTheFile(filename)
         return
 
     def openfile(self):
@@ -1772,8 +1293,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.tr("Ouvrir une vidéo"),
             dir_,
             self.tr("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)"))
-        self.pointage.video.openTheFile(filename)
-        self.pointage.video.reinitialise_capture()
+        self.pointage.openTheFile(filename)
+        self.pointage.reinitialise_capture()
         return
     
     def renomme_le_fichier(self):
@@ -1785,7 +1306,7 @@ Merci de bien vouloir le renommer avant de continuer"""))
         filename = QFileDialog.getOpenFileName(self, self.tr("Ouvrir une vidéo"),
                                                self._dir("videos", None),
                                                "*.avi")
-        self.pointage.video.openTheFile(filename)
+        self.pointage.openTheFile(filename)
         return
 
 
@@ -1819,33 +1340,16 @@ Merci de bien vouloir le renommer avant de continuer"""))
                 self.tr("Désolé pas de fichier d'aide pour le langage {0}.").format(lang))
         return
 
-    def verifie_IPS(self):
-        self.dbg.p(2, "rentre dans 'verifie_IPS'")
-        # si ce qui est rentré n'est pas un entier
-        if not self.pointage.lineEdit_IPS.text().isdigit() and len(self.lineEdit_IPS.text()) > 0:
-            QMessageBox.warning(
-                self,
-                self.tr("Le nombre d'images par seconde doit être un entier"),
-                self.tr("merci de recommencer"))
-        else:
-            # la vérification est OK, donc on modifie l'intervalle de temps
-            # et on refait le tableau de données sans changer le nombre
-            # d'objets
-            self.pointage.video.framerate = int(self.pointage.lineEdit_IPS.text())
-            self.pointage.video.deltaT = 1 / self.pointage.video.framerate
-            self.pointage.video.redimensionne_data(self.pointage.video.nb_obj)
-        return
-    
     def affiche_echelle(self):
         """
         affiche l'échelle courante pour les distances sur l'image
         """
         self.dbg.p(2, "rentre dans 'affiche_echelle'")
-        if self.pointage.video.echelle_image.isUndef():
+        if self.pointage.echelle_image.isUndef():
             self.pointage.echelleEdit.setText(
                 self.tr("indéf."))
         else:
-            epxParM = self.pointage.video.echelle_image.pxParM()
+            epxParM = self.pointage.echelle_image.pxParM()
             if epxParM > 20:
                 self.pointage.echelleEdit.setText("%.1f" % epxParM)
             else:
@@ -1892,9 +1396,9 @@ Merci de bien vouloir le renommer avant de continuer"""))
         self.apply_preferences(rouvre=True)
         
         # donne la main au videoWidget pour préparer les pointages
-        self.pointage.video.rouvre()
+        self.pointage.rouvre()
         # corrige éventuellement le nombre d'images par seconde à afficher
-        self.lineEdit_IPS.setText(f"{self.pointage.video.framerate}")
+        self.lineEdit_IPS.setText(f"{self.pointage.framerate}")
         
         lignes_data = [l for l in lignes if l[0] != "#" and len(l.strip()) > 0]
         # on trouve les données en coupant là où il y a des séparations
@@ -1903,50 +1407,15 @@ Merci de bien vouloir le renommer avant de continuer"""))
         # on remplace les virgules décimales par des points
         data = [re.split(r"\s+", l.strip().replace(",", "."))
                 for l in lignes_data][1:]
-        self.pointage.video.restaure_pointages(
+        self.pointage.restaure_pointages(
             data, self.prefs.config["DEFAULT"].getint("index_depart"))
-        self.sync_img2others(self.pointage.video.index)
+        self.sync_img2others(self.pointage.index)
         self.affiche_echelle()  # on met à jour le widget d'échelle
         # coche les cases pour les sens des axes
-        self.sens_axes.emit(self.pointage.video.sens_X, self.pointage.video.sens_Y)
+        self.sens_axes.emit(self.pointage.sens_X, self.pointage.sens_Y)
         self.change_etat.emit("D")
         return
 
-    def debut_capture(self):
-        """
-        Fonction de rappel du bouton Bouton_lance_capture
-
-        Passe à l'état D ou AB, selon self.checkBox_auto
-        """
-        prochain_etat = "AB" if self.pointage.checkBox_auto.isChecked() else "D"
-        self.change_etat.emit(prochain_etat)
-        return
-    
-    def demande_echelle(self):
-        """
-        demande l'échelle interactivement
-        """
-        self.dbg.p(2, "rentre dans 'demande_echelle'")
-        reponse, ok = QInputDialog.getText(
-            None,
-            self.tr("Définir léchelle"),
-            self.tr("Quelle est la longueur en mètre de votre étalon sur l'image ?"),
-            text = f"{self.pointage.video.echelle_image.longueur_reelle_etalon:.3f}")
-        reponse = reponse.replace(",", ".")
-        ok = ok and pattern_float.match(reponse) and float(reponse) > 0
-        if not ok:
-            self.affiche_statut.emit(self.tr(
-                "Merci d'indiquer une échelle valable : {} ne peut pas être converti en nombre.").format(reponse))
-            self.demande_echelle()
-            return
-        reponse = float(reponse)
-        self.pointage.video.echelle_image.etalonneReel(reponse)
-        self.etat_ancien = self.etat # conserve pour plus tard
-        self.change_etat.emit("C")
-        job = EchelleWidget(self.pointage.video)
-        job.show()
-        return
-    
     def sync_img2others(self, i):
         """
         Fait en sorte que self.pointage.horizontalSlider et self.pointage.spinBox_image
@@ -1963,9 +1432,9 @@ Merci de bien vouloir le renommer avant de continuer"""))
         synchronise self.pointage.horizontalSlider
         """
         self.dbg.p(2, "rentre dans 'sync_spinbox2others'")
-        self.pointage.video.index = self.pointage.spinBox_image.value()
-        self.pointage.horizontalSlider.setValue(self.pointage.video.index)
-        self.pointage.video.affiche_image()
+        self.pointage.index = self.pointage.spinBox_image.value()
+        self.pointage.horizontalSlider.setValue(self.pointage.index)
+        self.pointage.affiche_image()
         return
 
     def sync_slider2spinbox(self):
@@ -1988,9 +1457,9 @@ Merci de bien vouloir le renommer avant de continuer"""))
         if state:
             self.pointage.horizontalSlider.setMinimum(1)
             self.pointage.spinBox_image.setMinimum(1)
-            if self.pointage.video.image_max:
-                self.pointage.horizontalSlider.setMaximum(int(self.pointage.video.image_max))
-                self.pointage.spinBox_image.setMaximum(int(self.pointage.video.image_max))
+            if self.pointage.image_max:
+                self.pointage.horizontalSlider.setMaximum(int(self.pointage.image_max))
+                self.pointage.spinBox_image.setMaximum(int(self.pointage.image_max))
             self.pointage.horizontalSlider.valueChanged.connect(
                 self.sync_slider2spinbox)
             self.pointage.spinBox_image.valueChanged.connect(self.sync_spinbox2others)
@@ -2049,11 +1518,11 @@ Merci de bien vouloir le renommer avant de continuer"""))
 
     def loupe(self, position):
         """
-        Agrandit une partie de self.pointage.video.image et la met dans la zone du zoom
+        Agrandit une partie de self.pointage.image et la met dans la zone du zoom
         @param position le centre de la zone à agrandir
         """
-        self.pointage.zoom_zone.fait_crop(self.pointage.video.image, position)
-        xpx, ypx, xm, ym = self.pointage.video.coords(position)
+        self.pointage.zoom_zone.fait_crop(self.pointage.image, position)
+        xpx, ypx, xm, ym = self.pointage.coords(position)
         self.pointage.editXpx.setText(f"{xpx}")
         self.pointage.editYpx.setText(f"{ypx}")
         self.pointage.editXm.setText(f"{xm}")

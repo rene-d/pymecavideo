@@ -400,3 +400,11 @@ class Pointage(QObject):
         return [self.data[t][obj] for t in self.dates
                 if self.data[t][obj] is not None]
     
+    @property
+    def nb_obj(self):
+        """
+        @return le nombre d'objets suivis
+        """
+        if self.suivis is None: return 0
+        return len(self.suivis)
+

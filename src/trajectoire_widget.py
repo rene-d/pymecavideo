@@ -52,11 +52,11 @@ class TrajectoireWidget(ImageWidget):
 
     def setApp(self, app):
         self.app = app
-        self.video = app.pointage.video
+        self.pointage = app.pointage
         return
     
     def maj(self):
-        self.origine_mvt = self.video.origine
+        self.origine_mvt = self.pointage.origine
 
     def prepare_vecteurs_pour_paint(self):
         if self.video.app.checkBoxVectorSpeed.isChecked():
