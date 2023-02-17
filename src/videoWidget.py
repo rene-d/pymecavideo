@@ -190,7 +190,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
 
     def resizeEvent(self, e):
         self.dbg.p(2, "rentre dans 'resizeEvent'")
-        self.app.update_imgedit.emit(
+        self.app.pointage.update_imgedit.emit(
             self.image_w, self.image_h, self.rotation)
         if self.premier_resize:  # Au premier resize, la taille est changée mais pas l'origine.
             self.premier_resize = False
@@ -381,7 +381,7 @@ class VideoPointeeWidget(ImageWidget, Pointage):
             if not ips_from_line_edit:
                 self.deltaT = 1 / self.framerate
                 # mets à jour le widget contenant les IPS
-                self.app.lineEdit_IPS.setText(str(self.framerate))
+                self.app.pointage.lineEdit_IPS.setText(str(self.framerate))
             else:
                 IPS = int(self.app.lineEdit_IPS.text())
                 self.framerate = IPS

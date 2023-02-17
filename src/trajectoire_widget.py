@@ -52,7 +52,7 @@ class TrajectoireWidget(ImageWidget):
 
     def setApp(self, app):
         self.app = app
-        self.video = app.video
+        self.video = app.pointage.video
         return
     
     def maj(self):

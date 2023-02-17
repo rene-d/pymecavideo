@@ -88,7 +88,7 @@ class Zoom(ImageWidget):
         return
 
     def paintEvent(self, event):
-        if self.app.video.image:
+        if self.image:
             painter = QPainter()
             painter.begin(self)
             if self.image != None:

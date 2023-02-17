@@ -100,7 +100,7 @@ class Preferences (QObject):
         with open(self.conffile, "w") as outfile:
             d = self.config["DEFAULT"]
             d["version"] = f"pymecavideo {Version}"
-            d["lastvideo"] = str(self.app.video.filename)
+            d["lastvideo"] = str(self.app.pointage.video.filename)
             self.config.write(outfile)
         return
 
