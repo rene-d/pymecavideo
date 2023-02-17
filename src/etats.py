@@ -24,6 +24,8 @@ from PyQt6.QtCore import Qt, QObject, pyqtSignal
 
 import os
 
+from vecteur import vecteur
+
 class Etats(QObject):
     """
     Une classe qui permet de définir les états de l'application:
@@ -188,19 +190,12 @@ class Etats(QObject):
             self.label_nb_de_points, \
             self.spinBox_objets, self.Bouton_Echelle, \
             self.checkBox_auto, self.Bouton_lance_capture, \
-            self.pushButton_origine, self.actionCopier_dans_le_presse_papier, \
+            self.pushButton_origine, \
             self.checkBox_abscisses, self.checkBox_ordonnees, \
-            self.label_IPS, self.lineEdit_IPS, \
-            self.menuE_xporter_vers, self.actionSaveData :
+            self.label_IPS, self.lineEdit_IPS :
 
             obj.setEnabled(False)
 
-        QMessageBox.information(
-            None, "Capture Automatique",
-            self.tr("""\
-            Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre.
-            Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",None))
-        self.affiche_statut.emit(self.tr("Pointage Automatique"))
         self.imgControlImage(False)
         # on démarre la définition des zones à suivre
         self.capture_auto()
@@ -285,29 +280,7 @@ class Etats(QObject):
          # les widgets de contrôle de l'image sont actifs ici
         self.imgControlImage(True)
         
-        # tous les onglets sont actifs
-        for i in 1, 2, 3:
-            self.tabWidget.setTabEnabled(i, True)
-            
-        # comme l'onglet 2 est actif, il faut s'occuper du statut des
-        # boutons pour les énergies !
-        for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
-            obj.setChecked(False)
-            obj.setEnabled(bool(self.echelle_image))
-            
-        # mise à jour des menus
-        self.actionSaveData.setEnabled(True)
-        self.actionCopier_dans_le_presse_papier.setEnabled(True)
-        self.comboBox_referentiel.setEnabled(True)
-        self.pushButton_select_all_table.setEnabled(True)
-
-        self.comboBox_referentiel.clear()
-        self.comboBox_referentiel.insertItem(-1, "camera")
-        for obj in self.suivis:
-            self.comboBox_referentiel.insertItem(
-                -1, self.tr("objet N° {0}").format(str(obj)))
-
-        # désactive des boutons et des cases à cocher
+       # désactive des boutons et des cases à cocher
         for obj in self.pushButton_origine, self.checkBox_abscisses, \
             self.checkBox_ordonnees, self.checkBox_auto, \
             self.Bouton_lance_capture, self.pushButton_rot_droite, \
@@ -359,7 +332,7 @@ class Etats(QObject):
             if app.filename is None: return ""
             return self.tr("Fichier vidéo : {filename} ... définissez l'échelle ou démarrez le pointage | Il est possible de redimensionner la fenêtre").format(filename = os.path.basename(app.filename))
         def msgAB(app):
-            return self.tr("Préparation du pointage automatique : sélectionnez les objets à suivre, au nombre de {n}").format(n = app.nb_obj)
+            return self.tr("Préparation du pointage automatique : sélectionnez les objets à suivre, au nombre de {n}").format(n = app.pointage.nb_obj)
         def msgB(app):
             return self.tr("Pointage automatique en cours : il peut être interrompu par le bouton STOP")
         def msgC(app):
@@ -367,7 +340,7 @@ class Etats(QObject):
         def msgD(app):
             return self.tr("Pointage manuel : cliquez sur le premier objet à suivre")
         def msgE(app):
-            return self.tr("Pointage manuel : il reste encore des objets à pointer, on en est à {obj}").format(obj = app.objet_courant)
+            return self.tr("Pointage manuel : il reste encore des objets à pointer, on en est à {obj}").format(obj = app.pointage.objet_courant)
         return { # résumé de ce que représente un état
             "debut" : msgDebut,
             "A" :     msgA,

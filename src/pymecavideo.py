@@ -324,13 +324,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     show_coord = pyqtSignal()               # montre l'onglet des coordonnées
     show_video = pyqtSignal()               # montre l'onglet des vidéos
     sens_axes = pyqtSignal(int, int)        # coche les cases des axes
-    stop_n = pyqtSignal(str)                # refait le texte du bouton STOP
-    image_n = pyqtSignal(int)               # modifie les contrôles d'image
     adjust4image = pyqtSignal()             # adapte la taille à l'image
     hide_imgdim = pyqtSignal()              # cache la dimension de l'image
     affiche_statut = pyqtSignal(str)        # modifie la ligne de statut
     stopRedimensionnement = pyqtSignal()    # fixe la taille de la fenêtre
     OKRedimensionnement = pyqtSignal()      # libère la taille de la fenêtre
+    image_n = pyqtSignal(int)               # modifie les contrôles d'image
     
     
     def ui_connections(self):
@@ -384,14 +383,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.show_coord.connect(self.montre_volet_coord)
         self.show_video.connect(self.montre_volet_video)
         self.sens_axes.connect(self.coche_axes)
-        self.stop_n.connect(self.stop_setText)
-        self.image_n.connect(self.sync_img2others)
         self.affiche_statut.connect(self.setStatus)
         self.adjust4image.connect(self.ajuste_pour_image)
         self.hide_imgdim.connect(self.cache_imgdim)
         self.affiche_statut.connect(self.setStatus)
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
+        self.image_n.connect(self.sync_img2others)
         
         return
 
@@ -1359,14 +1357,6 @@ Merci de bien vouloir le renommer avant de continuer"""))
         self.pointage.checkBox_ordonnees.setChecked(y < 0)
         return
 
-    def stop_setText(self, text):
-        """
-        Change le texte du bouton STOP
-        @param text le nouveau texte
-        """
-        self.pushButton_stopCalculs.setText(text)
-        return
-
     def setStatus(self, text):
         """
         Précise la ligne de statut, qui commence par une indication de l'état
@@ -1451,6 +1441,17 @@ Merci de bien vouloir le renommer avant de continuer"""))
             self.init_variables(self.pointage.filename)
             
         elif etat == "AB":
+            for obj in self.actionCopier_dans_le_presse_papier, \
+                self.menuE_xporter_vers, self.actionSaveData :
+                obj.setEnabled(False)
+            self.affiche_statut.emit(self.tr("Pointage Automatique"))
+            QMessageBox.information(
+                None, "Capture Automatique",
+                self.tr("""\
+Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre ;
+Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",
+                        None))
+                
             pass
         elif etat == "B":
             pass
@@ -1460,7 +1461,28 @@ Merci de bien vouloir le renommer avant de continuer"""))
                 obj.setEnabled(False)
 
         elif etat == "D":
-            pass
+            # tous les onglets sont actifs
+            for i in 1, 2, 3:
+                self.tabWidget.setTabEnabled(i, True)
+            # comme l'onglet 2 est actif, il faut s'occuper du statut des
+            # boutons pour les énergies !
+            print("BUG dans l'état D avec self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp")
+            for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
+                obj.setChecked(False)
+                obj.setEnabled(bool(self.pointage.echelle_image))
+            # mise à jour des menus
+            self.actionSaveData.setEnabled(True)
+            self.actionCopier_dans_le_presse_papier.setEnabled(True)
+            print("BUG dans l'état D avec comboBox_referentiel pushButton_select_all_table")
+            self.comboBox_referentiel.setEnabled(True)
+            self.pushButton_select_all_table.setEnabled(True)
+
+            self.comboBox_referentiel.clear()
+            self.comboBox_referentiel.insertItem(-1, "camera")
+            for obj in self.pointage.suivis:
+                self.comboBox_referentiel.insertItem(
+                    -1, self.tr("objet N° {0}").format(str(obj)))
+
         elif etat == "E":
             pass
         self.setStatus("")

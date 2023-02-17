@@ -43,6 +43,7 @@ from toQimage import toQImage
 from suivi_auto import SelRectWidget
 from detect import filter_picture
 from dbg import Dbg
+from suivi_auto import SelRectWidget
 
 import interfaces.icon_rc
 
@@ -50,6 +51,7 @@ from interfaces.Ui_pointage import Ui_pointageWidget
 from pointage import Pointage
 from etats import Etats
 from echelle import EchelleWidget, echelle
+from detect import filter_picture
 
 class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     """
@@ -77,8 +79,6 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.hotspot = None             # vecteur (position de la souris)
         self.image = None               # l'image tirée du film
         self.origine = vecteur(self.width()//2, self.height()//2)
-        self.couleurs = [
-            "red", "blue", "cyan", "magenta", "yellow", "gray", "green"] *2
         self.image_max = None      # numéro de la dernière image de la vidéo
         self.framerate = None      # nombre d'images par seconde
         # dimensions natives des images de la vidéo
@@ -96,7 +96,10 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.pointageOK = False    # il est possible de faire un pointage
         self.pointageCursor = None # le curseur pour le pointage
         self.filename = None       # nom du fichier video
-
+        self.selRect = None        # sélecteur de zones à suivre
+        self.indexMotif = 0        # le numéro du motif à entourer
+        self.pileDeDetections = [] # pile d'index d'images où détecter
+        
         # fait un beau gros curseur
         cible_pix = QPixmap(cible_icon).scaledToHeight(32)
         self.pointageCursor = QCursor(cible_pix)
@@ -115,6 +118,10 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     update_zoom = pyqtSignal(vecteur)          # agrandit une portion d'image
     echelle_modif = pyqtSignal(str, str)       # modifie le bouton d'échelle
     apres_echelle = pyqtSignal()               # après dénition de l'échelle
+    selection_motif_done = pyqtSignal()        # prêt à commencer la détection
+    clic_sur_video_signal = pyqtSignal()       # après un pointage
+    stop_n = pyqtSignal(str)                   # refait le texte du bouton STOP
+
     
     ########### connexion des signaux #######
     def connecte_signaux(self):
@@ -127,6 +134,9 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.update_zoom.connect(self.loupe)
         self.echelle_modif.connect(self.setButtonEchelle)
         self.apres_echelle.connect(self.restaureEtat)
+        self.clic_sur_video_signal.connect(self.clic_sur_la_video)
+        self.selection_motif_done.connect(self.suiviDuMotif)
+        self.stop_n.connect(self.stop_setText)
         return
 
     def connecte_ui(self):
@@ -778,5 +788,153 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.echelle_trace.show()
         if self.echelle:
             self.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
+        return
+
+    def capture_auto(self):
+        """
+        fonction appelée au début de l'état AB : prépare la sélection
+        des motifs à suivre en capture automatique
+        """
+        self.dbg.p(2, "rentre dans 'capture_auto'")
+        self.auto = True # inhibe le pointage à la souris !
+        # recouvre l'image avec le widget selRect pour définir des
+        # rectangles pour chaque motif à suivre
+        self.zoomLabel.setText(self.tr("Zone à suivre n° {zone} x, y =").format(zone=self.suivis[0]))
+        self.selRect = SelRectWidget(self.video, self)
+        self.selRect.show()
+        return
+
+    def suiviDuMotif(self):
+        self.dbg.p(2, "rentre dans 'suiviDuMotif'")
+        if len(self.motifs_auto) == self.nb_obj:
+            self.dbg.p(3, "selection des motifs finie")
+            self.selRect.hide()
+            self.indexMotif = 0
+            self.pileDeDetections = []
+            for i in range(self.index, self.image_max+1):
+                self.pileDeDetections.append(i)
+            self.dbg.p(3, "self.pileDeDetections : %s" % self.pileDeDetections)
+            self.app.change_etat.emit("B")
+        else:
+            self.label_zoom.emit(self.tr("Zone à suivre n° {zone} x, y =").format(zone=self.suivis[len(self.motifs_auto)]))
+        return
+
+    # @time_it
+    def detecteUnPoint(self):
+        """
+        méthode (re)lancée pour les détections automatiques de points
+        traite une à une les données empilées dans self.pileDeDetections
+        et relance un signal si la pile n'est pas vide après chacun
+        des traitements.
+        """
+        self.dbg.p(2, f"rentre dans 'detecteUnPoint', pileDeDetection = {self.pileDeDetections}")
+        if self.pileDeDetections:
+            # on dépile un index de détections à faire et on met à jour
+            # le bouton de STOP
+            self.stop_n.emit(f"STOP ({self.pileDeDetections.pop(0)})")
+            ok, image = self.cvReader.getImage(
+                self.index, self.video.rotation, rgb=False)
+            # puis on boucle sur les objets à suivre et on
+            # détecte leurs positions
+            # Ça pourrait bien se faire dans des threads, en parallèle !!!
+            for i, part in enumerate(self.motifs_auto):
+                self.indexMotif = i
+                zone_proche = self.pointsProbables.get(self.objet_courant, None)
+                point = filter_picture(part, image, zone_proche)
+                self.pointsProbables[self.objet_courant] = point
+                echelle = self.video.image_w / self.largeurFilm
+                # on convertit selon l'échelle, et on recentre la détection
+                # par rapport au motif `part`
+                self.storePoint(vecteur(
+                    echelle*(point[0]+part.shape[1]/2),
+                    echelle*(point[1]+part.shape[0]/2)))
+                # le point étant détecté, on passe à l'objet suivant
+                # et si nécessaire à l'image suivante
+                self.objetSuivant()
+            # programme le suivi du point suivant après un délai de 50 ms,
+            # pour laisser une chance aux évènement de l'interface graphique
+            # d'être traités en priorité
+            QTimer.singleShot(50, self.detecteUnPoint)
+        else:
+            # fin de la détection automatique
+            self.auto = False
+            # si la pile d'images à détecter a été vidée par self.stopComputing,
+            # il faut passer à l'image suivante si possible
+            self.clic_sur_video_signal.emit()
+            self.change_etat.emit("D")
+        return
+
+    def storePoint(self, point):
+        """
+        enregistre un point, quand self.index et self.objet_courant
+        sont déjà bien réglés.
+        @param point la position à enregistrer
+        """
+        self.dbg.p(2, "rentre dans 'storePoint'")
+        if self.lance_capture or self.auto:
+            self.pointe(self.objet_courant, point, index=self.index-1)
+            self.clic_sur_video_signal.emit()
+        return
+
+    def clic_sur_la_video(self):
+        self.dbg.p(2, "rentre dans 'clic_sur_video'")
+        self.purge_defaits() # oublie les pointages à refaire
+        self.clic_sur_video_ajuste_ui()
+        self.app.sync_img2others(self.index)
+        return
+    
+    def clic_sur_video_ajuste_ui(self):
+        """
+        Ajuste l'interface utilisateur pour attendre un nouveau clic
+        """
+        self.dbg.p(2, "rentre dans 'clic_sur_video_ajuste_ui'")
+        self.affiche_image()
+        self.affiche_point_attendu(self.objet_courant)
+        self.enableDefaire(self.peut_defaire())
+        self.enableRefaire(self.peut_refaire())
+        return
+
+    def stop_setText(self, text):
+        """
+        Change le texte du bouton STOP
+        @param text le nouveau texte
+        """
+        self.pushButton_stopCalculs.setText(text)
+        return
+
+    def objetSuivant(self):
+        """
+        passage à l'objet suivant pour le pointage.
+        revient au premier objet quand on a fait le dernier, et
+        change d'image aussi
+        """
+        i = self.suivis.index(self.objet_courant)
+        if i < self.nb_obj - 1 :
+            self.objet_courant = self.suivis[i+1]
+            self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.objet_courant))
+        else:
+            # on passe à l'image suivante, et on revient au premier objet
+            self.objet_courant = self.suivis[0]
+            if self.index < self.image_max:
+                self.index +=1
+            # on revient à l'état D sauf en cas de suivi automatique
+            # auquel cas l'état E perdure
+            if not self.auto:
+                self.change_etat.emit("D")
+            else:
+                # on reste dans l'état E, néanmoins on synchronise
+                # les contrôles de l'image
+                self.app.image_n.emit(self.index)
+        
+        return
+
+    def affiche_point_attendu(self, obj):
+        """
+        Renseigne sur le numéro d'objet du point attendu
+        affecte la ligne de statut et la ligne sous le zoom
+        @param obj l'objet courant
+        """
+        self.dbg.p(2, "rentre dans 'affiche_point_attendu'")
+        self.app.affiche_statut.emit(self.tr("Cliquez sur l'objet : {0}").format(obj))
         return
 

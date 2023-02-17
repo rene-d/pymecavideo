@@ -62,14 +62,15 @@ class SelRectWidget(QWidget):
     zone rectangulaire pour le suivi automatique
 
     paramètres du constructeur:
-    @param parent le widget parent, qui est un VideoWidget
+    @param parent le widget parent, qui est un videoWidget
+    @param pw un poitageWidget
     """
-    def __init__(self, parent):
+    def __init__(self, parent, pw):
         """make a rectangle near point to be tracked"""
         QWidget.__init__(self, parent)
         self.video = parent
-        self.app = self.video.app
-        self.echelle = parent.image_w/parent.largeurFilm
+        self.pw = pw
+        self.echelle = self.video.image_w/pw.largeurFilm
         self.setGeometry(
             QRect(0, 0, self.video.image_w, self.video.image_h))
         self.setAutoFillBackground(False)
@@ -90,7 +91,7 @@ class SelRectWidget(QWidget):
 
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
-        self.app.update_zoom.emit(p)
+        self.pw.update_zoom.emit(p)
 
         if self.dragging:
             self.rects[-1].x2 = p.x
@@ -100,8 +101,8 @@ class SelRectWidget(QWidget):
 
     def mouseReleaseEvent(self, event):
         self.dragging = False
-        self.video.motifs_auto.append(self.getMotif())
-        self.video.selection_motif_done.emit()
+        self.pw.motifs_auto.append(self.getMotif())
+        self.pw.selection_motif_done.emit()
         self.update()
         return
 
@@ -120,8 +121,8 @@ class SelRectWidget(QWidget):
         w = round(abs(x2-x1) / self.echelle)
         h = round(abs(y2-y1) / self.echelle)
         # on récupère la bonne image du film et on la découpe
-        ok, image_opencv = self.video.cvReader.getImage(
-            self.video.index, self.video.rotation, rgb=False)
+        ok, image_opencv = self.pw.cvReader.getImage(
+            self.pw.index, self.video.rotation, rgb=False)
         return image_opencv[y:y+h,x:x+w]
 
     def paintEvent(self, event):
