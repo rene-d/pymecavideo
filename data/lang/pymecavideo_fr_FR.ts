@@ -990,84 +990,6 @@ auto.</source>
     </message>
     <message>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Trajectoire</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Chronophotographie</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Chronogramme</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>vecteur vitesse ...</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Montrer les
-vecteurs vitesse</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Près de la souris</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Partout</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Échelle de vitesses</source>
-      <translation>Échelle de vitesses</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>px pour 1 m/s</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Chronophotographie ...</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Image n°</source>
-      <translation>Image n°</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Enregistrer comme image</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Enregistrer</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Changement de référentiel :</source>
-      <translation type="unfinished" />
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Voir la vidéo</source>
-      <translation>Voir la vidéo</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>Coordonnées</source>
       <translation type="unfinished" />
     </message>
@@ -1175,6 +1097,16 @@ vecteurs vitesse</source>
     <message>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>Lignes seules</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Enregistrer comme image</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Enregistrer</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -1298,6 +1230,18 @@ vecteurs vitesse</source>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>Fichier Numpy</source>
       <translation type="unfinished" />
+    </message>
+    <message>
+      <source>Échelle de vitesses</source>
+      <translation type="vanished">Échelle de vitesses</translation>
+    </message>
+    <message>
+      <source>Image n°</source>
+      <translation type="vanished">Image n°</translation>
+    </message>
+    <message>
+      <source>Voir la vidéo</source>
+      <translation type="vanished">Voir la vidéo</translation>
     </message>
     <message>
       <source>indéf.</source>
@@ -1453,6 +1397,100 @@ Merci de bien vouloir le renommer avant de continuer</translation>
     <message>
       <source>Voir la vidéo</source>
       <translation type="vanished">Voir la vidéo</translation>
+    </message>
+  </context>
+  <context>
+    <name>tab_traj</name>
+    <message>
+      <source>Échelle de vitesses</source>
+      <translation type="vanished">Échelle de vitesses</translation>
+    </message>
+    <message>
+      <source>Image n°</source>
+      <translation type="vanished">Image n°</translation>
+    </message>
+    <message>
+      <source>Voir la vidéo</source>
+      <translation type="vanished">Voir la vidéo</translation>
+    </message>
+  </context>
+  <context>
+    <name>trajectoire</name>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Trajectoire</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Chronophotographie</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Chronogramme</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>vecteur vitesse ...</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Montrer les
+vecteurs vitesse</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Près de la souris</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Partout</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Échelle de vitesses</source>
+      <translation type="unfinished">Échelle de vitesses</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>px pour 1 m/s</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Chronophotographie ...</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Image n°</source>
+      <translation type="unfinished">Image n°</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Enregistrer comme image</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Enregistrer</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Changement de référentiel :</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Voir la vidéo</source>
+      <translation type="unfinished">Voir la vidéo</translation>
     </message>
   </context>
 </TS>

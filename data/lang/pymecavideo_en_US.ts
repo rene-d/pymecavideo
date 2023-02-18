@@ -1285,86 +1285,6 @@ spot.</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Trajectoire</source>
-      <translation>Trajectory</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Chronophotographie</source>
-      <translation>Chronophotography</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Chronogramme</source>
-      <translation>Chronogram</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>vecteur vitesse ...</source>
-      <translation>Velocity vector ...</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Montrer les
-vecteurs vitesse</source>
-      <translation>Show
-velocity vectors</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Près de la souris</source>
-      <translation>Near the
-mouse</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Partout</source>
-      <translation>Everywhere</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Échelle de vitesses</source>
-      <translation>Scale for speed</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>px pour 1 m/s</source>
-      <translation>px for 1 m/s</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Chronophotographie ...</source>
-      <translation>Chronophotography ...</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Image n°</source>
-      <translation>Image #</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Enregistrer comme image</source>
-      <translation>Save as image</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Enregistrer</source>
-      <translation>Save</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Changement de référentiel :</source>
-      <translation>Change the referential:</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Voir la vidéo</source>
-      <translation>tch the video</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>Coordonnées</source>
       <translation>Coordinates</translation>
     </message>
@@ -1473,6 +1393,16 @@ mouse</translation>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>Lignes seules</source>
       <translation>Lines</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Enregistrer comme image</source>
+      <translation>Save as image</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>Enregistrer</source>
+      <translation>Save</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
@@ -1595,6 +1525,61 @@ mouse</translation>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>Fichier Numpy</source>
       <translation>Numpy file</translation>
+    </message>
+    <message>
+      <source>Trajectoire</source>
+      <translation type="vanished">Trajectory</translation>
+    </message>
+    <message>
+      <source>Chronophotographie</source>
+      <translation type="vanished">Chronophotography</translation>
+    </message>
+    <message>
+      <source>Chronogramme</source>
+      <translation type="vanished">Chronogram</translation>
+    </message>
+    <message>
+      <source>vecteur vitesse ...</source>
+      <translation type="vanished">Velocity vector ...</translation>
+    </message>
+    <message>
+      <source>Montrer les
+vecteurs vitesse</source>
+      <translation type="vanished">Show
+velocity vectors</translation>
+    </message>
+    <message>
+      <source>Près de la souris</source>
+      <translation type="vanished">Near the
+mouse</translation>
+    </message>
+    <message>
+      <source>Partout</source>
+      <translation type="vanished">Everywhere</translation>
+    </message>
+    <message>
+      <source>Échelle de vitesses</source>
+      <translation type="vanished">Scale for speed</translation>
+    </message>
+    <message>
+      <source>px pour 1 m/s</source>
+      <translation type="vanished">px for 1 m/s</translation>
+    </message>
+    <message>
+      <source>Chronophotographie ...</source>
+      <translation type="vanished">Chronophotography ...</translation>
+    </message>
+    <message>
+      <source>Image n°</source>
+      <translation type="vanished">Image #</translation>
+    </message>
+    <message>
+      <source>Changement de référentiel :</source>
+      <translation type="vanished">Change the referential:</translation>
+    </message>
+    <message>
+      <source>Voir la vidéo</source>
+      <translation type="vanished">tch the video</translation>
     </message>
     <message>
       <source>Zoom ⨯2 autour du curseur de la souris</source>
@@ -2230,6 +2215,153 @@ You can stop the capture at any moment by clicking the STOP button</translation>
     <message>
       <source>Choisir le nombre de points puis « Démarrer l'acquisition » </source>
       <translation type="vanished">Choose the number of spotted objects, and "Start Spotting" </translation>
+    </message>
+  </context>
+  <context>
+    <name>tab_traj</name>
+    <message>
+      <source>Trajectoire</source>
+      <translation type="vanished">Trajectory</translation>
+    </message>
+    <message>
+      <source>Chronophotographie</source>
+      <translation type="vanished">Chronophotography</translation>
+    </message>
+    <message>
+      <source>Chronogramme</source>
+      <translation type="vanished">Chronogram</translation>
+    </message>
+    <message>
+      <source>vecteur vitesse ...</source>
+      <translation type="vanished">Velocity vector ...</translation>
+    </message>
+    <message>
+      <source>Montrer les
+vecteurs vitesse</source>
+      <translation type="vanished">Show
+velocity vectors</translation>
+    </message>
+    <message>
+      <source>Près de la souris</source>
+      <translation type="vanished">Near the
+mouse</translation>
+    </message>
+    <message>
+      <source>Partout</source>
+      <translation type="vanished">Everywhere</translation>
+    </message>
+    <message>
+      <source>Échelle de vitesses</source>
+      <translation type="vanished">Scale for speed</translation>
+    </message>
+    <message>
+      <source>px pour 1 m/s</source>
+      <translation type="vanished">px for 1 m/s</translation>
+    </message>
+    <message>
+      <source>Chronophotographie ...</source>
+      <translation type="vanished">Chronophotography ...</translation>
+    </message>
+    <message>
+      <source>Image n°</source>
+      <translation type="vanished">Image #</translation>
+    </message>
+    <message>
+      <source>Enregistrer comme image</source>
+      <translation type="vanished">Save as image</translation>
+    </message>
+    <message>
+      <source>Enregistrer</source>
+      <translation type="vanished">Save</translation>
+    </message>
+    <message>
+      <source>Changement de référentiel :</source>
+      <translation type="vanished">Change the referential:</translation>
+    </message>
+    <message>
+      <source>Voir la vidéo</source>
+      <translation type="vanished">tch the video</translation>
+    </message>
+  </context>
+  <context>
+    <name>trajectoire</name>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Trajectoire</source>
+      <translation type="unfinished">Trajectory</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Chronophotographie</source>
+      <translation type="unfinished">Chronophotography</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Chronogramme</source>
+      <translation type="unfinished">Chronogram</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>vecteur vitesse ...</source>
+      <translation type="unfinished">Velocity vector ...</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Montrer les
+vecteurs vitesse</source>
+      <translation type="unfinished">Show
+velocity vectors</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Près de la souris</source>
+      <translation type="unfinished">Near the
+mouse</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Partout</source>
+      <translation type="unfinished">Everywhere</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Échelle de vitesses</source>
+      <translation type="unfinished">Scale for speed</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>px pour 1 m/s</source>
+      <translation type="unfinished">px for 1 m/s</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Chronophotographie ...</source>
+      <translation type="unfinished">Chronophotography ...</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Image n°</source>
+      <translation type="unfinished">Image #</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Enregistrer comme image</source>
+      <translation type="unfinished">Save as image</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Enregistrer</source>
+      <translation type="unfinished">Save</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Changement de référentiel :</source>
+      <translation type="unfinished">Change the referential:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/trajectoire.ui" line="0" />
+      <source>Voir la vidéo</source>
+      <translation type="unfinished">tch the video</translation>
     </message>
   </context>
 </TS>

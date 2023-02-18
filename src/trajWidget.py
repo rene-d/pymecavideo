@@ -30,9 +30,14 @@ from vecteur import vecteur
 from globdef import pattern_float
 
 class trajWidget(ImageWidget):
+    """
+    Classe pour l'élément qui remplit l'essentiel de l'onglet trajectoire
+    paramètres du constructeur :
+
+    @param parent un des layouts de l'onglet
+    """
     def __init__(self, parent):
         ImageWidget.__init__(self, parent)
-        self.app = None
         self.chrono = False
 
         self.setCursor(Qt.CursorShape.ArrowCursor)
@@ -50,18 +55,12 @@ class trajWidget(ImageWidget):
         self.referentiel = 0
         return
 
-    def setApp(self, app):
-        self.app = app
-        self.pointage = app.pointage
-        self.video = app.pointage.video
-        return
-    
     def maj(self):
         self.origine_mvt = self.pointage.origine
 
     def prepare_vecteurs_pour_paint(self):
-        if self.app.checkBoxVectorSpeed.isChecked():
-            vitesse = self.app.checkBoxScale.currentText().replace(
+        if self.trajectoire.checkBoxVectorSpeed.isChecked():
+            vitesse = self.trajectoire.checkBoxScale.currentText().replace(
                 ",",".")
             if not pattern_float.match(vitesse): return
             self.speedToDraw = self.pointage.vecteursVitesse(float(vitesse))
@@ -70,7 +69,7 @@ class trajWidget(ImageWidget):
     def mouseMoveEvent(self, event):
         # Look if mouse is near a point
         self.pos_souris = event.pos()
-        if self.app.radioButtonNearMouse.isChecked():
+        if self.trajectoire.radioButtonNearMouse.isChecked():
             self.update()
         return
 
@@ -122,7 +121,7 @@ class trajWidget(ImageWidget):
             couleur_de_fond = QColor("grey")
         if not self.chrono == 1 :
             self.painter.fillRect(
-                QRect(0, 0, self.video.width(), self.video.height()), couleur_de_fond)
+                QRect(0, 0, self.video.image_w, self.video.image_h), couleur_de_fond)
         
         ############################################################
         # paint the origin
@@ -151,7 +150,7 @@ class trajWidget(ImageWidget):
             if self.chrono == 1:  # rends plus lisible si le fond est foncé
                 text = f"Δt = {self.pointage.deltaT:.3f} s"
                 self.paintText(self.width() - x1 - 100, y1, text)
-                text = f"t = {self.pointage.deltaT*(self.app.spinBox_chrono.value()-1):.3f} s"
+                text = f"t = {self.pointage.deltaT*(self.trajectoire.spinBox_chrono.value()-1):.3f} s"
                 self.paintText(self.width() - x1 - 100, 2 * y1, text)
             # dessine l'échelle
             if self.chrono == 2:  # chronogramme
@@ -287,7 +286,7 @@ class trajWidget(ImageWidget):
         # paint speed vectors if asked
 
         if self.speedToDraw != [] and \
-           self.app.checkBoxVectorSpeed.isChecked():
+           self.trajectoire.checkBoxVectorSpeed.isChecked():
             for obj in self.speedToDraw:
                 for (org, ext) in self.speedToDraw[obj]:
                     if org == ext:  continue # si la vitesse est nulle
@@ -295,7 +294,7 @@ class trajWidget(ImageWidget):
                     # du pointeur de souris;
                     # s'il est à plus de 20 pixels de l'origine du vecteur
                     # on ne trace rien
-                    if self.app.radioButtonNearMouse.isChecked():
+                    if self.trajectoire.radioButtonNearMouse.isChecked():
                         ecart = vecteur(qPoint = self.pos_souris) - org
                         if ecart.manhattanLength() > 20: continue
                     self.painter = QPainter()

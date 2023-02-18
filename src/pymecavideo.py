@@ -32,7 +32,6 @@ from toQimage import toQImage
 from version import version, Version, str2version
 from dbg import Dbg
 from preferences import Preferences
-from cadreur import Cadreur, openCvReader
 from trajWidget import trajWidget
 from grandeurs import grandeurs
 from glob import glob
@@ -147,7 +146,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # définition des widgets importants
         self.graphWidget = None
         self.pointage.setApp(self)
-        self.trajW.setApp(self)
+        self.trajectoire.setApp(self)
 
         # on cache le widget des dimensions de l'image
         self.hide_imgdim.emit()
@@ -260,8 +259,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.adjust4image.emit()
        
         d = self.prefs.config["DEFAULT"]
-        self.radioButtonNearMouse.setChecked(d["proximite"] == "True")
         self.pointage.apply_preferences(rouvre = rouvre)
+        self.trajectoire.apply_preferences()
         return
 
     def hasHeightForWidth(self):
@@ -293,7 +292,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
         self.locals = {} # dictionnaire de variables locales, pour eval
         self.motif = []
-        self.trajectoire = {}  # dictionnaire des points des trajectoires
         self.index_du_point = 0
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray",
                          "green"]  # correspond aux couleurs des points de la trajectoire
@@ -358,20 +356,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
         self.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
         self.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
-        self.pushButton_save.clicked.connect(self.enregistreChrono)
-        self.spinBox_chrono.valueChanged.connect(self.changeChronoImg)
-        self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
-        self.comboBox_referentiel.currentIndexChanged.connect(
-            self.tracer_trajectoires)
         self.tabWidget.currentChanged.connect(self.choix_onglets)
-        self.checkBoxScale.currentIndexChanged.connect(self.enableSpeed)
-        self.checkBoxScale.currentTextChanged.connect(self.enableSpeed)
-        self.checkBoxVectorSpeed.stateChanged.connect(self.enableSpeed)
-        self.radioButtonSpeedEveryWhere.clicked.connect(self.enableSpeed)
-        self.radioButtonNearMouse.clicked.connect(self.enableSpeed)
-        self.button_video.clicked.connect(self.montre_video)
         self.pushButton_select_all_table.clicked.connect(self.presse_papier)
-        self.comboBoxChrono.currentIndexChanged.connect(self.chronoPhoto)
+        self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
 
         # connexion de signaux spéciaux
         self.redimensionneSignal.connect(self.redimensionneFenetre)
@@ -456,108 +443,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         harmonise l'origine : recopie celle de la vidéo vers le
         widget des trajectoires et redessine les deux.
         """
-        self.trajW.origine_mvt = self.pointage.origine
-        self.trajW.update()
+        self.trajectoire.trajW.origine_mvt = self.pointage.origine
+        self.trajectoire.update()
         self.pointage.update()
         return
     
-    def changeChronoImg(self,img):
-        self.chronoImg = img
-        self.chronoPhoto()
-
-    def enregistreChrono(self):
-        self.pixmapChrono = QPixmap(self.trajW.size())
-        self.trajW.render(self.pixmapChrono)
-        base_name = os.path.splitext(os.path.basename(self.filename))[0]
-        defaultName = os.path.join(DOCUMENT_PATH, base_name)
-        fichier = QFileDialog.getSaveFileName(self,
-                                              self.tr("Enregistrer comme image"),
-                                              defaultName, self.tr("fichiers images(*.png *.jpg)"))
-        try :
-            self.pixmapChrono.save(fichier[0])
-        except Exception as err:
-            self.dbg.p(3, f"***Exception*** {err} at line {get_linenumber()}")
-            QMessageBox.critical(None, self.tr("Erreur lors de l'enregistrement"), self.tr("Echec de l'enregistrement du fichier:<b>\n{0}</b>").format(
-                    fichier[0]))
-
-    def chronoPhoto(self):
-        """lance la sauvegarde du trajW.
-        Si chronophotographie, on ajoute l'image et la trace de l'échelle comme pointée.
-        Si chronophotogramme, on ne met pas l'image et la trace est en haut.
-        """
-        # Configure l'UI en fonction du mode
-        if self.comboBoxChrono.currentIndex() == 0 :
-            self.widget_chronophoto.setEnabled(False)
-            self.trajW.setEnabled(True)
-            self.widget_speed.setEnabled(True)
-        elif self.comboBoxChrono.currentIndex() == 1 :
-            self.widget_chronophoto.setEnabled(True)
-            self.trajW.setEnabled(False)
-            self.widget_speed.setEnabled(False)
-            self.checkBoxVectorSpeed.setChecked(False)
-            self.spinBox_chrono.setMaximum(int(self.pointage.image_max))
-            self.spinBox_chrono.setMinimum(1)
-
-        elif self.comboBoxChrono.currentIndex() == 2 :
-            self.widget_chronophoto.setEnabled(False)
-            self.trajW.setEnabled(False)
-            self.widget_speed.setEnabled(False)
-            self.checkBoxVectorSpeed.setChecked(False)
-        self.dbg.p(2, "rentre dans 'chronoPhoto'")
-        # ajoute la première image utilisée pour le pointage sur le fond du vidget
-        liste_types_photos = ['chronophotographie', 'chronophotogramme']
-
-        if self.comboBoxChrono.currentIndex() != 0:
-            photo_chrono = liste_types_photos[self.comboBoxChrono.currentIndex(
-            )-1]
-            self.dbg.p(2, "dans 'chronoPhoto, on a choisi le type %s'" %
-                       (photo_chrono))
-            if photo_chrono == 'chronophotographie':  # on extrait le première image que l'on rajoute au widget
-                self.trajW.chrono = 1  # 1 pour chronophotographie
-                ok, img = self.pointage.cvReader.getImage(
-                    self.chronoImg, self.pointage.video.rotation)
-                self.imageChrono = toQImage(img).scaled(
-                    self.pointage.video.image_w, self.pointage.video.image_h) #, Qt.KeepAspectRatio)
-                self.trajW.setImage(
-                    QPixmap.fromImage(self.imageChrono))
-            else:
-                self.trajW.chrono = 2  # 2 pour chronophotogramme
-                self.trajW.setImage(QPixmap())
-            #self.enregistreChrono()
-        else:
-            self.trajW.setImage(QPixmap())
-            self.trajW.chrono = 0
-        self.redimensionneFenetre()
-        self.update()
-        return
-
     def updatePB(self):
         self.qmsgboxencode.updateProgressBar()
-
-    def enableSpeed(self, secondParam=None):
-        """
-        Quand on veut afficher le vecteur vitesse,
-        on active le spinbox qui permet de choisir une échelle.
-        Quand on ne veut plus, on peut cacher le spinbox.
-        @param secondParam peu utile mais nécessaire : certains modes
-          de rappel de cette fonction ont un paramètre supplémentaire
-        """
-        self.dbg.p(2, "rentre dans 'enableSpeed'")
-        if self.checkBoxVectorSpeed.isChecked():
-            self.dbg.p(2, "In enableSpeed")
-            self.checkBoxScale.setEnabled(1)
-            if self.checkBoxScale.count() < 1:
-                self.checkBoxScale.insertItem(0, "1")
-            self.radioButtonNearMouse.show()
-            self.radioButtonSpeedEveryWhere.show()
-            self.trajW.prepare_vecteurs_pour_paint()
-            self.trajW.update()
-        else:
-            self.checkBoxScale.setEnabled(0)
-            self.radioButtonNearMouse.hide()
-            self.radioButtonSpeedEveryWhere.hide()
-            self.trajW.update()
-        return
 
     def presse_papier(self):
         """Sélectionne la totalité du tableau de coordonnées
@@ -643,7 +535,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.pointage.remontre_image()
         else:
             self.pointage.affiche_image()
-        self.trajW.maj()
+        self.trajectoire.trajW.maj()
         return
 
     def enterEvent(self, e):
@@ -752,15 +644,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.pointage.iteration_data(cb_temps, cb_point, unite = "m")
         return
 
-    def montre_video(self):
-        self.dbg.p(2, "rentre dans 'montre_video'")
-        ref = self.comboBox_referentiel.currentText().split(" ")[-1]
-        if len(ref) == 0 or ref == "camera":
-            return
-        c = Cadreur(int(ref), self)
-        c.montrefilm()
-        return
-
     def choix_onglets(self, newIndex):
         """
         traite les signaux émis par le changement d'onglet, ou
@@ -775,7 +658,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             pass
         if self.tabWidget.currentIndex() == 1:
             # onglet des trajectoires
-            self.tracer_trajectoires("absolu")
+            self.trajectoire.trace.emit("absolu")
         elif self.tabWidget.currentIndex() == 2:
             # onglet des coordonnées
             self.affiche_tableau()
@@ -985,48 +868,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 defaultName, self.tr("fichiers images(*.png)"))
             self.pg_exporter.export(fichier[0])
 
-    def tracer_trajectoires(self, newValue):
-        """
-        Cette fonction est appelée par un changement de référentiel.
-        On peut aussi appeler cette fonction directement, auquel cas on
-        donne la valeur "absolu" à newValue pour reconnaître ce cas.
-        efface les trajectoires anciennes, puis
-        trace les trajectoires en fonction du référentiel choisi.
-
-        """
-        self.dbg.p(2, "rentre dans 'tracer_trajectoires'")
-        self.trajW.origine_mvt = self.pointage.origine
-        if newValue == "absolu":
-            ref = 0 # la caméra
-            # mets à jour le comboBox referentiel :
-            self.comboBox_referentiel.setCurrentIndex(
-                self.comboBox_referentiel.count()-1)
-            self.comboBox_referentiel.update()
-        else:
-            choix_ref = self.comboBox_referentiel.currentText()
-            # on évite le cas où le combobox a été vidé, entre deux sessions 
-            if choix_ref == "":
-                return
-            elif choix_ref == "camera":
-                ref = 0
-            else:
-                ref = int(choix_ref.split(" ")[-1])
-        if ref != 0:
-            self.button_video.setEnabled(1)
-            self.trajW.chrono = False
-            origine = vecteur(self.pointage.width() // 2, self.pointage.height() // 2)
-            self.trajW.origine = origine
-            self.trajW.origine_mvt = origine
-            self.trajW.referentiel = ref
-        else:  # si le référentiel est la caméra, aucune translation !
-            self.trajW.referentiel = 0
-            self.trajW.origine = vecteur(0, 0)
-        self.dbg.p(3, "origine %s, ref %s" %
-                   (str(self.trajW.origine), str(ref)))
-        self.trajW.prepare_vecteurs_pour_paint()
-        self.trajW.update()
-        return
-    
     def masse(self, obj):
         """
         Renseigne la masse d'un objet. L'implémentation est actuellement
@@ -1371,8 +1212,8 @@ Merci de bien vouloir le renommer avant de continuer"""))
         if etat == "debut":
             for obj in self.actionDefaire, self.actionRefaire, \
                 self.actionCopier_dans_le_presse_papier, \
-                self.menuE_xporter_vers, self.button_video, \
-                self.actionSaveData, self.widget_chronophoto :
+                self.menuE_xporter_vers, \
+                self.actionSaveData :
 
                 obj.setEnabled(False)
             # décochage de widgets
@@ -1386,14 +1227,6 @@ Merci de bien vouloir le renommer avant de continuer"""))
             for i in range(1,4):
                 self.tabWidget.setTabEnabled(i, False)  # autres onglets inactifs
 
-            # initialisation de self.trajW
-            self.trajW.chrono = False
-
-            # on cache certains widgets
-            print("BUG renvoyer self.radioButtonNearMouse self.radioButtonSpeedEveryWhere ailleurs")
-            for obj in self.radioButtonNearMouse, \
-                self.radioButtonSpeedEveryWhere:
-                obj.hide()
             # autorise le redimensionnement de la fenêtre principale
             self.OKRedimensionnement.emit()
 
@@ -1416,11 +1249,10 @@ Merci de bien vouloir le renommer avant de continuer"""))
             for i in 1, 2, 3:
                 self.tabWidget.setTabEnabled(i, False)
                 
-            print("BUG pour A au sujet de self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp, self.spinBox_chrono")
+            print("BUG pour A au sujet de self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp")
             self.checkBox_Ec.setChecked(False)
             self.checkBox_Em.setChecked(False)
             self.checkBox_Epp.setChecked(False)
-            self.spinBox_chrono.setMaximum(self.pointage.image_max)
             
             print("BUG pour A au sujet du grapheur")
             # désactive le grapheur si existant
@@ -1471,15 +1303,8 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             # mise à jour des menus
             self.actionSaveData.setEnabled(True)
             self.actionCopier_dans_le_presse_papier.setEnabled(True)
-            print("BUG dans l'état D avec comboBox_referentiel pushButton_select_all_table")
-            self.comboBox_referentiel.setEnabled(True)
+            print("BUG dans l'état D avec pushButton_select_all_table")
             self.pushButton_select_all_table.setEnabled(True)
-
-            self.comboBox_referentiel.clear()
-            self.comboBox_referentiel.insertItem(-1, "camera")
-            for obj in self.pointage.suivis:
-                self.comboBox_referentiel.insertItem(
-                    -1, self.tr("objet N° {0}").format(str(obj)))
 
         elif etat == "E":
             for i in 1, 2, 3:
@@ -1487,6 +1312,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
         self.setStatus("")
         self.pointage.etatUI(etat)
+        self.trajectoire.changeEtat(etat)
         return
 
     def fixeLesDimensions(self):
