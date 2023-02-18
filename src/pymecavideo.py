@@ -515,9 +515,9 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             if photo_chrono == 'chronophotographie':  # on extrait le première image que l'on rajoute au widget
                 self.trajectoire_widget.chrono = 1  # 1 pour chronophotographie
                 ok, img = self.pointage.cvReader.getImage(
-                    self.chronoImg, self.pointage.rotation)
+                    self.chronoImg, self.pointage.video.rotation)
                 self.imageChrono = toQImage(img).scaled(
-                    self.pointage.width(), self.pointage.height(), Qt.KeepAspectRatio)
+                    self.pointage.video.image_w, self.pointage.video.image_h) #, Qt.KeepAspectRatio)
                 self.trajectoire_widget.setImage(
                     QPixmap.fromImage(self.imageChrono))
             else:
@@ -757,7 +757,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         ref = self.comboBox_referentiel.currentText().split(" ")[-1]
         if len(ref) == 0 or ref == "camera":
             return
-        c = Cadreur(int(ref), self.pointage)
+        c = Cadreur(int(ref), self)
         c.montrefilm()
         return
 
@@ -1459,8 +1459,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
 
         elif etat == "D":
             # tous les onglets sont actifs
-            for i in 1, 2, 3:
-                self.tabWidget.setTabEnabled(i, True)
+            if self.pointage:
+                for i in 1, 2, 3:
+                    self.tabWidget.setTabEnabled(i, True)
             # comme l'onglet 2 est actif, il faut s'occuper du statut des
             # boutons pour les énergies !
             print("BUG dans l'état D avec self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp")
@@ -1485,7 +1486,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                 self.tabWidget.setTabEnabled(i, False)        
 
         self.setStatus("")
-        self.pointage.change_etat.emit(etat)
+        self.pointage.etatUI(etat)
         return
 
     def fixeLesDimensions(self):

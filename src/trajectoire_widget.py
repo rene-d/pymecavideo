@@ -53,23 +53,24 @@ class TrajectoireWidget(ImageWidget):
     def setApp(self, app):
         self.app = app
         self.pointage = app.pointage
+        self.video = app.pointage.video
         return
     
     def maj(self):
         self.origine_mvt = self.pointage.origine
 
     def prepare_vecteurs_pour_paint(self):
-        if self.video.app.checkBoxVectorSpeed.isChecked():
-            vitesse = self.video.app.checkBoxScale.currentText().replace(
+        if self.app.checkBoxVectorSpeed.isChecked():
+            vitesse = self.app.checkBoxScale.currentText().replace(
                 ",",".")
             if not pattern_float.match(vitesse): return
-            self.speedToDraw = self.video.vecteursVitesse(float(vitesse))
+            self.speedToDraw = self.pointage.vecteursVitesse(float(vitesse))
         return
 
     def mouseMoveEvent(self, event):
         # Look if mouse is near a point
         self.pos_souris = event.pos()
-        if self.video.app.radioButtonNearMouse.isChecked():
+        if self.app.radioButtonNearMouse.isChecked():
             self.update()
         return
 
@@ -91,14 +92,15 @@ class TrajectoireWidget(ImageWidget):
         @param center (faux par défaut) centrage horizontal demandé
         """
         if fontfamily:
-            font = QFont(fontfamily, fontsize, QFont.Bold)
+            font = QFont(fontfamily, fontsize, weight = 700) # bold
         else:
             font = QFont()
         font.setPointSize(fontsize)
         self.painter.setFont(font)
         font_metrics = QFontMetrics(font)
-        text_width = font_metrics.width(text)
-        text_height = fontsize
+        r = font_metrics.boundingRect(text)
+        text_width = r.width()
+        text_height = r.height()
         self.painter.setPen(color)
         offset_x = 0 if center == False else text_width // 2
         if bgcolor:
@@ -142,29 +144,28 @@ class TrajectoireWidget(ImageWidget):
             self.painter.begin(self)
             if self.chrono==1:
                 self.painter.drawPixmap(0, 0, self.image)
-            self.painter.setRenderHint(QPainter.TextAntialiasing)
             self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             x1 = 50 # marge en largeur
             y1 = 50 # marge en hauteur
             # Ecrit l'intervalle de temps
             if self.chrono == 1:  # rends plus lisible si le fond est foncé
-                text = f"Δt = {self.video.deltaT:.3f} s"
+                text = f"Δt = {self.pointage.deltaT:.3f} s"
                 self.paintText(self.width() - x1 - 100, y1, text)
-                text = f"t = {self.video.deltaT*(self.video.app.spinBox_chrono.value()-1):.3f} s"
+                text = f"t = {self.pointage.deltaT*(self.app.spinBox_chrono.value()-1):.3f} s"
                 self.paintText(self.width() - x1 - 100, 2 * y1, text)
             # dessine l'échelle
             if self.chrono == 2:  # chronogramme
-                self.painter.setPen(Qt.black)
-                if self.video.echelle_image : #dessine une échelle en haut, horizontalement
-                    longueur = round((self.video.echelle_image.p1 - self.video.echelle_image.p2).norme)
+                self.painter.setPen(QColor("black"))
+                if self.pointage.echelle_image : #dessine une échelle en haut, horizontalement
+                    longueur = round((self.pointage.echelle_image.p1 - self.pointage.echelle_image.p2).norme)
                     self.painter.drawLine(x1, y1-10, x1, y1+10)
                     self.painter.drawLine(x1, y1, longueur+x1, y1)
                     self.painter.drawLine(longueur+x1, y1-10, longueur+x1, y1+10)
-                    text = "d = {0:.2e} m".format(self.video.echelle_image.longueur_reelle_etalon)
+                    text = "d = {0:.2e} m".format(self.pointage.echelle_image.longueur_reelle_etalon)
                     self.paintText(
                         max(x1+round(longueur/2), 0), y1+30,
                         text,
-                        color = Qt.black,
+                        color = Qcolor("black"),
                         bgcolor = None,
                         center = True
                     )
@@ -172,7 +173,7 @@ class TrajectoireWidget(ImageWidget):
                     self.paintText(
                         x1, y1+20,
                         "échelle non précisée",
-                         color = Qt.black,
+                         color = QColor("black"),
                          bgcolor = None)
                 self.painter.end()
 
@@ -182,22 +183,22 @@ class TrajectoireWidget(ImageWidget):
                 self.painter = QPainter()
                 self.painter.begin(self)
                 self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-                pen = QPen(Qt.blue)
+                pen = QPen(QColor("blue"))
                 pen.setWidth(3)
                 self.painter.setPen(pen)
-                if self.video.echelle: 
+                if self.pointage.echelle: 
                     self.painter.drawLine(
-                        round(self.video.echelle_trace.p1.x),
-                        round(self.video.echelle_trace.p1.y),
-                        round(self.video.echelle_trace.p2.x),
-                        round(self.video.echelle_trace.p2.y))
+                        round(self.pointage.echelle_trace.p1.x),
+                        round(self.pointage.echelle_trace.p1.y),
+                        round(self.pointage.echelle_trace.p2.x),
+                        round(self.pointage.echelle_trace.p2.y))
 
                     echelle = "d = {0:.2e} m".format(
-                            self.video.echelle_image.longueur_reelle_etalon)
+                            self.pointage.echelle_image.longueur_reelle_etalon)
 
                     self.paintText(
-                        round(self.video.echelle_trace.p1.x),
-                        round((self.video.echelle_trace.p1.y + self.video.echelle_trace.p2.y)/2)+20,
+                        round(self.pointage.echelle_trace.p1.x),
+                        round((self.pointage.echelle_trace.p1.y + self.pointage.echelle_trace.p2.y)/2)+20,
                         echelle,
                         color = Qt.blue,
                         bgcolor = None,
@@ -206,7 +207,7 @@ class TrajectoireWidget(ImageWidget):
                     )
                 else : #pas d'échelle 
                     self.paintText(x1, y1+20, "échelle non précisée",
-                                   color = Qt.blue,
+                                   color = QColor("blue"),
                                    bgcolor = None,
                                    fontfamily = "Times",
                                    fontsize = 15,)
@@ -222,7 +223,7 @@ class TrajectoireWidget(ImageWidget):
         self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         # préparation de la fonction de rappel
-        data = self.video.data
+        data = self.pointage.data
         def cb_point(i, t, j, obj, p, v):
             """
             fonction de rappel pour usage avec iteration_data du videoWidget
@@ -237,14 +238,14 @@ class TrajectoireWidget(ImageWidget):
                     round(p.x + self.origine.x - obj_reference.x),
                     round(p.y + self.origine.y - obj_reference.y))
                 if self.chrono == 2:
-                    self.painter.setPen(Qt.black)
+                    self.painter.setPen(QColor("black"))
                     self.painter.drawLine(-4, 0, 4, 0)
                     self.painter.drawLine(0, -4, 0, 4)
                     self.painter.translate(-10, +10)
                     decal = -25
                     if p.x + decal < 0 : 
                         decal = 5 
-                    self.painter.drawText(decal, 5, "M"+"'"*num_point+str(no))
+                    self.painter.drawText(decal, 5, "M"+"'"*j+str(i))
                 else :
                     self.painter.setPen(QColor(self.couleurs[j]))
                     self.painter.drawLine(-2, 0, 2, 0)
@@ -256,7 +257,7 @@ class TrajectoireWidget(ImageWidget):
                     round(-p.y - self.origine.y + obj_reference.y) - 10)
             return
 
-        self.video.iteration_data(None, cb_point)
+        self.pointage.iteration_data(None, cb_point)
         self.painter.end()
         ############################################################
         # paint repere
@@ -268,17 +269,17 @@ class TrajectoireWidget(ImageWidget):
             # self.painter.translate(0,0)
             self.painter.translate(
                 round(self.origine_mvt.x), round(self.origine_mvt.y))
-            p1 = QPoint(round(self.video.sens_X * (-40)), 0)
-            p2 = QPoint(round(self.video.sens_X * (40)), 0)
-            p3 = QPoint(round(self.video.sens_X * (36)), 2)
-            p4 = QPoint(round(self.video.sens_X * (36)), -2)
+            p1 = QPoint(round(self.pointage.sens_X * (-40)), 0)
+            p2 = QPoint(round(self.pointage.sens_X * (40)), 0)
+            p3 = QPoint(round(self.pointage.sens_X * (36)), 2)
+            p4 = QPoint(round(self.pointage.sens_X * (36)), -2)
             self.painter.scale(1, 1)
             self.painter.drawPolyline(p1, p2, p3, p4, p2)
-            self.painter.rotate(self.video.sens_X *
-                                self.video.sens_Y * (-90))
+            self.painter.rotate(self.pointage.sens_X *
+                                self.pointage.sens_Y * (-90))
             self.painter.drawPolyline(p1, p2, p3, p4, p2)
-            self.painter.rotate(self.video.sens_X *
-                                self.video.sens_Y * (90))
+            self.painter.rotate(self.pointage.sens_X *
+                                self.pointage.sens_Y * (90))
             self.painter.translate(
                 round(-self.origine_mvt.x), round(-self.origine_mvt.y))
             self.painter.end()
@@ -286,7 +287,7 @@ class TrajectoireWidget(ImageWidget):
         # paint speed vectors if asked
 
         if self.speedToDraw != [] and \
-           self.video.app.checkBoxVectorSpeed.isChecked():
+           self.app.checkBoxVectorSpeed.isChecked():
             for obj in self.speedToDraw:
                 for (org, ext) in self.speedToDraw[obj]:
                     if org == ext:  continue # si la vitesse est nulle
@@ -294,13 +295,13 @@ class TrajectoireWidget(ImageWidget):
                     # du pointeur de souris;
                     # s'il est à plus de 20 pixels de l'origine du vecteur
                     # on ne trace rien
-                    if self.video.app.radioButtonNearMouse.isChecked():
+                    if self.app.radioButtonNearMouse.isChecked():
                         ecart = vecteur(qPoint = self.pos_souris) - org
                         if ecart.manhattanLength() > 20: continue
                     self.painter = QPainter()
                     self.painter.begin(self)
                     self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-                    self.painter.setPen(QColor(self.couleurs[int(obj) - 1]))
+                    self.painter.setPen(QColor(self.video.couleurs[int(obj) - 1]))
                     vec = ext - org                # le vecteur de la flèche 
                     ortho = vecteur(-vec.y, vec.x) # idem tourné de 90°
                     p1 = ext - vec * 0.1 + ortho * 0.05

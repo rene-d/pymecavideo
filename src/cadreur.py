@@ -43,26 +43,28 @@ class Cadreur(QObject):
     d'un point donné. 
     Paramètres du constructeur :
     @param obj le numéro de l'objet qui doit rester immobile
-    @param video le videoWidget où on a pointé les objets à suivre
+    @param app la fenêtre principale
     @param titre le titre désiré pour la fenêtre
     """
 
-    def __init__(self, obj, video, titre=None):
+    def __init__(self, obj, app, titre=None):
         QObject.__init__(self)
-        self.video = video
+        self.app = app
+        self.pointage = app.pointage
+        self.video = app.pointage.video
         if titre == None:
             self.titre = str(self.tr("Presser la touche ESC pour sortir"))
         self.obj = obj
         # on s'intéresse à la trajectoire de l'objet servant de référentiel
-        self.trajectoire_obj = video.une_trajectoire(obj)
+        self.trajectoire_obj = self.pointage.une_trajectoire(obj)
         # on fait la liste des index où l'objet a été pointé (début à 0)
-        self.index_obj = video.index_trajectoires(debut = 0)
-        self.capture = cv2.VideoCapture(self.video.filename)
+        self.index_obj = self.pointage.index_trajectoires(debut = 0)
+        self.capture = cv2.VideoCapture(self.pointage.filename)
         self.fps = self.capture.get(cv2.CAP_PROP_FPS)
         self.delay = int(1000.0 / self.fps)
-        self.video.dbg.p(2, "In : Video, self.obj %s" %
+        self.app.dbg.p(2, "In : Video, self.obj %s" %
                        (self.obj))
-        self.video.dbg.p(3, "In : Video, __init__, fps = %s and delay = %s" % (
+        self.app.dbg.p(3, "In : Video, __init__, fps = %s and delay = %s" % (
             self.fps, self.delay))
 
         self.ralenti = 3
@@ -75,9 +77,9 @@ class Cadreur(QObject):
         à l'image effectivement trouvée dans le film, et la taille du film
         @return un triplet échelle, largeur, hauteur (de l'image dans le widget de de pymecavideo)
         """
-        m = self.video.imageExtraite.size()
-        echx = 1.0 * m.width() / self.video.width()
-        echy = 1.0 * m.height() / self.video.height()
+        m = self.pointage.imageExtraite.size()
+        echx = 1.0 * m.width() / self.video.image_w
+        echy = 1.0 * m.height() / self.video.image_h
         ech = max(echx, echy)
         return ech, int(m.width() / ech), int(m.height() / ech)
 

@@ -113,7 +113,6 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     dimension_data = pyqtSignal(int)           # redimensionne les données
     stopCalculs = pyqtSignal()                 # arrete le pointage auto
     label_zoom = pyqtSignal(str)               # change le label du zoom
-    change_etat = pyqtSignal(str)              # gère l'aspect selon l'état
     update_zoom = pyqtSignal(vecteur)          # agrandit une portion d'image
     echelle_modif = pyqtSignal(str, str)       # modifie le bouton d'échelle
     apres_echelle = pyqtSignal()               # après dénition de l'échelle
@@ -130,7 +129,6 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.dimension_data.connect(self.redimensionne_data)
         self.stopCalculs.connect(self.stopComputing)
         self.label_zoom.connect(self.labelZoom)
-        self.change_etat.connect(self.etatUI)
         self.update_zoom.connect(self.loupe)
         self.echelle_modif.connect(self.setButtonEchelle)
         self.apres_echelle.connect(self.restaureEtat)
@@ -404,7 +402,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         reponse = float(reponse)
         self.echelle_image.etalonneReel(reponse)
         self.etat_ancien = self.etat # conserve pour plus tard
-        self.change_etat.emit("C")
+        self.app.change_etat.emit("C")
         job = EchelleWidget(self.video, self)
         job.show()
         return
@@ -415,8 +413,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
 
         Passe à l'état D ou AB, selon self.checkBox_auto
         """
-        prochain_etat = "AB" if self.checkBox_auto.isChecked() else "D"
-        self.change_etat.emit(prochain_etat)
+        self.app.change_etat.emit(
+            "AB" if self.checkBox_auto.isChecked() else "D")
         return
     
     def nouvelle_origine(self):
@@ -869,7 +867,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             # si la pile d'images à détecter a été vidée par self.stopComputing,
             # il faut passer à l'image suivante si possible
             self.fin_pointage.emit()
-            self.change_etat.emit("D")
+            self.app.change_etat.emit("D")
         return
 
     def storePoint(self, point):
@@ -897,7 +895,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         après un mouserelease (bouton gauche)
         """
         if self.pointageOK:
-            self.change_etat.emit("E")
+            self.app.change_etat.emit("E")
             self.pointe(self.objet_courant, event, index=self.index-1)
             self.objetSuivant()
             self.fin_pointage.emit()
@@ -947,7 +945,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             # on revient à l'état D sauf en cas de suivi automatique
             # auquel cas l'état E perdure
             if not self.auto:
-                self.change_etat.emit("D")
+                self.app.change_etat.emit("D")
             else:
                 # on reste dans l'état E, néanmoins on synchronise
                 # les contrôles de l'image
@@ -964,4 +962,37 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.dbg.p(2, "rentre dans 'affiche_point_attendu'")
         self.app.affiche_statut.emit(self.tr("Cliquez sur l'objet : {0}").format(obj))
         return
+
+    def vecteursVitesse(self, echelle_vitesse):
+        """
+        Calcule les vecteurs vitesse affichables étant donné la collection
+        de points. Un vecteur vitesse a pour origine un point de la 
+        trajectoire, et sa direction, sa norme sont basées sur le point
+        précédent et le point suivant ; il faut donc au moins trois pointages
+        pour que le résultat ne soit pas vide.
+
+        @param echelle_vitesse le nombre de pixels pour 1 m/s
+        @return un dictionnaire objet => [(org, ext), ...] où org et ext
+          sont l'origine et l'extrémité d'un vecteur vitesse
+        """
+        self.dbg.p(2, "rentre dans 'vecteursVitesse'")
+        result = {obj : [] for obj in self.suivis}
+        trajectoires = self.les_trajectoires()
+        for obj in self.suivis:
+            precedent = trajectoires[obj][0]
+            suivant = None
+            for i in range(1, len(trajectoires[obj]) - 1):
+                # itération le long de la trajectoire, sauf
+                # sur les points extrêmes.
+                if suivant:
+                    point = suivant # le point est l'ancien suivant s'il existe
+                else:
+                    point = trajectoires[obj][i]
+                suivant = trajectoires[obj][i+1]
+                vitesse = (self.pointEnMetre(suivant) - self.pointEnMetre(precedent)) * (1 / self.deltaT / 2)
+                # attention, l'axe Y de l'écran est vers le bas !!
+                if self.sens_Y == 1: vitesse.miroirY()
+                result[obj].append ((point, point + (vitesse * echelle_vitesse)))
+                precedent = point # on conserve les coordonnées pour la suite
+        return result
 

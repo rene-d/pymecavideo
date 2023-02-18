@@ -316,7 +316,7 @@ class Etats(QObject):
         """
         Restauration de l'état A ou D après (re)définition de l'échelle
         """
-        self.change_etat.emit(self.etat_ancien)
+        self.app.change_etat.emit(self.etat_ancien)
         return
 
     def definit_messages_statut(self):
