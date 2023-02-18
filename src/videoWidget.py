@@ -113,10 +113,7 @@ class VideoPointeeWidget(ImageWidget):
         return
 
     def mouseMoveEvent(self, event):
-        if self.pw.etat in ("A", "AB", "D", "E"):
-            p = vecteur(qPoint = event.position())
-            self.pw.hotspot = p
-            self.pw.update_zoom.emit(self.pw.hotspot)
+        self.pw.update_zoom.emit(vecteur(qPoint = event.position()))
         return
     
     def paintEvent(self, event):

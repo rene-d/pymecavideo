@@ -76,7 +76,6 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.dbg = None                 # le débogueur
         self.etat = "A"                 # état initial ; défférent de "debut"
         self.etat_ancien = None         # état précédent
-        self.hotspot = None             # vecteur (position de la souris)
         self.image = None               # l'image tirée du film
         self.origine = vecteur(self.width()//2, self.height()//2)
         self.image_max = None      # numéro de la dernière image de la vidéo
@@ -718,9 +717,12 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
 
     def loupe(self, position):
         """
-        Agrandit une partie de self.video.image et la met dans la zone du zoom
+        Agrandit deux fois une partie de self.video.image et la met
+        dans la zone du zoom, puis met à jour les affichages de coordonnées ;
+        sauf dans l'état B (pointage auto)
         @param position le centre de la zone à agrandir
         """
+        if self.etat == "B": return
         self.zoom_zone.fait_crop(self.video.image, position)
         xpx, ypx, xm, ym = self.coords(position)
         self.editXpx.setText(f"{xpx}")
@@ -894,7 +896,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             self.pointe(self.objet_courant, event, index=self.index-1)
             self.objetSuivant()
             self.fin_pointage.emit()
-            self.update_zoom.emit(self.hotspot)
+            self.update_zoom.emit(vecteur(qPoint = event.position()))
             self.video.update()
             if self.refait_point and self.objet_courant == self.suivis[0]:
                 # on a été délégué pour corriger le tableau
