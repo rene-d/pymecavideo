@@ -1484,7 +1484,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
                     -1, self.tr("objet N° {0}").format(str(obj)))
 
         elif etat == "E":
-            pass
+            for i in 1, 2, 3:
+                self.tabWidget.setTabEnabled(i, False)        
+
         self.setStatus("")
         self.pointage.change_etat.emit(etat)
         return

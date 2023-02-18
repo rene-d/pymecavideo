@@ -316,7 +316,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         # connexe aux pointages existants
         self.pointageOK = \
             self.etat in ("D", "E") and \
-            (not self.video or index in range(self.premiere_image() - 1, \
+            (not self or index in range(self.premiere_image() - 1, \
                                         self.derniere_image() + 2))
         if self.pointageOK:
             # beau gros curseur seulement si le pointage est licite ;

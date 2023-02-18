@@ -310,8 +310,6 @@ class Etats(QObject):
         """
         self.label_zoom.emit(self.tr("Pointage ({obj}) ; x, y =").format(obj = self.objet_courant))
         self.imgControlImage(False)
-        for i in 1, 2, 3:
-            self.tabWidget.setTabEnabled(i, False)        
         return
         
     def restaureEtat(self):

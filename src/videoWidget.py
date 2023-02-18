@@ -108,26 +108,26 @@ class VideoPointeeWidget(ImageWidget):
         éventuellement vers l'onglet coordonnées, quand le dernier
         objet a été pointé.
         """
-        if self.pointageOK and event.button() == Qt.MouseButton.LeftButton:
+        if self.pw.pointageOK and event.button() == Qt.MouseButton.LeftButton:
             self.pw.change_etat.emit("E")
-            self.pointe(
-                self.objet_courant, event, index=self.index-1)
-            self.objetSuivant()
+            self.pw.pointe(
+                self.pw.objet_courant, event, index=self.pw.index-1)
+            self.pw.objetSuivant()
             self.pw.clic_sur_video_signal.emit()
-            self.pw.update_zoom.emit(self.hotspot)
+            self.pw.update_zoom.emit(self.pw.hotspot)
             self.update()
-            if self.refait_point : # on a été délégué pour corriger le tableau
-                if self.objet_courant == self.suivis[0]:
+            if self.pw.refait_point : # on a été délégué pour corriger le tableau
+                if self.pw.objet_courant == self.pw.suivis[0]:
                     # le dernier objet est pointé, retour au tableau de coords
-                    self.refait_point = False
+                    self.pw.refait_point = False
                     self.pw.show_coord.emit()
         return
 
     def mouseMoveEvent(self, event):
         if self.pw.etat in ("A", "AB", "D", "E"):
             p = vecteur(qPoint = event.position())
-            self.hotspot = p
-            self.pw.update_zoom.emit(self.hotspot)
+            self.pw.hotspot = p
+            self.pw.update_zoom.emit(self.pw.hotspot)
         return
     
     def paintEvent(self, event):
@@ -183,11 +183,11 @@ class VideoPointeeWidget(ImageWidget):
         # !!!! mais dans une instance de Echelle_TraceWidget
         self.pw.sens_axes.emit(self.sens_X, self.sens_Y)
         self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
-            self.cvReader.recupere_avi_infos(self.rotation)
-        self.ratio = self.largeurFilm / self.hauteurFilm
+            self.pw.cvReader.recupere_avi_infos(self.rotation)
+        self.pw.ratio = self.pw.largeurFilm / self.pw.hauteurFilm
         # réapplique la préférence de deltat, comme openCV peut se tromper
-        self.deltaT = float(self.pw.prefs.config["DEFAULT"]["deltat"])
-        self.framerate = round(1/self.deltaT)
+        self.pw.deltaT = float(self.pw.prefs.config["DEFAULT"]["deltat"])
+        self.pw.framerate = round(1/self.pw.deltaT)
         return
 
     def restaure_pointages(self, data, premiere_image_pointee) :
@@ -197,31 +197,31 @@ class VideoPointeeWidget(ImageWidget):
         @param premiere_image_pointee la toute première image pointée
           (au moins 1)
         """
-        self.dimensionne(self.nb_obj, self.deltaT, self.image_max)
+        self.pw.dimensionne(self.pw.nb_obj, self.pw.deltaT, self.pw.image_max)
         for i in range(len(data)) :
-            for obj in self.suivis:
+            for obj in self.pw.suivis:
                 j = int(obj)*2-1 # index du début des coordonnées xj, yj
                 if len(data[i]) > j:
                     x, y = data[i][j:j + 2]
                     # À ce stade x et y sont en mètre
                     # on remet ça en pixels
-                    x = self.origine.x + self.sens_X * \
-                        round(float(x) * self.echelle_image.pxParM())
-                    y = self.origine.y - self.sens_Y * \
-                        round(float(y) * self.echelle_image.pxParM())
+                    x = self.pw.origine.x + self.pw.sens_X * \
+                        round(float(x) * self.pw.echelle_image.pxParM())
+                    y = self.pw.origine.y - self.pw.sens_Y * \
+                        round(float(y) * self.pw.echelle_image.pxParM())
                     self.pointe(
                         obj, vecteur(x, y),
                         index = i + premiere_image_pointee - 1)
         # affiche la dernière image pointée
-        der = self.derniere_image()
+        der = self.pw.derniere_image()
         if der is not None:
-            if der < self.image_max:
-                self.index = der + 1
+            if der < self.pw.image_max:
+                self.pw.index = der + 1
             else:
-                self.index = self.image_max
+                self.pw.index = self.image_max
         else:
-            self.index = 1
-        self.clic_sur_video_ajuste_ui()
+            self.pw.index = 1
+        self.pw.clic_sur_video_ajuste_ui()
         self.pw.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
         return
     
