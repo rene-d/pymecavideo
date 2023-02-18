@@ -315,7 +315,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     
 
     ############ les signaux spéciaux #####################
-    change_axe_origine = pyqtSignal()
     selection_done = pyqtSignal()
     redimensionneSignal = pyqtSignal(bool)
     updateProgressBar = pyqtSignal()
@@ -375,7 +374,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.comboBoxChrono.currentIndexChanged.connect(self.chronoPhoto)
 
         # connexion de signaux spéciaux
-        self.change_axe_origine.connect(self.egalise_origine)
         self.redimensionneSignal.connect(self.redimensionneFenetre)
         self.updateProgressBar.connect(self.updatePB)
         self.change_etat.connect(self.changeEtat)

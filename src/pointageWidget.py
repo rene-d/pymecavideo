@@ -121,8 +121,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     fin_pointage = pyqtSignal()                # après un pointage
     fin_pointage_manuel = pyqtSignal(QEvent)   # après un pointage manuel
     stop_n = pyqtSignal(str)                   # refait le texte du bouton STOP
+    change_axe_origine = pyqtSignal()          # inverse un des axes du repère
 
-    
     ########### connexion des signaux #######
     def connecte_signaux(self):
         self.update_imgedit.connect(self.affiche_imgsize)
@@ -138,6 +138,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.fin_pointage_manuel.connect(self.termine_pointage_manuel)
         self.selection_motif_done.connect(self.suiviDuMotif)
         self.stop_n.connect(self.stop_setText)
+
         return
 
     def connecte_ui(self):
@@ -172,6 +173,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.prefs = app.prefs
         self.video.setParent(self)
         self.zoom_zone.setApp(app)
+        self.change_axe_origine.connect(self.app.egalise_origine)
         return
 
 
@@ -435,6 +437,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             self.video.sens_X = -1
         else:
             self.video.sens_X = 1
+        self.video.update()
         self.change_axe_origine.emit()
 
     def change_sens_Y(self):
@@ -443,6 +446,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             self.video.sens_Y = -1
         else:
             self.video.sens_Y = 1
+        self.video.update()
         self.change_axe_origine.emit()
 
     def tourne_droite(self):
