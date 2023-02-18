@@ -89,7 +89,8 @@ class EchelleWidget(QWidget):
     Widget qui permet de définir l'échelles
 
     Paramètres du constructeur :
-    @param parent le widget parent
+    @param parent le widget video
+    @param pw  widget principal de l'onglet pointage
     @param app pointeur vers l'application
 
     Propiétés
@@ -97,16 +98,16 @@ class EchelleWidget(QWidget):
     @prop self.p2 vecteur
     ...
     """
-    def __init__(self, parent):
+    def __init__(self, parent, pw):
         QWidget.__init__(self, parent)
-        self.app = parent.app         # la fenêtre principale
-        self.video = parent.video     # l'afficheur de vidéo
-        self.pw = parent              # le widget de l'onglet de pointage
+        self.app = pw.app         # la fenêtre principale
+        self.video = parent       # l'afficheur de vidéo
+        self.pw = pw              # le widget de l'onglet de pointage
         self.image=None
         self.setGeometry(
-            QRect(0, 0, self.video.width(), self.video.height()))
-        self.largeur = self.video.width()
-        self.hauteur = self.video.height()
+            QRect(0, 0, self.video.image_w, self.video.image_h))
+        self.largeur = self.video.image_w
+        self.hauteur = self.video.image_h
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
@@ -154,7 +155,6 @@ class EchelleWidget(QWidget):
             self.pw.echelle_image.p1 = self.p1.copy()
             self.pw.echelle_image.p2 = self.p2.copy()
 
-            epxParM = self.pw.echelle_image.pxParM()
             self.pw.affiche_echelle()
             self.app.affiche_statut.emit(self.tr("Échelle définie"))
             self.pw.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
@@ -163,7 +163,7 @@ class EchelleWidget(QWidget):
             self.pw.feedbackEchelle(self.p1, self.p2)
             self.app.stopRedimensionnement.emit()
             if self.pw.data:  # si on a déjà pointé une position au moins
-                self.app.affiche_statut.emit(self.app.tr(
+                self.app.affiche_statut.emit(self.tr(
                     "Vous pouvez continuer votre acquisition"))
                 self.app.recalculLesCoordonnees()
 
@@ -172,12 +172,20 @@ class EchelleWidget(QWidget):
         return
 
 class Echelle_TraceWidget(QWidget):
+    """
+    Un widget transparent qui sert seulement à tracer l'échelle
+
+    Paramètres du constructeur :
+    @param parent un videoWidget
+    @param p1 origine de l'étalon
+    @param p2 extrémité de l'étalon
+    """
     def __init__(self, parent, p1, p2):
         QWidget.__init__(self, parent)
         self.video = parent
         self.image = None
         self.setGeometry(
-            QRect(0, 0, self.video.width(), self.video.height()))
+            QRect(0, 0, self.video.image_w, self.video.image_h))
         self.setAutoFillBackground(False)
         self.p1 = p1
         self.p2 = p2
@@ -185,7 +193,7 @@ class Echelle_TraceWidget(QWidget):
 
     def maj(self):
         self.setGeometry(
-            QRect(0, 0, self.video.width(), self.video.height()))
+            QRect(0, 0, self.video.image_w, self.video.image_h))
 
     def paintEvent(self, event):
         if self.p1.x <= 0 or self.p2.x <= 0: return

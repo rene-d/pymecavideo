@@ -405,7 +405,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.echelle_image.etalonneReel(reponse)
         self.etat_ancien = self.etat # conserve pour plus tard
         self.change_etat.emit("C")
-        job = EchelleWidget(self)
+        job = EchelleWidget(self.video, self)
         job.show()
         return
     
@@ -791,7 +791,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.dbg.p(2, "rentre dans 'feedbackEchelle'")
         if self.echelle_trace:
             self.echelle_trace.hide()
-        self.echelle_trace = Echelle_TraceWidget(self, p1, p2)
+        self.echelle_trace = Echelle_TraceWidget(self.video, p1, p2)
         # on garde les valeurs pour le redimensionnement
         self.echelle_trace.show()
         if self.echelle:
