@@ -434,18 +434,18 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     def change_sens_X(self):
         self.dbg.p(2, "rentre dans 'change_sens_X'")
         if self.checkBox_abscisses.isChecked():
-            self.video.sens_X = -1
+            self.sens_X = -1
         else:
-            self.video.sens_X = 1
+            self.sens_X = 1
         self.video.update()
         self.change_axe_origine.emit()
 
     def change_sens_Y(self):
         self.dbg.p(2, "rentre dans 'change_sens_Y'")
         if self.checkBox_ordonnees.isChecked():
-            self.video.sens_Y = -1
+            self.sens_Y = -1
         else:
-            self.video.sens_Y = 1
+            self.sens_Y = 1
         self.video.update()
         self.change_axe_origine.emit()
 
