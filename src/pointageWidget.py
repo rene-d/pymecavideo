@@ -22,7 +22,7 @@
 """
 
 from PyQt6.QtCore import QThread, pyqtSignal, QLocale, QTranslator, Qt, \
-    QSize, QTimer, QObject, QRect, QPoint, QPointF
+    QSize, QTimer, QObject, QRect, QPoint, QPointF, QEvent
 from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, \
     QCursor, QPen, QColor, QFont, QResizeEvent, QShortcut
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, \
@@ -94,7 +94,6 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.pointsProbables = {}  # dict. de points proches de la détection ?
         self.refait_point = False  # on doit repointer une date
         self.pointageOK = False    # il est possible de faire un pointage
-        self.pointageCursor = None # le curseur pour le pointage
         self.filename = None       # nom du fichier video
         self.selRect = None        # sélecteur de zones à suivre
         self.indexMotif = 0        # le numéro du motif à entourer
@@ -119,7 +118,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     echelle_modif = pyqtSignal(str, str)       # modifie le bouton d'échelle
     apres_echelle = pyqtSignal()               # après dénition de l'échelle
     selection_motif_done = pyqtSignal()        # prêt à commencer la détection
-    clic_sur_video_signal = pyqtSignal()       # après un pointage
+    fin_pointage = pyqtSignal()                # après un pointage
+    fin_pointage_manuel = pyqtSignal(QEvent)   # après un pointage manuel
     stop_n = pyqtSignal(str)                   # refait le texte du bouton STOP
 
     
@@ -134,7 +134,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.update_zoom.connect(self.loupe)
         self.echelle_modif.connect(self.setButtonEchelle)
         self.apres_echelle.connect(self.restaureEtat)
-        self.clic_sur_video_signal.connect(self.clic_sur_la_video)
+        self.fin_pointage.connect(self.termine_pointage)
+        self.fin_pointage_manuel.connect(self.termine_pointage_manuel)
         self.selection_motif_done.connect(self.suiviDuMotif)
         self.stop_n.connect(self.stop_setText)
         return
@@ -320,9 +321,9 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
                                         self.derniere_image() + 2))
         if self.pointageOK:
             # beau gros curseur seulement si le pointage est licite ;
-            self.setCursor(self.pointageCursor)
+            self.video.setCursor(self.pointageCursor)
         else:
-            self.setCursor(Qt.CursorShape.ArrowCursor)
+            self.video.setCursor(Qt.CursorShape.ArrowCursor)
         return ok, image_opencv
 
     def calcul_deltaT(self, ips_from_line_edit=False, rouvre=False):
@@ -553,7 +554,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         else:
             self.purge_defaits() # si on a retiré le dernier pointage visible
             if self.index > 1: self.index -= 1
-        self.clic_sur_video_ajuste_ui()
+        self.prepare_futur_clic()
         return
     
     def refait_point_suivant(self):
@@ -566,7 +567,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.app.recalculLesCoordonnees()
         if self.index < self.image_max:
             self.index += 1
-        self.clic_sur_video_ajuste_ui()
+        self.prepare_futur_clic()
         return
 
     def enregistre_ui(self):
@@ -860,7 +861,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             self.auto = False
             # si la pile d'images à détecter a été vidée par self.stopComputing,
             # il faut passer à l'image suivante si possible
-            self.clic_sur_video_signal.emit()
+            self.fin_pointage.emit()
             self.change_etat.emit("D")
         return
 
@@ -873,21 +874,40 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.dbg.p(2, "rentre dans 'storePoint'")
         if self.lance_capture or self.auto:
             self.pointe(self.objet_courant, point, index=self.index-1)
-            self.clic_sur_video_signal.emit()
+            self.fin_pointage.emit()
         return
 
-    def clic_sur_la_video(self):
+    def termine_pointage(self):
         self.dbg.p(2, "rentre dans 'clic_sur_video'")
         self.purge_defaits() # oublie les pointages à refaire
-        self.clic_sur_video_ajuste_ui()
+        self.prepare_futur_clic()
         self.app.sync_img2others(self.index)
         return
+
+    def termine_pointage_manuel(self, event):
+        """
+        Fonction appelée en cas de pointage manuel sur l'image de la vidéo
+        après un mouserelease (bouton gauche)
+        """
+        if self.pointageOK:
+            self.change_etat.emit("E")
+            self.pointe(self.objet_courant, event, index=self.index-1)
+            self.objetSuivant()
+            self.fin_pointage.emit()
+            self.update_zoom.emit(self.hotspot)
+            self.video.update()
+            if self.refait_point and self.objet_courant == self.suivis[0]:
+                # on a été délégué pour corriger le tableau
+                # le dernier objet est pointé, retour au tableau de coords
+                self.refait_point = False
+                self.show_coord.emit()
+        return
     
-    def clic_sur_video_ajuste_ui(self):
+    def prepare_futur_clic(self):
         """
         Ajuste l'interface utilisateur pour attendre un nouveau clic
         """
-        self.dbg.p(2, "rentre dans 'clic_sur_video_ajuste_ui'")
+        self.dbg.p(2, "rentre dans 'prepare_futur_clic'")
         self.affiche_image()
         self.affiche_point_attendu(self.objet_courant)
         self.enableDefaire(self.peut_defaire())

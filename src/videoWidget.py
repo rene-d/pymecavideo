@@ -108,19 +108,8 @@ class VideoPointeeWidget(ImageWidget):
         éventuellement vers l'onglet coordonnées, quand le dernier
         objet a été pointé.
         """
-        if self.pw.pointageOK and event.button() == Qt.MouseButton.LeftButton:
-            self.pw.change_etat.emit("E")
-            self.pw.pointe(
-                self.pw.objet_courant, event, index=self.pw.index-1)
-            self.pw.objetSuivant()
-            self.pw.clic_sur_video_signal.emit()
-            self.pw.update_zoom.emit(self.pw.hotspot)
-            self.update()
-            if self.pw.refait_point : # on a été délégué pour corriger le tableau
-                if self.pw.objet_courant == self.pw.suivis[0]:
-                    # le dernier objet est pointé, retour au tableau de coords
-                    self.pw.refait_point = False
-                    self.pw.show_coord.emit()
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.pw.fin_pointage_manuel.emit(event)
         return
 
     def mouseMoveEvent(self, event):
@@ -221,7 +210,7 @@ class VideoPointeeWidget(ImageWidget):
                 self.pw.index = self.image_max
         else:
             self.pw.index = 1
-        self.pw.clic_sur_video_ajuste_ui()
+        self.pw.prepare_futur_clic()
         self.pw.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
         return
     
@@ -281,7 +270,7 @@ class VideoPointeeWidget(ImageWidget):
         self.refait_point=True
         self.objet_courant = self.suivis[0]
         self.index = qpbn.index_image
-        self.clic_sur_video_ajuste_ui()
+        self.prepare_futur_clic()
         self.pw.show_video.emit()
         return
 
