@@ -33,7 +33,6 @@ from version import version, Version, str2version
 from dbg import Dbg
 from preferences import Preferences
 from cadreur import Cadreur, openCvReader
-from choix_origine import ChoixOrigineWidget
 from trajectoire_widget import TrajectoireWidget
 from grandeurs import grandeurs
 from glob import glob

@@ -44,14 +44,15 @@ from suivi_auto import SelRectWidget
 from detect import filter_picture
 from dbg import Dbg
 from suivi_auto import SelRectWidget
-
-import interfaces.icon_rc
-
-from interfaces.Ui_pointage import Ui_pointageWidget
+from choix_origine import ChoixOrigineWidget
 from pointage import Pointage
 from etats import Etats
 from echelle import EchelleWidget, echelle
 from detect import filter_picture
+
+import interfaces.icon_rc
+
+from interfaces.Ui_pointage import Ui_pointageWidget
 
 class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     """
@@ -72,12 +73,12 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         Etats.__init__(self)
         self.setupUi(self)
         
-        self.app = None                 # la fenêtre principale
-        self.dbg = None                 # le débogueur
-        self.etat = "A"                 # état initial ; défférent de "debut"
-        self.etat_ancien = None         # état précédent
-        self.image = None               # l'image tirée du film
-        self.origine = vecteur(self.width()//2, self.height()//2)
+        self.app = None            # la fenêtre principale
+        self.dbg = None            # le débogueur
+        self.etat = "A"            # état initial ; différent de "debut"
+        self.etat_ancien = None    # état précédent
+        self.image = None          # l'image tirée du film
+        self.origine = vecteur()   # origine du repère
         self.image_max = None      # numéro de la dernière image de la vidéo
         self.framerate = None      # nombre d'images par seconde
         # dimensions natives des images de la vidéo
@@ -425,7 +426,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             self,
             "NOUVELLE ORIGINE",
             "Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
-        ChoixOrigineWidget(parent=self.video, app=self).show()
+        ChoixOrigineWidget(self.video, self).show()
         return
 
     def change_sens_X(self):
@@ -463,7 +464,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
                    str(self.video.rotation))
 
         # gestion de l'origine et de l'échelle :
-        self.dbg.p(3, f"Dans 'tourne_image' avant de tourner, self.origine {self.video.origine}, largeur video {self.video.width()}, hauteur video {self.video.height()}")
+        self.dbg.p(3, f"Dans 'tourne_image' avant de tourner, self.origine {self.origine}, largeur video {self.video.width()}, hauteur video {self.video.height()}")
         self.redimensionneSignal.emit(True)
         return
 

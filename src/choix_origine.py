@@ -31,29 +31,29 @@ class ChoixOrigineWidget(QWidget):
     Un widget pour choisir une nouvelle origine ; il est posé sur le
     widget vidéo, et durant sa vie, il permet d'avoir un retour visuel
     pendant qu'on bouge la souris vers la nouvelle origine.
+
+    Paramètres du constructeur:
+    @param parent un videoWidget
+    @param pw le widget principal de l'onglet de pointage
     """
     
-    def __init__(self, parent, app):
+    def __init__(self, parent, pw):
         QWidget.__init__(self, parent)
-        self.parent = parent
-        self.app = app
-        self.setGeometry(
-            QRect(0, 0, self.parent.width(), self.parent.height()))
+        self.pw = pw
         self.setAutoFillBackground(False)
-
+        self.setGeometry(QRect(0, 0, parent.image_w, parent.image_h))
         self.setCursor(Qt.CursorShape.CrossCursor)
         self.cropX2 = None
         self.setMouseTracking(True)
 
     def mouseMoveEvent(self, event):
-        p = vecteur(qPoint = event.position())
-        self.app.update_zoom.emit(p)
+        self.pw.update_zoom.emit(vecteur(qPoint = event.position()))
         return
 
     def mouseReleaseEvent(self, event):
         p = vecteur(qPoint = event.position())
-        self.app.video.origine = p
-        self.app.update_zoom.emit(p)
-
-        self.app.egalise_origine()
+        self.pw.origine = p
+        self.pw.update_zoom.emit(p)
+        self.pw.app.egalise_origine()
         self.close()
+        return
