@@ -33,7 +33,7 @@ from version import version, Version, str2version
 from dbg import Dbg
 from preferences import Preferences
 from cadreur import Cadreur, openCvReader
-from trajectoire_widget import TrajectoireWidget
+from trajWidget import trajWidget
 from grandeurs import grandeurs
 from glob import glob
 from vecteur import vecteur
@@ -147,7 +147,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         # définition des widgets importants
         self.graphWidget = None
         self.pointage.setApp(self)
-        self.trajectoire_widget.setApp(self)
+        self.trajW.setApp(self)
 
         # on cache le widget des dimensions de l'image
         self.hide_imgdim.emit()
@@ -456,8 +456,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         harmonise l'origine : recopie celle de la vidéo vers le
         widget des trajectoires et redessine les deux.
         """
-        self.trajectoire_widget.origine_mvt = self.pointage.origine
-        self.trajectoire_widget.update()
+        self.trajW.origine_mvt = self.pointage.origine
+        self.trajW.update()
         self.pointage.update()
         return
     
@@ -466,8 +466,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.chronoPhoto()
 
     def enregistreChrono(self):
-        self.pixmapChrono = QPixmap(self.trajectoire_widget.size())
-        self.trajectoire_widget.render(self.pixmapChrono)
+        self.pixmapChrono = QPixmap(self.trajW.size())
+        self.trajW.render(self.pixmapChrono)
         base_name = os.path.splitext(os.path.basename(self.filename))[0]
         defaultName = os.path.join(DOCUMENT_PATH, base_name)
         fichier = QFileDialog.getSaveFileName(self,
@@ -481,18 +481,18 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     fichier[0]))
 
     def chronoPhoto(self):
-        """lance la sauvegarde du trajectoire_widget.
+        """lance la sauvegarde du trajW.
         Si chronophotographie, on ajoute l'image et la trace de l'échelle comme pointée.
         Si chronophotogramme, on ne met pas l'image et la trace est en haut.
         """
         # Configure l'UI en fonction du mode
         if self.comboBoxChrono.currentIndex() == 0 :
             self.widget_chronophoto.setEnabled(False)
-            self.trajectoire_widget.setEnabled(True)
+            self.trajW.setEnabled(True)
             self.widget_speed.setEnabled(True)
         elif self.comboBoxChrono.currentIndex() == 1 :
             self.widget_chronophoto.setEnabled(True)
-            self.trajectoire_widget.setEnabled(False)
+            self.trajW.setEnabled(False)
             self.widget_speed.setEnabled(False)
             self.checkBoxVectorSpeed.setChecked(False)
             self.spinBox_chrono.setMaximum(int(self.pointage.image_max))
@@ -500,7 +500,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         elif self.comboBoxChrono.currentIndex() == 2 :
             self.widget_chronophoto.setEnabled(False)
-            self.trajectoire_widget.setEnabled(False)
+            self.trajW.setEnabled(False)
             self.widget_speed.setEnabled(False)
             self.checkBoxVectorSpeed.setChecked(False)
         self.dbg.p(2, "rentre dans 'chronoPhoto'")
@@ -513,20 +513,20 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.dbg.p(2, "dans 'chronoPhoto, on a choisi le type %s'" %
                        (photo_chrono))
             if photo_chrono == 'chronophotographie':  # on extrait le première image que l'on rajoute au widget
-                self.trajectoire_widget.chrono = 1  # 1 pour chronophotographie
+                self.trajW.chrono = 1  # 1 pour chronophotographie
                 ok, img = self.pointage.cvReader.getImage(
                     self.chronoImg, self.pointage.video.rotation)
                 self.imageChrono = toQImage(img).scaled(
                     self.pointage.video.image_w, self.pointage.video.image_h) #, Qt.KeepAspectRatio)
-                self.trajectoire_widget.setImage(
+                self.trajW.setImage(
                     QPixmap.fromImage(self.imageChrono))
             else:
-                self.trajectoire_widget.chrono = 2  # 2 pour chronophotogramme
-                self.trajectoire_widget.setImage(QPixmap())
+                self.trajW.chrono = 2  # 2 pour chronophotogramme
+                self.trajW.setImage(QPixmap())
             #self.enregistreChrono()
         else:
-            self.trajectoire_widget.setImage(QPixmap())
-            self.trajectoire_widget.chrono = 0
+            self.trajW.setImage(QPixmap())
+            self.trajW.chrono = 0
         self.redimensionneFenetre()
         self.update()
         return
@@ -550,13 +550,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.checkBoxScale.insertItem(0, "1")
             self.radioButtonNearMouse.show()
             self.radioButtonSpeedEveryWhere.show()
-            self.trajectoire_widget.prepare_vecteurs_pour_paint()
-            self.trajectoire_widget.update()
+            self.trajW.prepare_vecteurs_pour_paint()
+            self.trajW.update()
         else:
             self.checkBoxScale.setEnabled(0)
             self.radioButtonNearMouse.hide()
             self.radioButtonSpeedEveryWhere.hide()
-            self.trajectoire_widget.update()
+            self.trajW.update()
         return
 
     def presse_papier(self):
@@ -643,7 +643,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.pointage.remontre_image()
         else:
             self.pointage.affiche_image()
-        self.trajectoire_widget.maj()
+        self.trajW.maj()
         return
 
     def enterEvent(self, e):
@@ -995,7 +995,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
 
         """
         self.dbg.p(2, "rentre dans 'tracer_trajectoires'")
-        self.trajectoire_widget.origine_mvt = self.pointage.origine
+        self.trajW.origine_mvt = self.pointage.origine
         if newValue == "absolu":
             ref = 0 # la caméra
             # mets à jour le comboBox referentiel :
@@ -1013,18 +1013,18 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 ref = int(choix_ref.split(" ")[-1])
         if ref != 0:
             self.button_video.setEnabled(1)
-            self.trajectoire_widget.chrono = False
+            self.trajW.chrono = False
             origine = vecteur(self.pointage.width() // 2, self.pointage.height() // 2)
-            self.trajectoire_widget.origine = origine
-            self.trajectoire_widget.origine_mvt = origine
-            self.trajectoire_widget.referentiel = ref
+            self.trajW.origine = origine
+            self.trajW.origine_mvt = origine
+            self.trajW.referentiel = ref
         else:  # si le référentiel est la caméra, aucune translation !
-            self.trajectoire_widget.referentiel = 0
-            self.trajectoire_widget.origine = vecteur(0, 0)
+            self.trajW.referentiel = 0
+            self.trajW.origine = vecteur(0, 0)
         self.dbg.p(3, "origine %s, ref %s" %
-                   (str(self.trajectoire_widget.origine), str(ref)))
-        self.trajectoire_widget.prepare_vecteurs_pour_paint()
-        self.trajectoire_widget.update()
+                   (str(self.trajW.origine), str(ref)))
+        self.trajW.prepare_vecteurs_pour_paint()
+        self.trajW.update()
         return
     
     def masse(self, obj):
@@ -1386,8 +1386,8 @@ Merci de bien vouloir le renommer avant de continuer"""))
             for i in range(1,4):
                 self.tabWidget.setTabEnabled(i, False)  # autres onglets inactifs
 
-            # initialisation de self.trajectoire_widget
-            self.trajectoire_widget.chrono = False
+            # initialisation de self.trajW
+            self.trajW.chrono = False
 
             # on cache certains widgets
             print("BUG renvoyer self.radioButtonNearMouse self.radioButtonSpeedEveryWhere ailleurs")

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    trajectoire_widget, a module for pymecavideo:
+    trajWidget, a module for pymecavideo:
       a program to track moving points in a video frameset
       
     Copyright (C) 2007 Jean-Baptiste Butet <ashashiwa@gmail.com>
@@ -29,7 +29,7 @@ from image_widget import ImageWidget
 from vecteur import vecteur
 from globdef import pattern_float
 
-class TrajectoireWidget(ImageWidget):
+class trajWidget(ImageWidget):
     def __init__(self, parent):
         ImageWidget.__init__(self, parent)
         self.app = None

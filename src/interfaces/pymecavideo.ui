@@ -31,7 +31,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_acq">
        <attribute name="title">
@@ -286,7 +286,7 @@ vecteurs vitesse</string>
             </widget>
            </item>
            <item>
-            <widget class="TrajectoireWidget" name="trajectoire_widget" native="true"/>
+            <widget class="trajWidget" name="trajW" native="true"/>
            </item>
           </layout>
          </widget>
@@ -959,12 +959,6 @@ vecteurs vitesse</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TrajectoireWidget</class>
-   <extends>QWidget</extends>
-   <header>trajectoire_widget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ImageWidget</class>
    <extends>QWidget</extends>
    <header>image_widget.h</header>
@@ -974,6 +968,12 @@ vecteurs vitesse</string>
    <class>PointageWidget</class>
    <extends>QWidget</extends>
    <header location="global">pointageWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>trajWidget</class>
+   <extends>QWidget</extends>
+   <header>trajWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
