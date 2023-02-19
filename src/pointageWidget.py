@@ -139,7 +139,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.selection_motif_done.connect(self.suiviDuMotif)
         self.stop_n.connect(self.stop_setText)
         self.sens_axes.connect(self.coche_axes)
-        self.montre_etalon.connect(self.montreEtalon)
+        self.montre_etalon.connect(self.feedbackEchelle)
 
         return
 
@@ -785,7 +785,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.affiche_image()
         return
 
-    def feedbackEchelle(self, p1, p2):
+    def feedbackEchelle(self):
         """
         affiche une trace au-dessus du self.job, qui reflète les positions
         retenues pour l'échelle
@@ -793,7 +793,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.dbg.p(2, "rentre dans 'feedbackEchelle'")
         if self.echelle_trace:
             self.echelle_trace.hide()
-        self.echelle_trace = Echelle_TraceWidget(self.video, p1, p2)
+        self.echelle_trace = Echelle_TraceWidget(
+            self.video, self.echelle_image.p1, self.echelle_image.p2)
         # on garde les valeurs pour le redimensionnement
         self.echelle_trace.show()
         if self.echelle:
@@ -1016,14 +1017,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.sens_axes.emit(self.sens_X, self.sens_Y)
         # on met à jour le widget d'échelle
         self.affiche_echelle()
-        self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
-        return
-
-    def montreEtalon(self):
-        """
-        fonction de rappel qui montre l'étalon sur l'image de la vidéo
-        """
-        self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        self.feedbackEchelle()
         return
 
     def coche_axes(self, x, y):

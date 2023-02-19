@@ -160,7 +160,7 @@ class EchelleWidget(QWidget):
             self.pw.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
             self.pw.index_du_point = 0
 
-            self.pw.feedbackEchelle(self.p1, self.p2)
+            self.pw.feedbackEchelle()
             self.app.stopRedimensionnement.emit()
             if self.pw.data:  # si on a déjà pointé une position au moins
                 self.app.affiche_statut.emit(self.tr(
