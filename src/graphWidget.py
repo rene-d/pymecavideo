@@ -27,10 +27,13 @@ from PyQt6.QtGui import QKeySequence, QIcon, QPixmap, QImage, QPainter, \
     QCursor, QPen, QColor, QFont, QResizeEvent, QShortcut
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLayout, \
     QFileDialog, QTableWidgetItem, QInputDialog, QLineEdit, QMessageBox, \
-    QTableWidgetSelectionRange, QPushButton
+    QTableWidgetSelectionRange, QPushButton, QVBoxLayout
 
 import os, time, re, sys
 import locale
+import pyqtgraph as pg
+import pyqtgraph.exporters
+import math
 
 from version import Version
 from vecteur import vecteur
@@ -61,6 +64,8 @@ class GraphWidget(QWidget, Ui_graphWidget):
         self.setupUi(self)
         self.connecte_ui()
         self.locals = {} # dictionnaire de variables locales, pour eval
+        self.graphe_deja_choisi = None
+        self.graphW = None
         return
 
     def setApp(self, app):
@@ -155,36 +160,36 @@ class GraphWidget(QWidget, Ui_graphWidget):
             else:
                 unite_y = ordonnee+'(m)'
 
-            if not self.graphWidget:  # premier tour
-                self.graphWidget = pg.PlotWidget(
+            if not self.graphW:  # premier tour
+                self.graphW = pg.PlotWidget(
                     title=titre, parent=self.widget_graph)
-                self.graphWidget.setMenuEnabled(False)
-                self.graphWidget.setLabel('bottom', unite_x)
-                self.graphWidget.setLabel('left', unite_y)
-                self.verticalLayout_onglet4 = QVBoxLayout(self.widget_graph)
-                self.verticalLayout_onglet4.setContentsMargins(0, 0, 0, 0)
-                self.verticalLayout_onglet4.setObjectName(
+                self.graphW.setMenuEnabled(False)
+                self.graphW.setLabel('bottom', unite_x)
+                self.graphW.setLabel('left', unite_y)
+                self.vLayout = QVBoxLayout(self.widget_graph)
+                self.vLayout.setContentsMargins(0, 0, 0, 0)
+                self.vLayout.setObjectName(
                     "verticalLayout_graph")
-                self.verticalLayout_onglet4.addWidget(self.graphWidget)
-                self.graphWidget.plot(X, Y, pen=pen, symbol=symbol)
-                self.graphWidget.autoRange()
-                self.graphWidget.show()
-                self.pg_exporter = pg.exporters.ImageExporter(self.graphWidget.plotItem)
+                self.vLayout.addWidget(self.graphW)
+                self.graphW.plot(X, Y, pen=pen, symbol=symbol)
+                self.graphW.autoRange()
+                self.graphW.show()
+                self.pg_exporter = pg.exporters.ImageExporter(self.graphW.plotItem)
             else:
-                plotItem = self.graphWidget.getPlotItem()
+                plotItem = self.graphW.getPlotItem()
                 plotItem.setTitle(titre)
-                self.graphWidget.setLabel('bottom', unite_x)
-                self.graphWidget.setLabel('left', unite_y)
-                self.graphWidget.clear()
-                self.graphWidget.plot(X, Y, pen=pen, symbol=symbol)
-                self.graphWidget.autoRange()
-                self.graphWidget.show()
+                self.graphW.setLabel('bottom', unite_x)
+                self.graphW.setLabel('left', unite_y)
+                self.graphW.clear()
+                self.graphW.plot(X, Y, pen=pen, symbol=symbol)
+                self.graphW.autoRange()
+                self.graphW.show()
             self.graphe_deja_choisi = (ordonnee, abscisse)
         return
     
     def enregistre_graphe(self):
         if hasattr (self, 'pg_exporter'):
-            base_name = os.path.splitext(os.path.basename(self.filename))[0]
+            base_name = os.path.splitext(os.path.basename(self.pointage.filename))[0]
             defaultName = os.path.join(DOCUMENT_PATH, base_name+'.png')
             fichier = QFileDialog.getSaveFileName(
                 self,
@@ -278,10 +283,9 @@ class GraphWidget(QWidget, Ui_graphWidget):
                     self.locals["Ax"+str(obj)],
                     self.locals["Ay"+str(obj)]
                 )]
-        return
-        
-    def MAJ_combox_box_grapheur(self):
-        if self.graphe_deja_choisi is None : #premier choix de graphe
+        # mise à jour des éléments graphiques
+        if self.graphe_deja_choisi is None :
+            # tout premier choix de graphe
             self.comboBox_X.clear()
             self.comboBox_Y.clear()
             self.comboBox_X.insertItem(-1,
@@ -313,4 +317,28 @@ class GraphWidget(QWidget, Ui_graphWidget):
         #else : #il y a déjà eu un choix de graphe
             #self.comboBox_X.setItem(self.graphe_deja_choisi[1])
             #self.comboBox_Y.setItem(self.graphe_deja_choisi[0])
+        return
+    
 
+    def changeEtat(self, etat):
+        if etat == "debut":
+            pass
+        if etat == "A":
+            # désactive le grapheur si existant
+            if self.graphW:
+                plotItem = self.graphWidget.getPlotItem()
+                plotItem.clear()
+                plotItem.setTitle('')
+                plotItem.hideAxis('bottom')
+                plotItem.hideAxis('left')
+        if etat == "AB":
+            pass
+        if etat == "B":
+            pass
+        if etat == "C":
+            pass
+        if etat == "D":
+            pass
+        if etat == "E":
+            pass
+        return

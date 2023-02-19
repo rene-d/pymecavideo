@@ -23,9 +23,6 @@ import tempfile
 import platform
 import re
 import magic
-import pyqtgraph as pg
-import pyqtgraph.exporters
-import math
 
 from export import Export, EXPORT_FORMATS
 from toQimage import toQImage
@@ -101,8 +98,9 @@ app = QApplication(sys.argv)
 
 
 from interfaces.Ui_pymecavideo import Ui_pymecavideo
+from etatsMain import Etats
 
-class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
+class FenetrePrincipale(QMainWindow, Ui_pymecavideo, Etats):
     def __init__(self, parent=None, opts=[], args=[]):
         """
         le constructeur reçoit les données principales du logiciel :
@@ -112,19 +110,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         """
         QMainWindow.__init__(self, parent)
         Ui_pymecavideo.__init__(self)
-        QWidget.__init__(self, parent)
+        Etats.__init__(self)
         # version minimale du fichier de configuration :
         self.min_version = version(7, 3, ".0-1")
-        self.hauteur = 1
-        self.largeur = 0
-        self.ratio = 4/3
-        self.decalh = 0
-        self.decalw = 0
         self.wanted_image_size = vecteur() # taille souhaitée pour l'image
         self.nb_ajuste_image = 20          # nombre d'itérations pour y parvenir
         self.imgdim_hide = time.time() + 2 # moment pour cacher la taille
-        self.roleEtat = None               # dict. état => message de statut
-        self.dictionnairePlotWidget = {}
+        self.etat = None                   # avant le système d'états
 
         # Mode plein écran
         self.plein_ecran = False
@@ -144,7 +136,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.prefs = Preferences(self)
 
         # définition des widgets importants
-        self.graphWidget = None
         self.pointage.setApp(self)
         self.trajectoire.setApp(self)
         self.coord.setApp(self)
@@ -172,13 +163,10 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.init_variables(self.prefs.defaults['lastVideo'])
         # connections internes
         self.connecte_ui()
+         # met l'état à "debut"
+        self.change_etat.emit("debut")
 
-        # crée les débuts de messages pour la ligne de statut
-        self.roleEtat = self.pointage.definit_messages_statut()
-        
-        self.change_etat.emit("debut") # met l'état à "debut"
-
-        # traite un argument ; si ça ne va pas, s'intéresse à la
+        # traite un argument ; s'il n'y en a pas, s'intéresse
         # aux préférences du fichier pymecavideo.conf
         self.traite_arg() or self.apply_preferences()
 
@@ -310,7 +298,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.resizing = False
         self.stopRedimensionne = False
         self.refait_point = False
-        self.graphe_deja_choisi = None
         return
 
     
@@ -359,7 +346,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.affiche_statut.connect(self.setStatus)
         self.adjust4image.connect(self.ajuste_pour_image)
         self.hide_imgdim.connect(self.cache_imgdim)
-        self.affiche_statut.connect(self.setStatus)
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
         self.image_n.connect(self.sync_img2others)
@@ -496,15 +482,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.trajectoire.trajW.maj()
         return
 
-    def enterEvent(self, e):
-        self.gardeLargeur()
-
-    def leaveEvent(self, e):
-        self.gardeLargeur()
-
-    def gardeLargeur(self):
-        self.largeurAvant = self.largeur
-
     def resizeEvent(self, event):
         self.dbg.p(2, "rentre dans 'resizeEvent'")
         
@@ -543,7 +520,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         elif self.tabWidget.currentIndex() == 3:
             # onglet du grapheur
             self.graph.affiche_grapheur()
-            self.MAJ_combox_box_grapheur()
         return
 
     def recommence_echelle(self):
@@ -560,10 +536,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         de la fermeture de l'application.
         """
         self.dbg.p(2, "rentre dans 'closeEvent'")
-        for plotwidget in self.dictionnairePlotWidget.values():
-            plotwidget.parentWidget().close()
-            plotwidget.close()
-            del plotwidget
         d = self.prefs.config["DEFAULT"]
         d["taille_image"] = f"({self.pointage.video.image_w},{self.pointage.video.image_h})"
         d["rotation"] = str(self.pointage.video.rotation)
@@ -696,103 +668,8 @@ Merci de bien vouloir le renommer avant de continuer"""))
         Précise la ligne de statut, qui commence par une indication de l'état
         @param text un texte pour terminer la ligne de statut
         """
-        if self.roleEtat is None: return
-        self.statusBar().showMessage(self.roleEtat[self.pointage.etat](self) + "| " + text)
-        return
-
-    def changeEtat(self, etat):
-        """
-        changement d'état : fait ce qu'il faut faire au niveau de la fenêtre
-        principale puis renvoie aux autres widgets actifs
-        """
-        if etat == "debut":
-            for obj in self.actionDefaire, self.actionRefaire, \
-                self.actionCopier_dans_le_presse_papier, \
-                self.menuE_xporter_vers, \
-                self.actionSaveData :
-
-                obj.setEnabled(False)
-            self.actionExemples.setEnabled(True)
-            self.tabWidget.setEnabled(True)
-            # organisation des onglets
-            self.tabWidget.setCurrentIndex(0)       # montre l'onglet video
-            for i in range(1,4):
-                self.tabWidget.setTabEnabled(i, False)  # autres onglets inactifs
-
-            # autorise le redimensionnement de la fenêtre principale
-            self.OKRedimensionnement.emit()
-
-        elif etat == "A":
-            if self.pointage.filename is None: return
-            self.setWindowTitle(self.tr("Pymecavideo : {filename}").format(
-                filename = os.path.basename(self.pointage.filename)))
-            if not self.pointage.echelle_image:
-                # sans échelle, on peut redimensionner la fenêtre
-                self.OKRedimensionnement.emit()
-            # ferme les widget d'affichages des x, y, v du 2eme onglet
-            # si elles existent
-            for plotwidget in self.dictionnairePlotWidget.values():
-                plotwidget.parentWidget().close()
-                plotwidget.close()
-                del plotwidget
-            for obj in self.menuE_xporter_vers, self.actionSaveData, \
-                self.actionCopier_dans_le_presse_papier:
-                obj.setEnabled(True)
-            for i in 1, 2, 3:
-                self.tabWidget.setTabEnabled(i, False)
-                
-            print("BUG pour A au sujet du grapheur")
-            # désactive le grapheur si existant
-            if self.graphWidget:
-                plotItem = self.graphWidget.getPlotItem()
-                plotItem.clear()
-                plotItem.setTitle('')
-                plotItem.hideAxis('bottom')
-                plotItem.hideAxis('left')
-                
-            self.affiche_statut.emit(
-               self.tr("Veuillez choisir une image (et définir l'échelle)"))
-            self.montre_vitesses = False
-            self.egalise_origine()
-            self.init_variables(self.pointage.filename)
-            
-        elif etat == "AB":
-            for obj in self.actionCopier_dans_le_presse_papier, \
-                self.menuE_xporter_vers, self.actionSaveData :
-                obj.setEnabled(False)
-            self.affiche_statut.emit(self.tr("Pointage Automatique"))
-            QMessageBox.information(
-                None, "Capture Automatique",
-                self.tr("""\
-Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre ;
-Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP""",
-                        None))
-                
-            pass
-        elif etat == "B":
-            pass
-        elif etat == "C":
-            for obj in self.actionCopier_dans_le_presse_papier, \
-                self.menuE_xporter_vers, self.actionSaveData:
-                obj.setEnabled(False)
-
-        elif etat == "D":
-            # tous les onglets sont actifs
-            if self.pointage:
-                for i in 1, 2, 3:
-                    self.tabWidget.setTabEnabled(i, True)
-            # mise à jour des menus
-            self.actionSaveData.setEnabled(True)
-            self.actionCopier_dans_le_presse_papier.setEnabled(True)
-
-        elif etat == "E":
-            for i in 1, 2, 3:
-                self.tabWidget.setTabEnabled(i, False)        
-
-        self.setStatus("")
-        self.pointage.etatUI(etat)
-        self.trajectoire.changeEtat(etat)
-        self.coord.changeEtat(etat)
+        if self.etat is None : return
+        self.statusBar().showMessage(self.roleEtat[self.etat](self) + "| " + text)
         return
 
     def fixeLesDimensions(self):

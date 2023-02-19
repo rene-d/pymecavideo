@@ -57,9 +57,9 @@ class VideoPointeeWidget(ImageWidget):
         self.image_w = self.width()     # deux valeurs par défaut
         self.image_h = self.height()    # pas forcément pertinentes
         self.rotation = 0          # permet de retourner une vidéo mal prise
+        self.setMouseTracking(True)
         self.couleurs = [
             "red", "blue", "cyan", "magenta", "yellow", "gray", "green"] *2
-
         return
 
 

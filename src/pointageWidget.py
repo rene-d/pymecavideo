@@ -46,7 +46,7 @@ from dbg import Dbg
 from suivi_auto import SelRectWidget
 from choix_origine import ChoixOrigineWidget
 from pointage import Pointage
-from etats import Etats
+from etatsPointage import Etats
 from echelle import EchelleWidget, echelle
 from detect import filter_picture
 
@@ -76,7 +76,6 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.app = None            # la fenêtre principale
         self.dbg = None            # le débogueur
         self.etat = "A"            # état initial ; différent de "debut"
-        self.etat_ancien = None    # état précédent
         self.image = None          # l'image tirée du film
         self.origine = vecteur()   # origine du repère
         self.image_max = None      # numéro de la dernière image de la vidéo
@@ -405,7 +404,6 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             return
         reponse = float(reponse)
         self.echelle_image.etalonneReel(reponse)
-        self.etat_ancien = self.etat # conserve pour plus tard
         self.app.change_etat.emit("C")
         job = EchelleWidget(self.video, self)
         job.show()
@@ -528,8 +526,6 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.redimensionne_data(self.nb_obj)
         self.sens_X = self.sens_Y = 1
         self.sens_axes.emit(self.sens_X, self.sens_Y)
-        # passage par deux états afin de forcer une réinitialisation complète
-        self.app.change_etat.emit("debut")
         self.app.change_etat.emit("A")
         return
 
