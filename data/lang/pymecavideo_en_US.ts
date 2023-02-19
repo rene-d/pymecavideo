@@ -19,6 +19,31 @@ to capture a video</translation>
     </message>
   </context>
   <context>
+    <name>CoordWidget</name>
+    <message>
+      <location filename="../../src/coordWidget.py" line="358" />
+      <source>refaire le pointage
+ de l'image {numero}</source>
+      <translation type="unfinished">respot
+image #{numero}</translation>
+    </message>
+    <message>
+      <location filename="../../src/coordWidget.py" line="378" />
+      <source>Masse de l'objet</source>
+      <translation type="unfinished">Mass of the object</translation>
+    </message>
+    <message>
+      <location filename="../../src/coordWidget.py" line="379" />
+      <source>Quelle est la masse de l'objet ? (en kg)</source>
+      <translation type="unfinished">Please enter the mass of the object (kg)</translation>
+    </message>
+    <message>
+      <location filename="../../src/coordWidget.py" line="385" />
+      <source>Merci d'indiquer une masse valable</source>
+      <translation type="unfinished">Please type a sensible mass</translation>
+    </message>
+  </context>
+  <context>
     <name>CsvExportDialog</name>
     <message>
       <source>Dialog</source>
@@ -253,153 +278,149 @@ to capture a video</translation>
   <context>
     <name>FenetrePrincipale</name>
     <message>
-      <location filename="../../src/pymecavideo.py" line="215" />
+      <location filename="../../src/pymecavideo.py" line="211" />
       <source>Argument non pris en compte</source>
       <translation>Argument not taken in account</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="216" />
+      <location filename="../../src/pymecavideo.py" line="212" />
       <source>Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.</source>
       <translation>The file {filename} is neither a video file, not a pymecavideo saved file..</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="237" />
+      <location filename="../../src/pymecavideo.py" line="233" />
       <source>Configuration trop ancienne</source>
       <translation>Obsolete configuration file</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="238" />
+      <location filename="../../src/pymecavideo.py" line="234" />
       <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
       <translation>The version of the configuration file, {version} is less than {min_version}: the configuration file cannot be taken in account</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="245" />
+      <location filename="../../src/pymecavideo.py" line="241" />
       <source>Configuration ancienne</source>
       <translation>Older configuration</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="246" />
+      <location filename="../../src/pymecavideo.py" line="242" />
       <source>La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.</source>
       <translation>The version of the configuration file, {version} is less than {Version}: some dimensions can be slightly wrong.</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="533" />
+      <location filename="../../src/pymecavideo.py" line="489" />
       <source>Ouvrir un projet Pymecavideo</source>
       <translation>Open a Mecavideo project</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="535" />
+      <location filename="../../src/pymecavideo.py" line="491" />
       <source>Projet Pymecavideo (*.mecavideo)</source>
       <translation>Pymecavideo Project (*.mecavideo)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="748" />
-      <location filename="../../src/pymecavideo.py" line="746" />
+      <location filename="../../src/pymecavideo.py" line="624" />
+      <location filename="../../src/pymecavideo.py" line="622" />
       <source>Choisir ...</source>
       <translation>Choose...</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="876" />
+      <location filename="../../src/pymecavideo.py" line="752" />
       <source>Enregistrer le graphique</source>
       <translation>Save the plot</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="877" />
+      <location filename="../../src/pymecavideo.py" line="753" />
       <source>fichiers images(*.png)</source>
       <translation>image files (*.png)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="891" />
-      <source>Masse de l'objet</source>
-      <translation>Mass of the object</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="892" />
-      <source>Quelle est la masse de l'objet ? (en kg)</source>
-      <translation>Please enter the mass of the object (kg)</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="898" />
-      <source>Merci d'indiquer une masse valable</source>
-      <translation>Please type a sensible mass</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="913" />
-      <source>refaire le pointage
- de l'image {numero}</source>
-      <translation>respot
-image #{numero}</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="1062" />
-      <location filename="../../src/pymecavideo.py" line="1049" />
+      <location filename="../../src/pymecavideo.py" line="799" />
+      <location filename="../../src/pymecavideo.py" line="786" />
       <source>MAUVAISE VALEUR !</source>
       <translation>BAD VALUE!</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1050" />
+      <location filename="../../src/pymecavideo.py" line="787" />
       <source>La valeur rentrée (m = {}) n'est pas compatible avec le calcul</source>
       <translation>The given value (m = {}) is not compatible with the process</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1063" />
+      <location filename="../../src/pymecavideo.py" line="800" />
       <source>La valeur rentrée (g = {}) n'est pas compatible avec le calcul</source>
       <translation>The given value (g = {}) is not compatible with the process</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1100" />
-      <location filename="../../src/pymecavideo.py" line="1087" />
-      <location filename="../../src/pymecavideo.py" line="1074" />
+      <location filename="../../src/pymecavideo.py" line="837" />
+      <location filename="../../src/pymecavideo.py" line="824" />
+      <location filename="../../src/pymecavideo.py" line="811" />
       <source>Ouvrir une vidéo</source>
       <translation>Open a video</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1075" />
+      <location filename="../../src/pymecavideo.py" line="812" />
       <source>fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
       <translation>video files (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1089" />
+      <location filename="../../src/pymecavideo.py" line="826" />
       <source>fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
       <translation>video files( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1096" />
+      <location filename="../../src/pymecavideo.py" line="833" />
       <source>Nom de fichier non conforme</source>
       <translation>Invalid filename</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1097" />
+      <location filename="../../src/pymecavideo.py" line="834" />
       <source>Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
       <translation>The name of the file contains accented characters or spaces.
 PLease rename it before going on</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1134" />
+      <location filename="../../src/pymecavideo.py" line="871" />
       <source>Désolé pas de fichier d'aide pour le langage {0}.</source>
       <translation>Sorry, no help file for the language {0}.</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1227" />
+      <location filename="../../src/pymecavideo.py" line="960" />
       <source>Pymecavideo : {filename}</source>
       <translation>Pymecavideo: {filename}</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1259" />
+      <location filename="../../src/pymecavideo.py" line="987" />
       <source>Veuillez choisir une image (et définir l'échelle)</source>
       <translation>Please select an image (and define the scale)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1268" />
+      <location filename="../../src/pymecavideo.py" line="996" />
       <source>Pointage Automatique</source>
       <translation>Automatic Spotting</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1271" />
+      <location filename="../../src/pymecavideo.py" line="999" />
       <source>Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre ;
 Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</source>
       <translation type="unfinished" />
+    </message>
+    <message>
+      <source>Masse de l'objet</source>
+      <translation type="vanished">Mass of the object</translation>
+    </message>
+    <message>
+      <source>Quelle est la masse de l'objet ? (en kg)</source>
+      <translation type="vanished">Please enter the mass of the object (kg)</translation>
+    </message>
+    <message>
+      <source>Merci d'indiquer une masse valable</source>
+      <translation type="vanished">Please type a sensible mass</translation>
+    </message>
+    <message>
+      <source>refaire le pointage
+ de l'image {numero}</source>
+      <translation type="vanished">respot
+image #{numero}</translation>
     </message>
     <message>
       <source>Enregistrer comme image</source>
@@ -990,95 +1011,95 @@ is maybe in an unsupported video format.</translation>
   <context>
     <name>export</name>
     <message>
-      <location filename="../../src/export.py" line="46" />
+      <location filename="../../src/export.py" line="44" />
       <source>Libre/OpenOffice Calc</source>
       <translation>Libre/OpenOffice Calc</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="47" />
+      <location filename="../../src/export.py" line="45" />
       <source>Feuille de calcul OpenDocument (*.ods)</source>
       <translation>OpenDocument worksheet (*.ods)</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="54" />
+      <location filename="../../src/export.py" line="52" />
       <source>Python (source)</source>
       <translation>Python (source)</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="55" />
+      <location filename="../../src/export.py" line="53" />
       <source>Fichier Python (*.py)</source>
       <translation>Python file (*.py)</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="62" />
+      <location filename="../../src/export.py" line="60" />
       <source>Python (Numpy)</source>
       <translation>Python (Numpy)</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="63" />
+      <location filename="../../src/export.py" line="61" />
       <source>Fichier Numpy (*.npy)</source>
       <translation>Numpy file (*.npy)</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="70" />
+      <location filename="../../src/export.py" line="68" />
       <source>Jupyter Notebook</source>
       <translation>Jupyter Notebook</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="71" />
+      <location filename="../../src/export.py" line="69" />
       <source>Notebook (*.ipynb)</source>
       <translation>Notebook (*.ipynb)</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="78" />
+      <location filename="../../src/export.py" line="76" />
       <source>Fichier CSV</source>
       <translation>CSV file</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="79" />
+      <location filename="../../src/export.py" line="77" />
       <source>Fichier CSV (*.csv, *.txt)</source>
       <translation>CSV file (*.csv, *.txt)</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="86" />
+      <location filename="../../src/export.py" line="84" />
       <source>Pandas Dataframe</source>
       <translation>Pandas Dataframe</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="87" />
+      <location filename="../../src/export.py" line="85" />
       <source>Dataframe (*.pkl)</source>
       <translation>Dataframe (*.pkl)</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="97" />
+      <location filename="../../src/export.py" line="95" />
       <source>Erreur lors de l'exportation</source>
       <translation>Error during the export</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="98" />
+      <location filename="../../src/export.py" line="96" />
       <source>Echec de l'enregistrement du fichier:&lt;b&gt;
 {0}&lt;/b&gt;</source>
       <translation>Failed to save the file:&lt;b&gt;
 {0}&lt;/b&gt;</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="106" />
-      <location filename="../../src/export.py" line="100" />
+      <location filename="../../src/export.py" line="104" />
+      <location filename="../../src/export.py" line="98" />
       <source>Impossible de créer le fichier</source>
       <translation>Cannot create the file</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="101" />
+      <location filename="../../src/export.py" line="99" />
       <source>L'export n'est possible que pour 1 seul point cliqué.</source>
       <translation>This export is possible for only 1 spotted object.</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="103" />
+      <location filename="../../src/export.py" line="101" />
       <source>Exportation terminée</source>
       <translation>Export done</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="104" />
+      <location filename="../../src/export.py" line="102" />
       <source>Fichier:
 &lt;b&gt;{0}&lt;/b&gt;
 enregistré avec succès.</source>
@@ -1087,7 +1108,7 @@ enregistré avec succès.</source>
 successfully saved.</translation>
     </message>
     <message>
-      <location filename="../../src/export.py" line="107" />
+      <location filename="../../src/export.py" line="105" />
       <source>Le module &lt;b&gt;{0}&lt;/b&gt; n'est pas installé.</source>
       <translation>The module &lt;b&gt;{0}&lt;/b&gt; is not installed.</translation>
     </message>
@@ -1103,7 +1124,7 @@ successfully saved.</translation>
   <context>
     <name>export_numpy</name>
     <message>
-      <location filename="../../src/export.py" line="528" />
+      <location filename="../../src/export.py" line="526" />
       <source>Fichier Numpy sauvegardé</source>
       <translation>Numpy file saved</translation>
     </message>
@@ -1111,9 +1132,77 @@ successfully saved.</translation>
   <context>
     <name>export_pandas</name>
     <message>
-      <location filename="../../src/export.py" line="128" />
+      <location filename="../../src/export.py" line="126" />
       <source>Fichier Pandas sauvegardé</source>
       <translation>Pandas file saved</translation>
+    </message>
+  </context>
+  <context>
+    <name>graphWidget</name>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>Données et grandeurs à représenter</source>
+      <translation type="unfinished">Data and quantities to plot</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>Masse (kg)</source>
+      <translation type="unfinished">Mass (kg)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>1.0</source>
+      <translation type="unfinished">1.0</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>Intensité de la pesanteur g (N/kg)</source>
+      <translation type="unfinished">Gravity g (N/kg)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>9.8</source>
+      <translation type="unfinished">9.8</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>Tracer :</source>
+      <translation type="unfinished">Plot:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>En fonction de :</source>
+      <translation type="unfinished">As a function of:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>Avec le style :</source>
+      <translation type="unfinished">Styled like:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>Points seuls</source>
+      <translation type="unfinished">Plain Dots</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>Points et lignes</source>
+      <translation type="unfinished">Dots and Lines</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>Lignes seules</source>
+      <translation type="unfinished">Lines</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>Enregistrer comme image</source>
+      <translation type="unfinished">Save as image</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/graphWidget.ui" line="0" />
+      <source>Enregistrer</source>
+      <translation type="unfinished">Save</translation>
     </message>
   </context>
   <context>
@@ -1378,71 +1467,6 @@ spot.</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Données et grandeurs à représenter</source>
-      <translation>Data and quantities to plot</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Masse (kg)</source>
-      <translation>Mass (kg)</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>1.0</source>
-      <translation>1.0</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Intensité de la pesanteur g (N/kg)</source>
-      <translation>Gravity g (N/kg)</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>9.8</source>
-      <translation>9.8</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Tracer :</source>
-      <translation>Plot:</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>En fonction de :</source>
-      <translation>As a function of:</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Avec le style :</source>
-      <translation>Styled like:</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Points seuls</source>
-      <translation>Plain Dots</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Points et lignes</source>
-      <translation>Dots and Lines</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Lignes seules</source>
-      <translation>Lines</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Enregistrer comme image</source>
-      <translation>Save as image</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Enregistrer</source>
-      <translation>Save</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>&amp;Fichier</source>
       <translation>&amp;File</translation>
     </message>
@@ -1562,6 +1586,58 @@ spot.</translation>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>Fichier Numpy</source>
       <translation>Numpy file</translation>
+    </message>
+    <message>
+      <source>Données et grandeurs à représenter</source>
+      <translation type="vanished">Data and quantities to plot</translation>
+    </message>
+    <message>
+      <source>Masse (kg)</source>
+      <translation type="vanished">Mass (kg)</translation>
+    </message>
+    <message>
+      <source>1.0</source>
+      <translation type="vanished">1.0</translation>
+    </message>
+    <message>
+      <source>Intensité de la pesanteur g (N/kg)</source>
+      <translation type="vanished">Gravity g (N/kg)</translation>
+    </message>
+    <message>
+      <source>9.8</source>
+      <translation type="vanished">9.8</translation>
+    </message>
+    <message>
+      <source>Tracer :</source>
+      <translation type="vanished">Plot:</translation>
+    </message>
+    <message>
+      <source>En fonction de :</source>
+      <translation type="vanished">As a function of:</translation>
+    </message>
+    <message>
+      <source>Avec le style :</source>
+      <translation type="vanished">Styled like:</translation>
+    </message>
+    <message>
+      <source>Points seuls</source>
+      <translation type="vanished">Plain Dots</translation>
+    </message>
+    <message>
+      <source>Points et lignes</source>
+      <translation type="vanished">Dots and Lines</translation>
+    </message>
+    <message>
+      <source>Lignes seules</source>
+      <translation type="vanished">Lines</translation>
+    </message>
+    <message>
+      <source>Enregistrer comme image</source>
+      <translation type="vanished">Save as image</translation>
+    </message>
+    <message>
+      <source>Enregistrer</source>
+      <translation type="vanished">Save</translation>
     </message>
     <message>
       <source>Tableau des dates et des coordonnées</source>
