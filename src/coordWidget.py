@@ -46,8 +46,9 @@ from dbg import Dbg
 import interfaces.icon_rc
 
 from interfaces.Ui_coordWidget import Ui_coordWidget
+from etatsCoord import Etats
 
-class CoordWidget(QWidget, Ui_coordWidget):
+class CoordWidget(QWidget, Ui_coordWidget, Etats):
     """
     Widget principal de l'onglet coordonnées
 
@@ -57,6 +58,7 @@ class CoordWidget(QWidget, Ui_coordWidget):
     def __init__(self, parent):
         QWidget.__init__(self, parent)
         Ui_coordWidget.__init__(self)
+        Etats.__init__(self)
         self.setupUi(self)
         # remplit l'exportCombo
         self.exportCombo.addItem('Exporter vers...')
@@ -237,34 +239,6 @@ class CoordWidget(QWidget, Ui_coordWidget):
             texte = texte[:-1] + "\n"  # le [:-1] élimine le '\t' en trop
         # enregistrement dans le clipboard
         QApplication.clipboard().setText(texte)
-        return
-
-    def changeEtat(self, etat):
-        """
-        changement d'état : fait ce qu'il faut faire au niveau
-        de l'onglet des coordonnées
-        """
-        if etat == "debut":
-            # décochage de widgets
-            for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
-                obj.setChecked(False)
-        elif etat == "A":
-            # décochage de widgets
-            for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
-                obj.setChecked(False)
-        elif etat == "AB":
-            pass
-        elif etat == "C":
-            pass
-        elif etat == "D":
-            # comme l'onglet 2 est actif, il faut s'occuper du statut des
-            # boutons pour les énergies
-            for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
-                obj.setChecked(False)
-                obj.setEnabled(bool(self.pointage.echelle_image))
-            self.pushButton_select_all_table.setEnabled(True)
-        elif etat == "E":
-            pass
         return
 
     def cree_tableau(self, nb_suivis=1):
