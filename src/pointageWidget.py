@@ -910,7 +910,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
                 # on a été délégué pour corriger le tableau
                 # le dernier objet est pointé, retour au tableau de coords
                 self.refait_point = False
-                self.show_coord.emit()
+                self.app.show_coord.emit()
         return
     
     def prepare_futur_clic(self):
@@ -1066,3 +1066,17 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
         return
     
+    def refait_point_depuis_tableau(self, qpbn ):
+        """
+        fonction de rappel déclenchée quand on clique dans la dernière
+        colonne du tableau
+        @param qbbn le bouton qui a été cliqué pour en arriver là
+        """
+        self.dbg.p(2, "rentre dans 'refait_point_depuis_tableau'")
+        self.refait_point=True
+        self.objet_courant = self.suivis[0]
+        self.index = qpbn.index_image
+        self.prepare_futur_clic()
+        self.app.show_video.emit()
+        return
+

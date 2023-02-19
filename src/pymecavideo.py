@@ -147,6 +147,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.graphWidget = None
         self.pointage.setApp(self)
         self.trajectoire.setApp(self)
+        self.coord.setApp(self)
 
         # on cache le widget des dimensions de l'image
         self.hide_imgdim.emit()
@@ -159,13 +160,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self._dir()
 
 
-        # remplit l'exportCombo
-        self.exportCombo.addItem('Exporter vers...')
-        # Ajoute les différents formats d'exportation
-        for key in sorted(EXPORT_FORMATS.keys()):
-            self.exportCombo.addItem(EXPORT_FORMATS[key]['nom'])
-
-        # crée les action exportQactions du menu Fichier
+       # crée les action exportQactions du menu Fichier
         for key in sorted(EXPORT_FORMATS.keys()):
             action = QAction(EXPORT_FORMATS[key]
                              ['nom'], self.menuE_xporter_vers)
@@ -335,7 +330,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     stopRedimensionnement = pyqtSignal()    # fixe la taille de la fenêtre
     OKRedimensionnement = pyqtSignal()      # libère la taille de la fenêtre
     image_n = pyqtSignal(int)               # modifie les contrôles d'image
-    
+    new_echelle = pyqtSignal()              # redemande l'échelle
     
     def ui_connections(self):
         """connecte les signaux de Qt"""
@@ -351,22 +346,16 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.actionQuitter.triggered.connect(self.close)
         self.actionSaveData.triggered.connect(self.pointage.enregistre_ui)
         self.actionCopier_dans_le_presse_papier.triggered.connect(
-            self.presse_papier)
+            self.coord.presse_papier)
         self.actionRouvrirMecavideo.triggered.connect(self.rouvre_ui)
 
         # connexion de signaux de widgets
-        self.exportCombo.currentIndexChanged.connect(self.export)
-        self.pushButton_nvl_echelle.clicked.connect(self.recommence_echelle)
-        self.checkBox_Ec.stateChanged.connect(self.affiche_tableau)
-        self.checkBox_Epp.stateChanged.connect(self.affiche_tableau)
-        self.checkBox_Em.stateChanged.connect(self.affiche_tableau)
         self.comboBox_X.currentIndexChanged.connect(self.dessine_graphe_avant)
         self.comboBox_Y.currentIndexChanged.connect(self.dessine_graphe_avant)
         self.lineEdit_m.textChanged.connect(self.verifie_m_grapheur)
         self.lineEdit_g.textChanged.connect(self.verifie_g_grapheur)
         self.comboBox_style.currentIndexChanged.connect(self.dessine_graphe)
         self.tabWidget.currentChanged.connect(self.choix_onglets)
-        self.pushButton_select_all_table.clicked.connect(self.presse_papier)
         self.pushButton_save_plot.clicked.connect(self.enregistre_graphe)
 
         # connexion de signaux spéciaux
@@ -382,7 +371,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.stopRedimensionnement.connect(self.fixeLesDimensions)
         self.OKRedimensionnement.connect(self.defixeLesDimensions)
         self.image_n.connect(self.sync_img2others)
-        
+        self.new_echelle.connect(self.recommence_echelle)
         return
 
     def cache_imgdim(self):
@@ -459,38 +448,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     
     def updatePB(self):
         self.qmsgboxencode.updateProgressBar()
-
-    def presse_papier(self):
-        """Sélectionne la totalité du tableau de coordonnées
-        et l'exporte dans le presse-papier (l'exportation est implicitement
-        héritée de la classe utilisée pour faire le tableau). Les
-        séparateurs décimaux sont automatiquement remplacés par des virgules
-        si la locale est française.
-        """
-        self.dbg.p(2, "rentre dans 'presse_papier'")
-        self.affiche_tableau()
-        trange = QTableWidgetSelectionRange(0, 0,
-                                            self.tableWidget.rowCount() - 1,
-                                            self.tableWidget.columnCount() - 1)
-        self.tableWidget.setRangeSelected(trange, True)
-        self.tableWidget.selection()
-
-    def export(self, choix_export=None):
-        self.dbg.p(2, "rentre dans 'export'")
-        """
-        Traite le signal venu de exportCombo, puis remet l\'index de ce
-        combo à zéro.
-        """
-        # Si appel depuis les QActions, choix_export contient la clé du dico
-        if not choix_export:
-            # Si appel depuis le comboBox, on cherche l'index
-            choix_export = self.exportCombo.currentIndex()
-        if choix_export > 0:
-            # Les choix d'export du comboBox commencent à l'index 1. Le dico EXPORT_FORMATS commence à 1 et pas à zéro
-            self.exportCombo.setCurrentIndex(0)
-            self.affiche_tableau()
-            Export(self, choix_export)
-        return
 
     def _dir(lequel=None, install=None):
         """renvoie les répertoires utiles.
@@ -573,86 +530,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(2, "rentre dans 'showEvent'")
         self.redimensionneSignal.emit(False)
 
-    def cree_tableau(self, nb_suivis=1):
-        """
-        Crée un tableau de coordonnées neuf dans l'onglet idoine.
-        @param nb_suivis le nombre d'objets suivis (1 par défaut)
-        """
-        self.dbg.p(2, "rentre dans 'cree_tableau'")
-        self.tableWidget.clear()
-        self.tab_coord.setEnabled(1)
-        self.tableWidget.setRowCount(1)
-        #le compte de colonnes supplémentaires pour chaque objet
-        colonnes_sup = self.checkBox_Ec.isChecked() + \
-            self.checkBox_Epp.isChecked() + \
-            self.checkBox_Em.isChecked()
-
-        # 2 colonnes par objet, colonnes_sup colonnes par objet
-        # une pour la date, une pour refaire le pointage
-        self.tableWidget.setColumnCount(nb_suivis * (2 + colonnes_sup) + 2)
-
-        self.tableWidget.setDragEnabled(True)
-        # on met des titres aux colonnes.
-        self.tableWidget.setHorizontalHeaderItem(
-            0, QTableWidgetItem('t (s)'))
-        self.tableWidget.setRowCount(len(self.pointage.data))
-        for i in range(nb_suivis):
-            unite = "m" if self.pointage.echelle_image \
-                else "px"
-            self.tableWidget.setHorizontalHeaderItem(
-                1 + (2+colonnes_sup) * i, QTableWidgetItem(
-                    f"X{i + 1} ({unite})"))
-            self.tableWidget.setHorizontalHeaderItem(
-                2 + (2+colonnes_sup) * i, QTableWidgetItem(
-                f"Y{i + 1} ({unite})"))
-            for j in range(colonnes_sup):
-                cptr = 0
-                if self.checkBox_Ec.isChecked():
-                    self.tableWidget.setHorizontalHeaderItem(
-                        3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"Ec{1 + i} (J)"))
-                    cptr += 1
-                if self.checkBox_Epp.isChecked():
-                    self.tableWidget.setHorizontalHeaderItem(
-                        3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"Epp{1 + i} (J)"))
-                    cptr += 1
-                if self.checkBox_Em.isChecked():
-                    self.tableWidget.setHorizontalHeaderItem(
-                        3+cptr + (2+colonnes_sup)*i, QTableWidgetItem(f"Em{1 + i} (J)"))
-                    cptr += 1
-        #dernier pour le bouton
-        self.tableWidget.setHorizontalHeaderItem(
-            nb_suivis * 2 + 1 + colonnes_sup*nb_suivis,
-            QTableWidgetItem("Refaire le point"))
-        return
-
-    def recalculLesCoordonnees(self):
-        """
-        permet de remplir le tableau des coordonnées à la demande. 
-        Se produit quand on ouvre un fichier pymecavideo ou quand on 
-        redéfinit l'échelle
-        """
-        self.dbg.p(2, "rentre dans 'recalculLesCoordonnees'")
-        nb_suivis = self.pointage.nb_obj
-
-        def cb_temps(i, t):
-            # marque la date dans la colonne de gauche
-            self.tableWidget.setItem(i, 0, QTableWidgetItem(f"{t:.3f}"))
-            return
-
-        def cb_point(i, t, j, obj, p, v):
-            # marque les coordonnées x et y de chaque objet, deux colonnes
-            # par deux colonnes.
-            if p:
-                self.tableWidget.setItem(
-                    i, j*(nb_suivis)+1, QTableWidgetItem(str(p.x)))
-                self.tableWidget.setItem(
-                    i, j*(nb_suivis) + 2, QTableWidgetItem(str(p.y)))
-            return
-
-        # dans le tableau, l'unité est le mètre.
-        self.pointage.iteration_data(cb_temps, cb_point, unite = "m")
-        return
-
     def choix_onglets(self, newIndex):
         """
         traite les signaux émis par le changement d'onglet, ou
@@ -670,7 +547,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.trajectoire.trace.emit("absolu")
         elif self.tabWidget.currentIndex() == 2:
             # onglet des coordonnées
-            self.affiche_tableau()
+            self.coord.affiche_tableau()
         elif self.tabWidget.currentIndex() == 3:
             # onglet du grapheur
             self.affiche_grapheur()
@@ -901,121 +778,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             self.masse_objet = masse_objet
         return self.masse_objet
 
-    def bouton_refaire(self, ligne):
-        """
-        Crée un bouton servant à refaire un pointage, pour la donnée
-        affichée dans une ligne du tableau
-        @param ligne une ligne du tableau (indexée à partir de 0)
-        @return un bouton
-        """
-        b = QPushButton()
-        b.setIcon(QIcon(":/data/icones/curseur_cible.svg"))
-        b.setToolTip(self.tr(
-            "refaire le pointage\n de l'image {numero}").format(
-                numero = ligne + 1))
-        b.setFlat(True)
-        b.clicked.connect(lambda state: \
-                          self.pointage.refait_point_depuis_tableau( b ))
-        b.index_image = ligne + 1
-        return b
-    
-    def affiche_tableau(self):
-        """
-        lancée à chaque affichage du tableau, recalcule les coordonnées
-        à afficher à partir des listes de points.
-        """
-        self.dbg.p(2, "rentre dans 'affiche_tableau'")
-
-        # active ou désactive les checkbox énergies
-        # (n'ont un intérêt que si l'échelle est déterminée)
-        if self.pointage.echelle_image:
-            self.checkBox_Ec.setEnabled(True)
-            self.checkBox_Epp.setEnabled(True)
-            if self.checkBox_Ec.isChecked() and self.checkBox_Epp.isChecked():
-                self.checkBox_Em.setEnabled(True)
-            else:
-                # s'il manque Ec ou Epp on décoche Em
-                self.checkBox_Em.setChecked(False)
-        else:
-            self.checkBox_Ec.setEnabled(False)
-            self.checkBox_Em.setEnabled(False)
-            self.checkBox_Epp.setEnabled(False)
-
-        # masse de l'objet ATTENTION : QUID SI PLUSIEURS OBJETS ?
-        if self.checkBox_Ec.isChecked():
-            self.masse_objet = self.masse(1)
-            self.checkBox_Ec.setChecked(self.masse_objet != 0)
-        # initialise tout le tableau (nb de colonnes, unités etc.)
-        self.cree_tableau(nb_suivis = self.pointage.nb_obj)
-        # le compte de colonnes supplémentaires pour chaque objet
-        colonnes_sup = self.checkBox_Ec.isChecked() + \
-            self.checkBox_Epp.isChecked() + \
-            self.checkBox_Em.isChecked()
-        # le numéro de la dernière colonne où on peut refaire les points
-        colonne_refait_points = self.pointage.nb_obj * (2 + colonnes_sup) + 1
-
-        def cb_temps(i, t):
-            # marque la date dans la colonne de gauche
-            self.tableWidget.setItem(i, 0, QTableWidgetItem(f"{t:.3f}"))
-            return
-
-        def cb_point(i, t, j, obj, p, v):
-            # marque les coordonnées x et y de chaque objet, deux colonnes
-            # suivies par des colonnes supplémentaires (Ec, Epp, Em), et après
-            # avoir épuisé le compte d'objets, un colonne pour permettre de
-            # refaire le pointage
-            col = 1 + (2 + colonnes_sup) * j
-            if p:
-                self.tableWidget.setItem(
-                    i, col, QTableWidgetItem(f"{p.x:.4g}"))
-                col += 1
-                self.tableWidget.setItem(
-                    i, col, QTableWidgetItem(f"{p.y:.4g}"))
-                col+= 1
-                if colonnes_sup:
-                    m = self.masse(obj)
-                # Énergie cinétique si nécessaire
-                if self.checkBox_Ec.isChecked():
-                    if v is not None:
-                        Ec = 0.5 * m * v.norme ** 2
-                        self.tableWidget.setItem(
-                            i, col, QTableWidgetItem(f"{Ec:.4g}"))
-                    col += 1
-                # Énergie potentielle de pesanteur si nécessaire
-                if self.checkBox_Epp.isChecked():
-                    Epp = m * 9.81 * p.y  # TODO faire varier g
-                    self.tableWidget.setItem(
-                        i, col, QTableWidgetItem(f"{Epp:.4g}"))
-                    col += 1
-                # Énergie mécanique si nécessaire
-                if self.checkBox_Em.isChecked():
-                    if v is not None:
-                        self.tableWidget.setItem(
-                            i, col, QTableWidgetItem(f"{Ec+Epp:.4g}"))
-                    col += 1
-                # dernière colonne : un bouton pour refaire le pointage
-                # n'existe que s'il y a eu un pointage
-                derniere = self.pointage.nb_obj * (2 + colonnes_sup) +1
-                self.tableWidget.setCellWidget(
-                    i, derniere, self.bouton_refaire(i))
-            return
-        
-        self.pointage.iteration_data(
-            cb_temps, cb_point,
-            unite = "m" if self.pointage.echelle_image else "px")
-        
-        # rajoute des boutons pour refaire le pointage
-        # au voisinage immédiat des zones de pointage
-        colonne = self.pointage.nb_obj * (2 + colonnes_sup) +1
-        if self.pointage.premiere_image() is None: return
-        if self.pointage.premiere_image() > 1:
-            i = self.pointage.premiere_image() - 2
-            self.tableWidget.setCellWidget(i, colonne, self.bouton_refaire(i))
-        if self.pointage.derniere_image() < len(self.pointage):
-            i = self.pointage.derniere_image()
-            self.tableWidget.setCellWidget(i, colonne, self.bouton_refaire(i))
-        return
-
     def recommence_echelle(self):
         self.dbg.p(2, "rentre dans 'recommence_echelle'")
         self.tabWidget.setCurrentIndex(0)
@@ -1208,10 +970,6 @@ Merci de bien vouloir le renommer avant de continuer"""))
                 self.actionSaveData :
 
                 obj.setEnabled(False)
-            # décochage de widgets
-            print("BUG renvoyer self.checkBox_Ec, self.checkBox_Em, self.checkBox_Ep ailleurs")
-            for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
-                obj.setChecked(False)
             self.actionExemples.setEnabled(True)
             self.tabWidget.setEnabled(True)
             # organisation des onglets
@@ -1241,11 +999,6 @@ Merci de bien vouloir le renommer avant de continuer"""))
             for i in 1, 2, 3:
                 self.tabWidget.setTabEnabled(i, False)
                 
-            print("BUG pour A au sujet de self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp")
-            self.checkBox_Ec.setChecked(False)
-            self.checkBox_Em.setChecked(False)
-            self.checkBox_Epp.setChecked(False)
-            
             print("BUG pour A au sujet du grapheur")
             # désactive le grapheur si existant
             if self.graphWidget:
@@ -1286,17 +1039,9 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
             if self.pointage:
                 for i in 1, 2, 3:
                     self.tabWidget.setTabEnabled(i, True)
-            # comme l'onglet 2 est actif, il faut s'occuper du statut des
-            # boutons pour les énergies !
-            print("BUG dans l'état D avec self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp")
-            for obj in self.checkBox_Ec, self.checkBox_Em, self.checkBox_Epp:
-                obj.setChecked(False)
-                obj.setEnabled(bool(self.pointage.echelle_image))
             # mise à jour des menus
             self.actionSaveData.setEnabled(True)
             self.actionCopier_dans_le_presse_papier.setEnabled(True)
-            print("BUG dans l'état D avec pushButton_select_all_table")
-            self.pushButton_select_all_table.setEnabled(True)
 
         elif etat == "E":
             for i in 1, 2, 3:
@@ -1305,6 +1050,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP"""
         self.setStatus("")
         self.pointage.etatUI(etat)
         self.trajectoire.changeEtat(etat)
+        self.coord.changeEtat(etat)
         return
 
     def fixeLesDimensions(self):

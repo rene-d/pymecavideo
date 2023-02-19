@@ -173,20 +173,6 @@ class VideoPointeeWidget(ImageWidget):
         config = open(self.pw.prefs.conffile).readlines()
         return "".join(["# "+l for l in config[1:]]) + "# " + msg + "\n"
 
-    def refait_point_depuis_tableau(self, qpbn ):
-        """
-        fonction de rappel déclenchée quand on clique dans la dernière
-        colonne du tableau
-        @param qbbn le bouton qui a été cliqué pour en arriver là
-        """
-        self.dbg.p(2, "rentre dans 'refait_point_depuis_tableau'")
-        self.refait_point=True
-        self.objet_courant = self.suivis[0]
-        self.index = qpbn.index_image
-        self.prepare_futur_clic()
-        self.pw.show_video.emit()
-        return
-
     def placeImage(self, im, ratio, largeurFilm):
         """
         place une image dans le widget, en conservant le ratio de cette image

@@ -253,180 +253,175 @@ to capture a video</translation>
   <context>
     <name>FenetrePrincipale</name>
     <message>
-      <location filename="../../src/pymecavideo.py" line="216" />
+      <location filename="../../src/pymecavideo.py" line="215" />
       <source>Argument non pris en compte</source>
       <translation>Argument not taken in account</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="217" />
+      <location filename="../../src/pymecavideo.py" line="216" />
       <source>Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.</source>
       <translation>The file {filename} is neither a video file, not a pymecavideo saved file..</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="245" />
+      <location filename="../../src/pymecavideo.py" line="237" />
       <source>Configuration trop ancienne</source>
       <translation>Obsolete configuration file</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="246" />
+      <location filename="../../src/pymecavideo.py" line="238" />
       <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
       <translation>The version of the configuration file, {version} is less than {min_version}: the configuration file cannot be taken in account</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="253" />
+      <location filename="../../src/pymecavideo.py" line="245" />
       <source>Configuration ancienne</source>
       <translation>Older configuration</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="254" />
+      <location filename="../../src/pymecavideo.py" line="246" />
       <source>La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.</source>
       <translation>The version of the configuration file, {version} is less than {Version}: some dimensions can be slightly wrong.</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="474" />
-      <source>Enregistrer comme image</source>
-      <translation>Save as image</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="475" />
-      <source>fichiers images(*.png *.jpg)</source>
-      <translation>image files (*.png *.jpg)</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="480" />
-      <source>Erreur lors de l'enregistrement</source>
-      <translation>Error while saving the data</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="480" />
-      <source>Echec de l'enregistrement du fichier:&lt;b&gt;
-{0}&lt;/b&gt;</source>
-      <translation>Failed to save the file:&lt;b&gt;
-{0}&lt;/b&gt;</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="632" />
+      <location filename="../../src/pymecavideo.py" line="533" />
       <source>Ouvrir un projet Pymecavideo</source>
       <translation>Open a Mecavideo project</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="634" />
+      <location filename="../../src/pymecavideo.py" line="535" />
       <source>Projet Pymecavideo (*.mecavideo)</source>
       <translation>Pymecavideo Project (*.mecavideo)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="856" />
-      <location filename="../../src/pymecavideo.py" line="854" />
+      <location filename="../../src/pymecavideo.py" line="748" />
+      <location filename="../../src/pymecavideo.py" line="746" />
       <source>Choisir ...</source>
       <translation>Choose...</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="984" />
+      <location filename="../../src/pymecavideo.py" line="876" />
       <source>Enregistrer le graphique</source>
       <translation>Save the plot</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="985" />
+      <location filename="../../src/pymecavideo.py" line="877" />
       <source>fichiers images(*.png)</source>
       <translation>image files (*.png)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1041" />
+      <location filename="../../src/pymecavideo.py" line="891" />
       <source>Masse de l'objet</source>
       <translation>Mass of the object</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1042" />
+      <location filename="../../src/pymecavideo.py" line="892" />
       <source>Quelle est la masse de l'objet ? (en kg)</source>
       <translation>Please enter the mass of the object (kg)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1048" />
+      <location filename="../../src/pymecavideo.py" line="898" />
       <source>Merci d'indiquer une masse valable</source>
       <translation>Please type a sensible mass</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1063" />
+      <location filename="../../src/pymecavideo.py" line="913" />
       <source>refaire le pointage
  de l'image {numero}</source>
       <translation>respot
 image #{numero}</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1212" />
-      <location filename="../../src/pymecavideo.py" line="1199" />
+      <location filename="../../src/pymecavideo.py" line="1062" />
+      <location filename="../../src/pymecavideo.py" line="1049" />
       <source>MAUVAISE VALEUR !</source>
       <translation>BAD VALUE!</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1200" />
+      <location filename="../../src/pymecavideo.py" line="1050" />
       <source>La valeur rentrée (m = {}) n'est pas compatible avec le calcul</source>
       <translation>The given value (m = {}) is not compatible with the process</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1213" />
+      <location filename="../../src/pymecavideo.py" line="1063" />
       <source>La valeur rentrée (g = {}) n'est pas compatible avec le calcul</source>
       <translation>The given value (g = {}) is not compatible with the process</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1250" />
-      <location filename="../../src/pymecavideo.py" line="1237" />
-      <location filename="../../src/pymecavideo.py" line="1224" />
+      <location filename="../../src/pymecavideo.py" line="1100" />
+      <location filename="../../src/pymecavideo.py" line="1087" />
+      <location filename="../../src/pymecavideo.py" line="1074" />
       <source>Ouvrir une vidéo</source>
       <translation>Open a video</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1225" />
+      <location filename="../../src/pymecavideo.py" line="1075" />
       <source>fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
       <translation>video files (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1239" />
+      <location filename="../../src/pymecavideo.py" line="1089" />
       <source>fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
       <translation>video files( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1246" />
+      <location filename="../../src/pymecavideo.py" line="1096" />
       <source>Nom de fichier non conforme</source>
       <translation>Invalid filename</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1247" />
+      <location filename="../../src/pymecavideo.py" line="1097" />
       <source>Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
       <translation>The name of the file contains accented characters or spaces.
 PLease rename it before going on</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1284" />
+      <location filename="../../src/pymecavideo.py" line="1134" />
       <source>Désolé pas de fichier d'aide pour le langage {0}.</source>
       <translation>Sorry, no help file for the language {0}.</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1402" />
+      <location filename="../../src/pymecavideo.py" line="1227" />
       <source>Pymecavideo : {filename}</source>
       <translation>Pymecavideo: {filename}</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1435" />
+      <location filename="../../src/pymecavideo.py" line="1259" />
       <source>Veuillez choisir une image (et définir l'échelle)</source>
       <translation>Please select an image (and define the scale)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1444" />
+      <location filename="../../src/pymecavideo.py" line="1268" />
       <source>Pointage Automatique</source>
       <translation>Automatic Spotting</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1447" />
+      <location filename="../../src/pymecavideo.py" line="1271" />
       <source>Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre ;
 Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="1482" />
+      <source>Enregistrer comme image</source>
+      <translation type="vanished">Save as image</translation>
+    </message>
+    <message>
+      <source>fichiers images(*.png *.jpg)</source>
+      <translation type="vanished">image files (*.png *.jpg)</translation>
+    </message>
+    <message>
+      <source>Erreur lors de l'enregistrement</source>
+      <translation type="vanished">Error while saving the data</translation>
+    </message>
+    <message>
+      <source>Echec de l'enregistrement du fichier:&lt;b&gt;
+{0}&lt;/b&gt;</source>
+      <translation type="vanished">Failed to save the file:&lt;b&gt;
+{0}&lt;/b&gt;</translation>
+    </message>
+    <message>
       <source>objet N° {0}</source>
-      <translation>Object #{0}</translation>
+      <translation type="vanished">Object #{0}</translation>
     </message>
     <message>
       <source>Début : ouvrez un fichier, ou un exemple des aides</source>
@@ -532,107 +527,108 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</s
   <context>
     <name>PointageWidget</name>
     <message>
-      <location filename="../../src/pointageWidget.py" line="219" />
+      <location filename="../../src/pointageWidget.py" line="223" />
       <source>Erreur lors de la lecture du fichier</source>
       <translation type="unfinished">Error while reading the file</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="220" />
+      <location filename="../../src/pointageWidget.py" line="224" />
       <source>Le fichier&lt;b&gt;{0}&lt;/b&gt; ...
 n'est peut-être pas dans un format vidéo supporté.</source>
       <translation type="unfinished">The file&lt;b&gt;{0}&lt;/b&gt; ...
 is maybe in an unsupported video format.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="276" />
+      <location filename="../../src/pointageWidget.py" line="280" />
       <source>Le format de cette vidéo n'est pas pris en charge par pymecavideo</source>
       <translation type="unfinished">The format of this video is not compatible with pymecavideo</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="311" />
+      <location filename="../../src/pointageWidget.py" line="315" />
       <source>Pymecavideo n'arrive pas à lire l'image</source>
       <translation type="unfinished">Pymecavideo cannot read the image</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="374" />
+      <location filename="../../src/pointageWidget.py" line="378" />
       <source>Le nombre d'images par seconde doit être un entier</source>
       <translation type="unfinished">The framerate must be an integer</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="375" />
+      <location filename="../../src/pointageWidget.py" line="379" />
       <source>merci de recommencer</source>
       <translation type="unfinished">Please try again</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="392" />
+      <location filename="../../src/pointageWidget.py" line="396" />
       <source>Définir léchelle</source>
       <translation type="unfinished">Define the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="393" />
+      <location filename="../../src/pointageWidget.py" line="397" />
       <source>Quelle est la longueur en mètre de votre étalon sur l'image ?</source>
       <translation type="unfinished">Which the length (in meter) of your gauge in the image?</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="398" />
+      <location filename="../../src/pointageWidget.py" line="402" />
       <source>Merci d'indiquer une échelle valable : {} ne peut pas être converti en nombre.</source>
       <translation type="unfinished">Please define a sensible scale: {} cannot be converted in a number.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="513" />
+      <location filename="../../src/pointageWidget.py" line="517" />
       <source>Définir l'échelle</source>
       <translation type="unfinished">Define the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="582" />
+      <location filename="../../src/pointageWidget.py" line="586" />
       <source>Enregistrer le projet pymecavideo</source>
       <translation type="unfinished">Save the Pymecavideo project</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="584" />
+      <location filename="../../src/pointageWidget.py" line="588" />
       <source>Projet pymecavideo (*.mecavideo)</source>
       <translation type="unfinished">pymecavideo project file (*.mecavideo)</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="587" />
+      <location filename="../../src/pointageWidget.py" line="591" />
       <source>Erreur lors de l'enregistrement</source>
       <translation type="unfinished">Error while saving the data</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="587" />
+      <location filename="../../src/pointageWidget.py" line="591" />
       <source>Il manque les données, ou l'échelle</source>
       <translation type="unfinished">Some data, or the scale, are missing</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="606" />
+      <location filename="../../src/pointageWidget.py" line="610" />
       <source>temps en seconde, positions en mètre</source>
       <translation type="unfinished">time in second, positions in meter</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="748" />
-      <location filename="../../src/pointageWidget.py" line="748" />
-      <location filename="../../src/pointageWidget.py" line="687" />
+      <location filename="../../src/pointageWidget.py" line="752" />
+      <location filename="../../src/pointageWidget.py" line="752" />
+      <location filename="../../src/pointageWidget.py" line="691" />
       <source>indéf.</source>
       <translation type="unfinished">undef.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="796" />
+      <location filename="../../src/pointageWidget.py" line="1066" />
+      <location filename="../../src/pointageWidget.py" line="801" />
       <source>Refaire l'échelle</source>
       <translation type="unfinished">Redo the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="825" />
-      <location filename="../../src/pointageWidget.py" line="808" />
+      <location filename="../../src/pointageWidget.py" line="830" />
+      <location filename="../../src/pointageWidget.py" line="813" />
       <source>Zone à suivre n° {zone} x, y =</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="939" />
+      <location filename="../../src/pointageWidget.py" line="944" />
       <source>Pointage ({obj}) ; x, y =</source>
       <translation type="unfinished">Spotting ({obj}); x, y =</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="963" />
+      <location filename="../../src/pointageWidget.py" line="968" />
       <source>Cliquez sur l'objet : {0}</source>
       <translation type="unfinished">Clic on the object: {0}</translation>
     </message>
@@ -817,11 +813,40 @@ PLease rename it before going on</translation>
     </message>
   </context>
   <context>
+    <name>TrajectoireWidget</name>
+    <message>
+      <location filename="../../src/trajectoireWidget.py" line="140" />
+      <source>objet N° {0}</source>
+      <translation type="unfinished">Object #{0}</translation>
+    </message>
+    <message>
+      <location filename="../../src/trajectoireWidget.py" line="151" />
+      <source>Enregistrer comme image</source>
+      <translation type="unfinished">Save as image</translation>
+    </message>
+    <message>
+      <location filename="../../src/trajectoireWidget.py" line="152" />
+      <source>fichiers images(*.png *.jpg)</source>
+      <translation type="unfinished">image files (*.png *.jpg)</translation>
+    </message>
+    <message>
+      <location filename="../../src/trajectoireWidget.py" line="157" />
+      <source>Erreur lors de l'enregistrement</source>
+      <translation type="unfinished">Error while saving the data</translation>
+    </message>
+    <message>
+      <location filename="../../src/trajectoireWidget.py" line="157" />
+      <source>Echec de l'enregistrement du fichier:&lt;b&gt;
+{0}&lt;/b&gt;</source>
+      <translation type="unfinished">Failed to save the file:&lt;b&gt;
+{0}&lt;/b&gt;</translation>
+    </message>
+  </context>
+  <context>
     <name>VideoPointeeWidget</name>
     <message>
-      <location filename="../../src/videoWidget.py" line="211" />
       <source>Refaire l'échelle</source>
-      <translation>Redo the scale</translation>
+      <translation type="vanished">Redo the scale</translation>
     </message>
     <message>
       <source>Pointage ({obj}) ; x, y =</source>
@@ -902,6 +927,64 @@ is maybe in an unsupported video format.</translation>
     <message>
       <source>Energies</source>
       <translation type="vanished">Energies</translation>
+    </message>
+  </context>
+  <context>
+    <name>coordWidget</name>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>Coordonnées</source>
+      <translation type="unfinished">Coordinates</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>Tableau des dates et des coordonnées</source>
+      <translation type="unfinished">Table of dates and coordinates</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>Copier les mesures dans le presse papier</source>
+      <translation type="unfinished">Copy data to the clipboard</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>Changer d'échelle</source>
+      <translation type="unfinished">Change the scale</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>Ajouter les énergies :</source>
+      <translation type="unfinished">Add energies:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>Cinétique (échelle obligatoire)</source>
+      <translation type="unfinished">Cinetic (scale is mandatory)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>Potentielle de pesanteur</source>
+      <translation type="unfinished">Potential of weight</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>Mécanique</source>
+      <translation type="unfinished">Mechanic</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>Intensité de la pesanteur :</source>
+      <translation type="unfinished">gravity:</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>g (N/kg)</source>
+      <translation type="unfinished">g (N/kg)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>9.8</source>
+      <translation type="unfinished">9.8</translation>
     </message>
   </context>
   <context>
@@ -1290,57 +1373,6 @@ spot.</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Tableau des dates et des coordonnées</source>
-      <translation>Table of dates and coordinates</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Copier les mesures dans le presse papier</source>
-      <translation>Copy data to the clipboard</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Changer d'échelle</source>
-      <translation>Change the scale</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Ajouter les énergies :</source>
-      <translation>Add energies:</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Cinétique (échelle obligatoire)</source>
-      <translation>Cinetic (scale is mandatory)</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Potentielle de pesanteur</source>
-      <translation>Potential of weight</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Mécanique</source>
-      <translation>Mechanic</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>Intensité de la pesanteur :</source>
-      <translation>gravity:</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>g (N/kg)</source>
-      <translation>g (N/kg)</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
-      <source>9.8</source>
-      <translation>9.8</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>Grapheur</source>
       <translation>Plotter</translation>
     </message>
@@ -1363,6 +1395,11 @@ spot.</translation>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>Intensité de la pesanteur g (N/kg)</source>
       <translation>Gravity g (N/kg)</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
+      <source>9.8</source>
+      <translation>9.8</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
@@ -1525,6 +1562,42 @@ spot.</translation>
       <location filename="../../src/interfaces/pymecavideo.ui" line="0" />
       <source>Fichier Numpy</source>
       <translation>Numpy file</translation>
+    </message>
+    <message>
+      <source>Tableau des dates et des coordonnées</source>
+      <translation type="vanished">Table of dates and coordinates</translation>
+    </message>
+    <message>
+      <source>Copier les mesures dans le presse papier</source>
+      <translation type="vanished">Copy data to the clipboard</translation>
+    </message>
+    <message>
+      <source>Changer d'échelle</source>
+      <translation type="vanished">Change the scale</translation>
+    </message>
+    <message>
+      <source>Ajouter les énergies :</source>
+      <translation type="vanished">Add energies:</translation>
+    </message>
+    <message>
+      <source>Cinétique (échelle obligatoire)</source>
+      <translation type="vanished">Cinetic (scale is mandatory)</translation>
+    </message>
+    <message>
+      <source>Potentielle de pesanteur</source>
+      <translation type="vanished">Potential of weight</translation>
+    </message>
+    <message>
+      <source>Mécanique</source>
+      <translation type="vanished">Mechanic</translation>
+    </message>
+    <message>
+      <source>Intensité de la pesanteur :</source>
+      <translation type="vanished">gravity:</translation>
+    </message>
+    <message>
+      <source>g (N/kg)</source>
+      <translation type="vanished">g (N/kg)</translation>
     </message>
     <message>
       <source>Trajectoire</source>
