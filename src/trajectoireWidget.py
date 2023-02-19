@@ -45,8 +45,9 @@ from dbg import Dbg
 import interfaces.icon_rc
 
 from interfaces.Ui_trajectoire import Ui_trajectoire
+from etatsTraj import Etats
 
-class TrajectoireWidget(QWidget, Ui_trajectoire):
+class TrajectoireWidget(QWidget, Ui_trajectoire, Etats):
     """
     Le widget principal de l'onglet des trajectoires
 
@@ -56,6 +57,7 @@ class TrajectoireWidget(QWidget, Ui_trajectoire):
     def __init__(self, parent):
         QWidget.__init__(self, parent)
         Ui_trajectoire.__init__(self)
+        Etats.__init__(self)
         self.setupUi(self)
         self.connecte_ui()
         self.trace.connect(self.traceTrajectoires)
@@ -109,39 +111,6 @@ class TrajectoireWidget(QWidget, Ui_trajectoire):
         self.radioButtonNearMouse.setChecked(d["proximite"] == "True")
         return
 
-    def changeEtat(self, etat):
-        """
-        actions à faire en cas de changement d'état
-        @param etat : debut, A, AB, B, C, D, E
-        """
-        if etat =="debut":
-            for obj in self.button_video, self.widget_chronophoto:
-                obj.setEnabled(False)
-            # initialisation de self.trajW
-            self.trajW.chrono = False
-            # on cache certains widgets
-            for obj in self.radioButtonNearMouse, \
-                self.radioButtonSpeedEveryWhere:
-                obj.hide()
-        elif etat =="A":
-            self.spinBox_chrono.setMaximum(self.pointage.image_max)
-        elif etat =="AB":
-            pass
-        elif etat =="B":
-            pass
-        elif etat =="C":
-            pass
-        elif etat =="D":
-            self.comboBox_referentiel.setEnabled(True)
-            self.comboBox_referentiel.clear()
-            self.comboBox_referentiel.insertItem(-1, "camera")
-            for obj in self.pointage.suivis:
-                self.comboBox_referentiel.insertItem(
-                    -1, self.tr("objet N° {0}").format(str(obj)))
-            pass
-        elif etat =="E":
-            pass
-        return
     def enregistreChrono(self):
         self.pixmapChrono = QPixmap(self.trajW.size())
         self.trajW.render(self.pixmapChrono)
