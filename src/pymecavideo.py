@@ -294,7 +294,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(2, "rentre dans 'init_variables'")
         self.index_max = 1
         self.repere = 0
-        self.masse_objet = 0
         # contient les listes des abscisses, vitesses, énergies calculées par le grapheur.
         self.locals = {} # dictionnaire de variables locales, pour eval
         self.motif = []
@@ -753,30 +752,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 self.tr("Enregistrer le graphique"),
                 defaultName, self.tr("fichiers images(*.png)"))
             self.pg_exporter.export(fichier[0])
-
-    def masse(self, obj):
-        """
-        Renseigne la masse d'un objet. L'implémentation est actuellement
-        incomplète : une seule masse est autorisée, pour tous les objets
-        donc on ne tient pas compte du paramètre obj
-        @param obj un objet suivi
-        @return la masse de cet objet
-        """
-        if self.masse_objet == 0:
-            masse_objet_raw, ok = QInputDialog.getText(
-                None,
-                self.tr("Masse de l'objet"),
-                self.tr("Quelle est la masse de l'objet ? (en kg)"),
-                text ="1.0")
-            masse_objet_raw = masse_objet_raw.replace(",", ".")
-            ok = ok and pattern_float.match(masse_objet_raw)
-            masse_objet = float(masse_objet_raw)
-            if masse_objet <= 0 or not ok:
-                self.affiche_statut.emit(self.tr(
-                    "Merci d'indiquer une masse valable"))
-                return None
-            self.masse_objet = masse_objet
-        return self.masse_objet
 
     def recommence_echelle(self):
         self.dbg.p(2, "rentre dans 'recommence_echelle'")

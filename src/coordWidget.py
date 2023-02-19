@@ -64,6 +64,7 @@ class CoordWidget(QWidget, Ui_coordWidget):
         for key in sorted(EXPORT_FORMATS.keys()):
             self.exportCombo.addItem(EXPORT_FORMATS[key]['nom'])
         self.connecte_ui()
+        self.masse_objet = 0   # masse du premier objet suivi ???? à déboguer
         return
 
     def setApp(self, app):
@@ -363,3 +364,27 @@ class CoordWidget(QWidget, Ui_coordWidget):
         b.index_image = ligne + 1
         return b
     
+    def masse(self, obj):
+        """
+        Renseigne la masse d'un objet. L'implémentation est actuellement
+        incomplète : une seule masse est autorisée, pour tous les objets
+        donc on ne tient pas compte du paramètre obj
+        @param obj un objet suivi
+        @return la masse de cet objet
+        """
+        if self.masse_objet == 0:
+            masse_objet_raw, ok = QInputDialog.getText(
+                None,
+                self.tr("Masse de l'objet"),
+                self.tr("Quelle est la masse de l'objet ? (en kg)"),
+                text ="1.0")
+            masse_objet_raw = masse_objet_raw.replace(",", ".")
+            ok = ok and pattern_float.match(masse_objet_raw)
+            masse_objet = float(masse_objet_raw)
+            if masse_objet <= 0 or not ok:
+                self.affiche_statut.emit(self.tr(
+                    "Merci d'indiquer une masse valable"))
+                return None
+            self.masse_objet = masse_objet
+        return self.masse_objet
+
