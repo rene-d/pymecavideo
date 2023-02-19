@@ -294,7 +294,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</s
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="576" />
+      <location filename="../../src/pymecavideo.py" line="580" />
       <location filename="../../src/pymecavideo.py" line="563" />
       <location filename="../../src/pymecavideo.py" line="550" />
       <source>Ouvrir une vidéo</source>
@@ -311,18 +311,28 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</s
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="572" />
+      <location filename="../../src/pymecavideo.py" line="574" />
       <source>Nom de fichier non conforme</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="573" />
+      <location filename="../../src/pymecavideo.py" line="575" />
       <source>Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="610" />
+      <location filename="../../src/pymecavideo.py" line="600" />
+      <source>Licence</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/pymecavideo.py" line="617" />
+      <source>Aide</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/pymecavideo.py" line="618" />
       <source>Désolé pas de fichier d'aide pour le langage {0}.</source>
       <translation type="unfinished" />
     </message>
@@ -376,96 +386,111 @@ n'est peut-être pas dans un format vidéo supporté.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="279" />
+      <location filename="../../src/pointageWidget.py" line="280" />
+      <source>Format vidéo non pris en charge</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/pointageWidget.py" line="281" />
       <source>Le format de cette vidéo n'est pas pris en charge par pymecavideo</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="314" />
+      <location filename="../../src/pointageWidget.py" line="316" />
       <source>Pymecavideo n'arrive pas à lire l'image</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="377" />
+      <location filename="../../src/pointageWidget.py" line="379" />
       <source>Le nombre d'images par seconde doit être un entier</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="378" />
+      <location filename="../../src/pointageWidget.py" line="380" />
       <source>merci de recommencer</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="395" />
+      <location filename="../../src/pointageWidget.py" line="397" />
       <source>Définir léchelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="396" />
+      <location filename="../../src/pointageWidget.py" line="398" />
       <source>Quelle est la longueur en mètre de votre étalon sur l'image ?</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="401" />
+      <location filename="../../src/pointageWidget.py" line="403" />
       <source>Merci d'indiquer une échelle valable : {} ne peut pas être converti en nombre.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="515" />
+      <location filename="../../src/pointageWidget.py" line="431" />
+      <source>NOUVELLE ORIGINE</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/pointageWidget.py" line="432" />
+      <source>Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/pointageWidget.py" line="517" />
       <source>Définir l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="582" />
+      <location filename="../../src/pointageWidget.py" line="584" />
       <source>Enregistrer le projet pymecavideo</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="584" />
+      <location filename="../../src/pointageWidget.py" line="586" />
       <source>Projet pymecavideo (*.mecavideo)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="587" />
+      <location filename="../../src/pointageWidget.py" line="589" />
       <source>Erreur lors de l'enregistrement</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="587" />
+      <location filename="../../src/pointageWidget.py" line="589" />
       <source>Il manque les données, ou l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="606" />
+      <location filename="../../src/pointageWidget.py" line="608" />
       <source>temps en seconde, positions en mètre</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="748" />
-      <location filename="../../src/pointageWidget.py" line="748" />
-      <location filename="../../src/pointageWidget.py" line="687" />
+      <location filename="../../src/pointageWidget.py" line="750" />
+      <location filename="../../src/pointageWidget.py" line="750" />
+      <location filename="../../src/pointageWidget.py" line="689" />
       <source>indéf.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="1062" />
-      <location filename="../../src/pointageWidget.py" line="797" />
+      <location filename="../../src/pointageWidget.py" line="1064" />
+      <location filename="../../src/pointageWidget.py" line="799" />
       <source>Refaire l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="826" />
-      <location filename="../../src/pointageWidget.py" line="809" />
+      <location filename="../../src/pointageWidget.py" line="828" />
+      <location filename="../../src/pointageWidget.py" line="811" />
       <source>Zone à suivre n° {zone} x, y =</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="940" />
+      <location filename="../../src/pointageWidget.py" line="942" />
       <source>Pointage ({obj}) ; x, y =</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="964" />
+      <location filename="../../src/pointageWidget.py" line="966" />
       <source>Cliquez sur l'objet : {0}</source>
       <translation type="unfinished" />
     </message>

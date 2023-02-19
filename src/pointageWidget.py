@@ -275,8 +275,10 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.cvReader = openCvReader(self.filename)
         time.sleep(0.1)
         if not self.cvReader.ok:
-            QMessageBox.warning(None, "Format vidéo non pris en charge",
-                                self.tr("Le format de cette vidéo n'est pas pris en charge par pymecavideo"))
+            QMessageBox.warning(
+                None,
+                self.tr("Format vidéo non pris en charge"),
+                self.tr("Le format de cette vidéo n'est pas pris en charge par pymecavideo"))
         else:
             return True
 
@@ -426,8 +428,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.dbg.p(2, "rentre dans 'nouvelle_origine'")
         nvl_origine = QMessageBox.information(
             self,
-            "NOUVELLE ORIGINE",
-            "Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine")
+            self.tr("NOUVELLE ORIGINE"),
+            self.tr("Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine"))
         ChoixOrigineWidget(self.video, self).show()
         return
 

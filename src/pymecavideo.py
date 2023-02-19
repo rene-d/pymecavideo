@@ -569,13 +569,17 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo, Etats):
     
     def renomme_le_fichier(self):
         self.dbg.p(2, "rentre dans 'renomme_le_fichier'")
-        renomme_fichier = QMessageBox.warning(self, self.tr("Nom de fichier non conforme"),
-                                              self.tr("""\
+        renomme_fichier = QMessageBox.warning(
+            self,
+            self.tr("Nom de fichier non conforme"),
+            self.tr("""\
 Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer"""))
-        filename = QFileDialog.getOpenFileName(self, self.tr("Ouvrir une vidéo"),
-                                               self._dir("videos", None),
-                                               "*.avi")
+        filename = QFileDialog.getOpenFileName(
+            self,
+            self.tr("Ouvrir une vidéo"),
+            self._dir("videos", None),
+            "*.avi")
         self.pointage.openTheFile(filename)
         return
 
@@ -591,7 +595,10 @@ Merci de bien vouloir le renommer avant de continuer"""))
             licence_XX = licence[loc] % Version
         else:
             licence_XX = licence["en"] % Version
-        QMessageBox.information(None, "Licence", licence_XX)
+        QMessageBox.information(
+            None,
+            self.tr("Licence"),
+            licence_XX)
         return
 
     def aide(self):
@@ -606,7 +613,8 @@ Merci de bien vouloir le renommer avant de continuer"""))
                 status = subprocess.call(command, shell=True)
         else:
             QMessageBox.warning(
-                None, "Aide",
+                None,
+                self.tr("Aide"),
                 self.tr("Désolé pas de fichier d'aide pour le langage {0}.").format(lang))
         return
 
