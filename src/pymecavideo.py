@@ -36,6 +36,7 @@ from trajWidget import trajWidget
 from grandeurs import grandeurs
 from glob import glob
 from vecteur import vecteur
+from echelle import echelle
 
 import interfaces.icon_rc
 
@@ -781,8 +782,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.dbg.p(2, "rentre dans 'recommence_echelle'")
         self.tabWidget.setCurrentIndex(0)
         self.pointage.echelle_image = echelle()
-        self.affiche_echelle()
-        self.demande_echelle()
+        self.pointage.affiche_echelle()
+        self.pointage.demande_echelle()
         return
 
     def closeEvent(self, event):

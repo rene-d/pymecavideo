@@ -165,7 +165,7 @@ class EchelleWidget(QWidget):
             if self.pw.data:  # si on a déjà pointé une position au moins
                 self.app.affiche_statut.emit(self.tr(
                     "Vous pouvez continuer votre acquisition"))
-                self.app.recalculLesCoordonnees()
+                self.app.coord.recalculLesCoordonnees()
 
         self.close()
         self.pw.apres_echelle.emit()
