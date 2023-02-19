@@ -23,13 +23,11 @@ export.py permet d'exporter les données de pymecavideo dans différents formats
 """
 
 
-from dbg import Dbg
 from globdef import DOCUMENT_PATH, HOME_PATH
 from PyQt6.QtWidgets import QFileDialog, QCheckBox, QDialog, QMessageBox
 from PyQt6.QtCore import Qt, QCoreApplication, QUrl, QStandardPaths
 import sys
 import os, time
-DBG = Dbg(0)
 
 # On prévient si l'enregistrement est un succès ?
 INFO_OK = False
@@ -216,7 +214,7 @@ class Calc():
         """
         # fait une ligne de titres
         titles = ["t (s)"]
-        for obj in app.video.suivis:
+        for obj in app.pointage.suivis:
             titles.append(f"X{obj} (m)")
             titles.append(f"Y{obj} (m)")
         row = self.TableRow()
@@ -254,7 +252,7 @@ class Calc():
             return 
 
         # écrit dans toutes les cases du tableur
-        app.video.iteration_data(cb_temps, cb_point, unite="m")
+        app.pointage.iteration_data(cb_temps, cb_point, unite="m")
         # accroche la feuille au document tableur
         self.doc.spreadsheet.addElement(self.table)
         # écrit dans le fichier de sortie
@@ -384,7 +382,7 @@ dt={deltaT}
             calcule_vitesse = True
         with open(filepath, "w", encoding="UTF-8") as f:
             date = time.strftime("%d/%m/%y %H:%M")
-            f.write(self.en_tete.format(date=date, deltaT=app.video.deltaT))
+            f.write(self.en_tete.format(date=date, deltaT=app.pointage.deltaT))
 
             commentaires = []
             lignes_x     = []
@@ -422,7 +420,7 @@ dt={deltaT}
 
             # on crée les commentaires et les lignes de déclaration de
             # tableaux de nombres
-            app.video.iteration_objet(cb_objet, cb_point, unite="m")
+            app.pointage.iteration_objet(cb_objet, cb_point, unite="m")
             
             # On termine les lignes de déclaration des tableaux de nombres
             lignes_x = [l + "])\n" for l in lignes_x]
@@ -502,10 +500,10 @@ class PythonNumpy:
     def __init__(self, app, filepath):
         import numpy as np
 
-        liste_temps = app.video.liste_t_pointes()
+        liste_temps = app.pointage.liste_t_pointes()
         
-        x_objets = {o: [] for o in app.video.suivis}
-        y_objets = {o: [] for o in app.video.suivis}
+        x_objets = {o: [] for o in app.pointage.suivis}
+        y_objets = {o: [] for o in app.pointage.suivis}
         def cb_points(i, t, j, obj, p, v):
             """
             fonction de rappel pour chaque point
@@ -515,10 +513,10 @@ class PythonNumpy:
             y_objets[obj].append(p.y)
             return
 
-        app.video.iteration_data(None, cb_points, unite = "m")
+        app.pointage.iteration_data(None, cb_points, unite = "m")
         
         export = [liste_temps]
-        for obj in app.video.suivis:
+        for obj in app.pointage.suivis:
             export.append(x_objets[obj])
             export.append(y_objets[obj])
 
@@ -565,8 +563,8 @@ class PythonNotebook :
     def __init__(self, app, filepath):
         import nbformat as nbf
         from template_ipynb import genere_notebook
-        ligne_t = "np.array({})".format(app.video.liste_t_pointes())
-        points = app.video.liste_pointages()
+        ligne_t = "np.array({})".format(app.pointage.liste_t_pointes())
+        points = app.pointage.liste_pointages()
         ligne_x = "np.array({})".format([p.x for p in points])
         ligne_y = "np.array({})".format([p.y for p in points])
         d = NotebookExportDialog(app)
@@ -584,7 +582,6 @@ class SaveThenOpenFileDialog(QFileDialog):
 
     def __init__(self, *args, extension=None, proposeOuverture=True):
         super().__init__(*args)
-        DBG.p(1, "rentre dans 'SaveThenOpenFileDialog'")
         self.setOption(QFileDialog.Option.DontUseNativeDialog)
         self.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
         #self.setWindowFlags(self.windowFlags() & ~Qt.WindowFlags.Dialog)
@@ -607,12 +604,21 @@ class SaveThenOpenFileDialog(QFileDialog):
 
 
 class Export:
+    """
+    Une classe qui gère l'exportation des données
 
-    def __init__(self, app, choix_export):
-        DBG.p(1, "rentre dans 'Export'")
-        self.app = app
+    paramètres du constructeur
+    @param coord le widget principale de l'onglet coodonnées
+    """
+
+    def __init__(self, coord, choix_export):
+        self.coord = coord
+        self.app = coord.app
+        self.pointage = coord.pointage
+        self.dbg = coord.dbg
+        self.dbg.p(1, "rentre dans 'Export'")
         propose_ouverture = EXPORT_FORMATS[choix_export]['propose_ouverture']
-        base_name = os.path.splitext(os.path.basename(app.filename))[0]
+        base_name = os.path.splitext(os.path.basename(self.pointage.filename))[0]
         filtre = EXPORT_FORMATS[choix_export]['filtre']
         extension = EXPORT_FORMATS[choix_export]['extension']
         self.class_str = EXPORT_FORMATS[choix_export]['class']
@@ -624,20 +630,15 @@ class Export:
                 try:
                     m = __import__(mod)
                 except ImportError:
-                    DBG.p(3, "erreur d'export")
-                    DBG.p(3, EXPORT_MESSAGES)
+                    self.dbg.p(3, "erreur d'export")
+                    self.dbg.p(3, EXPORT_MESSAGES)
                     msg = EXPORT_MESSAGES[3]
                     QMessageBox.critical(None, msg['titre'], msg['texte'].format(
                         mod))
                     return
-        # On vérifie si le nombre de points est adapté
-        if un_point and app.nb_de_points > 1:
-            msg = EXPORT_MESSAGES[1]
-            QMessageBox.warning(
-                None, msg['titre'], msg['texte'], QMessageBox.Ok, QMessageBox.Ok)
-            return
         self.demande_nom_fichier(
             base_name, filtre, extension, propose_ouverture)
+        return
 
     def demande_nom_fichier(self, filename, filtre, extension, propose_ouverture):
         defaultName = os.path.join(DOCUMENT_PATH, filename)
@@ -663,7 +664,7 @@ class Export:
         self.class_str
         """
         dynamic_class = globals()[self.class_str]
-        dynamic_class(self.app, filepath)
+        dynamic_class(self.coord, filepath)
 
     def ouvre_fichier(self, filepath):
         if sys.platform.startswith('linux'):

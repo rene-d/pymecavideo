@@ -300,7 +300,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.index_du_point = 0
         self.couleurs = ["red", "blue", "cyan", "magenta", "yellow", "gray",
                          "green"]  # correspond aux couleurs des points de la trajectoire
-        self.nb_de_points = 0  # nombre de points suivis
         self.point_attendu = 0
         self.nb_clics = 0
         self.premierResize = True  # arrive quand on ouvre la première fois la fenetre

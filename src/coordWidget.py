@@ -220,7 +220,22 @@ class CoordWidget(QWidget, Ui_coordWidget):
                                             self.tableWidget.rowCount() - 1,
                                             self.tableWidget.columnCount() - 1)
         self.tableWidget.setRangeSelected(trange, True)
-        self.tableWidget.selection()
+        # copie en format TSV vers le presse-papier
+        # merci à tyrtamos : voir https://www.developpez.net/forums/d1502290/autres-langages/python/gui/pyqt/rendre-copiable-qtablewidget/
+        # emplacement sélectionné pour copier dans le clipboard
+        selected = self.tableWidget.selectedRanges()
+        # construction du texte à copier, ligne par ligne et colonne par colonne
+        texte = ""
+        for i in range(selected[0].topRow(), selected[0].bottomRow() + 1):
+            for j in range(selected[0].leftColumn(), selected[0].rightColumn() + 1):
+                try:
+                    texte += self.tableWidget.item(i, j).text() + "\t"
+                except AttributeError:
+                    # quand une case n'a jamais été initialisée
+                    texte += "\t"
+            texte = texte[:-1] + "\n"  # le [:-1] élimine le '\t' en trop
+        # enregistrement dans le clipboard
+        QApplication.clipboard().setText(texte)
         return
 
     def changeEtat(self, etat):
