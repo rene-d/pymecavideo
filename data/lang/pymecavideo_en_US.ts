@@ -21,26 +21,26 @@ to capture a video</translation>
   <context>
     <name>CoordWidget</name>
     <message>
-      <location filename="../../src/coordWidget.py" line="358" />
+      <location filename="../../src/coordWidget.py" line="332" />
       <source>refaire le pointage
  de l'image {numero}</source>
-      <translation type="unfinished">respot
+      <translation>respot
 image #{numero}</translation>
     </message>
     <message>
-      <location filename="../../src/coordWidget.py" line="378" />
+      <location filename="../../src/coordWidget.py" line="352" />
       <source>Masse de l'objet</source>
-      <translation type="unfinished">Mass of the object</translation>
+      <translation>Mass of the object</translation>
     </message>
     <message>
-      <location filename="../../src/coordWidget.py" line="379" />
+      <location filename="../../src/coordWidget.py" line="353" />
       <source>Quelle est la masse de l'objet ? (en kg)</source>
-      <translation type="unfinished">Please enter the mass of the object (kg)</translation>
+      <translation>Please enter the mass of the object (kg)</translation>
     </message>
     <message>
-      <location filename="../../src/coordWidget.py" line="385" />
+      <location filename="../../src/coordWidget.py" line="359" />
       <source>Merci d'indiquer une masse valable</source>
-      <translation type="unfinished">Please type a sensible mass</translation>
+      <translation>Please type a sensible mass</translation>
     </message>
   </context>
   <context>
@@ -221,56 +221,114 @@ image #{numero}</translation>
   <context>
     <name>Etats</name>
     <message>
-      <location filename="../../src/etats.py" line="231" />
-      <location filename="../../src/etats.py" line="187" />
-      <location filename="../../src/etats.py" line="122" />
-      <location filename="../../src/etats.py" line="76" />
+      <location filename="../../src/etatsMain.py" line="71" />
+      <source>Pymecavideo : {filename}</source>
+      <translation type="unfinished">Pymecavideo: {filename}</translation>
+    </message>
+    <message>
+      <location filename="../../src/etatsMain.py" line="83" />
+      <source>Veuillez choisir une image (et définir l'échelle)</source>
+      <translation type="unfinished">Please select an image (and define the scale)</translation>
+    </message>
+    <message>
+      <location filename="../../src/etatsMain.py" line="92" />
+      <source>Pointage Automatique</source>
+      <translation type="unfinished">Automatic Spotting</translation>
+    </message>
+    <message>
+      <location filename="../../src/etatsMain.py" line="95" />
+      <source>Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre ;
+Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</source>
+      <translation type="unfinished">PLease select a frame around the object(s) which you will spot.
+You can stop the capture at any moment by clicking the STOP button</translation>
+    </message>
+    <message>
+      <location filename="../../src/etatsPointage.py" line="159" />
+      <location filename="../../src/etatsPointage.py" line="133" />
+      <location filename="../../src/etatsPointage.py" line="81" />
+      <location filename="../../src/etatsPointage.py" line="49" />
       <source>Zoom autour de x, y =</source>
-      <translation type="unfinished">Zoom near x, y =</translation>
+      <translation>Zoom near x, y =</translation>
     </message>
     <message>
-      <location filename="../../src/etats.py" line="125" />
+      <location filename="../../src/etatsPointage.py" line="84" />
       <source>Définir l'échelle</source>
-      <translation type="unfinished">Define the scale</translation>
+      <translation>Define the scale</translation>
     </message>
     <message>
-      <location filename="../../src/etats.py" line="311" />
-      <location filename="../../src/etats.py" line="266" />
+      <location filename="../../src/etatsPointage.py" line="206" />
+      <location filename="../../src/etatsPointage.py" line="171" />
       <source>Pointage ({obj}) ; x, y =</source>
-      <translation type="unfinished">Spotting ({obj}); x, y =</translation>
+      <translation>Spotting ({obj}); x, y =</translation>
     </message>
     <message>
-      <location filename="../../src/etats.py" line="328" />
+      <location filename="../../src/etatsTraj.py" line="69" />
+      <source>objet N° {0}</source>
+      <translation type="unfinished">Object #{0}</translation>
+    </message>
+    <message>
+      <source>Début : ouvrez un fichier, ou un exemple des aides</source>
+      <translation type="vanished">Start: open a file, or an example from the Help</translation>
+    </message>
+    <message>
+      <source>Fichier vidéo : {filename} ... définissez l'échelle ou démarrez le pointage | Il est possible de redimensionner la fenêtre</source>
+      <translation type="vanished">Video file: {filename} ... define the scale or start spotting | The window can be resized</translation>
+    </message>
+    <message>
+      <source>Préparation du pointage automatique : sélectionnez les objets à suivre, au nombre de {n}</source>
+      <translation type="vanished">Prepare the automatic spotting: selet the objets to track, which are {are}</translation>
+    </message>
+    <message>
+      <source>Pointage automatique en cours : il peut être interrompu par le bouton STOP</source>
+      <translation type="vanished">Ongiong auo-spotting: it can be interrupted with the STOP button</translation>
+    </message>
+    <message>
+      <source>Définissez l'échelle, par un tirer-glisser sur l'image</source>
+      <translation type="vanished">Define the scale, by dragging on the image</translation>
+    </message>
+    <message>
+      <source>Pointage manuel : cliquez sur le premier objet à suivre</source>
+      <translation type="vanished">Manual spotting: click on the firts object</translation>
+    </message>
+    <message>
+      <source>Pointage manuel : il reste encore des objets à pointer, on en est à {obj}</source>
+      <translation type="vanished">Manual spotting: there are still some objects to spot, the current is {obj}</translation>
+    </message>
+  </context>
+  <context>
+    <name>Etats_Base</name>
+    <message>
+      <location filename="../../src/etats.py" line="57" />
       <source>Début : ouvrez un fichier, ou un exemple des aides</source>
       <translation type="unfinished">Start: open a file, or an example from the Help</translation>
     </message>
     <message>
-      <location filename="../../src/etats.py" line="331" />
+      <location filename="../../src/etats.py" line="60" />
       <source>Fichier vidéo : {filename} ... définissez l'échelle ou démarrez le pointage | Il est possible de redimensionner la fenêtre</source>
       <translation type="unfinished">Video file: {filename} ... define the scale or start spotting | The window can be resized</translation>
     </message>
     <message>
-      <location filename="../../src/etats.py" line="333" />
+      <location filename="../../src/etats.py" line="62" />
       <source>Préparation du pointage automatique : sélectionnez les objets à suivre, au nombre de {n}</source>
       <translation type="unfinished">Prepare the automatic spotting: selet the objets to track, which are {are}</translation>
     </message>
     <message>
-      <location filename="../../src/etats.py" line="335" />
+      <location filename="../../src/etats.py" line="64" />
       <source>Pointage automatique en cours : il peut être interrompu par le bouton STOP</source>
       <translation type="unfinished">Ongiong auo-spotting: it can be interrupted with the STOP button</translation>
     </message>
     <message>
-      <location filename="../../src/etats.py" line="337" />
+      <location filename="../../src/etats.py" line="66" />
       <source>Définissez l'échelle, par un tirer-glisser sur l'image</source>
       <translation type="unfinished">Define the scale, by dragging on the image</translation>
     </message>
     <message>
-      <location filename="../../src/etats.py" line="339" />
+      <location filename="../../src/etats.py" line="68" />
       <source>Pointage manuel : cliquez sur le premier objet à suivre</source>
       <translation type="unfinished">Manual spotting: click on the firts object</translation>
     </message>
     <message>
-      <location filename="../../src/etats.py" line="341" />
+      <location filename="../../src/etats.py" line="70" />
       <source>Pointage manuel : il reste encore des objets à pointer, on en est à {obj}</source>
       <translation type="unfinished">Manual spotting: there are still some objects to spot, the current is {obj}</translation>
     </message>
@@ -278,131 +336,120 @@ image #{numero}</translation>
   <context>
     <name>FenetrePrincipale</name>
     <message>
-      <location filename="../../src/pymecavideo.py" line="211" />
+      <location filename="../../src/pymecavideo.py" line="199" />
       <source>Argument non pris en compte</source>
       <translation>Argument not taken in account</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="212" />
+      <location filename="../../src/pymecavideo.py" line="200" />
       <source>Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.</source>
       <translation>The file {filename} is neither a video file, not a pymecavideo saved file..</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="233" />
+      <location filename="../../src/pymecavideo.py" line="221" />
       <source>Configuration trop ancienne</source>
       <translation>Obsolete configuration file</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="234" />
+      <location filename="../../src/pymecavideo.py" line="222" />
       <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
       <translation>The version of the configuration file, {version} is less than {min_version}: the configuration file cannot be taken in account</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="241" />
+      <location filename="../../src/pymecavideo.py" line="229" />
       <source>Configuration ancienne</source>
       <translation>Older configuration</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="242" />
+      <location filename="../../src/pymecavideo.py" line="230" />
       <source>La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.</source>
       <translation>The version of the configuration file, {version} is less than {Version}: some dimensions can be slightly wrong.</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="489" />
+      <location filename="../../src/pymecavideo.py" line="468" />
       <source>Ouvrir un projet Pymecavideo</source>
       <translation>Open a Mecavideo project</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="491" />
+      <location filename="../../src/pymecavideo.py" line="470" />
       <source>Projet Pymecavideo (*.mecavideo)</source>
       <translation>Pymecavideo Project (*.mecavideo)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="624" />
-      <location filename="../../src/pymecavideo.py" line="622" />
-      <source>Choisir ...</source>
-      <translation>Choose...</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="752" />
-      <source>Enregistrer le graphique</source>
-      <translation>Save the plot</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="753" />
-      <source>fichiers images(*.png)</source>
-      <translation>image files (*.png)</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="799" />
-      <location filename="../../src/pymecavideo.py" line="786" />
-      <source>MAUVAISE VALEUR !</source>
-      <translation>BAD VALUE!</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="787" />
-      <source>La valeur rentrée (m = {}) n'est pas compatible avec le calcul</source>
-      <translation>The given value (m = {}) is not compatible with the process</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="800" />
-      <source>La valeur rentrée (g = {}) n'est pas compatible avec le calcul</source>
-      <translation>The given value (g = {}) is not compatible with the process</translation>
-    </message>
-    <message>
-      <location filename="../../src/pymecavideo.py" line="837" />
-      <location filename="../../src/pymecavideo.py" line="824" />
-      <location filename="../../src/pymecavideo.py" line="811" />
+      <location filename="../../src/pymecavideo.py" line="576" />
+      <location filename="../../src/pymecavideo.py" line="563" />
+      <location filename="../../src/pymecavideo.py" line="550" />
       <source>Ouvrir une vidéo</source>
       <translation>Open a video</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="812" />
+      <location filename="../../src/pymecavideo.py" line="551" />
       <source>fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
       <translation>video files (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="826" />
+      <location filename="../../src/pymecavideo.py" line="565" />
       <source>fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
       <translation>video files( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="833" />
+      <location filename="../../src/pymecavideo.py" line="572" />
       <source>Nom de fichier non conforme</source>
       <translation>Invalid filename</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="834" />
+      <location filename="../../src/pymecavideo.py" line="573" />
       <source>Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
       <translation>The name of the file contains accented characters or spaces.
 PLease rename it before going on</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="871" />
+      <location filename="../../src/pymecavideo.py" line="610" />
       <source>Désolé pas de fichier d'aide pour le langage {0}.</source>
       <translation>Sorry, no help file for the language {0}.</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="960" />
+      <source>Choisir ...</source>
+      <translation type="vanished">Choose...</translation>
+    </message>
+    <message>
+      <source>Enregistrer le graphique</source>
+      <translation type="vanished">Save the plot</translation>
+    </message>
+    <message>
+      <source>fichiers images(*.png)</source>
+      <translation type="vanished">image files (*.png)</translation>
+    </message>
+    <message>
+      <source>MAUVAISE VALEUR !</source>
+      <translation type="vanished">BAD VALUE!</translation>
+    </message>
+    <message>
+      <source>La valeur rentrée (m = {}) n'est pas compatible avec le calcul</source>
+      <translation type="vanished">The given value (m = {}) is not compatible with the process</translation>
+    </message>
+    <message>
+      <source>La valeur rentrée (g = {}) n'est pas compatible avec le calcul</source>
+      <translation type="vanished">The given value (g = {}) is not compatible with the process</translation>
+    </message>
+    <message>
       <source>Pymecavideo : {filename}</source>
-      <translation>Pymecavideo: {filename}</translation>
+      <translation type="vanished">Pymecavideo: {filename}</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="987" />
       <source>Veuillez choisir une image (et définir l'échelle)</source>
-      <translation>Please select an image (and define the scale)</translation>
+      <translation type="vanished">Please select an image (and define the scale)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="996" />
       <source>Pointage Automatique</source>
-      <translation>Automatic Spotting</translation>
+      <translation type="vanished">Automatic Spotting</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="999" />
       <source>Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre ;
 Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</source>
-      <translation type="unfinished" />
+      <translation type="vanished">PLease select a frame around the object(s) which you will spot.
+You can stop the capture at any moment by clicking the STOP button</translation>
     </message>
     <message>
       <source>Masse de l'objet</source>
@@ -532,6 +579,41 @@ image #{numero}</translation>
     </message>
   </context>
   <context>
+    <name>GraphWidget</name>
+    <message>
+      <location filename="../../src/graphWidget.py" line="198" />
+      <source>Enregistrer le graphique</source>
+      <translation type="unfinished">Save the plot</translation>
+    </message>
+    <message>
+      <location filename="../../src/graphWidget.py" line="199" />
+      <source>fichiers images(*.png)</source>
+      <translation type="unfinished">image files (*.png)</translation>
+    </message>
+    <message>
+      <location filename="../../src/graphWidget.py" line="222" />
+      <location filename="../../src/graphWidget.py" line="209" />
+      <source>MAUVAISE VALEUR !</source>
+      <translation type="unfinished">BAD VALUE!</translation>
+    </message>
+    <message>
+      <location filename="../../src/graphWidget.py" line="210" />
+      <source>La valeur rentrée (m = {}) n'est pas compatible avec le calcul</source>
+      <translation type="unfinished">The given value (m = {}) is not compatible with the process</translation>
+    </message>
+    <message>
+      <location filename="../../src/graphWidget.py" line="223" />
+      <source>La valeur rentrée (g = {}) n'est pas compatible avec le calcul</source>
+      <translation type="unfinished">The given value (g = {}) is not compatible with the process</translation>
+    </message>
+    <message>
+      <location filename="../../src/graphWidget.py" line="296" />
+      <location filename="../../src/graphWidget.py" line="294" />
+      <source>Choisir ...</source>
+      <translation type="unfinished">Choose...</translation>
+    </message>
+  </context>
+  <context>
     <name>Label_Echelle</name>
     <message>
       <source>Choisir le nombre de points puis &amp;quot;DÃ©marrer l'acquisition&amp;quot; </source>
@@ -548,110 +630,110 @@ image #{numero}</translation>
   <context>
     <name>PointageWidget</name>
     <message>
-      <location filename="../../src/pointageWidget.py" line="223" />
+      <location filename="../../src/pointageWidget.py" line="222" />
       <source>Erreur lors de la lecture du fichier</source>
-      <translation type="unfinished">Error while reading the file</translation>
+      <translation>Error while reading the file</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="224" />
+      <location filename="../../src/pointageWidget.py" line="223" />
       <source>Le fichier&lt;b&gt;{0}&lt;/b&gt; ...
 n'est peut-être pas dans un format vidéo supporté.</source>
-      <translation type="unfinished">The file&lt;b&gt;{0}&lt;/b&gt; ...
+      <translation>The file&lt;b&gt;{0}&lt;/b&gt; ...
 is maybe in an unsupported video format.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="280" />
+      <location filename="../../src/pointageWidget.py" line="279" />
       <source>Le format de cette vidéo n'est pas pris en charge par pymecavideo</source>
-      <translation type="unfinished">The format of this video is not compatible with pymecavideo</translation>
+      <translation>The format of this video is not compatible with pymecavideo</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="315" />
+      <location filename="../../src/pointageWidget.py" line="314" />
       <source>Pymecavideo n'arrive pas à lire l'image</source>
-      <translation type="unfinished">Pymecavideo cannot read the image</translation>
+      <translation>Pymecavideo cannot read the image</translation>
+    </message>
+    <message>
+      <location filename="../../src/pointageWidget.py" line="377" />
+      <source>Le nombre d'images par seconde doit être un entier</source>
+      <translation>The framerate must be an integer</translation>
     </message>
     <message>
       <location filename="../../src/pointageWidget.py" line="378" />
-      <source>Le nombre d'images par seconde doit être un entier</source>
-      <translation type="unfinished">The framerate must be an integer</translation>
+      <source>merci de recommencer</source>
+      <translation>Please try again</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="379" />
-      <source>merci de recommencer</source>
-      <translation type="unfinished">Please try again</translation>
+      <location filename="../../src/pointageWidget.py" line="395" />
+      <source>Définir léchelle</source>
+      <translation>Define the scale</translation>
     </message>
     <message>
       <location filename="../../src/pointageWidget.py" line="396" />
-      <source>Définir léchelle</source>
-      <translation type="unfinished">Define the scale</translation>
-    </message>
-    <message>
-      <location filename="../../src/pointageWidget.py" line="397" />
       <source>Quelle est la longueur en mètre de votre étalon sur l'image ?</source>
-      <translation type="unfinished">Which the length (in meter) of your gauge in the image?</translation>
+      <translation>Which is the length (in meter) of your gauge in the image?</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="402" />
+      <location filename="../../src/pointageWidget.py" line="401" />
       <source>Merci d'indiquer une échelle valable : {} ne peut pas être converti en nombre.</source>
-      <translation type="unfinished">Please define a sensible scale: {} cannot be converted in a number.</translation>
+      <translation>Please define a sensible scale: {} cannot be converted in a number.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="517" />
+      <location filename="../../src/pointageWidget.py" line="515" />
       <source>Définir l'échelle</source>
-      <translation type="unfinished">Define the scale</translation>
+      <translation>Define the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="586" />
+      <location filename="../../src/pointageWidget.py" line="582" />
       <source>Enregistrer le projet pymecavideo</source>
-      <translation type="unfinished">Save the Pymecavideo project</translation>
+      <translation>Save the Pymecavideo project</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="588" />
+      <location filename="../../src/pointageWidget.py" line="584" />
       <source>Projet pymecavideo (*.mecavideo)</source>
-      <translation type="unfinished">pymecavideo project file (*.mecavideo)</translation>
+      <translation>pymecavideo project file (*.mecavideo)</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="591" />
+      <location filename="../../src/pointageWidget.py" line="587" />
       <source>Erreur lors de l'enregistrement</source>
-      <translation type="unfinished">Error while saving the data</translation>
+      <translation>Error while saving the data</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="591" />
+      <location filename="../../src/pointageWidget.py" line="587" />
       <source>Il manque les données, ou l'échelle</source>
-      <translation type="unfinished">Some data, or the scale, are missing</translation>
+      <translation>Some data, or the scale, are missing</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="610" />
+      <location filename="../../src/pointageWidget.py" line="606" />
       <source>temps en seconde, positions en mètre</source>
-      <translation type="unfinished">time in second, positions in meter</translation>
+      <translation>time in second, positions in meter</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="752" />
-      <location filename="../../src/pointageWidget.py" line="752" />
-      <location filename="../../src/pointageWidget.py" line="691" />
+      <location filename="../../src/pointageWidget.py" line="748" />
+      <location filename="../../src/pointageWidget.py" line="748" />
+      <location filename="../../src/pointageWidget.py" line="687" />
       <source>indéf.</source>
-      <translation type="unfinished">undef.</translation>
+      <translation>undef.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="1066" />
-      <location filename="../../src/pointageWidget.py" line="801" />
+      <location filename="../../src/pointageWidget.py" line="1062" />
+      <location filename="../../src/pointageWidget.py" line="797" />
       <source>Refaire l'échelle</source>
-      <translation type="unfinished">Redo the scale</translation>
+      <translation>Redo the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="830" />
-      <location filename="../../src/pointageWidget.py" line="813" />
+      <location filename="../../src/pointageWidget.py" line="826" />
+      <location filename="../../src/pointageWidget.py" line="809" />
       <source>Zone à suivre n° {zone} x, y =</source>
-      <translation type="unfinished" />
+      <translation>Mobile area #{zone} x, y =</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="944" />
+      <location filename="../../src/pointageWidget.py" line="940" />
       <source>Pointage ({obj}) ; x, y =</source>
-      <translation type="unfinished">Spotting ({obj}); x, y =</translation>
+      <translation>Spotting ({obj}); x, y =</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="968" />
+      <location filename="../../src/pointageWidget.py" line="964" />
       <source>Cliquez sur l'objet : {0}</source>
-      <translation type="unfinished">Clic on the object: {0}</translation>
+      <translation>Clic on the object: {0}</translation>
     </message>
   </context>
   <context>
@@ -836,31 +918,30 @@ PLease rename it before going on</translation>
   <context>
     <name>TrajectoireWidget</name>
     <message>
-      <location filename="../../src/trajectoireWidget.py" line="140" />
-      <source>objet N° {0}</source>
-      <translation type="unfinished">Object #{0}</translation>
-    </message>
-    <message>
-      <location filename="../../src/trajectoireWidget.py" line="151" />
+      <location filename="../../src/trajectoireWidget.py" line="120" />
       <source>Enregistrer comme image</source>
-      <translation type="unfinished">Save as image</translation>
+      <translation>Save as image</translation>
     </message>
     <message>
-      <location filename="../../src/trajectoireWidget.py" line="152" />
+      <location filename="../../src/trajectoireWidget.py" line="121" />
       <source>fichiers images(*.png *.jpg)</source>
-      <translation type="unfinished">image files (*.png *.jpg)</translation>
+      <translation>image files (*.png *.jpg)</translation>
     </message>
     <message>
-      <location filename="../../src/trajectoireWidget.py" line="157" />
+      <location filename="../../src/trajectoireWidget.py" line="126" />
       <source>Erreur lors de l'enregistrement</source>
-      <translation type="unfinished">Error while saving the data</translation>
+      <translation>Error while saving the data</translation>
     </message>
     <message>
-      <location filename="../../src/trajectoireWidget.py" line="157" />
+      <location filename="../../src/trajectoireWidget.py" line="126" />
       <source>Echec de l'enregistrement du fichier:&lt;b&gt;
 {0}&lt;/b&gt;</source>
-      <translation type="unfinished">Failed to save the file:&lt;b&gt;
+      <translation>Failed to save the file:&lt;b&gt;
 {0}&lt;/b&gt;</translation>
+    </message>
+    <message>
+      <source>objet N° {0}</source>
+      <translation type="vanished">Object #{0}</translation>
     </message>
   </context>
   <context>
@@ -955,57 +1036,57 @@ is maybe in an unsupported video format.</translation>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>Coordonnées</source>
-      <translation type="unfinished">Coordinates</translation>
+      <translation>Coordinates</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>Tableau des dates et des coordonnées</source>
-      <translation type="unfinished">Table of dates and coordinates</translation>
+      <translation>Table of dates and coordinates</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>Copier les mesures dans le presse papier</source>
-      <translation type="unfinished">Copy data to the clipboard</translation>
+      <translation>Copy data to the clipboard</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>Changer d'échelle</source>
-      <translation type="unfinished">Change the scale</translation>
+      <translation>Change the scale</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>Ajouter les énergies :</source>
-      <translation type="unfinished">Add energies:</translation>
+      <translation>Add energies:</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>Cinétique (échelle obligatoire)</source>
-      <translation type="unfinished">Cinetic (scale is mandatory)</translation>
+      <translation>Cinetic (scale is mandatory)</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>Potentielle de pesanteur</source>
-      <translation type="unfinished">Potential of weight</translation>
+      <translation>Potential of weight</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>Mécanique</source>
-      <translation type="unfinished">Mechanic</translation>
+      <translation>Mechanic</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>Intensité de la pesanteur :</source>
-      <translation type="unfinished">gravity:</translation>
+      <translation>gravity:</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>g (N/kg)</source>
-      <translation type="unfinished">g (N/kg)</translation>
+      <translation>g (N/kg)</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>9.8</source>
-      <translation type="unfinished">9.8</translation>
+      <translation>9.8</translation>
     </message>
   </context>
   <context>
@@ -1142,67 +1223,67 @@ successfully saved.</translation>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>Données et grandeurs à représenter</source>
-      <translation type="unfinished">Data and quantities to plot</translation>
+      <translation>Data and quantities to plot</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>Masse (kg)</source>
-      <translation type="unfinished">Mass (kg)</translation>
+      <translation>Mass (kg)</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>1.0</source>
-      <translation type="unfinished">1.0</translation>
+      <translation>1.0</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>Intensité de la pesanteur g (N/kg)</source>
-      <translation type="unfinished">Gravity g (N/kg)</translation>
+      <translation>Gravity g (N/kg)</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>9.8</source>
-      <translation type="unfinished">9.8</translation>
+      <translation>9.8</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>Tracer :</source>
-      <translation type="unfinished">Plot:</translation>
+      <translation>Plot:</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>En fonction de :</source>
-      <translation type="unfinished">As a function of:</translation>
+      <translation>As a function of:</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>Avec le style :</source>
-      <translation type="unfinished">Styled like:</translation>
+      <translation>Styled like:</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>Points seuls</source>
-      <translation type="unfinished">Plain Dots</translation>
+      <translation>Plain Dots</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>Points et lignes</source>
-      <translation type="unfinished">Dots and Lines</translation>
+      <translation>Dots and Lines</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>Lignes seules</source>
-      <translation type="unfinished">Lines</translation>
+      <translation>Lines</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>Enregistrer comme image</source>
-      <translation type="unfinished">Save as image</translation>
+      <translation>Save as image</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/graphWidget.ui" line="0" />
       <source>Enregistrer</source>
-      <translation type="unfinished">Save</translation>
+      <translation>Save</translation>
     </message>
   </context>
   <context>
@@ -1210,182 +1291,182 @@ successfully saved.</translation>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Pointage</source>
-      <translation type="unfinished">SpottingSpotting</translation>
+      <translation>Spotting</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Zoom ⨯2 autour du curseur de la souris</source>
-      <translation type="unfinished">Zoom ⨯2 around the mouse's cursor</translation>
+      <translation>Zoom ⨯2 around the mouse's cursor</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source> Zoom autour de x, y =</source>
-      <translation type="unfinished"> Zoom near x, y =</translation>
+      <translation> Zoom near x, y =</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Ordonnée (pixel)</source>
-      <translation type="unfinished">Ordinate (pixel)</translation>
+      <translation>Ordinate (pixel)</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Abscisse (pixel)</source>
-      <translation type="unfinished">Abscissa (pixel)</translation>
+      <translation>Abscissa (pixel)</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Ordonnée (m)</source>
-      <translation type="unfinished">Ordinate (m)</translation>
+      <translation>Ordinate (m)</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Abscisse (m)</source>
-      <translation type="unfinished">Abscissa (m)</translation>
+      <translation>Abscissa (m)</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>(px) </source>
-      <translation type="unfinished">(px) </translation>
+      <translation>(px) </translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>(m)</source>
-      <translation type="unfinished">(m)</translation>
+      <translation>(m)</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>,</source>
-      <translation type="unfinished">,</translation>
+      <translation>,</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Définition de l'échelle, par tirer-glisser sur l'image</source>
-      <translation type="unfinished">Define the scale, by dragging on the image</translation>
+      <translation>Define the scale, by dragging on the image</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Définir Échelle</source>
-      <translation type="unfinished">Define the scale</translation>
+      <translation>Define the scale</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>L'échelle, en pixel par mètre</source>
-      <translation type="unfinished">The scale, in pixel per metre</translation>
+      <translation>The scale, in pixel per metre</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>indéf.</source>
-      <translation type="unfinished">undef.</translation>
+      <translation>undef.</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>px/m</source>
-      <translation type="unfinished">px/m</translation>
+      <translation>px/m</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Nombre d'objets à suivre</source>
-      <translation type="unfinished">Number of objects to spot</translation>
+      <translation>Number of objects to spot</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Objets :</source>
-      <translation type="unfinished">Objects:</translation>
+      <translation>Objects:</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Activation du pointage automatique</source>
-      <translation type="unfinished">Activate the automatic spotting</translation>
+      <translation>Activate the automatic spotting</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>suivi
 auto.</source>
-      <translation type="unfinished">auto.
+      <translation>auto.
 spot.</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Commencer le suivi des objets (manuel ou automatique)</source>
-      <translation type="unfinished">Start spotting the objects (manual or automatic)</translation>
+      <translation>Start spotting the objects (manual or automatic)</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Démarrer le pointage</source>
-      <translation type="unfinished">Start spotting</translation>
+      <translation>Start spotting</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Arrêt du suivi automatique</source>
-      <translation type="unfinished">Stop the automatic spotting</translation>
+      <translation>Stop the automatic spotting</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>STOP</source>
-      <translation type="unfinished">STOP</translation>
+      <translation>STOP</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Supprimer tous les pointages et l'échelle</source>
-      <translation type="unfinished">Delete all the spots and the scale</translation>
+      <translation>Delete all the spots and the scale</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Tout réinitialiser</source>
-      <translation type="unfinished">Reinitialize</translation>
+      <translation>Reinitialize</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>On peut déplacer l'origine du repère</source>
-      <translation type="unfinished">One can move the origin of the referential</translation>
+      <translation>One can move the origin of the referential</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Changer d'origine</source>
-      <translation type="unfinished">Change the origin</translation>
+      <translation>Change the origin</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Orientation des axes</source>
-      <translation type="unfinished">Directions of axis</translation>
+      <translation>Directions of axis</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Axes : </source>
-      <translation type="unfinished">Axis: </translation>
+      <translation>Axis: </translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Ordonnées vers le bas de l'écran</source>
-      <translation type="unfinished">Ordinate to the bottom of the screen</translation>
+      <translation>Ordinate to the bottom of the screen</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>↧</source>
-      <translation type="unfinished">↧</translation>
+      <translation>↧</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Abscisses vers la gauche de l'écran</source>
-      <translation type="unfinished">Abscissa to the left of the screen</translation>
+      <translation>Abscissa to the left of the screen</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>↤</source>
-      <translation type="unfinished">↤</translation>
+      <translation>↤</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Le nombre d'images par seconde est détecté automatiquement. Entrer la valeur manuellement si la détection échoue.</source>
-      <translation type="unfinished">The framerate has been detected automatically. Enter the value manually if the autodetection failed.</translation>
+      <translation>The framerate has been detected automatically. Enter the value manually if the autodetection failed.</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>IPS :</source>
-      <translation type="unfinished">FPS:</translation>
+      <translation>FPS:</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
@@ -1393,49 +1474,49 @@ spot.</translation>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Incrémenter le compteur d'image à chaque pointage</source>
-      <translation type="unfinished">Increment the image counter at every spotting</translation>
+      <translation>Increment the image counter at every spotting</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Incr :</source>
-      <translation type="unfinished">Incr:</translation>
+      <translation>Incr:</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Tourner l'image de 90° vers la gauche</source>
-      <translation type="unfinished">Turn the image 90 degrees left</translation>
+      <translation>Turn the image 90 degrees left</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Tourner l'image de 90° vers la droite</source>
-      <translation type="unfinished">Turn the image 90 degrees right</translation>
+      <translation>Turn the image 90 degrees right</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Choix de l'image dans le film</source>
-      <translation type="unfinished">Choose the image in the film</translation>
+      <translation>Choose the image in the film</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Image n°</source>
-      <translation type="unfinished">Image #</translation>
+      <translation>Image #</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Efface le point précédent</source>
-      <translation type="unfinished">Delete the previous point</translation>
+      <translation>Delete the previous point</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Rétablit le point suivant</source>
-      <translation type="unfinished">Restore the next point</translation>
+      <translation>Restore the next point</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Zone d'affichage et de pointage ; peut être redimensionnée dans l'état « initial » seulement</source>
-      <translation type="unfinished">Area of display and spotting; can be resized only in the "initial" state</translation>
+      <translation>Area of display and spotting; can be resized only in the "initial" state</translation>
     </message>
   </context>
   <context>
@@ -2437,80 +2518,80 @@ mouse</translation>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Trajectoire</source>
-      <translation type="unfinished">Trajectory</translation>
+      <translation>Trajectory</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Chronophotographie</source>
-      <translation type="unfinished">Chronophotography</translation>
+      <translation>Chronophotography</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Chronogramme</source>
-      <translation type="unfinished">Chronogram</translation>
+      <translation>Chronogram</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>vecteur vitesse ...</source>
-      <translation type="unfinished">Velocity vector ...</translation>
+      <translation>Velocity vector ...</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Montrer les
 vecteurs vitesse</source>
-      <translation type="unfinished">Show
+      <translation>Show
 velocity vectors</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Près de la souris</source>
-      <translation type="unfinished">Near the
+      <translation>Near the
 mouse</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Partout</source>
-      <translation type="unfinished">Everywhere</translation>
+      <translation>Everywhere</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Échelle de vitesses</source>
-      <translation type="unfinished">Scale for speed</translation>
+      <translation>Scale for speed</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>px pour 1 m/s</source>
-      <translation type="unfinished">px for 1 m/s</translation>
+      <translation>px for 1 m/s</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Chronophotographie ...</source>
-      <translation type="unfinished">Chronophotography ...</translation>
+      <translation>Chronophotography ...</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Image n°</source>
-      <translation type="unfinished">Image #</translation>
+      <translation>Image #</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Enregistrer comme image</source>
-      <translation type="unfinished">Save as image</translation>
+      <translation>Save as image</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Enregistrer</source>
-      <translation type="unfinished">Save</translation>
+      <translation>Save</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Changement de référentiel :</source>
-      <translation type="unfinished">Change the referential:</translation>
+      <translation>Change the referential:</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/trajectoire.ui" line="0" />
       <source>Voir la vidéo</source>
-      <translation type="unfinished">tch the video</translation>
+      <translation>Watch the video</translation>
     </message>
   </context>
 </TS>
