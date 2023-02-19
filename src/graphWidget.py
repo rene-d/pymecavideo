@@ -50,8 +50,9 @@ from dbg import Dbg
 import interfaces.icon_rc
 
 from interfaces.Ui_graphWidget import Ui_graphWidget
+from etatsGraph import Etats
 
-class GraphWidget(QWidget, Ui_graphWidget):
+class GraphWidget(QWidget, Ui_graphWidget, Etats):
     """
     Widget principal de l'onglet grapheur
 
@@ -61,6 +62,7 @@ class GraphWidget(QWidget, Ui_graphWidget):
     def __init__(self, parent):
         QWidget.__init__(self, parent)
         Ui_graphWidget.__init__(self)
+        Etats.__init__(self)
         self.setupUi(self)
         self.connecte_ui()
         self.locals = {} # dictionnaire de variables locales, pour eval
@@ -320,25 +322,3 @@ class GraphWidget(QWidget, Ui_graphWidget):
         return
     
 
-    def changeEtat(self, etat):
-        if etat == "debut":
-            pass
-        if etat == "A":
-            # désactive le grapheur si existant
-            if self.graphW:
-                plotItem = self.graphWidget.getPlotItem()
-                plotItem.clear()
-                plotItem.setTitle('')
-                plotItem.hideAxis('bottom')
-                plotItem.hideAxis('left')
-        if etat == "AB":
-            pass
-        if etat == "B":
-            pass
-        if etat == "C":
-            pass
-        if etat == "D":
-            pass
-        if etat == "E":
-            pass
-        return
