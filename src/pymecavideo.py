@@ -441,6 +441,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             return
         else:
             # fini : il n'y a plus besoin de modifier la taille de la fenêtre
+            self.pointage.montre_etalon.emit()
             if self.pointage.etat not in ("debut", "A"):
                 self.stopRedimensionnement.emit()
         

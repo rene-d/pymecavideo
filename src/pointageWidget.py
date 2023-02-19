@@ -122,7 +122,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     stop_n = pyqtSignal(str)                   # refait le texte du bouton STOP
     change_axe_origine = pyqtSignal()          # inverse un des axes du repère
     sens_axes = pyqtSignal(int, int)           # coche les cases des axes
-
+    montre_etalon = pyqtSignal()               # montre l'étalon utilisé
+    
     ########### connexion des signaux #######
     def connecte_signaux(self):
         self.update_imgedit.connect(self.affiche_imgsize)
@@ -138,6 +139,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.selection_motif_done.connect(self.suiviDuMotif)
         self.stop_n.connect(self.stop_setText)
         self.sens_axes.connect(self.coche_axes)
+        self.montre_etalon.connect(self.montreEtalon)
 
         return
 
@@ -1014,8 +1016,13 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.sens_axes.emit(self.sens_X, self.sens_Y)
         # on met à jour le widget d'échelle
         self.affiche_echelle()
-        # !!!!!!!!!! il manque la restauration du widget d'échelle !!!!
-        print ("GRRR self.echelle_image.p1, self.echelle_image.p2 =", self.echelle_image.p1, self.echelle_image.p2)
+        self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        return
+
+    def montreEtalon(self):
+        """
+        fonction de rappel qui montre l'étalon sur l'image de la vidéo
+        """
         self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
         return
 
