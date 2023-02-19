@@ -166,7 +166,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
             action = QAction(EXPORT_FORMATS[key]
                              ['nom'], self.menuE_xporter_vers)
             action.triggered.connect(
-                lambda checked, index=key: self.export(index))
+                lambda checked, index=key: self.coord.export(index))
             self.menuE_xporter_vers.addAction(action)
 
         self.init_variables(self.prefs.defaults['lastVideo'])
