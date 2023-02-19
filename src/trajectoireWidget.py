@@ -114,7 +114,7 @@ class TrajectoireWidget(QWidget, Ui_trajectoire, Etats):
     def enregistreChrono(self):
         self.pixmapChrono = QPixmap(self.trajW.size())
         self.trajW.render(self.pixmapChrono)
-        base_name = os.path.splitext(os.path.basename(self.filename))[0]
+        base_name = os.path.splitext(os.path.basename(self.pointage.filename))[0]
         defaultName = os.path.join(DOCUMENT_PATH, base_name)
         fichier = QFileDialog.getSaveFileName(self,
                                               self.tr("Enregistrer comme image"),
