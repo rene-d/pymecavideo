@@ -160,57 +160,6 @@ class VideoPointeeWidget(ImageWidget):
             painter.end()
         return
 
-    def rouvre(self):
-        """
-        Ici c'est la partie dévolue au videoWidget quand on rouvre un
-        fichier pymecavideox
-        """
-        # !!!! il faudrait rétablir l'échelle (p,p2), pas sur le videoWidget
-        # !!!! mais dans une instance de Echelle_TraceWidget
-        self.pw.sens_axes.emit(self.sens_X, self.sens_Y)
-        self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
-            self.pw.cvReader.recupere_avi_infos(self.rotation)
-        self.pw.ratio = self.pw.largeurFilm / self.pw.hauteurFilm
-        # réapplique la préférence de deltat, comme openCV peut se tromper
-        self.pw.deltaT = float(self.pw.prefs.config["DEFAULT"]["deltat"])
-        self.pw.framerate = round(1/self.pw.deltaT)
-        return
-
-    def restaure_pointages(self, data, premiere_image_pointee) :
-        """
-        Rejoue les pointages issus d'un fichier pymecavideo
-        @param data une liste de listes de type [t, x1, y1, ..., xn, yn]
-        @param premiere_image_pointee la toute première image pointée
-          (au moins 1)
-        """
-        self.pw.dimensionne(self.pw.nb_obj, self.pw.deltaT, self.pw.image_max)
-        for i in range(len(data)) :
-            for obj in self.pw.suivis:
-                j = int(obj)*2-1 # index du début des coordonnées xj, yj
-                if len(data[i]) > j:
-                    x, y = data[i][j:j + 2]
-                    # À ce stade x et y sont en mètre
-                    # on remet ça en pixels
-                    x = self.pw.origine.x + self.pw.sens_X * \
-                        round(float(x) * self.pw.echelle_image.pxParM())
-                    y = self.pw.origine.y - self.pw.sens_Y * \
-                        round(float(y) * self.pw.echelle_image.pxParM())
-                    self.pointe(
-                        obj, vecteur(x, y),
-                        index = i + premiere_image_pointee - 1)
-        # affiche la dernière image pointée
-        der = self.pw.derniere_image()
-        if der is not None:
-            if der < self.pw.image_max:
-                self.pw.index = der + 1
-            else:
-                self.pw.index = self.image_max
-        else:
-            self.pw.index = 1
-        self.pw.prepare_futur_clic()
-        self.pw.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
-        return
-    
     def entete_fichier(self, msg=""):
         """
         Crée l'en-tête du fichier pymecavideo

@@ -164,7 +164,7 @@ class trajWidget(ImageWidget):
                     self.paintText(
                         max(x1+round(longueur/2), 0), y1+30,
                         text,
-                        color = Qcolor("black"),
+                        color = QColor("black"),
                         bgcolor = None,
                         center = True
                     )

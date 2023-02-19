@@ -217,19 +217,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                 
         return OK
 
-    def apply_preferences(self, rouvre = False):
+    def check_prefs_version(self):
         """
-        Récupère les préférences sauvegardées, et en applique les données
-        ici on s'occupe de ce qui se gère facilement au niveau de la
-        fenêtre principale
-        @param rouvre est vrai quand on ouvre un fichier pymecavideo ; 
-          il est faux par défaut
+        Vérifie la version du fichier de préférences
+        @return 0 si la version esty trop ancienne, 1 si elle est voisine,
+          2 quand tout va bien
         """
-        self.dbg.p(2, "rentre dans 'FenetrePrincipale.apply_preferences'")
-        # on relit les préférences du fichier de configuration, sauf en cas
-        # de réouverture d'un fichier pymecavideo, qui contient les préférences
-        if not rouvre:
-            self.prefs = Preferences(self)
         m = re.match(r"pymecavideo (.*)",
                      self.prefs.config["DEFAULT"]["version"])
         if m:
@@ -243,7 +236,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     self,
                     self.tr("Configuration trop ancienne"),
                     self.tr("La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte").format(version = thisversion, min_version = self.min_version)))
-            return
+            return 0
         elif thisversion < Version:
              QTimer.singleShot(
                 50,
@@ -251,8 +244,25 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
                     self,
                     self.tr("Configuration ancienne"),
                     self.tr("La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.").format(version = thisversion, Version = Version)))
+             return 1
         # le fichier de configuration a la bonne version, on applique ses
         # données
+        return 2
+        
+    def apply_preferences(self, rouvre = False):
+        """
+        Récupère les préférences sauvegardées, et en applique les données
+        ici on s'occupe de ce qui se gère facilement au niveau de la
+        fenêtre principale
+        @param rouvre est vrai quand on ouvre un fichier pymecavideo ; 
+          il est faux par défaut
+        """
+        self.dbg.p(2, "rentre dans 'FenetrePrincipale.apply_preferences'")
+        # on relit les préférences du fichier de configuration, sauf en cas
+        # de réouverture d'un fichier pymecavideo, qui contient les préférences
+        if not rouvre:
+            self.prefs = Preferences(self)
+        if not self.check_prefs_version(): return
         self.wanted_image_size = self.prefs.config.getvecteur(
             "DEFAULT", "taille_image")
         self.nb_ajuste_image = 20 # pas plus de 20 itérations
@@ -319,7 +329,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
     change_etat = pyqtSignal(str)
     show_coord = pyqtSignal()               # montre l'onglet des coordonnées
     show_video = pyqtSignal()               # montre l'onglet des vidéos
-    sens_axes = pyqtSignal(int, int)        # coche les cases des axes
     adjust4image = pyqtSignal()             # adapte la taille à l'image
     hide_imgdim = pyqtSignal()              # cache la dimension de l'image
     affiche_statut = pyqtSignal(str)        # modifie la ligne de statut
@@ -366,7 +375,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo):
         self.change_etat.connect(self.changeEtat)
         self.show_coord.connect(self.montre_volet_coord)
         self.show_video.connect(self.montre_volet_video)
-        self.sens_axes.connect(self.coche_axes)
         self.affiche_statut.connect(self.setStatus)
         self.adjust4image.connect(self.ajuste_pour_image)
         self.hide_imgdim.connect(self.cache_imgdim)
@@ -1141,9 +1149,6 @@ Merci de bien vouloir le renommer avant de continuer"""))
         
         # donne la main au videoWidget pour préparer les pointages
         self.pointage.rouvre()
-        # corrige éventuellement le nombre d'images par seconde à afficher
-        self.lineEdit_IPS.setText(f"{self.pointage.framerate}")
-        
         lignes_data = [l for l in lignes if l[0] != "#" and len(l.strip()) > 0]
         # on trouve les données en coupant là où il y a des séparations
         # par des espaces ou des tabulations, on ne conserve pas la
@@ -1154,9 +1159,6 @@ Merci de bien vouloir le renommer avant de continuer"""))
         self.pointage.restaure_pointages(
             data, self.prefs.config["DEFAULT"].getint("index_depart"))
         self.sync_img2others(self.pointage.index)
-        self.affiche_echelle()  # on met à jour le widget d'échelle
-        # coche les cases pour les sens des axes
-        self.sens_axes.emit(self.pointage.sens_X, self.pointage.sens_Y)
         self.change_etat.emit("D")
         return
 
@@ -1182,17 +1184,6 @@ Merci de bien vouloir le renommer avant de continuer"""))
         Met l'onglet des vidéos sur le dessus
         """
         self.tabWidget.setCurrentIndex(0)
-        return
-
-    def coche_axes(self, x, y):
-        """
-        Met à jour les caches à cocher des axes
-        @param x sens de l'axe x (+1 ou -1)
-        @param y sens de l'axe y (+1 ou -1)
-        """
-        self.dbg.p(2, "rentre dans 'coche_axes'")
-        self.pointage.checkBox_abscisses.setChecked(x < 0)
-        self.pointage.checkBox_ordonnees.setChecked(y < 0)
         return
 
     def setStatus(self, text):

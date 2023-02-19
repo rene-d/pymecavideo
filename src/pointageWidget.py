@@ -121,6 +121,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     fin_pointage_manuel = pyqtSignal(QEvent)   # après un pointage manuel
     stop_n = pyqtSignal(str)                   # refait le texte du bouton STOP
     change_axe_origine = pyqtSignal()          # inverse un des axes du repère
+    sens_axes = pyqtSignal(int, int)           # coche les cases des axes
 
     ########### connexion des signaux #######
     def connecte_signaux(self):
@@ -136,6 +137,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.fin_pointage_manuel.connect(self.termine_pointage_manuel)
         self.selection_motif_done.connect(self.suiviDuMotif)
         self.stop_n.connect(self.stop_setText)
+        self.sens_axes.connect(self.coche_axes)
 
         return
 
@@ -259,7 +261,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
                 self.echelle_image.p1 = None
                 self.echelle_image.p2 = None
         # coche les cases du sens des axes
-        self.app.sens_axes.emit(self.sens_X, self.sens_Y)
+        self.sens_axes.emit(self.sens_X, self.sens_Y)
         return
 
     def init_cvReader(self):
@@ -523,7 +525,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         # retire les objets déjà pointés
         self.redimensionne_data(self.nb_obj)
         self.sens_X = self.sens_Y = 1
-        self.app.sens_axes.emit(self.sens_X, self.sens_Y)
+        self.sens_axes.emit(self.sens_X, self.sens_Y)
         # passage par deux états afin de forcer une réinitialisation complète
         self.app.change_etat.emit("debut")
         self.app.change_etat.emit("A")
@@ -996,3 +998,70 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
                 precedent = point # on conserve les coordonnées pour la suite
         return result
 
+    def rouvre(self):
+        """
+        Ici c'est la partie dévolue au pointageWidget quand on rouvre un
+        fichier pymecavideox
+        """
+        self.sens_axes.emit(self.sens_X, self.sens_Y)
+        self.framerate, self.image_max, self.largeurFilm, self.hauteurFilm = \
+            self.cvReader.recupere_avi_infos(self.video.rotation)
+        self.ratio = self.largeurFilm / self.hauteurFilm
+        # réapplique la préférence de deltat, comme openCV peut se tromper
+        self.deltaT = float(self.prefs.config["DEFAULT"]["deltat"])
+        self.framerate = round(1/self.deltaT)
+        self.lineEdit_IPS.setText(f"{self.framerate}")
+        self.sens_axes.emit(self.sens_X, self.sens_Y)
+        # on met à jour le widget d'échelle
+        self.affiche_echelle()
+        # !!!!!!!!!! il manque la restauration du widget d'échelle !!!!
+        print ("GRRR self.echelle_image.p1, self.echelle_image.p2 =", self.echelle_image.p1, self.echelle_image.p2)
+        self.feedbackEchelle(self.echelle_image.p1, self.echelle_image.p2)
+        return
+
+    def coche_axes(self, x, y):
+        """
+        Met à jour les caches à cocher des axes
+        @param x sens de l'axe x (+1 ou -1)
+        @param y sens de l'axe y (+1 ou -1)
+        """
+        self.dbg.p(2, "rentre dans 'coche_axes'")
+        self.checkBox_abscisses.setChecked(x < 0)
+        self.checkBox_ordonnees.setChecked(y < 0)
+        return
+
+    def restaure_pointages(self, data, premiere_image_pointee) :
+        """
+        Rejoue les pointages issus d'un fichier pymecavideo
+        @param data une liste de listes de type [t, x1, y1, ..., xn, yn]
+        @param premiere_image_pointee la toute première image pointée
+          (au moins 1)
+        """
+        self.dimensionne(self.nb_obj, self.deltaT, self.image_max)
+        for i in range(len(data)) :
+            for obj in self.suivis:
+                j = int(obj)*2-1 # index du début des coordonnées xj, yj
+                if len(data[i]) > j:
+                    x, y = data[i][j:j + 2]
+                    # À ce stade x et y sont en mètre
+                    # on remet ça en pixels
+                    x = self.origine.x + self.sens_X * \
+                        round(float(x) * self.echelle_image.pxParM())
+                    y = self.origine.y - self.sens_Y * \
+                        round(float(y) * self.echelle_image.pxParM())
+                    self.pointe(
+                        obj, vecteur(x, y),
+                        index = i + premiere_image_pointee - 1)
+        # affiche la dernière image pointée
+        der = self.derniere_image()
+        if der is not None:
+            if der < self.image_max:
+                self.index = der + 1
+            else:
+                self.index = self.image_max
+        else:
+            self.index = 1
+        self.prepare_futur_clic()
+        self.echelle_modif.emit(self.tr("Refaire l'échelle"), "background-color:orange;")
+        return
+    
