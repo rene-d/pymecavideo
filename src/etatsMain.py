@@ -21,6 +21,7 @@
 """
 
 from PyQt6.QtCore import Qt, QObject, pyqtSignal
+from PyQt6.QtWidgets import QMessageBox
 
 import os
 
