@@ -1,0 +1,17 @@
+#projectlogo img {
+    padding: 1ex;
+}
+
+.sm-dox a, .sm-dox a:focus, .sm-dox a:hover, .sm-dox a:active {
+    font-size: 18px;
+}
+
+#MSearchField {
+    font-size: 16px !important;
+    height: 30px;
+}
+
+#MSearchBox .left {
+    height: 1.8em;
+    margin-top: -3px;
+}

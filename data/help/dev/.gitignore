@@ -1,0 +1,2 @@
+# ignore les productions directes de Doxygen
+out/
