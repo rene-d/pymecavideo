@@ -160,19 +160,6 @@ class VideoPointeeWidget(ImageWidget):
             painter.end()
         return
 
-    def entete_fichier(self, msg=""):
-        """
-        Crée l'en-tête du fichier pymecavideo
-        On recopie sous forme de commentaires préfixée par "# "
-        tout le fichier de configuration sauf la ligne "[DEFAULT]"
-        puis on ajoute le message
-        @param msg le message
-        @return le texte de l'en-tête (multi-ligne)
-        """
-        self.dbg.p(2, "rentre dans 'entete_fichier'")
-        config = open(self.pw.prefs.conffile).readlines()
-        return "".join(["# "+l for l in config[1:]]) + "# " + msg + "\n"
-
     def placeImage(self, im, ratio, largeurFilm):
         """
         place une image dans le widget, en conservant le ratio de cette image

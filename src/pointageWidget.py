@@ -1078,3 +1078,16 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.app.show_video.emit()
         return
 
+    def entete_fichier(self, msg=""):
+        """
+        Crée l'en-tête du fichier pymecavideo
+        On recopie sous forme de commentaires préfixée par "# "
+        tout le fichier de configuration sauf la ligne "[DEFAULT]"
+        puis on ajoute le message
+        @param msg le message
+        @return le texte de l'en-tête (multi-ligne)
+        """
+        self.dbg.p(2, "rentre dans 'entete_fichier'")
+        config = open(self.prefs.conffile).readlines()
+        return "".join(["# "+l for l in config[1:]]) + "# " + msg + "\n"
+
