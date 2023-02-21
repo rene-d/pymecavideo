@@ -568,7 +568,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         if inhibe("refaire",100): return # corrige un bug de Qt 5.15
         self.refaire()
         # ce serait moins long de remettre juste une ligne dans le tableau
-        self.app.recalculLesCoordonnees()
+        self.app.coord.recalculLesCoordonnees()
         if self.index < self.image_max:
             self.index += 1
         self.prepare_futur_clic()
@@ -618,13 +618,13 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     def savePrefs(self):
         d = self.app.prefs.defaults
         d['version'] = f"pymecavideo {Version}"
-        d['proximite'] = str(self.app.radioButtonNearMouse.isChecked())
+        d['proximite'] = str(self.app.trajectoire.radioButtonNearMouse.isChecked())
         d['lastvideo'] = self.filename
         d['videodir'] = os.path.dirname(self.filename)
         d['niveaudbg'] = str(self.dbg.verbosite)
         d['sens_x'] = str(self.sens_X)
         d['sens_y'] = str(self.sens_Y)
-        d["taille_image"] = f"({self.image_w},{self.image_h})"
+        d["taille_image"] = f"({self.video.image_w},{self.video.image_h})"
         d['rotation'] = str(self.video.rotation)
         d['origine'] = f"({round(self.origine.x)}, {round(self.origine.y)})"
         d['index_depart'] = str(self.premiere_image())
