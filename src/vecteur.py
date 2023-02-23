@@ -41,12 +41,15 @@ class vecteur:
     @param qPoint (None par défaut) ; si ce paramètre est d'un type
       qui possède les méthodes .x() et .y(), il sert à créer le vecteur
       de façon prioritaire.
+    @param precision permet de donner la précision qu'on souhaite (nombre
+      de chiffre significatifs). None par défaut, ce qui implique
+      4 chiffre significatifs
     """
-    def __init__(self, x=0, y=0, qPoint=None):
+    def __init__(self, x=0, y=0, qPoint=None, precision = None):
         if qPoint:
             self.value = (qPoint.x(), qPoint.y())
             return
-        self.precision = 4  # nb de  chiffres significatifs
+        self.precision = 4 if precision is None else precision
         self.value = (self.signif(float(x), self.precision),
                       self.signif(float(y), self.precision))
         return
@@ -136,6 +139,10 @@ class vecteur:
     @property
     def norme(self):
         return math.sqrt(self.x * self.x + self.y * self.y)
+
+    @property
+    def rounded(self):
+        return vecteur(round(self.x), round(self.y))
 
     @property
     def anglePolaire(self):
