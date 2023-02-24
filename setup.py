@@ -7,7 +7,7 @@ from itertools import chain
 from platform import platform
 import os, sys
 
-from distutils.core import setup
+from setuptools import setup
 # import py2exe
 setup(
     name='pymecavideo',
@@ -22,6 +22,7 @@ setup(
         'pymecavideo': 'src',
         'pymecavideo.interfaces' : 'src/interfaces',
     },
+    test_suite = 'src.test',
     data_files=[
         ('share/pymecavideo/data/help',
          chain(*[glob(f"data/help/*.{e}") for e in ("png", "svg", "html", "css")])
