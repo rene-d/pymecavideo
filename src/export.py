@@ -209,7 +209,7 @@ class Calc():
 
     def exportpymeca(self, app):
         """
-        exporte les données de pymecavideo
+        exporte les données de pymecavideo vers le tableur Calc
         @param app pointeur vers l'application
         """
         # fait une ligne de titres
@@ -227,32 +227,21 @@ class Calc():
 
 
         self.tr = []
-        def cb_temps(i,t):
-            """
-            fonction de rappel qui crée les lignes de tableur et
-            y inscrit la date, à gauche; construit self.tr la liste des
-            pointeurs vers les lignes du tableur
-            """
+
+        for i, t, iter_OP in app.pointage.iter_TOP():
             row = self.TableRow()
             self.tr.append(row)
             self.table.addElement(row)
             row.addElement(
                 self.TableCell(valuetype="float", value=str(t)))
-            return
-        
-        def cb_point(i, t, j, obj, p, v):
-            """
-            fonction de rappel qui inscrit les coordonnées dans le tableur
-            """
-            if p is None: return
-            self.tr[i].addElement(
-                self.TableCell(valuetype="float", value=str(p.x)))
-            self.tr[i].addElement(
-                self.TableCell(valuetype="float", value=str(p.y)))
-            return 
-
-        # écrit dans toutes les cases du tableur
-        app.pointage.iteration_data(cb_temps, cb_point, unite="m")
+            for j, obj, p in iter_OP:
+                if p is None: continue
+                # conversion en mètre, toujours
+                p = app.pointage.pointEnMetre(p)
+                self.tr[i].addElement(
+                    self.TableCell(valuetype="float", value=str(p.x)))
+                self.tr[i].addElement(
+                    self.TableCell(valuetype="float", value=str(p.y)))
         # accroche la feuille au document tableur
         self.doc.spreadsheet.addElement(self.table)
         # écrit dans le fichier de sortie
