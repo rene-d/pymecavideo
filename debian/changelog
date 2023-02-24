@@ -1,4 +1,4 @@
-pymecavideo (8.0~rc7-1) UNRELEASED; urgency=medium
+pymecavideo (8.0~rc8-1) UNRELEASED; urgency=medium
 
   * Adopted changes poposed by Janitor:
     + Trim trailing whitespace.
