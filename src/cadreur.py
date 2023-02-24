@@ -55,8 +55,6 @@ class Cadreur(QObject):
         if titre == None:
             self.titre = str(self.tr("Presser la touche ESC pour sortir"))
         self.obj = obj
-        # on s'intéresse à la trajectoire de l'objet servant de référentiel
-        self.trajectoire_obj = self.pointage.une_trajectoire(obj)
         # on fait la liste des index où l'objet a été pointé (début à 0)
         self.index_obj = self.pointage.index_trajectoires(debut = 0)
         self.capture = cv2.VideoCapture(self.pointage.filename)
@@ -69,7 +67,7 @@ class Cadreur(QObject):
 
         self.ralenti = 3
         self.fini = False
-        self.maxcadre()
+        self.maxcadre(self.obj)
 
     def echelleTaille(self):
         """
@@ -89,20 +87,29 @@ class Cadreur(QObject):
         """
         self.ralenti = max([1, position])
 
-    def maxcadre(self):
+    def maxcadre(self, obj):
         """
-        calcule le plus grand cadre qui peut suivre le point n° obj
+        calcule le plus grand cadre qui peut suivre l'objet obj
         sans déborder du cadre de la vidéo. Initialise self.rayons qui indique
         la taille de ce cadre, et self.decal qui est le décalage du point
         à suivre par rapport au centre du cadre.
+
+        Modifie les propriétés :
+        - self.tl (top left) coin haut-gauche du cadre
+        - self.sz (size) taille du cadre
+        - self.decal coordonnées du centre du cadre dans lui-même
+        - self.rayons coordonnées du centre du cadre dans son parent
+        
+        @param obj l'objet autour duquel on doit définir le cadre
         """
         ech, w, h = self.echelleTaille()
 
         agauche = []
         dessus = []
-        for p in self.trajectoire_obj:
-            agauche.append(p.x)
-            dessus.append(p.y)
+        for p in self.pointage.iter_trajectoire(obj):
+            if p:
+                agauche.append(p.x)
+                dessus.append(p.y)
         adroite = [w - x - 1 for x in agauche]
         dessous = [h - y - 1 for y in dessus]
 
@@ -115,6 +122,7 @@ class Cadreur(QObject):
 
         self.decal = vecteur((adroite - agauche) / 2, (dessous - dessus) / 2)
         self.rayons = vecteur((agauche + adroite) / 2, (dessus + dessous) / 2)
+        return
 
     def queryFrame(self):
         """
@@ -129,7 +137,7 @@ class Cadreur(QObject):
                 "erreur, OpenCV 2.1 ne sait pas extraire des images du fichier", videofile)
             sys.exit(1)
 
-    def montrefilm(self, fini=False):
+    def montrefilm(self):
         """
         Calcule et montre le film recadré à l'aide d'OpenCV
         """
@@ -156,9 +164,10 @@ class RalentiWidget(QDialog, Ralenti_Dialog):
         QDialog.__init__(self)
         Ralenti_Dialog.__init__(self)
         self.cadreur = parentObject
+        self.pointage = parentObject.pointage
         self.ralenti = 1
         self.images   = cycle(self.cadreur.index_obj)
-        self.origines = cycle(self.cadreur.trajectoire_obj)
+        self.origines = cycle((p for p in self.pointage.iter_trajectoire(self.cadreur.obj) if p))
         self.delay = self.cadreur.delay
         self.ech, self.w, self.h = self.cadreur.echelleTaille()
         self.timer = QTimer()
@@ -192,7 +201,7 @@ class RalentiWidget(QDialog, Ralenti_Dialog):
 
     def affiche_image(self):
         image_suivante = next(self.images)
-        p              = next(self.origines) 
+        p              = next(self.origines)
         hautgauche = (p + self.cadreur.decal -
                       self.cadreur.rayons) * self.ech
         taille = self.cadreur.sz * self.ech

@@ -408,3 +408,62 @@ class Pointage(QObject):
         if self.suivis is None: return 0
         return len(self.suivis)
 
+    def iter_TOP(self):
+        """
+        itérateur pour accéder aux données
+        @return i, t, iter_OP où i et t sont une énumération des dates
+          et iter_OP est un itérateur pour accéder aux données au temps t.
+
+          Quand on parcourt iter_OP, il renvoie j, obj, P où j et
+          obj sont une énumération de self.suivis et le point P
+          est un vecteur qui correspond au temps t et à l'objet obj.
+        """
+        i = 0
+        while i < len (self.dates):
+            t = self.dates[i]
+            yield i, t, ((j, obj, self.data[t][obj]) \
+                         for j,obj in enumerate(self.suivis))
+            i = i + 1
+        return
+    
+    def iter_TOPV(self):
+        """
+        itérateur pour accéder aux données
+        @return i, t, iter_OPV où i et t sont une énumération des dates
+          et iter_OPV est un itérateur pour accéder aux données au temps t.
+
+          Quand on parcourt iter_OPV, il renvoie j, obj, P, V où j et
+          obj sont une énumération de self.suivis, le point P
+          est un vecteur qui correspond au temps t et à l'objet obj,
+          et la vitesse V (quand elle est évaluable) est l'intervalle
+          entre le point P et celui qui le précède dans le temps, divisé
+          par l'intervalle de temps.
+        """
+        i = 0
+        while i < len (self.dates):
+            t = self.dates[i]
+            
+            def vitesse(i, j):
+                """
+                vitesse du point à la ième date, pour le jème objet
+                """
+                if i in range(1,len(self)) :
+                    p1 = self.data[self.dates[i-1]][self.suivis[j]]
+                    p2 = self.data[self.dates[i]][self.suivis[j]]
+                    if p1 and p2:
+                        return (p2-p1) * (1/self.deltaT)
+                return None
+            
+            yield i, t, ((j, obj, self.data[t][obj], vitesse(i, j)) \
+                         for j,obj in enumerate(self.suivis))
+            i = i + 1
+        return
+    
+    def iter_trajectoire(self, obj):
+        """
+        renvoie un itérateur sur la trajectoire d'un objet
+        @param obj un objet suivi
+        @return un itérateur qui renvoie chacun des points de la trajectoire
+          de l'objet obj.
+        """
+        return (self.data[t][obj] for t in self.dates)

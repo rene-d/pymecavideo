@@ -60,10 +60,10 @@ class trajWidget(ImageWidget):
 
     def prepare_vecteurs_pour_paint(self):
         if self.trajectoire.checkBoxVectorSpeed.isChecked():
-            vitesse = self.trajectoire.checkBoxScale.currentText().replace(
+            echelle = self.trajectoire.checkBoxScale.currentText().replace(
                 ",",".")
             if not pattern_float.match(vitesse): return
-            self.speedToDraw = self.pointage.vecteursVitesse(float(vitesse))
+            self.speedToDraw = self.pointage.vecteursVitesse(float(echelle))
         return
 
     def mouseMoveEvent(self, event):
@@ -222,41 +222,35 @@ class trajWidget(ImageWidget):
         self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         # préparation de la fonction de rappel
-        data = self.pointage.data
-        def cb_point(i, t, j, obj, p, v):
-            """
-            fonction de rappel pour usage avec iteration_data du videoWidget
-            """
+        for i, t, iter_OP in self.pointage.iter_TOP():
             if self.referentiel != 0:
-                obj_reference = data[t][self.referentiel]
+                obj_reference = self.pointage.data[t][self.referentiel]
             else:
                 obj_reference = vecteur(0, 0)
-            if p:
-                self.painter.setFont(QFont("", 10))
-                self.painter.translate(
-                    round(p.x + self.origine.x - obj_reference.x),
-                    round(p.y + self.origine.y - obj_reference.y))
-                if self.chrono == 2:
-                    self.painter.setPen(QColor("black"))
-                    self.painter.drawLine(-4, 0, 4, 0)
-                    self.painter.drawLine(0, -4, 0, 4)
-                    self.painter.translate(-10, +10)
-                    decal = -25
-                    if p.x + decal < 0 : 
-                        decal = 5 
-                    self.painter.drawText(decal, 5, "M"+"'"*j+str(i))
-                else :
-                    self.painter.setPen(QColor(self.couleurs[j]))
-                    self.painter.drawLine(-2, 0, 2, 0)
-                    self.painter.drawLine(0, -2, 0, 2)
-                    self.painter.translate(-10, +10)
-                    self.painter.drawText(0, 0, str(j + 1))
-                self.painter.translate(
-                    round(-p.x - self.origine.x + obj_reference.x) + 10,
-                    round(-p.y - self.origine.y + obj_reference.y) - 10)
-            return
-
-        self.pointage.iteration_data(None, cb_point)
+            for j, obj, p in iter_OP:
+                if p:
+                    self.painter.setFont(QFont("", 10))
+                    self.painter.translate(
+                        round(p.x + self.origine.x - obj_reference.x),
+                        round(p.y + self.origine.y - obj_reference.y))
+                    if self.chrono == 2:
+                        self.painter.setPen(QColor("black"))
+                        self.painter.drawLine(-4, 0, 4, 0)
+                        self.painter.drawLine(0, -4, 0, 4)
+                        self.painter.translate(-10, +10)
+                        decal = -25
+                        if p.x + decal < 0 : 
+                            decal = 5 
+                        self.painter.drawText(decal, 5, "M"+"'"*j+str(i))
+                    else :
+                        self.painter.setPen(QColor(self.couleurs[j]))
+                        self.painter.drawLine(-2, 0, 2, 0)
+                        self.painter.drawLine(0, -2, 0, 2)
+                        self.painter.translate(-10, +10)
+                        self.painter.drawText(0, 0, str(j + 1))
+                    self.painter.translate(
+                        round(-p.x - self.origine.x + obj_reference.x) + 10,
+                        round(-p.y - self.origine.y + obj_reference.y) - 10)
         self.painter.end()
         ############################################################
         # paint repere

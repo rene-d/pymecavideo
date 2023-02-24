@@ -90,6 +90,16 @@ class PointageTest(unittest.TestCase):
                 assert(erreur < 0.19)
             return
         p.iteration_data(None, callback, unite="px")
+        print("GRRRR deuxième méthode")
+        for i, t, iter_OPV in p.iter_TOPV():
+            for j, obj, p, v in iter_OPV:
+                if p is not None:
+                    erreur = abs(p.norme / etalon_px1 / distances_ua[obj] \
+                                 - 1.0)
+                    assert(erreur < 0.18)
+                if v is not None:
+                    erreur = abs((v.norme / etalon_px1 / vi_ua_par_s[obj]) - 1.0)
+                    assert(erreur < 0.19)
         return
 
 
