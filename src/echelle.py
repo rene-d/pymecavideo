@@ -100,14 +100,16 @@ class EchelleWidget(QWidget):
     """
     def __init__(self, parent, pw):
         QWidget.__init__(self, parent)
-        self.app = pw.app         # la fenêtre principale
+        if hasattr(pw, "app"):
+            self.app = pw.app     # la fenêtre principale
         self.video = parent       # l'afficheur de vidéo
         self.pw = pw              # le widget de l'onglet de pointage
         self.image=None
-        self.setGeometry(
-            QRect(0, 0, self.video.image_w, self.video.image_h))
-        self.largeur = self.video.image_w
-        self.hauteur = self.video.image_h
+        if self.video:
+            self.setGeometry(
+                QRect(0, 0, self.video.image_w, self.video.image_h))
+            self.largeur = self.video.image_w
+            self.hauteur = self.video.image_h
         self.setAutoFillBackground(False)
         self.p1 = vecteur()
         self.p2 = vecteur()
@@ -190,10 +192,12 @@ class Echelle_TraceWidget(QWidget):
         self.p1 = p1
         self.p2 = p2
         self.setMouseTracking(True)
+        return
 
     def maj(self):
         self.setGeometry(
             QRect(0, 0, self.video.image_w, self.video.image_h))
+        return
 
     def paintEvent(self, event):
         if self.p1.x <= 0 or self.p2.x <= 0: return

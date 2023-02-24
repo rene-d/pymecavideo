@@ -61,6 +61,12 @@ class Etats(Etats_Base):
 
                 obj.setEnabled(False)
 
+            # met à 1 les contrôles de l'image
+            self.spinBox_image.setValue(1)
+            self.horizontalSlider.setMinimum(1)
+            self.horizontalSlider.setMaximum(10)
+            self.horizontalSlider.setValue(1)
+            
             # désactive les contôles de l'image
             self.imgControlImage(False)
 
