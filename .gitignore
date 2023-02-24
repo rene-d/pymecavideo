@@ -17,6 +17,7 @@ pymecavideo.egg-info/
 # quilt
 .pc/
 
-#pybuild
+#pybuild, python tests
 .pybuild/
+.pytest_cache/
 dist/

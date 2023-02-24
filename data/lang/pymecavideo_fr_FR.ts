@@ -150,17 +150,17 @@
   <context>
     <name>EchelleWidget</name>
     <message>
-      <location filename="../../src/echelle.py" line="159" />
+      <location filename="../../src/echelle.py" line="161" />
       <source>Échelle définie</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/echelle.py" line="160" />
+      <location filename="../../src/echelle.py" line="162" />
       <source>Refaire l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/echelle.py" line="166" />
+      <location filename="../../src/echelle.py" line="168" />
       <source>Vous pouvez continuer votre acquisition</source>
       <translation type="unfinished" />
     </message>
@@ -168,42 +168,42 @@
   <context>
     <name>Etats</name>
     <message>
-      <location filename="../../src/etatsMain.py" line="71" />
+      <location filename="../../src/etatsMain.py" line="72" />
       <source>Pymecavideo : {filename}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/etatsMain.py" line="83" />
+      <location filename="../../src/etatsMain.py" line="84" />
       <source>Veuillez choisir une image (et définir l'échelle)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/etatsMain.py" line="92" />
+      <location filename="../../src/etatsMain.py" line="93" />
       <source>Pointage Automatique</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/etatsMain.py" line="95" />
+      <location filename="../../src/etatsMain.py" line="96" />
       <source>Veuillez sélectionner un cadre autour du ou des objets que vous voulez suivre ;
 Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/etatsPointage.py" line="159" />
-      <location filename="../../src/etatsPointage.py" line="133" />
-      <location filename="../../src/etatsPointage.py" line="81" />
+      <location filename="../../src/etatsPointage.py" line="165" />
+      <location filename="../../src/etatsPointage.py" line="139" />
+      <location filename="../../src/etatsPointage.py" line="87" />
       <location filename="../../src/etatsPointage.py" line="49" />
       <source>Zoom autour de x, y =</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/etatsPointage.py" line="84" />
+      <location filename="../../src/etatsPointage.py" line="90" />
       <source>Définir l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/etatsPointage.py" line="206" />
-      <location filename="../../src/etatsPointage.py" line="171" />
+      <location filename="../../src/etatsPointage.py" line="212" />
+      <location filename="../../src/etatsPointage.py" line="177" />
       <source>Pointage ({obj}) ; x, y =</source>
       <translation type="unfinished" />
     </message>
