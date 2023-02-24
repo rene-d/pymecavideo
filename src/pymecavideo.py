@@ -124,8 +124,13 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo, Etats):
         self.plein_ecran = False
         QShortcut(QKeySequence("F11"), self, self.basculer_plein_ecran)
 
-        g = QApplication.instance().screens()[0].geometry()
-        self.height_screen, self.width_screen = g.height(), g.width()
+        try:
+            g = QApplication.instance().screens()[0].geometry()
+            self.height_screen, self.width_screen = g.height(), g.width()
+        except:
+            # il s'agit peut-être bien d'un test, joué sous xvfb-run
+            # et dans ce cas QApplication.instance().screens() est vide
+            self.height_screen, self.width_screen = 1024, 768
 
         self.setupUi(self)
 
