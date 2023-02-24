@@ -274,85 +274,85 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</s
   <context>
     <name>FenetrePrincipale</name>
     <message>
-      <location filename="../../src/pymecavideo.py" line="199" />
+      <location filename="../../src/pymecavideo.py" line="206" />
       <source>Argument non pris en compte</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="200" />
+      <location filename="../../src/pymecavideo.py" line="207" />
       <source>Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="221" />
+      <location filename="../../src/pymecavideo.py" line="228" />
       <source>Configuration trop ancienne</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="222" />
+      <location filename="../../src/pymecavideo.py" line="229" />
       <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="229" />
+      <location filename="../../src/pymecavideo.py" line="236" />
       <source>Configuration ancienne</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="230" />
+      <location filename="../../src/pymecavideo.py" line="237" />
       <source>La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="468" />
+      <location filename="../../src/pymecavideo.py" line="475" />
       <source>Ouvrir un projet Pymecavideo</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="470" />
+      <location filename="../../src/pymecavideo.py" line="477" />
       <source>Projet Pymecavideo (*.mecavideo)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="580" />
-      <location filename="../../src/pymecavideo.py" line="563" />
-      <location filename="../../src/pymecavideo.py" line="550" />
+      <location filename="../../src/pymecavideo.py" line="587" />
+      <location filename="../../src/pymecavideo.py" line="570" />
+      <location filename="../../src/pymecavideo.py" line="557" />
       <source>Ouvrir une vidéo</source>
       <translation type="unfinished">Abrir un video</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="551" />
+      <location filename="../../src/pymecavideo.py" line="558" />
       <source>fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="565" />
+      <location filename="../../src/pymecavideo.py" line="572" />
       <source>fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="574" />
+      <location filename="../../src/pymecavideo.py" line="581" />
       <source>Nom de fichier non conforme</source>
       <translation type="unfinished">Nombre de archivo no valido</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="575" />
+      <location filename="../../src/pymecavideo.py" line="582" />
       <source>Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="600" />
+      <location filename="../../src/pymecavideo.py" line="607" />
       <source>Licence</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="617" />
+      <location filename="../../src/pymecavideo.py" line="624" />
       <source>Aide</source>
       <translation type="unfinished">Ayuda</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="618" />
+      <location filename="../../src/pymecavideo.py" line="625" />
       <source>Désolé pas de fichier d'aide pour le langage {0}.</source>
       <translation type="unfinished" />
     </message>
