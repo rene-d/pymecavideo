@@ -242,22 +242,19 @@ class GraphWidget(QWidget, Ui_graphWidget, Etats):
 
         # remplissage des self.locals pour les positions,
         # les vitesses, Ec et Epp
-        def cb_points(i, t, j, obj, p, v):
-            """
-            fonction de rappel pour une itération sur les dates
-            """
-            self.locals["X"+str(obj)].append(p.x if p else None)
-            self.locals["Y"+str(obj)].append(p.y if p else None)
-            self.locals["Vx"+str(obj)].append(v.x if v else None)
-            self.locals["Vy"+str(obj)].append(v.y if v else None)
-            self.locals["V"+str(obj)].append(v.norme if v else None)
-            self.locals["Ec"+str(obj)].append(
-                0.5 * m * v.norme ** 2 if v else None)
-            self.locals["Epp"+str(obj)].append(
-                self.pointage.sens_Y * m * g * p.y if p else None)
-            return
-        self.pointage.iteration_data(None, cb_points, unite="m")
-
+        for i, t, iter_OPV in self.pointage.iter_TOPV():
+            for j, obj, p, v in iter_OPV:
+                p = self.pointage.pointEnMetre(p)
+                v = self.pointage.pointEnMetre(v)
+                self.locals["X"+str(obj)].append(p.x if p else None)
+                self.locals["Y"+str(obj)].append(p.y if p else None)
+                self.locals["Vx"+str(obj)].append(v.x if v else None)
+                self.locals["Vy"+str(obj)].append(v.y if v else None)
+                self.locals["V"+str(obj)].append(v.norme if v else None)
+                self.locals["Ec"+str(obj)].append(
+                    0.5 * m * v.norme ** 2 if v else None)
+                self.locals["Epp"+str(obj)].append(
+                    self.pointage.sens_Y * m * g * p.y if p else None)
         # on complète le remplissage de self.locals
         for obj in self.pointage.suivis:
             # énergie mécanique
