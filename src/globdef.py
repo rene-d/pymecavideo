@@ -145,6 +145,8 @@ ICON_PATH = testerDossier(
      '/usr/share/pymecavideo/icones',
      '/usr/share/icons')
 )
+if not os.path.exists(CONF_PATH):
+    os.makedirs(CONF_PATH)
 
 #
 # Dossier des langues
