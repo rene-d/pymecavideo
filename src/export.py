@@ -493,16 +493,13 @@ class PythonNumpy:
         
         x_objets = {o: [] for o in app.pointage.suivis}
         y_objets = {o: [] for o in app.pointage.suivis}
-        def cb_points(i, t, j, obj, p, v):
-            """
-            fonction de rappel pour chaque point
-            """
-            if p is None: return
-            x_objets[obj].append(p.x)
-            y_objets[obj].append(p.y)
-            return
 
-        app.pointage.iteration_data(None, cb_points, unite = "m")
+        for i, t, iter_OP in app.pointage.iter_TOP():
+            for j, obj, p in iter_OP:
+                if p is None: continue
+                p = app.pointage.pointEnMetre(p)
+                x_objets[obj].append(p.x)
+                y_objets[obj].append(p.y)
         
         export = [liste_temps]
         for obj in app.pointage.suivis:
