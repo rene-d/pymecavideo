@@ -1,5 +1,5 @@
-import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from pointage import Pointage
 from vecteur import vecteur
