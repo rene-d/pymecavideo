@@ -1,6 +1,72 @@
-pymecavideo (7.3.0-1) unstable; urgency=medium
+pymecavideo (8.0~rc7-1) UNRELEASED; urgency=medium
+
+  * Adopted changes poposed by Janitor:
+    + Trim trailing whitespace.
+    + Set upstream metadata fields: Bug-Database, Bug-Submit, Name,
+      Repository-Browse.
+    + Update standards version to 4.6.2, no changes needed.
+  * change suggested by Janitor
+  * New upstream version 8.0~rc7
+
+ -- Georges Khaznadar <georgesk@debian.org>  Fri, 24 Feb 2023 11:04:09 +0100
+
+pymecavideo (8.0~rc5-1) unstable; urgency=medium
+
+  * modified d/watch to filter more precisely version tags
+  * fix a regression for package oggvideotools' autopkgtest
+  * New upstream version 8.0~rc5, which fixes a few bugs about
+    saving the configuration
+
+ -- Georges Khaznadar <georgesk@debian.org>  Tue, 21 Feb 2023 16:16:12 +0100
+
+pymecavideo (8.0~rc4-1) unstable; urgency=medium
+
+  * New upstream version 8.0~rc4
+
+ -- Georges Khaznadar <georgesk@debian.org>  Mon, 20 Feb 2023 14:34:53 +0100
+
+pymecavideo (8.0~rc3-1) UNRELEASED; urgency=medium
+
+  * New upstream version 8.0~rc3
+  * added build-dependencies on qt6-l10n-tools, qt6-base-dev-tools
+
+ -- Georges Khaznadar <georgesk@debian.org>  Sun, 19 Feb 2023 23:27:39 +0100
+
+pymecavideo (8.0~rc1-1) UNRELEASED; urgency=medium
+
+  * New upstream version 8.0~rc1
+  * switched to qt6
+  * fixed an issue with pylupdate5/pyludate6
+  * improved the target override_dh_clean
+  * added a build-dependency on pandoc
+  * switched dependencies on qt6
+  * removed obsolete conflicts clauses
+  * fixed the watch file for rc releases
+
+ -- Georges Khaznadar <georgesk@debian.org>  Tue, 14 Feb 2023 16:01:06 +0100
+
+pymecavideo (7.3.2-1) unstable; urgency=medium
+
+  * New upstream version 7.3.2
+  * disabled the tests in debian/rules and removed the build-dependencies
+    which are no longer used
+  bumped Standards-Version to 4.6.1
+
+ -- Georges Khaznadar <georgesk@debian.org>  Thu, 05 Jan 2023 22:51:34 +0100
+
+pymecavideo (7.3.1-1) UNRELEASED; urgency=medium
+
+  * New upstream version 7.3.1
+  * better support for the tests
+
+ -- Georges Khaznadar <georgesk@debian.org>  Thu, 05 Jan 2023 22:18:57 +0100
+
+pymecavideo (7.3.0-1) UNRELEASED; urgency=medium
 
   * new upstream
+  * new build-dependencies:  python3-numpy, python3-opencv, python3-pandas,
+    python3-pyqt5, python3-pyqtgraph in order to satisfy override_dh_auto_test
+
 
  -- Georges Khaznadar <georgesk@debian.org>  Fri, 30 Dec 2022 17:43:42 +0100
 
@@ -208,7 +274,6 @@ pymecavideo (6.0-4) unstable; urgency=low
   * added the possibility to give a video filename as an argument on the
     command line
   * updated the manpages
-  * 
 
  -- Georges Khaznadar <georgesk@ofset.org>  Sun, 24 Jun 2012 14:27:08 +0200
 
@@ -277,7 +342,7 @@ pymecavideo (5.4-2) unstable; urgency=low
   * reinforced the test to know whether openCV has guessed the movie's
     features.
   * fixed a bug in cadreur.py which caused cropping errors
-  * modified the lineEdit to display the scale : it allows now very 
+  * modified the lineEdit to display the scale : it allows now very
     small scales (useful for the following example)
   * added an example video: a simulation of the solar system over one year,
     and a pymecavideo file to open it directly.
@@ -288,7 +353,7 @@ pymecavideo (5.4-1) unstable; urgency=low
 
   * fixed the messages displaied during clics on the video images
   * fixed the recovery from a previously saved file
-  * fixed the undo/redo feature near the first record 
+  * fixed the undo/redo feature near the first record
   * improved the user interface
   * added a feature to recode badly managed video files
 
@@ -296,7 +361,7 @@ pymecavideo (5.4-1) unstable; urgency=low
 
 pymecavideo (5.3-9) unstable; urgency=low
 
-  * removed the dependency on the package ffmpeg coming from 
+  * removed the dependency on the package ffmpeg coming from
     debian-multimedia.org, Closes: #610708
   * removed any invokation of ffmpeg, by using openCV commands
 
@@ -325,14 +390,14 @@ pymecavideo (5.3-6) unstable; urgency=low
 
 pymecavideo (5.3-5) unstable; urgency=low
 
-  * modified the importation of the module Error to disable its use 
+  * modified the importation of the module Error to disable its use
     with GNU/Linux. Closes: #606380
 
  -- Georges Khaznadar <georgesk@ofset.org>  Sun, 12 Dec 2010 12:59:44 +0100
 
 pymecavideo (5.3-4) unstable; urgency=low
 
-  * changed the start time of the QApplication object to allow early 
+  * changed the start time of the QApplication object to allow early
     debugging.
 
  -- Georges Khaznadar <georgesk@ofset.org>  Thu, 18 Nov 2010 21:25:20 +0100
@@ -388,7 +453,7 @@ pymecavideo (5.2-5) unstable; urgency=low
 
 pymecavideo (5.2-4) unstable; urgency=low
 
-  * downgraded the dependency on python-opencv to allow the installtion on 
+  * downgraded the dependency on python-opencv to allow the installation on
     current Ubuntu distributions.
 
  -- Georges Khaznadar <georgesk@ofset.org>  Sun, 12 Sep 2010 12:40:43 +0200
@@ -462,7 +527,7 @@ pymecavideo (4.1-1) unstable; urgency=low
 
 pymecavideo (4.0-5) unstable; urgency=low
 
-  * replaced the invokation of evince by xdg-open, and adjusted the 
+  * replaced the invokation of evince by xdg-open, and adjusted the
     dependencies accordingly
   * modified the calling scheme for the ps-viewer, since xdg-open
     returns before the ps-viewer quits.
@@ -472,7 +537,7 @@ pymecavideo (4.0-5) unstable; urgency=low
 
 pymecavideo (4.0-4) unstable; urgency=low
 
-  * made a few improvements for the restoration from a file ... 
+  * made a few improvements for the restoration from a file ...
     still unsufficient.
   * implemented plotting for the variations of x, y and velocity
 
@@ -480,7 +545,7 @@ pymecavideo (4.0-4) unstable; urgency=low
 
 pymecavideo (4.0-3) unstable; urgency=low
 
-  * fixed the error in the saved config file when a bad file has been 
+  * fixed the error in the saved config file when a bad file has been
     submitted.
   * added the analysis of non integer framerates.
 
@@ -488,7 +553,7 @@ pymecavideo (4.0-3) unstable; urgency=low
 
 pymecavideo (4.0-2) unstable; urgency=low
 
-  * Fixed the bugs highlighted by Thibault North: now we use the built-in 
+  * Fixed the bugs highlighted by Thibault North: now we use the built-in
     class set, and the framerate is computed with a more secure method,
     relying on ffmpeg's messages.
 
@@ -548,7 +613,7 @@ pymecavideo (2.4-2) unstable; urgency=low
   * fixed an error with the debugger behavior
   * fixed an error with the movie making feature. Now the first image is
     the image where the first points were clicked.
-  * added a new feature: earlier clicked points now appear on the video 
+  * added a new feature: earlier clicked points now appear on the video
     during the acquisition of the trajectories. The speed vectors also
     appear with a scale 1 px for 1 m/s.
 
@@ -559,7 +624,7 @@ pymecavideo (2.4-1) unstable; urgency=low
   * Upgraded to svn revision 190
   * Added some new features : management of preferences, debug level
   * Added the possibility to use other video players
-  * Fixed a bug with sys.path which prevented pickle from finding the 
+  * Fixed a bug with sys.path which prevented pickle from finding the
     class vecteur.
 
  -- Georges Khaznadar <georgesk@ofset.org>  Sat, 19 Jan 2008 20:02:59 +0100
@@ -618,12 +683,12 @@ pymecavideo (1.6-1) unstable; urgency=low
 pymecavideo (1.5-1) unstable; urgency=low
 
   * Upgraded to svn revision 96
-  * modified the code to make a link between label_point and 
+  * modified the code to make a link between label_point and
     label_vitesse
   * upgraded to svn revision 98 which brought the mouse-hover events
   * enabled the show/hide feature for speed vectors in the neighborhood
-    of the mouse pointer. (known bug : the speed vectors are not erased 
-    consistently, for example changing the scale leaves the older 
+    of the mouse pointer. (known bug : the speed vectors are not erased
+    consistently, for example changing the scale leaves the older
     vectors)
 
  -- Georges Khaznadar <georgesk@ofset.org>  Sat, 05 Jan 2008 15:45:41 +0100
@@ -634,7 +699,7 @@ pymecavideo (1.4-1) unstable; urgency=low
   * Cleaned the code to draw speed vectors
   * added a new feature to choose a scale for the speed vectors
   * cleaned the code for writing into the tables
-  * cleaned the index of the dictionary dic_donnees : removed the string 
+  * cleaned the index of the dictionary dic_donnees : removed the string
     'data-' which was prepended then trimmed and prepended again.
 
  -- Georges Khaznadar <georgesk@ofset.org>  Thu, 03 Jan 2008 16:04:54 +0100
@@ -680,7 +745,7 @@ pymecavideo (1.0-1) unstable; urgency=low
   * reorganized the main part to make a module pymecavideo, then invoke
     it from a script in /usr/bin
   * modified the export routine to mark the comments
-  * cleaned the code for the decimal separator (taking in account the 
+  * cleaned the code for the decimal separator (taking in account the
     locale)
 
  -- Georges Khaznadar <georgesk@ofset.org>  Mon, 31 Dec 2007 00:41:49 +0100
@@ -706,7 +771,7 @@ pymecavideo (0.2-1) unstable; urgency=low
 
 pymecavideo (0.1-1) unstable; urgency=low
 
-  * Initial release 
+  * Initial release
   * Removed the script magic numbers from the modules
   * Ajouté la prise en compte d'un paramètre : le nom de fichier à ouvrir
   * Ajouté l'exportation dans un fichier texte.
