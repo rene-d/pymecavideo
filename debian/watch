@@ -1,5 +1,5 @@
 version=3
 
-opts=uversionmangle=s/(beta|RC)/~$1/ \
+opts=uversionmangle=s/_?(beta|RC|rc)/~$1/ \
 https://gitlab.com/oppl/pymecavideo/-/tags \
-   /oppl/pymecavideo/-/archive/[Vv]?(.*)/pymecavideo-.*\.tar\.gz
+   /oppl/pymecavideo/-/archive/[Vv]?(\d+\.\d+.*)/pymecavideo-.*\.tar\.gz

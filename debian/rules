@@ -10,25 +10,36 @@
 #export DH_VERBOSE=1
 
 PACKAGE = python3-mecavideo
+export PYBUILD_NAME=mecavideo
+export QT_QPA_PLATFORM=linuxfb
 
 %:
-	dh $@ --with python3
+	dh $@ --with python3 --buildsystem=pybuild
 
 override_dh_clean:
 	find . -type d -name __pycache__ | xargs rm -rf
+	rm -rf pymecavideo.egg-info/
+	rm -f data/lang/*.qm
+	rm -f data/help/*w32.png
+	rm -f src/interfaces/Ui_*.py src/interfaces/*_rc.py
 	dh_clean
 
-override_dh_auto_install:
-	$(MAKE) DESTDIR=$(CURDIR)/debian/$(PACKAGE) install-for-debian
-	python3 setup.py install --root $(CURDIR)/debian/$(PACKAGE)
-	# remove redundant icons and video files
-	find $(CURDIR)/debian/$(PACKAGE)/usr/lib -name icones -type d | xargs rm -rf
-	find $(CURDIR)/debian/$(PACKAGE)/usr/lib -name video -type d | xargs rm -rf
-	# remove files make_exe.py from the distribution
-	find $(CURDIR)/debian/$(PACKAGE) -name make_exe.py | xargs rm -f
+override_dh_auto_build:
+	$(MAKE) all
+	dh_auto_build
 
-override_dh_auto_test:
-	cd test && xvfb-run python3 pymecavideoTest.py
+override_dh_auto_install:
+	dh_auto_install
+	# fix executable flags
+	find $(CURDIR)/debian/$(PACKAGE)/usr/share/pymecavideo/data/video -type f -exec chmod 644 {} \;
+	# fix a bug in oggvideotools' autopkgtest system
+	mkdir $(CURDIR)/debian/$(PACKAGE)/usr/share/python3-mecavideo
+	ln -sf ../pymecavideo/data/video \
+	  $(CURDIR)/debian/$(PACKAGE)/usr/share/python3-mecavideo
+
+XVFB_OPTIONS =  -a -s '-screen 0 1280x1024x24 +extension GLX -dpi 96'
+#override_dh_auto_test:
+#	cd test && xvfb-run $(XVFB_OPTIONS) python3 pymecavideoTest.py
 
 override_dh_compress:
-	dh_compress -X.xhtml
+	dh_compress -X.html

@@ -1,0 +1,4 @@
+pymecavideo			/usr/bin
+pymecavideo.desktop		/usr/share/applications
+data/icones/pymecavideo-48.png	/usr/share/pixmaps
+data/help/static		/usr/share/pymecavideo/data/help
