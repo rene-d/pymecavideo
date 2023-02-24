@@ -111,6 +111,8 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo, Etats):
         QMainWindow.__init__(self, parent)
         Ui_pymecavideo.__init__(self)
         Etats.__init__(self)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+        self.setAttribute(Qt.WidgetAttribute.WA_QuitOnClose)
         # version minimale du fichier de configuration :
         self.min_version = version(7, 3, ".0-1")
         self.wanted_image_size = vecteur() # taille souhaitée pour l'image

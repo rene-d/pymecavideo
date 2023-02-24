@@ -23,6 +23,7 @@ class PymecavideoTest(unittest.TestCase):
         call ("rm -rf ~/.local/share/pymecavideo/*", shell=True)
         self.w = pymecavideo.FenetrePrincipale()
         self.w.changeEtat("debut")
+        self.w.show()
         return
 
     def tearDown(self):
@@ -88,4 +89,5 @@ class PymecavideoTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+    app.exec()
        
