@@ -126,6 +126,8 @@ CONF_PATH = os.path.join(
     QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppLocalDataLocation),
     "pymecavideo"
 )
+if not os.path.exists(CONF_PATH):
+    os.makedirs(CONF_PATH)
 
 # HOME_PATH
 HOME_PATH = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.HomeLocation)
