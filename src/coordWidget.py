@@ -148,55 +148,47 @@ class CoordWidget(QWidget, Ui_coordWidget, Etats):
         # le numéro de la dernière colonne où on peut refaire les points
         colonne_refait_points = self.pointage.nb_obj * (2 + colonnes_sup) + 1
 
-        def cb_temps(i, t):
-            # marque la date dans la colonne de gauche
+        for i, t, iter_OPV in self.pointage.iter_TOPV():
             self.tableWidget.setItem(i, 0, QTableWidgetItem(f"{t:.3f}"))
-            return
-
-        def cb_point(i, t, j, obj, p, v):
-            # marque les coordonnées x et y de chaque objet, deux colonnes
-            # suivies par des colonnes supplémentaires (Ec, Epp, Em), et après
-            # avoir épuisé le compte d'objets, un colonne pour permettre de
-            # refaire le pointage
-            col = 1 + (2 + colonnes_sup) * j
-            if p:
-                self.tableWidget.setItem(
-                    i, col, QTableWidgetItem(f"{p.x:.4g}"))
-                col += 1
-                self.tableWidget.setItem(
-                    i, col, QTableWidgetItem(f"{p.y:.4g}"))
-                col+= 1
-                if colonnes_sup:
-                    m = self.masse(obj)
-                # Énergie cinétique si nécessaire
-                if self.checkBox_Ec.isChecked():
-                    if v is not None:
-                        Ec = 0.5 * m * v.norme ** 2
-                        self.tableWidget.setItem(
-                            i, col, QTableWidgetItem(f"{Ec:.4g}"))
-                    col += 1
-                # Énergie potentielle de pesanteur si nécessaire
-                if self.checkBox_Epp.isChecked():
-                    Epp = m * 9.81 * p.y  # TODO faire varier g
+            for j, obj, p, v in iter_OPV:
+                if self.pointage.echelle_image:
+                    # on convertit les pixels et px/x en mètre et m/s
+                    p = self.pointage.pointEnMetre(p)
+                    v = self.pointage.pointEnMetre(v)
+                col = 1 + (2 + colonnes_sup) * j
+                if p:
                     self.tableWidget.setItem(
-                        i, col, QTableWidgetItem(f"{Epp:.4g}"))
+                        i, col, QTableWidgetItem(f"{p.x:.4g}"))
                     col += 1
-                # Énergie mécanique si nécessaire
-                if self.checkBox_Em.isChecked():
-                    if v is not None:
+                    self.tableWidget.setItem(
+                        i, col, QTableWidgetItem(f"{p.y:.4g}"))
+                    col+= 1
+                    if colonnes_sup:
+                        m = self.masse(obj)
+                    # Énergie cinétique si nécessaire
+                    if self.checkBox_Ec.isChecked():
+                        if v is not None:
+                            Ec = 0.5 * m * v.norme ** 2
+                            self.tableWidget.setItem(
+                                i, col, QTableWidgetItem(f"{Ec:.4g}"))
+                        col += 1
+                    # Énergie potentielle de pesanteur si nécessaire
+                    if self.checkBox_Epp.isChecked():
+                        Epp = m * 9.81 * p.y  # TODO faire varier g
                         self.tableWidget.setItem(
-                            i, col, QTableWidgetItem(f"{Ec+Epp:.4g}"))
-                    col += 1
-                # dernière colonne : un bouton pour refaire le pointage
-                # n'existe que s'il y a eu un pointage
-                derniere = self.pointage.nb_obj * (2 + colonnes_sup) +1
-                self.tableWidget.setCellWidget(
-                    i, derniere, self.bouton_refaire(i))
-            return
-        
-        self.pointage.iteration_data(
-            cb_temps, cb_point,
-            unite = "m" if self.pointage.echelle_image else "px")
+                            i, col, QTableWidgetItem(f"{Epp:.4g}"))
+                        col += 1
+                    # Énergie mécanique si nécessaire
+                    if self.checkBox_Em.isChecked():
+                        if v is not None:
+                            self.tableWidget.setItem(
+                                i, col, QTableWidgetItem(f"{Ec+Epp:.4g}"))
+                        col += 1
+                    # dernière colonne : un bouton pour refaire le pointage
+                    # n'existe que s'il y a eu un pointage
+                    derniere = self.pointage.nb_obj * (2 + colonnes_sup) +1
+                    self.tableWidget.setCellWidget(
+                        i, derniere, self.bouton_refaire(i))
         
         # rajoute des boutons pour refaire le pointage
         # au voisinage immédiat des zones de pointage
