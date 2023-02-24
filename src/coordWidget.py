@@ -293,23 +293,14 @@ class CoordWidget(QWidget, Ui_coordWidget, Etats):
         self.dbg.p(2, "rentre dans 'recalculLesCoordonnees'")
         nb_suivis = self.pointage.nb_obj
 
-        def cb_temps(i, t):
-            # marque la date dans la colonne de gauche
+        for i, t, iter_OP in self.pointage.iter_TOP():
             self.tableWidget.setItem(i, 0, QTableWidgetItem(f"{t:.3f}"))
-            return
-
-        def cb_point(i, t, j, obj, p, v):
-            # marque les coordonnées x et y de chaque objet, deux colonnes
-            # par deux colonnes.
-            if p:
-                self.tableWidget.setItem(
-                    i, j*(nb_suivis)+1, QTableWidgetItem(str(p.x)))
-                self.tableWidget.setItem(
-                    i, j*(nb_suivis) + 2, QTableWidgetItem(str(p.y)))
-            return
-
-        # dans le tableau, l'unité est le mètre.
-        self.pointage.iteration_data(cb_temps, cb_point, unite = "m")
+            for j, obj, p in iter_OP:
+                if p:
+                    self.tableWidget.setItem(
+                        i, j*(nb_suivis)+1, QTableWidgetItem(str(p.x)))
+                    self.tableWidget.setItem(
+                        i, j*(nb_suivis) + 2, QTableWidgetItem(str(p.y)))
         return
 
     def bouton_refaire(self, ligne):
