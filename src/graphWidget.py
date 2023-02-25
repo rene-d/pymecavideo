@@ -242,7 +242,7 @@ class GraphWidget(QWidget, Ui_graphWidget, Etats):
 
         # remplissage des self.locals pour les positions,
         # les vitesses, Ec et Epp
-        for i, t, iter_OPV in self.pointage.iter_TOPV():
+        for i, t, iter_OPV in self.pointage.gen_iter_TOPV():
             for j, obj, p, v in iter_OPV:
                 p = self.pointage.pointEnMetre(p)
                 v = self.pointage.pointEnMetre(v)

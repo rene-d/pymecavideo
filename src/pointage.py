@@ -351,7 +351,7 @@ class Pointage(QObject):
         if self.suivis is None: return 0
         return len(self.suivis)
 
-    def iter_TOP(self):
+    def gen_iter_TOP(self):
         """
         générateur pour accéder aux données
         @return un itérateur qui renvoie à chaque appel
@@ -366,7 +366,7 @@ class Pointage(QObject):
                          for j, obj in enumerate(self.suivis))) \
                  for i, t in enumerate(self.dates))
     
-    def iter_TOPV(self):
+    def gen_iter_TOPV(self):
         """
         genérateur pour accéder aux données
         @yield i, t, iter_OPV où i et t sont une énumération des dates
@@ -400,7 +400,7 @@ class Pointage(QObject):
             i = i + 1
         return
     
-    def iter_trajectoire(self, obj):
+    def gen_iter_traj(self, obj):
         """
         renvoie un itérateur sur la trajectoire d'un objet
         @param obj un objet suivi
@@ -409,12 +409,12 @@ class Pointage(QObject):
         """
         return (self.data[t][obj] for t in self.dates)
 
-    def iter_OP(self):
+    def gen_iter_OP(self):
         """
         générateur pour accéder aux données
         @yield i, obj, iter_P où i et obj viennent d'une eénumération
           des objets, et iter_P un itérateur qui permet de parcourir
           la trajectoire de l'objet courant.
         """
-        return ((i, obj, self.iter_trajectoire(obj)) \
+        return ((i, obj, self.gen_iter_traj(obj)) \
                 for i, obj in enumerate(self.suivis))

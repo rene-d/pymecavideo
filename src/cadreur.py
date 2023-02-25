@@ -106,7 +106,7 @@ class Cadreur(QObject):
 
         agauche = []
         dessus = []
-        for p in self.pointage.iter_trajectoire(obj):
+        for p in self.pointage.gen_iter_traj(obj):
             if p:
                 agauche.append(p.x)
                 dessus.append(p.y)
@@ -167,7 +167,7 @@ class RalentiWidget(QDialog, Ralenti_Dialog):
         self.pointage = parentObject.pointage
         self.ralenti = 1
         self.images   = cycle(self.cadreur.index_obj)
-        self.origines = cycle((p for p in self.pointage.iter_trajectoire(self.cadreur.obj) if p))
+        self.origines = cycle((p for p in self.pointage.gen_iter_traj(self.cadreur.obj) if p))
         self.delay = self.cadreur.delay
         self.ech, self.w, self.h = self.cadreur.echelleTaille()
         self.timer = QTimer()

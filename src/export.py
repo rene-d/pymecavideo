@@ -228,7 +228,7 @@ class Calc():
 
         self.tr = []
 
-        for i, t, iter_OP in app.pointage.iter_TOP():
+        for i, t, iter_OP in app.pointage.gen_iter_TOP():
             row = self.TableRow()
             self.tr.append(row)
             self.table.addElement(row)
@@ -377,7 +377,7 @@ dt={deltaT}
             lignes_x     = []
             lignes_y     = []
 
-            for i, obj, iter_P in app.pointage.iter_OP():
+            for i, obj, iter_P in app.pointage.gen_iter_OP():
                 commentaires.append(f"""\
 
 # coordonnées du point numéro {obj}
@@ -474,7 +474,7 @@ class PythonNumpy:
         x_objets = {o: [] for o in app.pointage.suivis}
         y_objets = {o: [] for o in app.pointage.suivis}
 
-        for i, t, iter_OP in app.pointage.iter_TOP():
+        for i, t, iter_OP in app.pointage.gen_iter_TOP():
             for j, obj, p in iter_OP:
                 if p is None: continue
                 p = app.pointage.pointEnMetre(p)

@@ -148,7 +148,7 @@ class CoordWidget(QWidget, Ui_coordWidget, Etats):
         # le numéro de la dernière colonne où on peut refaire les points
         colonne_refait_points = self.pointage.nb_obj * (2 + colonnes_sup) + 1
 
-        for i, t, iter_OPV in self.pointage.iter_TOPV():
+        for i, t, iter_OPV in self.pointage.gen_iter_TOPV():
             self.tableWidget.setItem(i, 0, QTableWidgetItem(f"{t:.3f}"))
             for j, obj, p, v in iter_OPV:
                 if self.pointage.echelle_image:
@@ -293,7 +293,7 @@ class CoordWidget(QWidget, Ui_coordWidget, Etats):
         self.dbg.p(2, "rentre dans 'recalculLesCoordonnees'")
         nb_suivis = self.pointage.nb_obj
 
-        for i, t, iter_OP in self.pointage.iter_TOP():
+        for i, t, iter_OP in self.pointage.gen_iter_TOP():
             self.tableWidget.setItem(i, 0, QTableWidgetItem(f"{t:.3f}"))
             for j, obj, p in iter_OP:
                 if p:

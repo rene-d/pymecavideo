@@ -222,7 +222,7 @@ class trajWidget(ImageWidget):
         self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         # préparation de la fonction de rappel
-        for i, t, iter_OP in self.pointage.iter_TOP():
+        for i, t, iter_OP in self.pointage.gen_iter_TOP():
             if self.referentiel != 0:
                 obj_reference = self.pointage.data[t][self.referentiel]
             else:
