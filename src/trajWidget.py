@@ -62,7 +62,7 @@ class trajWidget(ImageWidget):
         if self.trajectoire.checkBoxVectorSpeed.isChecked():
             echelle = self.trajectoire.checkBoxScale.currentText().replace(
                 ",",".")
-            if not pattern_float.match(vitesse): return
+            if not pattern_float.match(echelle): return
             self.speedToDraw = self.pointage.vecteursVitesse(float(echelle))
         return
 
