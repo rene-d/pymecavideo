@@ -377,13 +377,7 @@ dt={deltaT}
             lignes_x     = []
             lignes_y     = []
 
-            def cb_objet(i, obj):
-                """
-                fonction de rappel pour chacun des objets; modifie les listes
-                commentaires, lignes_x et lignes_y
-                @param i index de l'objet, commençant à 0
-                @param obj un objet suivi
-                """
+            for i, obj, iter_P in app.pointage.iter_OP():
                 commentaires.append(f"""\
 
 # coordonnées du point numéro {obj}
@@ -391,25 +385,11 @@ dt={deltaT}
 """)
                 lignes_x.append(f"x{obj} = np.array([")
                 lignes_y.append(f"y{obj} = np.array([")
-                return
-
-
-            def cb_point(i, obj, p):
-                """
-                fonction de rappel pour les points pointés appartenant à un
-                objet
-                @param i l'index de l'objet, commençant à 0
-                @param obj l'objet suivi
-                @param p un pointage (de type vecteur)
-                """
-                if p is not None:
-                    lignes_x[i] += f"{p.x}, "
-                    lignes_y[i] += f"{p.y}, "
-                return
-
-            # on crée les commentaires et les lignes de déclaration de
-            # tableaux de nombres
-            app.pointage.iteration_objet(cb_objet, cb_point, unite="m")
+                for p in iter_P:
+                    if p is not None:
+                        p = app.pointage.pointEnMetre(p)
+                        lignes_x[i] += f"{p.x}, "
+                        lignes_y[i] += f"{p.y}, "
             
             # On termine les lignes de déclaration des tableaux de nombres
             lignes_x = [l + "])\n" for l in lignes_x]
