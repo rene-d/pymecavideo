@@ -353,25 +353,22 @@ class Pointage(QObject):
 
     def iter_TOP(self):
         """
-        itérateur pour accéder aux données
-        @yield i, t, iter_OP où i et t sont une énumération des dates
+        générateur pour accéder aux données
+        @return un itérateur qui renvoie à chaque appel
+          i, t, iter_OP, où i et t sont une énumération des dates
           et iter_OP est un itérateur pour accéder aux données au temps t.
 
           Quand on parcourt iter_OP, il renvoie j, obj, P où j et
           obj sont une énumération de self.suivis et le point P
           est un vecteur qui correspond au temps t et à l'objet obj.
         """
-        i = 0
-        while i < len (self.dates):
-            t = self.dates[i]
-            yield i, t, ((j, obj, self.data[t][obj]) \
-                         for j,obj in enumerate(self.suivis))
-            i = i + 1
-        return
+        return ((i, t, ((j, obj, self.data[t][obj]) \
+                         for j, obj in enumerate(self.suivis))) \
+                 for i, t in enumerate(self.dates))
     
     def iter_TOPV(self):
         """
-        itérateur pour accéder aux données
+        genérateur pour accéder aux données
         @yield i, t, iter_OPV où i et t sont une énumération des dates
           et iter_OPV est un itérateur pour accéder aux données au temps t.
 
