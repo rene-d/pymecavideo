@@ -380,22 +380,23 @@ class Pointage(QObject):
           par l'intervalle de temps.
         """
         i = 0
+        points_avant = [None] * len(self.suivis)
         while i < len (self.dates):
             t = self.dates[i]
             
-            def vitesse(i, j):
+            def vitesse(p2, p1):
                 """
-                vitesse du point à la ième date, pour le jème objet
+                vitesse du point p2
+                @param p2 position d'un objet
+                @param p1 position du même objet juste avant dans le temps
                 """
-                if i in range(1,len(self)) :
-                    p1 = self.data[self.dates[i-1]][self.suivis[j]]
-                    p2 = self.data[self.dates[i]][self.suivis[j]]
-                    if p1 and p2:
-                        return (p2-p1) * (1/self.deltaT)
+                if p1 and p2:
+                    return (p2-p1) * (1/self.deltaT)
                 return None
             
-            yield i, t, ((j, obj, self.data[t][obj], vitesse(i, j)) \
+            yield i, t, ((j, obj, self.data[t][obj], vitesse(self.data[t][obj], points_avant[j])) \
                          for j,obj in enumerate(self.suivis))
+            points_avant = [self.data[t][obj] for obj in self.suivis]
             i = i + 1
         return
     
