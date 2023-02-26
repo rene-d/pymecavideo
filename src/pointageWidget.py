@@ -541,6 +541,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             self.cvReader.recupere_avi_infos(self.video.rotation)
         self.ratio = self.largeurFilm / self.hauteurFilm
         self.affiche_image()
+        self.app.sync_img2others(self.index)
         return
     
     def efface_point_precedent(self):
