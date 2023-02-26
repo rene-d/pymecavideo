@@ -126,12 +126,7 @@ CONF_PATH = os.path.join(
     QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppLocalDataLocation),
     "pymecavideo"
 )
-if '/nonexistent' in CONF_PATH:
-    # cas des test durant la compilation Debian dans un chroot
-    CONF_PATH = "/tmp/pymecavideo"
-    
 if not os.path.exists(CONF_PATH):
-    # création du répertoire CONF_PATH au besoin :
     os.makedirs(CONF_PATH)
 
 # HOME_PATH
@@ -150,6 +145,8 @@ ICON_PATH = testerDossier(
      '/usr/share/pymecavideo/icones',
      '/usr/share/icons')
 )
+if not os.path.exists(CONF_PATH):
+    os.makedirs(CONF_PATH)
 
 #
 # Dossier des langues
