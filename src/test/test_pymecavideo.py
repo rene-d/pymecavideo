@@ -11,6 +11,7 @@ from PyQt6.QtTest import QTest
 from PyQt6.QtCore import Qt, QPoint
 from src import pymecavideo
 from src.echelle import EchelleWidget
+from globdef import VIDEO_PATH
 
 # il faut créer l'application même si le module n'est pas __main__
 # sinon le PymecavideoTest.setUp ne fonctionnera pas.
@@ -59,9 +60,8 @@ class PymecavideoTest(unittest.TestCase):
         # alors, l'étalon est forcément indéfini
         self.assertEqual(self.w.pointage.echelleEdit.text(), "indéf.")
         # ensuite on charge le fichier
-        # /usr/share/python3-mecavideo/video/Principe_inertie.avi
-        self.w.pointage.openTheFile(
-            "/usr/share/python3-mecavideo/video/Principe_inertie.avi")
+        # f"{VIDEO_PATH}/Principe_inertie.avi"
+        self.w.pointage.openTheFile(f"{VIDEO_PATH}/Principe_inertie.avi")
         # l'application est censée "croire" que l'étalon fait 1 mètre
         self.assertEqual(self.w.pointage.echelle_image.longueur_reelle_etalon,1)
         # on démarre un widget EchelleWidget, puis on simule un tirer-glisser
