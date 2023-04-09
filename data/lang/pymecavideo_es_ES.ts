@@ -12,23 +12,23 @@
   <context>
     <name>CoordWidget</name>
     <message>
-      <location filename="../../src/coordWidget.py" line="332" />
+      <location filename="../../src/coordWidget.py" line="315" />
       <source>refaire le pointage
  de l'image {numero}</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/coordWidget.py" line="352" />
+      <location filename="../../src/coordWidget.py" line="335" />
       <source>Masse de l'objet</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/coordWidget.py" line="353" />
+      <location filename="../../src/coordWidget.py" line="336" />
       <source>Quelle est la masse de l'objet ? (en kg)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/coordWidget.py" line="359" />
+      <location filename="../../src/coordWidget.py" line="342" />
       <source>Merci d'indiquer une masse valable</source>
       <translation type="unfinished" />
     </message>
@@ -394,8 +394,8 @@ Merci de bien vouloir le renommer avant de continuer</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/graphWidget.py" line="296" />
-      <location filename="../../src/graphWidget.py" line="294" />
+      <location filename="../../src/graphWidget.py" line="293" />
+      <location filename="../../src/graphWidget.py" line="291" />
       <source>Choisir ...</source>
       <translation type="unfinished" />
     </message>
@@ -476,56 +476,56 @@ n'est peut-être pas dans un format vidéo supporté.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="584" />
+      <location filename="../../src/pointageWidget.py" line="585" />
       <source>Enregistrer le projet pymecavideo</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="586" />
+      <location filename="../../src/pointageWidget.py" line="587" />
       <source>Projet pymecavideo (*.mecavideo)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="589" />
+      <location filename="../../src/pointageWidget.py" line="590" />
       <source>Erreur lors de l'enregistrement</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="589" />
+      <location filename="../../src/pointageWidget.py" line="590" />
       <source>Il manque les données, ou l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="608" />
+      <location filename="../../src/pointageWidget.py" line="609" />
       <source>temps en seconde, positions en mètre</source>
       <translation type="unfinished">tiempo en segundos, posición en metros</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="750" />
-      <location filename="../../src/pointageWidget.py" line="750" />
-      <location filename="../../src/pointageWidget.py" line="689" />
+      <location filename="../../src/pointageWidget.py" line="751" />
+      <location filename="../../src/pointageWidget.py" line="751" />
+      <location filename="../../src/pointageWidget.py" line="690" />
       <source>indéf.</source>
       <translation type="unfinished">indéf.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="1064" />
-      <location filename="../../src/pointageWidget.py" line="799" />
+      <location filename="../../src/pointageWidget.py" line="1065" />
+      <location filename="../../src/pointageWidget.py" line="800" />
       <source>Refaire l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="828" />
-      <location filename="../../src/pointageWidget.py" line="811" />
+      <location filename="../../src/pointageWidget.py" line="829" />
+      <location filename="../../src/pointageWidget.py" line="812" />
       <source>Zone à suivre n° {zone} x, y =</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="942" />
+      <location filename="../../src/pointageWidget.py" line="943" />
       <source>Pointage ({obj}) ; x, y =</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="966" />
+      <location filename="../../src/pointageWidget.py" line="967" />
       <source>Cliquez sur l'objet : {0}</source>
       <translation type="unfinished" />
     </message>
@@ -823,7 +823,7 @@ enregistré avec succès.</source>
   <context>
     <name>export_numpy</name>
     <message>
-      <location filename="../../src/export.py" line="526" />
+      <location filename="../../src/export.py" line="492" />
       <source>Fichier Numpy sauvegardé</source>
       <translation type="unfinished" />
     </message>
