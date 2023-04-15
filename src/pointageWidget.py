@@ -471,7 +471,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
 
         # gestion de l'origine et de l'échelle :
         self.dbg.p(3, f"Dans 'tourne_image' avant de tourner, self.origine {self.origine}, largeur video {self.video.width()}, hauteur video {self.video.height()}")
-        self.redimensionneSignal.emit(True)
+        self.app.redimensionneSignal.emit(True)
         return
 
     def affiche_image(self, index= None):

@@ -62,6 +62,7 @@ class Preferences (QObject):
 
         # ajuste les valeurs par défaut
         d = self.defaults = self.config['DEFAULT']
+
         d['version']   = f"pymecavideo {Version}"
         d['proximite'] = "False"     # vecteurs tracés près du curseur
         d['lastVideo'] = ""          # vidéo consultée précédement
