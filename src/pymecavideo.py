@@ -573,7 +573,6 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo, Etats):
         self.pointage.openTheFile(filename)
         self.pointage.reinitialise_capture()
         self.pointage.video.rotation = 0
-
         return
     
     def renomme_le_fichier(self):
