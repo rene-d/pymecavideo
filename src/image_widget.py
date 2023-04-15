@@ -90,7 +90,7 @@ class Zoom(ImageWidget):
         return
 
     def paintEvent(self, event):
-        if self.image:
+        if self.image and self.app.etat=='D': #TODO compléter les états possibles pour zoom (échelles etc.)
             painter = QPainter()
             painter.begin(self)
             if self.image != None:
