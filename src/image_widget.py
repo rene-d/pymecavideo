@@ -36,7 +36,7 @@ class ImageWidget(QWidget):
         QWidget.__init__(self, parent)
         self.setImage(image)
 
-    def setImage(self, image=None):
+    def setImage(self, image=None, position=None):
         """
         définit l'image de fond
         """
@@ -46,6 +46,8 @@ class ImageWidget(QWidget):
             self.image = image
         elif isinstance(image, QImage):
             self.image = QPixmap.fromImage(image)
+        if position is not None :
+            self.move(int(position.x),int(position.y) )
         self.update()
         return
 
@@ -84,7 +86,7 @@ class Zoom(ImageWidget):
                 crop.scaled(100, 100, Qt.AspectRatioMode.KeepAspectRatio))
         else:
             cropX2 = crop.scaled(100, 100, Qt.AspectRatioMode.KeepAspectRatio)
-        self.setImage(cropX2)
+        self.setImage(cropX2, p)
         return
 
     def paintEvent(self, event):
@@ -93,11 +95,19 @@ class Zoom(ImageWidget):
             painter.begin(self)
             if self.image != None:
                 painter.drawPixmap(0, 0, self.image)
+            #croix de visée
             painter.setPen(QColor("red"))
             painter.drawLine(50, 0, 50, 45)
             painter.drawLine(50, 55, 50, 100)
             painter.drawLine(0, 50, 45, 50)
             painter.drawLine(55, 50, 100, 50)
+
+            #bordure extérieure
+            #painter.setPen(QColor("yellow"))
+            painter.drawLine(0, 0, 0, 100)
+            painter.drawLine(0, 0, 100, 0)
+            painter.drawLine(0, 100, 100, 100)
+            painter.drawLine(100, 0, 100, 100)
 
             # fixe la couleur du crayon et la largeur pour le dessin - forme compactée
             painter.setPen(QPen(QColor(255, 64, 255), 1))

@@ -54,6 +54,7 @@ import interfaces.icon_rc
 
 from interfaces.Ui_pointage import Ui_pointageWidget
 
+
 class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     """
     Une classe qui affiche l'image d'une vidéo et qui gère le pointage
@@ -72,7 +73,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         Pointage.__init__(self)
         Etats.__init__(self)
         self.setupUi(self)
-        
+
         self.app = None            # la fenêtre principale
         self.dbg = None            # le débogueur
         self.etat = "A"            # état initial ; différent de "debut"
@@ -729,6 +730,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         @param position le centre de la zone à agrandir
         """
         if self.etat == "B": return
+        self.zoom_zone.raise_()
         self.zoom_zone.fait_crop(self.video.image, position)
         xpx, ypx, xm, ym = self.coords(position)
         self.editXpx.setText(f"{xpx}")

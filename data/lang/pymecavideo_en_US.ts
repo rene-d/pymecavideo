@@ -376,7 +376,7 @@ You can stop the capture at any moment by clicking the STOP button</translation>
       <translation>Pymecavideo Project (*.mecavideo)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="587" />
+      <location filename="../../src/pymecavideo.py" line="588" />
       <location filename="../../src/pymecavideo.py" line="570" />
       <location filename="../../src/pymecavideo.py" line="557" />
       <source>Ouvrir une vidéo</source>
@@ -393,29 +393,29 @@ You can stop the capture at any moment by clicking the STOP button</translation>
       <translation>video files( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="581" />
+      <location filename="../../src/pymecavideo.py" line="582" />
       <source>Nom de fichier non conforme</source>
       <translation>Invalid filename</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="582" />
+      <location filename="../../src/pymecavideo.py" line="583" />
       <source>Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
       <translation>The name of the file contains accented characters or spaces.
 PLease rename it before going on</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="607" />
+      <location filename="../../src/pymecavideo.py" line="608" />
       <source>Licence</source>
       <translation>License</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="624" />
+      <location filename="../../src/pymecavideo.py" line="625" />
       <source>Aide</source>
       <translation>Help</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="625" />
+      <location filename="../../src/pymecavideo.py" line="626" />
       <source>Désolé pas de fichier d'aide pour le langage {0}.</source>
       <translation>Sorry, no help file for the language {0}.</translation>
     </message>
@@ -640,123 +640,123 @@ image #{numero}</translation>
   <context>
     <name>PointageWidget</name>
     <message>
-      <location filename="../../src/pointageWidget.py" line="222" />
+      <location filename="../../src/pointageWidget.py" line="223" />
       <source>Erreur lors de la lecture du fichier</source>
       <translation>Error while reading the file</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="223" />
+      <location filename="../../src/pointageWidget.py" line="224" />
       <source>Le fichier&lt;b&gt;{0}&lt;/b&gt; ...
 n'est peut-être pas dans un format vidéo supporté.</source>
       <translation>The file&lt;b&gt;{0}&lt;/b&gt; ...
 is maybe in an unsupported video format.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="280" />
+      <location filename="../../src/pointageWidget.py" line="281" />
       <source>Format vidéo non pris en charge</source>
       <translation>Video format not supported</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="281" />
+      <location filename="../../src/pointageWidget.py" line="282" />
       <source>Le format de cette vidéo n'est pas pris en charge par pymecavideo</source>
       <translation>The format of this video is not compatible with pymecavideo</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="316" />
+      <location filename="../../src/pointageWidget.py" line="317" />
       <source>Pymecavideo n'arrive pas à lire l'image</source>
       <translation>Pymecavideo cannot read the image</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="379" />
+      <location filename="../../src/pointageWidget.py" line="380" />
       <source>Le nombre d'images par seconde doit être un entier</source>
       <translation>The framerate must be an integer</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="380" />
+      <location filename="../../src/pointageWidget.py" line="381" />
       <source>merci de recommencer</source>
       <translation>Please try again</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="397" />
+      <location filename="../../src/pointageWidget.py" line="398" />
       <source>Définir léchelle</source>
       <translation>Define the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="398" />
+      <location filename="../../src/pointageWidget.py" line="399" />
       <source>Quelle est la longueur en mètre de votre étalon sur l'image ?</source>
       <translation>Which is the length (in meter) of your gauge in the image?</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="403" />
+      <location filename="../../src/pointageWidget.py" line="404" />
       <source>Merci d'indiquer une échelle valable : {} ne peut pas être converti en nombre.</source>
       <translation>Please define a sensible scale: {} cannot be converted in a number.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="431" />
+      <location filename="../../src/pointageWidget.py" line="432" />
       <source>NOUVELLE ORIGINE</source>
       <translation>NEW ORIGIN</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="432" />
+      <location filename="../../src/pointageWidget.py" line="433" />
       <source>Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine</source>
       <translation>Please select the new origin's location by clicking on the video</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="517" />
+      <location filename="../../src/pointageWidget.py" line="518" />
       <source>Définir l'échelle</source>
       <translation>Define the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="585" />
+      <location filename="../../src/pointageWidget.py" line="586" />
       <source>Enregistrer le projet pymecavideo</source>
       <translation>Save the Pymecavideo project</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="587" />
+      <location filename="../../src/pointageWidget.py" line="588" />
       <source>Projet pymecavideo (*.mecavideo)</source>
       <translation>pymecavideo project file (*.mecavideo)</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="590" />
+      <location filename="../../src/pointageWidget.py" line="591" />
       <source>Erreur lors de l'enregistrement</source>
       <translation>Error while saving the data</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="590" />
+      <location filename="../../src/pointageWidget.py" line="591" />
       <source>Il manque les données, ou l'échelle</source>
       <translation>Some data, or the scale, are missing</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="609" />
+      <location filename="../../src/pointageWidget.py" line="610" />
       <source>temps en seconde, positions en mètre</source>
       <translation>time in second, positions in meter</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="751" />
-      <location filename="../../src/pointageWidget.py" line="751" />
-      <location filename="../../src/pointageWidget.py" line="690" />
+      <location filename="../../src/pointageWidget.py" line="753" />
+      <location filename="../../src/pointageWidget.py" line="753" />
+      <location filename="../../src/pointageWidget.py" line="691" />
       <source>indéf.</source>
       <translation>undef.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="1065" />
-      <location filename="../../src/pointageWidget.py" line="800" />
+      <location filename="../../src/pointageWidget.py" line="1067" />
+      <location filename="../../src/pointageWidget.py" line="802" />
       <source>Refaire l'échelle</source>
       <translation>Redo the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="829" />
-      <location filename="../../src/pointageWidget.py" line="812" />
+      <location filename="../../src/pointageWidget.py" line="831" />
+      <location filename="../../src/pointageWidget.py" line="814" />
       <source>Zone à suivre n° {zone} x, y =</source>
       <translation>Mobile area #{zone} x, y =</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="943" />
+      <location filename="../../src/pointageWidget.py" line="945" />
       <source>Pointage ({obj}) ; x, y =</source>
       <translation>Spotting ({obj}); x, y =</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="967" />
+      <location filename="../../src/pointageWidget.py" line="969" />
       <source>Cliquez sur l'objet : {0}</source>
       <translation>Clic on the object: {0}</translation>
     </message>
@@ -764,12 +764,12 @@ is maybe in an unsupported video format.</translation>
   <context>
     <name>Preferences</name>
     <message>
-      <location filename="../../src/preferences.py" line="116" />
+      <location filename="../../src/preferences.py" line="117" />
       <source>Erreur de lecture de la configuration</source>
       <translation>Error in the configuration file</translation>
     </message>
     <message>
-      <location filename="../../src/preferences.py" line="117" />
+      <location filename="../../src/preferences.py" line="118" />
       <source>Peut-être un ancien format de fichier de configuration ? On recommence avec une configuration neuve.</source>
       <translation>Maybe some old configuration file? A new configuration will be used.</translation>
     </message>
@@ -1320,11 +1320,6 @@ successfully saved.</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
-      <source>Zoom ⨯2 autour du curseur de la souris</source>
-      <translation>Zoom ⨯2 around the mouse's cursor</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source> Zoom autour de x, y =</source>
       <translation> Zoom near x, y =</translation>
     </message>
@@ -1537,6 +1532,11 @@ spot.</translation>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Rétablit le point suivant</source>
       <translation>Restore the next point</translation>
+    </message>
+    <message>
+      <location filename="../../src/interfaces/pointage.ui" line="0" />
+      <source>Zoom ⨯2 autour du curseur de la souris</source>
+      <translation>Zoom ⨯2 around the mouse's cursor</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />

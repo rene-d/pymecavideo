@@ -54,8 +54,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>182</width>
-        <height>601</height>
+        <width>223</width>
+        <height>582</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -92,70 +92,6 @@
              </size>
             </property>
            </spacer>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>1</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>100</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>100</width>
-              <height>100</height>
-             </size>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="Zoom" name="zoom_zone" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Zoom ⨯2 autour du curseur de la souris</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
           </item>
           <item>
            <spacer name="horizontalSpacer">
@@ -859,6 +795,28 @@ QPushButton:disabled{color: #c0c0c0;}</string>
           </widget>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="Zoom" name="zoom_zone" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Zoom ⨯2 autour du curseur de la souris</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border: 1px solid yellow; border-radius: 10px;</string>
+        </property>
        </widget>
       </item>
       <item>
