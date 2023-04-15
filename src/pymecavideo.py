@@ -572,7 +572,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo, Etats):
             self.tr("fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)"))
         self.pointage.openTheFile(filename)
         self.pointage.reinitialise_capture()
-        self.pointage.video.rotation = 0
+        self.pointage.video.rotation = 0 #quand on ouvre un nouveau fichier, la rotation doit être remise par défaut
         return
     
     def renomme_le_fichier(self):
