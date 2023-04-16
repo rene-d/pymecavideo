@@ -47,7 +47,7 @@ class ImageWidget(QWidget):
         elif isinstance(image, QImage):
             self.image = QPixmap.fromImage(image)
         if position is not None :
-            self.move(int(position.x),int(position.y) )
+            self.move(int(position.x), int(position.y) )
         self.update()
         return
 
@@ -90,7 +90,7 @@ class Zoom(ImageWidget):
         return
 
     def paintEvent(self, event):
-        if self.image and self.app.etat=='D': #TODO compléter les états possibles pour zoom (échelles etc.)
+        if self.image : #TODO compléter les états possibles pour zoom (échelles etc.)
             painter = QPainter()
             painter.begin(self)
             if self.image != None:

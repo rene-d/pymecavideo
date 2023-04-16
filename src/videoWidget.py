@@ -115,7 +115,7 @@ class VideoPointeeWidget(ImageWidget):
     def mouseMoveEvent(self, event):
         self.pw.update_zoom.emit(vecteur(qPoint = event.position()))
         return
-    
+
     def paintEvent(self, event):
         if self.image:
             painter = QPainter()

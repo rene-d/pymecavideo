@@ -729,15 +729,20 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         sauf dans l'état B (pointage auto)
         @param position le centre de la zone à agrandir
         """
-        if self.etat == "B": return
-        self.zoom_zone.raise_()
-        self.zoom_zone.fait_crop(self.video.image, position)
-        xpx, ypx, xm, ym = self.coords(position)
-        self.editXpx.setText(f"{xpx}")
-        self.editYpx.setText(f"{ypx}")
-        self.editXm.setText(f"{xm}")
-        self.editYm.setText(f"{ym}")
-        return
+        self.dbg.p(2, "rentre dans 'loupe'")
+
+        if self.etat == "B" : return
+        elif (self.app.etat=='D' or self.app.etat=='C' or self.app.etat=='E'):
+            self.dbg.p(3, f"Mets à jour ZOOM à la position {position}")
+            self.zoom_zone.raise_()
+            self.zoom_zone.fait_crop(self.video.image, position)
+            xpx, ypx, xm, ym = self.coords(position)
+            self.editXpx.setText(f"{xpx}")
+            self.editYpx.setText(f"{ypx}")
+            self.editXm.setText(f"{xm}")
+            self.editYm.setText(f"{ym}")
+            self.app.update()
+            return
 
     def coords(self, p):
         """
