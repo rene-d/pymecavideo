@@ -114,6 +114,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
     stopCalculs = pyqtSignal()                 # arrete le pointage auto
     label_zoom = pyqtSignal(str)               # change le label du zoom
     update_zoom = pyqtSignal(vecteur)          # agrandit une portion d'image
+    disable_zoom = pyqtSignal()                # desactive la fenetre de zoom
+    remet_zoom = pyqtSignal()                  # remet la fenetre de zoom
     echelle_modif = pyqtSignal(str, str)       # modifie le bouton d'échelle
     apres_echelle = pyqtSignal()               # après dénition de l'échelle
     selection_motif_done = pyqtSignal()        # prêt à commencer la détection
@@ -132,6 +134,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.stopCalculs.connect(self.stopComputing)
         self.label_zoom.connect(self.labelZoom)
         self.update_zoom.connect(self.loupe)
+        self.disable_zoom.connect(self.annule_loupe)
+        self.remet_zoom.connect(self.remet_loupe)
         self.echelle_modif.connect(self.setButtonEchelle)
         self.apres_echelle.connect(self.restaureEtat)
         self.fin_pointage.connect(self.termine_pointage)
@@ -530,6 +534,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.sens_X = self.sens_Y = 1
         self.sens_axes.emit(self.sens_X, self.sens_Y)
         self.app.change_etat.emit("A")
+        self.disable_zoom.emit()
         return
 
     def remontre_image(self):
@@ -722,6 +727,12 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.app.actionRefaire.setEnabled(value)
         return
 
+    def annule_loupe(self):
+        self.zoom_zone.setVisible(0)
+        self.update_zoom.emit(vecteur(self.zoom_zone.x(), self.zoom_zone.y()))
+    def remet_loupe(self):
+        self.zoom_zone.setVisible(1)
+
     def loupe(self, position):
         """
         Agrandit deux fois une partie de self.video.image et la met
@@ -734,14 +745,15 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         if self.etat == "B" : return
         elif (self.app.etat=='D' or self.app.etat=='C' or self.app.etat=='E'):
             self.dbg.p(3, f"Mets à jour ZOOM à la position {position}")
-            self.zoom_zone.raise_()
+
             self.zoom_zone.fait_crop(self.video.image, position)
             xpx, ypx, xm, ym = self.coords(position)
             self.editXpx.setText(f"{xpx}")
             self.editYpx.setText(f"{ypx}")
             self.editXm.setText(f"{xm}")
             self.editYm.setText(f"{ym}")
-            self.app.update()
+            self.zoom_zone.raise_()
+
             return
 
     def coords(self, p):
@@ -910,13 +922,14 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
             self.pointe(self.objet_courant, event, index=self.index-1)
             self.objetSuivant()
             self.fin_pointage.emit()
-            self.update_zoom.emit(vecteur(qPoint = event.position()))
-            self.video.update()
             if self.refait_point and self.objet_courant == self.suivis[0]:
                 # on a été délégué pour corriger le tableau
                 # le dernier objet est pointé, retour au tableau de coords
                 self.refait_point = False
                 self.app.show_coord.emit()
+            self.app.update()
+            self.update_zoom.emit(vecteur(qPoint = event.position()))
+
         return
     
     def prepare_futur_clic(self):

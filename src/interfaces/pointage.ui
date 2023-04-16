@@ -798,28 +798,6 @@ QPushButton:disabled{color: #c0c0c0;}</string>
        </widget>
       </item>
       <item>
-       <widget class="Zoom" name="zoom_zone" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>Zoom ⨯2 autour du curseur de la souris</string>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">border: 1px solid yellow; border-radius: 10px;</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="VideoPointeeWidget" name="video" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -854,6 +832,28 @@ QPushButton:disabled{color: #c0c0c0;}</string>
           </widget>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="Zoom" name="zoom_zone" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border: 1px solid yellow; border-radius: 10px;</string>
+        </property>
        </widget>
       </item>
      </layout>

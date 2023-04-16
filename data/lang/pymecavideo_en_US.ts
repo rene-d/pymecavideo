@@ -640,123 +640,123 @@ image #{numero}</translation>
   <context>
     <name>PointageWidget</name>
     <message>
-      <location filename="../../src/pointageWidget.py" line="223" />
+      <location filename="../../src/pointageWidget.py" line="227" />
       <source>Erreur lors de la lecture du fichier</source>
       <translation>Error while reading the file</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="224" />
+      <location filename="../../src/pointageWidget.py" line="228" />
       <source>Le fichier&lt;b&gt;{0}&lt;/b&gt; ...
 n'est peut-être pas dans un format vidéo supporté.</source>
       <translation>The file&lt;b&gt;{0}&lt;/b&gt; ...
 is maybe in an unsupported video format.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="281" />
+      <location filename="../../src/pointageWidget.py" line="285" />
       <source>Format vidéo non pris en charge</source>
       <translation>Video format not supported</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="282" />
+      <location filename="../../src/pointageWidget.py" line="286" />
       <source>Le format de cette vidéo n'est pas pris en charge par pymecavideo</source>
       <translation>The format of this video is not compatible with pymecavideo</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="317" />
+      <location filename="../../src/pointageWidget.py" line="321" />
       <source>Pymecavideo n'arrive pas à lire l'image</source>
       <translation>Pymecavideo cannot read the image</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="380" />
+      <location filename="../../src/pointageWidget.py" line="384" />
       <source>Le nombre d'images par seconde doit être un entier</source>
       <translation>The framerate must be an integer</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="381" />
+      <location filename="../../src/pointageWidget.py" line="385" />
       <source>merci de recommencer</source>
       <translation>Please try again</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="398" />
+      <location filename="../../src/pointageWidget.py" line="402" />
       <source>Définir léchelle</source>
       <translation>Define the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="399" />
+      <location filename="../../src/pointageWidget.py" line="403" />
       <source>Quelle est la longueur en mètre de votre étalon sur l'image ?</source>
       <translation>Which is the length (in meter) of your gauge in the image?</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="404" />
+      <location filename="../../src/pointageWidget.py" line="408" />
       <source>Merci d'indiquer une échelle valable : {} ne peut pas être converti en nombre.</source>
       <translation>Please define a sensible scale: {} cannot be converted in a number.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="432" />
+      <location filename="../../src/pointageWidget.py" line="436" />
       <source>NOUVELLE ORIGINE</source>
       <translation>NEW ORIGIN</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="433" />
+      <location filename="../../src/pointageWidget.py" line="437" />
       <source>Choisissez, en cliquant sur la vidéo le point qui sera la nouvelle origine</source>
       <translation>Please select the new origin's location by clicking on the video</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="518" />
+      <location filename="../../src/pointageWidget.py" line="522" />
       <source>Définir l'échelle</source>
       <translation>Define the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="586" />
+      <location filename="../../src/pointageWidget.py" line="590" />
       <source>Enregistrer le projet pymecavideo</source>
       <translation>Save the Pymecavideo project</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="588" />
+      <location filename="../../src/pointageWidget.py" line="592" />
       <source>Projet pymecavideo (*.mecavideo)</source>
       <translation>pymecavideo project file (*.mecavideo)</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="591" />
+      <location filename="../../src/pointageWidget.py" line="595" />
       <source>Erreur lors de l'enregistrement</source>
       <translation>Error while saving the data</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="591" />
+      <location filename="../../src/pointageWidget.py" line="595" />
       <source>Il manque les données, ou l'échelle</source>
       <translation>Some data, or the scale, are missing</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="610" />
+      <location filename="../../src/pointageWidget.py" line="614" />
       <source>temps en seconde, positions en mètre</source>
       <translation>time in second, positions in meter</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="753" />
-      <location filename="../../src/pointageWidget.py" line="753" />
-      <location filename="../../src/pointageWidget.py" line="691" />
+      <location filename="../../src/pointageWidget.py" line="769" />
+      <location filename="../../src/pointageWidget.py" line="769" />
+      <location filename="../../src/pointageWidget.py" line="695" />
       <source>indéf.</source>
       <translation>undef.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="1067" />
-      <location filename="../../src/pointageWidget.py" line="802" />
+      <location filename="../../src/pointageWidget.py" line="1084" />
+      <location filename="../../src/pointageWidget.py" line="818" />
       <source>Refaire l'échelle</source>
       <translation>Redo the scale</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="831" />
-      <location filename="../../src/pointageWidget.py" line="814" />
+      <location filename="../../src/pointageWidget.py" line="847" />
+      <location filename="../../src/pointageWidget.py" line="830" />
       <source>Zone à suivre n° {zone} x, y =</source>
       <translation>Mobile area #{zone} x, y =</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="945" />
+      <location filename="../../src/pointageWidget.py" line="962" />
       <source>Pointage ({obj}) ; x, y =</source>
       <translation>Spotting ({obj}); x, y =</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="969" />
+      <location filename="../../src/pointageWidget.py" line="986" />
       <source>Cliquez sur l'objet : {0}</source>
       <translation>Clic on the object: {0}</translation>
     </message>
@@ -1535,13 +1535,12 @@ spot.</translation>
     </message>
     <message>
       <location filename="../../src/interfaces/pointage.ui" line="0" />
-      <source>Zoom ⨯2 autour du curseur de la souris</source>
-      <translation>Zoom ⨯2 around the mouse's cursor</translation>
-    </message>
-    <message>
-      <location filename="../../src/interfaces/pointage.ui" line="0" />
       <source>Zone d'affichage et de pointage ; peut être redimensionnée dans l'état « initial » seulement</source>
       <translation>Area of display and spotting; can be resized only in the "initial" state</translation>
+    </message>
+    <message>
+      <source>Zoom ⨯2 autour du curseur de la souris</source>
+      <translation type="vanished">Zoom ⨯2 around the mouse's cursor</translation>
     </message>
   </context>
   <context>

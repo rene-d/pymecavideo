@@ -110,9 +110,11 @@ class VideoPointeeWidget(ImageWidget):
         """
         if event.button() == Qt.MouseButton.LeftButton:
             self.pw.fin_pointage_manuel.emit(event)
+            self.pw.disable_zoom.emit()
         return
 
     def mouseMoveEvent(self, event):
+        self.pw.remet_zoom.emit()
         self.pw.update_zoom.emit(vecteur(qPoint = event.position()))
         return
 
