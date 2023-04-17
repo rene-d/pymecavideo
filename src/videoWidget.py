@@ -177,5 +177,6 @@ class VideoPointeeWidget(ImageWidget):
         self.setMouseTracking(True)
         image = im.scaled(self.image_w, self.image_h)
         self.setImage(image)
+        self.update()
         return image
     

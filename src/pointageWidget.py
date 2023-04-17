@@ -218,18 +218,21 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         if self.init_cvReader():
             # le fichier vidéo est OK, et son format est reconnu
             self.init_image()
+            self.app.redimensionneSignal.emit(True)
             # s'il y avait déjà une échelle, il faut l'oublier,
             # quitter l'état A pour y revenir
             if self.echelle_image:
                 self.clearEchelle()
                 self.app.change_etat.emit("debut")
             self.app.change_etat.emit("A")
+
         else:
             QMessageBox.warning(
                 None,
                 self.tr("Erreur lors de la lecture du fichier"),
                 self.tr("Le fichier<b>{0}</b> ...\nn'est peut-être pas dans un format vidéo supporté.").format(
                     filename))
+
         return
     
     def apply_preferences(self, rouvre=False):
@@ -305,6 +308,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         # on dimensionne les données pour les pointages
         self.redimensionne_data(self.nb_obj)
         self.affiche_image()
+        self.video.rotation = 0
         return
 
     def extract_image(self, index):
