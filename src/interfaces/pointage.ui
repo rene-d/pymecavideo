@@ -24,7 +24,7 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>184</width>
+       <width>225</width>
        <height>0</height>
       </size>
      </property>
@@ -55,7 +55,7 @@
         <x>0</x>
         <y>0</y>
         <width>223</width>
-        <height>582</height>
+        <height>597</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -80,32 +80,6 @@
           <property name="bottomMargin">
            <number>2</number>
           </property>
-          <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>1</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>1</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
         </widget>
        </item>
