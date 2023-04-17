@@ -97,6 +97,13 @@ class VideoPointeeWidget(ImageWidget):
             self.pw.update_origine.emit(ratiow, ratioh)
         return
 
+    def leaveEvent(self, event):
+        self.pw.disable_zoom.emit()
+
+    def enterEvent(self, event):
+        self.pw.remet_zoom.emit()
+
+
     def mouseReleaseEvent(self, event):
         """
         enregistre le point de l'évènement souris, si self.pointageOK
