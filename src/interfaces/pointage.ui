@@ -834,39 +834,12 @@ QPushButton:disabled{color: #c0c0c0;}</string>
         </layout>
        </widget>
       </item>
-      <item>
-       <widget class="Zoom" name="zoom_zone" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">border: 1px solid yellow; border-radius: 10px;</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>Zoom</class>
-   <extends>QWidget</extends>
-   <header>image_widget.h</header>
-  </customwidget>
   <customwidget>
    <class>VideoPointeeWidget</class>
    <extends>QWidget</extends>

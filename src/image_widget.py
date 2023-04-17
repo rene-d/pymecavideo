@@ -47,7 +47,7 @@ class ImageWidget(QWidget):
         elif isinstance(image, QImage):
             self.image = QPixmap.fromImage(image)
         if position is not None :
-            self.move(int(position.x)+50, int(position.y)-50 )
+            self.move(int(position.x), int(position.y) )
         return
 
 class Zoom(ImageWidget):

@@ -35,7 +35,7 @@ import locale
 from version import Version
 from vecteur import vecteur
 from echelle import Echelle_TraceWidget
-from image_widget import ImageWidget
+from image_widget import ImageWidget, Zoom
 from pointage import Pointage
 from globdef import cible_icon, DOCUMENT_PATH, inhibe, pattern_float
 from cadreur import openCvReader
@@ -49,6 +49,7 @@ from pointage import Pointage
 from etatsPointage import Etats
 from echelle import EchelleWidget, echelle
 from detect import filter_picture
+
 
 import interfaces.icon_rc
 
@@ -102,6 +103,8 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         # fait un beau gros curseur
         cible_pix = QPixmap(cible_icon).scaledToHeight(32)
         self.pointageCursor = QCursor(cible_pix)
+        self.zoom_zone = Zoom(parent=self)
+        self.zoom_zone.setFixedSize(100,100)
 
         self.connecte_ui()
         self.connecte_signaux()
@@ -728,9 +731,13 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         return
 
     def annule_loupe(self):
+        self.dbg.p(2, "rentre dans 'annule_loupe'")
+
         self.zoom_zone.setVisible(0)
-        self.update_zoom.emit(vecteur(self.zoom_zone.x(), self.zoom_zone.y()))
+
     def remet_loupe(self):
+        self.dbg.p(2, "rentre dans 'remet_loupe'")
+
         self.zoom_zone.setVisible(1)
 
     def loupe(self, position):

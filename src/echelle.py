@@ -143,7 +143,9 @@ class EchelleWidget(QWidget):
 
     def mouseMoveEvent(self, event):
         p = vecteur(qPoint = event.position())
-        self.pw.update_zoom.emit(p)
+        if self.pw.etat in ( 'C' , 'D') :
+            self.pw.remet_zoom.emit()
+            self.pw.update_zoom.emit(p)
         if self.pressed:
             self.p2 = p
             self.update()
@@ -171,6 +173,7 @@ class EchelleWidget(QWidget):
 
         self.close()
         self.pw.apres_echelle.emit()
+        self.pw.disable_zoom.emit()
         return
 
 class Echelle_TraceWidget(QWidget):
