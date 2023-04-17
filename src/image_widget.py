@@ -23,6 +23,8 @@ from PyQt6.QtCore import QRect, Qt, QPointF
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtGui import QPixmap, QImage, QPainter, QPen, QColor
 
+ZOOM_DIM = 100 # dimension de la zone de zoom (100×100 si c'est une carré)
+
 class ImageWidget(QWidget):
     """
     Un widget contenant une image
@@ -39,6 +41,10 @@ class ImageWidget(QWidget):
     def setImage(self, image=None, position=None):
         """
         définit l'image de fond
+        @param image l'image à mettre en fond (None par défaut)
+        @param position un point (None par défaut) ; si la position est
+           renseignée, alors l'image est décalée ; c'est utile pour
+           dessiner une image zoomée à côté de la position du curseur.
         """
         if not image:
             self.image = None
@@ -47,14 +53,14 @@ class ImageWidget(QWidget):
         elif isinstance(image, QImage):
             self.image = QPixmap.fromImage(image)
         if position is not None :
-            dx = 90 if position.x > 100 else 228
+            dx = ZOOM_DIM-10 if position.x > ZOOM_DIM else ZOOM_DIM+128
             dy = -35
             self.move(int(position.x+dx), int(position.y+dy) )
         return
 
 class Zoom(ImageWidget):
     """
-    classe dédiée, qui permet d'avoir un zoom de 100x100 px sur un détail
+    classe dédiée, qui permet d'avoir un zoom de ZOOM_DIMxZOOM_DIM px sur un détail
     
     Paramètres du constructeur
     @param app la fenêtre prncipale
@@ -75,18 +81,21 @@ class Zoom(ImageWidget):
         """
         récupère une zone rectangulaire dans l'image affiché e
         (dans le widget vidéo) et l'affiche grandie deux fois.
-        param image une image
+        @param image une image
         @param p un vecteur
         """
         if not image:
             return
-        rect = QRect(round(p.x) - 25, round(p.y) - 25, 50, 50)
+        rect = QRect(round(p.x) - ZOOM_DIM//4, round(p.y) - ZOOM_DIM//4,
+                     ZOOM_DIM//2, ZOOM_DIM//2)
         crop = image.copy(rect)
         if isinstance(crop, QImage):
             cropX2 = QPixmap.fromImage(
-                crop.scaled(100, 100, Qt.AspectRatioMode.KeepAspectRatio))
+                crop.scaled(ZOOM_DIM, ZOOM_DIM,
+                            Qt.AspectRatioMode.KeepAspectRatio))
         else:
-            cropX2 = crop.scaled(100, 100, Qt.AspectRatioMode.KeepAspectRatio)
+            cropX2 = crop.scaled(ZOOM_DIM, ZOOM_DIM,
+                                 Qt.AspectRatioMode.KeepAspectRatio)
         self.setImage(cropX2, p)
         return
 
@@ -97,21 +106,28 @@ class Zoom(ImageWidget):
             if self.image != None:
                 painter.drawPixmap(0, 0, self.image)
             #croix de visée
+            R = ZOOM_DIM//20 # rayon du cercle intérieur
             painter.setPen(QColor("red"))
-            painter.drawLine(50, 0, 50, 45)
-            painter.drawLine(50, 55, 50, 100)
-            painter.drawLine(0, 50, 45, 50)
-            painter.drawLine(55, 50, 100, 50)
+            painter.drawLine(ZOOM_DIM//2, 0,
+                             ZOOM_DIM//2, ZOOM_DIM//2-R)
+            painter.drawLine(ZOOM_DIM//2, ZOOM_DIM//2+R,
+                             ZOOM_DIM//2, ZOOM_DIM)
+            painter.drawLine(0, ZOOM_DIM//2,
+                             ZOOM_DIM//2-R, ZOOM_DIM//2)
+            painter.drawLine(ZOOM_DIM//2+R, ZOOM_DIM//2,
+                             ZOOM_DIM, ZOOM_DIM//2)
 
             #bordure extérieure
             #painter.setPen(QColor("yellow"))
-            painter.drawLine(0, 0, 0, 100)
-            painter.drawLine(0, 0, 100, 0)
-            painter.drawLine(0, 100, 100, 100)
-            painter.drawLine(100, 0, 100, 100)
+            painter.drawLine(0, 0, 0, ZOOM_DIM-1)
+            painter.drawLine(0, 0, ZOOM_DIM-1, 0)
+            painter.drawLine(0, ZOOM_DIM-1, ZOOM_DIM-1, ZOOM_DIM-1)
+            painter.drawLine(ZOOM_DIM-1, 0, ZOOM_DIM-1, ZOOM_DIM-1)
 
             # fixe la couleur du crayon et la largeur pour le dessin - forme compactée
             painter.setPen(QPen(QColor(255, 64, 255), 1))
             # cf QPen(QBrush brush, float width, Qt.PenStyle style = Qt.SolidLine, Qt.PenCapStyle cap = Qt.SquareCap, Qt.PenJoinStyle join = Qt.BevelJoin)
-            painter.drawEllipse(QPointF(50, 50), 5, 5)
+            painter.drawEllipse(QPointF(ZOOM_DIM//2, ZOOM_DIM//2), R, R)
             painter.end()
+        return
+    
