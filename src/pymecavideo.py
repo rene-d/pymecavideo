@@ -35,6 +35,10 @@ from vecteur import vecteur
 from echelle import echelle
 
 import interfaces.icon_rc
+from inspect import currentframe
+
+from interfaces.Ui_pymecavideo import Ui_pymecavideo
+from etatsMain import Etats
 
 licence = {}
 licence['en'] = """
@@ -83,7 +87,7 @@ licence['fr'] = """
 thisDir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, thisDir)
 
-from inspect import currentframe
+
 
 def get_linenumber():
     cf = currentframe()
@@ -97,8 +101,7 @@ app = QApplication(sys.argv)
 #import qtiplotexport
 
 
-from interfaces.Ui_pymecavideo import Ui_pymecavideo
-from etatsMain import Etats
+
 
 class FenetrePrincipale(QMainWindow, Ui_pymecavideo, Etats):
     def __init__(self, parent=None, opts=[], args=[]):

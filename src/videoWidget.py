@@ -101,7 +101,8 @@ class VideoPointeeWidget(ImageWidget):
         self.pw.disable_zoom.emit()
 
     def enterEvent(self, event):
-        self.pw.remet_zoom.emit()
+        if self.pw.etat in ('C', 'D'):
+            self.pw.remet_zoom.emit()
 
 
     def mouseReleaseEvent(self, event):
