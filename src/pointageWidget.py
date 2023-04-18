@@ -572,6 +572,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         else:
             self.purge_defaits() # si on a retiré le dernier pointage visible
             if self.index > 1: self.index -= 1
+        self.app.sync_img2others(self.index)
         self.prepare_futur_clic()
         return
     
@@ -585,6 +586,7 @@ class PointageWidget(QWidget, Ui_pointageWidget, Pointage, Etats):
         self.app.coord.recalculLesCoordonnees()
         if self.index < self.image_max:
             self.index += 1
+        self.app.sync_img2others(self.index)
         self.prepare_futur_clic()
         return
 
