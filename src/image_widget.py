@@ -23,6 +23,8 @@ from PyQt6.QtCore import QRect, Qt, QPointF
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtGui import QPixmap, QImage, QPainter, QPen, QColor
 
+from vecteur import vecteur
+
 ZOOM_DIM = 100 # dimension de la zone de zoom (100×100 si c'est un carré)
 
 class ImageWidget(QWidget):
@@ -38,13 +40,10 @@ class ImageWidget(QWidget):
         QWidget.__init__(self, parent)
         self.setImage(image)
 
-    def setImage(self, image=None, position=None):
+    def setImage(self, image=None):
         """
         définit l'image de fond
         @param image l'image à mettre en fond (None par défaut)
-        @param position un point (None par défaut) ; si la position est
-           renseignée, alors l'image est décalée ; c'est utile pour
-           dessiner une image zoomée à côté de la position du curseur.
         """
         if not image:
             self.image = None
@@ -52,10 +51,6 @@ class ImageWidget(QWidget):
             self.image = image
         elif isinstance(image, QImage):
             self.image = QPixmap.fromImage(image)
-        if position is not None :
-            dx = ZOOM_DIM+30
-            dy = -35
-            self.move(int(position.x+dx), int(position.y+dy) )
         return
 
 class Zoom(ImageWidget):
@@ -73,6 +68,24 @@ class Zoom(ImageWidget):
         self.app = app
         return
 
+    def setImage(self, image=None, position=None):
+        """
+        surcharge la méthode héritée de ImageWidget, en ajoutant un fonction
+        de dessin décalée.
+        @param image l'image à mettre en fond (None par défaut)
+        @param position un point (None par défaut) ; si la position est
+           renseignée, alors l'image est décalée ; c'est utile pour
+           dessiner l'image zoomée à côté de la position du curseur.
+        """
+        ImageWidget.setImage(self, image)
+        if position is not None :
+            decale = position + vecteur(
+                ZOOM_DIM+58, # decalage horizontal pour centrer sur le pointeur
+                -45)         # decalage vertical pour mettre au-dessus
+            self.move(int(decale.x), int(decale.y) )
+        return
+       
+
     def setApp(self, app):
         self.app = app
         return
@@ -86,16 +99,27 @@ class Zoom(ImageWidget):
         """
         if not image:
             return
-        rect = QRect(round(p.x) - ZOOM_DIM//4, round(p.y) - ZOOM_DIM//4,
-                     ZOOM_DIM//2, ZOOM_DIM//2)
-        crop = image.copy(rect)
-        if isinstance(crop, QImage):
-            cropX2 = QPixmap.fromImage(
-                crop.scaled(ZOOM_DIM, ZOOM_DIM,
-                            Qt.AspectRatioMode.KeepAspectRatio))
-        else:
-            cropX2 = crop.scaled(ZOOM_DIM, ZOOM_DIM,
-                                 Qt.AspectRatioMode.KeepAspectRatio)
+        imgsize = image.size()
+        # on délimite un rectangle autour de p, de largeur/longueur
+        # au plus ZOOM_DIM//2, mais limité par les frontières de l'image
+        x1 = max(round(p.x) - ZOOM_DIM//4, 0)
+        y1 = max(round(p.y) - ZOOM_DIM//4, 0)
+        x2 = min(round(p.x) + ZOOM_DIM//4, imgsize.width())
+        y2 = min(round(p.y) + ZOOM_DIM//4, imgsize.height())
+        crop = image.copy(QRect(x1, y1, x2-x1, y2-y1))
+        cropX2 = QImage(ZOOM_DIM, ZOOM_DIM, QImage.Format.Format_RGB888)
+        cropX2.fill(QColor(255,255,255,255)) # blanc 100% transparent
+        painter =  QPainter()
+        painter.begin(cropX2)
+        # pour dessiner l'image crop, il y a un décalage en x ou en y
+        # dès lors que x1 ou y1 sont nuls ; la valeur absolue pourvoit
+        # à ce décalage conditionnel.
+        painter.drawPixmap(
+            2 * abs(round(p.x) - ZOOM_DIM//4 - x1),
+            2 * abs(round(p.y) - ZOOM_DIM//4 - y1),
+            crop.scaled(
+                ZOOM_DIM, ZOOM_DIM, Qt.AspectRatioMode.KeepAspectRatio))
+        painter.end()
         self.setImage(cropX2, p)
         return
 
