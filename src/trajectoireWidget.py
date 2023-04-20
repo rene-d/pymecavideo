@@ -131,6 +131,8 @@ class TrajectoireWidget(QWidget, Ui_trajectoire, Etats):
         Si chronophotographie, on ajoute l'image et la trace de l'échelle comme pointée.
         Si chronophotogramme, on ne met pas l'image et la trace est en haut.
         """
+        self.dbg.p(2, "rentre dans 'chronoPhoto'")
+
         # Configure l'UI en fonction du mode
         if self.comboBoxChrono.currentIndex() == 0 :
             self.widget_chronophoto.setEnabled(False)
@@ -144,15 +146,15 @@ class TrajectoireWidget(QWidget, Ui_trajectoire, Etats):
             self.spinBox_chrono.setMaximum(int(self.pointage.image_max))
             self.spinBox_chrono.setMinimum(1)
 
+
         elif self.comboBoxChrono.currentIndex() == 2 :
             self.widget_chronophoto.setEnabled(False)
             self.trajW.setEnabled(False)
             self.widget_speed.setEnabled(False)
             self.checkBoxVectorSpeed.setChecked(False)
-        self.dbg.p(2, "rentre dans 'chronoPhoto'")
         # ajoute la première image utilisée pour le pointage sur le fond du vidget
         liste_types_photos = ['chronophotographie', 'chronophotogramme']
-
+        self.widget_speed.update()
         if self.comboBoxChrono.currentIndex() != 0:
             photo_chrono = liste_types_photos[self.comboBoxChrono.currentIndex(
             )-1]
@@ -178,6 +180,8 @@ class TrajectoireWidget(QWidget, Ui_trajectoire, Etats):
         return
 
     def changeChronoImg(self,img):
+        self.dbg.p(2, "rentre dans 'changeChronoImg'")
+
         self.chronoImg = img
         self.chronoPhoto()
 
