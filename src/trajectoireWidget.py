@@ -61,10 +61,12 @@ class TrajectoireWidget(QWidget, Ui_trajectoire, Etats):
         self.setupUi(self)
         self.connecte_ui()
         self.trace.connect(self.traceTrajectoires)
+        self.redessine_pixmap.connect(self.defini_pixmap)
         return
     
     ############ les signaux spéciaux #####################
     trace = pyqtSignal(str)
+    redessine_pixmap = pyqtSignal()
 
     def setApp(self, app):
         """
@@ -126,6 +128,12 @@ class TrajectoireWidget(QWidget, Ui_trajectoire, Etats):
             QMessageBox.critical(None, self.tr("Erreur lors de l'enregistrement"), self.tr("Echec de l'enregistrement du fichier:<b>\n{0}</b>").format(
                     fichier[0]))
 
+    def defini_pixmap(self):
+        """appelé par le signal redessine_pixmap, a chaque changement de type de trajectoire à afficher autre que celui par défaut"""
+
+        #self.trajW.setImage(QPixmap())
+        self.trajW.update()
+
     def chronoPhoto(self):
         """lance la sauvegarde du trajW.
         Si chronophotographie, on ajoute l'image et la trace de l'échelle comme pointée.
@@ -154,7 +162,9 @@ class TrajectoireWidget(QWidget, Ui_trajectoire, Etats):
             self.checkBoxVectorSpeed.setChecked(False)
         # ajoute la première image utilisée pour le pointage sur le fond du vidget
         liste_types_photos = ['chronophotographie', 'chronophotogramme']
-        self.widget_speed.update()
+
+        self.widget_speed.update() #nécessaire pour la prise en compte du setEnabled
+
         if self.comboBoxChrono.currentIndex() != 0:
             photo_chrono = liste_types_photos[self.comboBoxChrono.currentIndex(
             )-1]
@@ -171,12 +181,15 @@ class TrajectoireWidget(QWidget, Ui_trajectoire, Etats):
             else:
                 self.trajW.chrono = 2  # 2 pour chronophotogramme
                 self.trajW.setImage(QPixmap())
+
             #self.enregistreChrono()
         else:
-            self.trajW.setImage(QPixmap())
             self.trajW.chrono = 0
-        self.app.redimensionneFenetre()
+            #self.redessine_pixmap.emit()
+            self.trajW.setImage(QPixmap())
+        self.redessine_pixmap.emit()
         self.update()
+        self.app.redimensionneFenetre()
         return
 
     def changeChronoImg(self,img):
