@@ -274,85 +274,85 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</s
   <context>
     <name>FenetrePrincipale</name>
     <message>
-      <location filename="../../src/pymecavideo.py" line="206" />
+      <location filename="../../src/pymecavideo.py" line="209" />
       <source>Argument non pris en compte</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="207" />
+      <location filename="../../src/pymecavideo.py" line="210" />
       <source>Le fichier {filename} n'est ni un fichier vidéo, ni un fichier de sauvegarde de pymecavideo.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="228" />
+      <location filename="../../src/pymecavideo.py" line="231" />
       <source>Configuration trop ancienne</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="229" />
+      <location filename="../../src/pymecavideo.py" line="232" />
       <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="236" />
+      <location filename="../../src/pymecavideo.py" line="239" />
       <source>Configuration ancienne</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="237" />
+      <location filename="../../src/pymecavideo.py" line="240" />
       <source>La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="475" />
+      <location filename="../../src/pymecavideo.py" line="478" />
       <source>Ouvrir un projet Pymecavideo</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="477" />
+      <location filename="../../src/pymecavideo.py" line="480" />
       <source>Projet Pymecavideo (*.mecavideo)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="588" />
-      <location filename="../../src/pymecavideo.py" line="570" />
-      <location filename="../../src/pymecavideo.py" line="557" />
+      <location filename="../../src/pymecavideo.py" line="591" />
+      <location filename="../../src/pymecavideo.py" line="573" />
+      <location filename="../../src/pymecavideo.py" line="560" />
       <source>Ouvrir une vidéo</source>
       <translation type="unfinished">Abrir un video</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="558" />
+      <location filename="../../src/pymecavideo.py" line="561" />
       <source>fichiers vidéos (*.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.mov *.wmv)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="572" />
+      <location filename="../../src/pymecavideo.py" line="575" />
       <source>fichiers vidéos ( *.avi *.mp4 *.ogv *.mpg *.mpeg *.ogg *.wmv *.mov)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="582" />
+      <location filename="../../src/pymecavideo.py" line="585" />
       <source>Nom de fichier non conforme</source>
       <translation type="unfinished">Nombre de archivo no valido</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="583" />
+      <location filename="../../src/pymecavideo.py" line="586" />
       <source>Le nom de votre fichier contient des caractères accentués ou des espaces.
 Merci de bien vouloir le renommer avant de continuer</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="608" />
+      <location filename="../../src/pymecavideo.py" line="611" />
       <source>Licence</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="625" />
+      <location filename="../../src/pymecavideo.py" line="628" />
       <source>Aide</source>
       <translation type="unfinished">Ayuda</translation>
     </message>
     <message>
-      <location filename="../../src/pymecavideo.py" line="626" />
+      <location filename="../../src/pymecavideo.py" line="629" />
       <source>Désolé pas de fichier d'aide pour le langage {0}.</source>
       <translation type="unfinished" />
     </message>
@@ -476,56 +476,56 @@ n'est peut-être pas dans un format vidéo supporté.</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="598" />
+      <location filename="../../src/pointageWidget.py" line="600" />
       <source>Enregistrer le projet pymecavideo</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="600" />
+      <location filename="../../src/pointageWidget.py" line="602" />
       <source>Projet pymecavideo (*.mecavideo)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="603" />
+      <location filename="../../src/pointageWidget.py" line="605" />
       <source>Erreur lors de l'enregistrement</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="603" />
+      <location filename="../../src/pointageWidget.py" line="605" />
       <source>Il manque les données, ou l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="622" />
+      <location filename="../../src/pointageWidget.py" line="624" />
       <source>temps en seconde, positions en mètre</source>
       <translation type="unfinished">tiempo en segundos, posición en metros</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="781" />
-      <location filename="../../src/pointageWidget.py" line="781" />
-      <location filename="../../src/pointageWidget.py" line="703" />
+      <location filename="../../src/pointageWidget.py" line="783" />
+      <location filename="../../src/pointageWidget.py" line="783" />
+      <location filename="../../src/pointageWidget.py" line="705" />
       <source>indéf.</source>
       <translation type="unfinished">indéf.</translation>
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="1096" />
-      <location filename="../../src/pointageWidget.py" line="830" />
+      <location filename="../../src/pointageWidget.py" line="1098" />
+      <location filename="../../src/pointageWidget.py" line="832" />
       <source>Refaire l'échelle</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="859" />
-      <location filename="../../src/pointageWidget.py" line="842" />
+      <location filename="../../src/pointageWidget.py" line="861" />
+      <location filename="../../src/pointageWidget.py" line="844" />
       <source>Zone à suivre n° {zone} x, y =</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="974" />
+      <location filename="../../src/pointageWidget.py" line="976" />
       <source>Pointage ({obj}) ; x, y =</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/pointageWidget.py" line="998" />
+      <location filename="../../src/pointageWidget.py" line="1000" />
       <source>Cliquez sur l'objet : {0}</source>
       <translation type="unfinished" />
     </message>

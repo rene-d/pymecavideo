@@ -121,7 +121,7 @@ class VideoPointeeWidget(ImageWidget):
         return
 
     def mouseMoveEvent(self, event):
-        if self.pw.etat in ( 'C' , 'D') :
+        if self.pw.etat in ( 'C' , 'D', 'E') :
             self.pw.remet_zoom.emit()
             self.pw.update_zoom.emit(vecteur(qPoint = event.position()))
         return
