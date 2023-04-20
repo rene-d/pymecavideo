@@ -628,22 +628,22 @@ Voulez-vous les sauvegarder ?</source>
   <context>
     <name>TrajectoireWidget</name>
     <message>
-      <location filename="../../src/trajectoireWidget.py" line="120" />
+      <location filename="../../src/trajectoireWidget.py" line="122" />
       <source>Enregistrer comme image</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/trajectoireWidget.py" line="121" />
+      <location filename="../../src/trajectoireWidget.py" line="123" />
       <source>fichiers images(*.png *.jpg)</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/trajectoireWidget.py" line="126" />
+      <location filename="../../src/trajectoireWidget.py" line="128" />
       <source>Erreur lors de l'enregistrement</source>
       <translation type="unfinished" />
     </message>
     <message>
-      <location filename="../../src/trajectoireWidget.py" line="126" />
+      <location filename="../../src/trajectoireWidget.py" line="128" />
       <source>Echec de l'enregistrement du fichier:&lt;b&gt;
 {0}&lt;/b&gt;</source>
       <translation type="unfinished" />
@@ -662,11 +662,6 @@ Voulez-vous les sauvegarder ?</source>
   </context>
   <context>
     <name>coordWidget</name>
-    <message>
-      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
-      <source>Coordonnées</source>
-      <translation type="unfinished" />
-    </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>Tableau des dates et des coordonnées</source>
@@ -704,7 +699,7 @@ Voulez-vous les sauvegarder ?</source>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
-      <source>Intensité de la pesanteur :</source>
+      <source>Autres données :</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -714,7 +709,17 @@ Voulez-vous les sauvegarder ?</source>
     </message>
     <message>
       <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>masse (kg)</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
       <source>9.8</source>
+      <translation type="unfinished" />
+    </message>
+    <message>
+      <location filename="../../src/interfaces/coordWidget.ui" line="0" />
+      <source>1,0</source>
       <translation type="unfinished" />
     </message>
   </context>
