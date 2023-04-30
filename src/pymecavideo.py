@@ -614,7 +614,7 @@ Merci de bien vouloir le renommer avant de continuer"""))
 
     def aide(self):
         self.dbg.p(2, "rentre dans 'aide'")
-        lang = locale.getdefaultlocale()[0][0:2]
+        lang = locale.getlocale()[0][0:2]
         helpfile = "%s/help-%s.html" % (self._dir("help"), lang)
         if os.path.exists(helpfile):
             command = "firefox --new-window %s" % helpfile
@@ -741,6 +741,12 @@ def run():
                            r"pymecavideo_" + locale)
     if appTranslator.load(langdir):
         b = app.installTranslator(appTranslator)
+    elif "_" in locale:
+        locale, _ = locale.split("_")
+        langdir = os.path.join(FenetrePrincipale._dir("langues"),
+                           r"pymecavideo_" + locale)
+        if appTranslator.load(langdir):
+            b = app.installTranslator(appTranslator)
     window = FenetrePrincipale(None, opts, args)
     window.show()
     sys.exit(app.exec())
