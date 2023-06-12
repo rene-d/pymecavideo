@@ -22,7 +22,7 @@ import math
 import tempfile
 import platform
 import re
-import magic
+import mimetypes
 
 from export import Export, EXPORT_FORMATS
 from toQimage import toQImage
@@ -191,12 +191,12 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo, Etats):
         OK = False
         if len(self.args) > 0:
             filename = self.args[0]
-            mime = magic.Magic(mime=True)
-            mt = mime.from_file(filename)
-            if mt.startswith("video/"):
-                OK = True
-                self.pointage.openTheFile(filename)
-            elif mt == "text/plain":
+            mt = mimetypes.guess_type(filename)[0]
+            if mt is not None : 
+                if mt.startswith("video/"):
+                    OK = True
+                    self.pointage.openTheFile(filename)
+            else : 
                 signature = open(filename).read(24)
                 if signature.startswith("# version = pymecavideo"):
                     OK = True
@@ -229,7 +229,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo, Etats):
                 lambda: QMessageBox.information(
                     self,
                     self.tr("Configuration trop ancienne"),
-                    self.tr("La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte").format(version = thisversion, min_version = self.min_version)))
+                    self.tr("La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte").format(version = thisversion, min_version = self.min_version)))
             return 0
         elif thisversion < Version:
              QTimer.singleShot(
@@ -237,7 +237,7 @@ class FenetrePrincipale(QMainWindow, Ui_pymecavideo, Etats):
                 lambda: QMessageBox.information(
                     self,
                     self.tr("Configuration ancienne"),
-                    self.tr("La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.").format(version = thisversion, Version = Version)))
+                    self.tr("La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.").format(version = thisversion, Version = Version)))
              return 1
         # le fichier de configuration a la bonne version, on applique ses
         # données
