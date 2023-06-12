@@ -109,7 +109,7 @@ class Preferences (QObject):
         if os.path.exists(self.conffile):
             try:
                 self.config.read(self.conffile)
-            except UnicodeDecodeError:
+            except :
                 QTimer.singleShot(
                     50,
                     lambda: QMessageBox.information(
