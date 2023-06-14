@@ -272,8 +272,8 @@ Se puede quitar a cualquier momento con el botón STOP</translation>
     </message>
     <message>
       <location filename="../../src/pymecavideo.py" line="232" />
-      <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
-      <translation>La version del archivo de configuración, {version} es inferior a {min_version}; el archivo de configuración ne puede ser tenido en cuenta</translation>
+      <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../../src/pymecavideo.py" line="239" />
@@ -282,8 +282,8 @@ Se puede quitar a cualquier momento con el botón STOP</translation>
     </message>
     <message>
       <location filename="../../src/pymecavideo.py" line="240" />
-      <source>La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.</source>
-      <translation>La version del archivo de configuración, {version} es inferior a {Version}; algunas dimensiones pueden ser ligeramente falsas.</translation>
+      <source>La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.</source>
+      <translation type="unfinished" />
     </message>
     <message>
       <location filename="../../src/pymecavideo.py" line="478" />
@@ -338,6 +338,14 @@ Por favor cambia el nombre</translation>
       <location filename="../../src/pymecavideo.py" line="629" />
       <source>Désolé pas de fichier d'aide pour le langage {0}.</source>
       <translation>Lo siento, no hay archivo de ayuda para el idioma {0}.</translation>
+    </message>
+    <message>
+      <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
+      <translation type="vanished">La version del archivo de configuración, {version} es inferior a {min_version}; el archivo de configuración ne puede ser tenido en cuenta</translation>
+    </message>
+    <message>
+      <source>La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.</source>
+      <translation type="vanished">La version del archivo de configuración, {version} es inferior a {Version}; algunas dimensiones pueden ser ligeramente falsas.</translation>
     </message>
   </context>
   <context>
