@@ -270,7 +270,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</s
     </message>
     <message>
       <location filename="../../src/pymecavideo.py" line="232" />
-      <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
+      <source>La version du fichier de configuration, {version} est inférieure à {min_version} : le fichier de configuration ne peut pas être pris en compte</source>
       <translation type="unfinished" />
     </message>
     <message>
@@ -280,7 +280,7 @@ Vous pouvez arrêter à tout moment la capture en appuyant sur le bouton STOP</s
     </message>
     <message>
       <location filename="../../src/pymecavideo.py" line="240" />
-      <source>La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.</source>
+      <source>La version du fichier de configuration, {version} est inférieure à {Version} : certaines dimensions peuvent être légèrement fausses.</source>
       <translation type="unfinished" />
     </message>
     <message>
