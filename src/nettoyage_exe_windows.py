@@ -11,26 +11,32 @@ a_enlever["lib/cv2"] = ["opencv_videoio_ffmpeg451_64.dll", "python39.dll"]
 #rep : "lib\PyQt6\Qt\bin"
 # fichiers :
 
-a_enlever["lib/PyQt6/Qt5/bin"] = [
+a_enlever["lib/PyQt5/Qt5/bin"] = [
     "d3dcompiler_47.dll",
-    "Qt5QmlModels.dll",
+    "Qt6QmlModels.dll",
     "libcrypto-1_1-x64.dll",
-    "Qt5Bluetooth.dll",
-    "Qt5Quick.dll",
+    "Qt6Bluetooth.dll",
+    "Qt6Quick.dll",
     "libeay32.dll",
-    "Qt5DBus.dll",
-    "Qt5QuickParticles.dll",
+    "Qt6DBus.dll",
+    "Qt6QuickParticles.dll",
     "libGLESv2.dll",
-    "Qt5Designer.dll",
-    "Qt5QuickTemplates2.dll",
+    "Qt6Designer.dll",
+    "Qt6QuickTemplates2.dll",
     "libssl-1_1-x64.dll",
-    "Qt5Network.dll",
-    "Qt5XmlPatterns.dll",
+    "Qt6Network.dll",
+    "Qt6XmlPatterns.dll",
     "opengl32sw.dll",
-    "Qt5Qml.dll",
+    "Qt6Qml.dll",
     "QtWidgets.dll",
     "QtCore.dll",
+    "Qt6Core.dll",
+    "Qt6Pdf.dll",
+    "Qt6ShaderTools.dll",
+    "Qt6Quick3DRuntimeRender.dll",
 ]
+
+
 
 a_enlever["lib/PyQt6/Qt/bin"] = [
     "d3dcompiler_47.dll",
@@ -53,7 +59,7 @@ a_enlever["lib/PyQt6/Qt/bin"] = [
 ]
 
 #rep : "lib\PyQt6\Qt5\plugins"
-a_enlever["lib/PyQt6/Qt5/plugins"] = [
+a_enlever["lib/PyQt5/Qt5/plugins"] = [
     "printsupport",
     "sensorgestures",
     "sqldrivers",
@@ -62,7 +68,29 @@ a_enlever["lib/PyQt6/Qt5/plugins"] = [
     "sensors",
     "texttospeech"]
 
+a_enlever["lib/PyQt5/Qt5/plugins/imageformats"] = [
+    "Qt5Core.dll",
+    "Qt5Gui.dll",
+    "Qt5Widgets.dll",
+    "Qt5Quick.dll",
+    "Qt5Qml.dll",
+    "Qt5Network.dll"]
 
+a_enlever["lib/PyQt5/Qt5/plugins/platforms"] = [
+    "Qt5Core.dll",
+    "Qt5Gui.dll",
+    "Qt5Widgets.dll",
+    "Qt5Quick.dll",
+    "Qt5Qml.dll",
+    "Qt5Network.dll"]
+
+a_enlever["lib/PyQt5/Qt5/plugins/style"] = [
+    "Qt5Core.dll",
+    "Qt5Gui.dll",
+    "Qt5Widgets.dll",
+    "Qt5Quick.dll",
+    "Qt5Qml.dll",
+    "Qt5Network.dll"]
 
 #rep : "lib\PyQt6"
 a_enlever["lib/PyQt6"] = [
