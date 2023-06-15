@@ -125,6 +125,7 @@ os.chdir(dossier_du_build)
 for rep, dossier_fichier in a_enlever.items():
     try:
         for fichier_ in dossier_fichier:
+            print(f"effacement de {fichier}")
             os.remove(os.path.join(rep, fichier_))
     except FileNotFoundError :
         print("%s non trouvé. Déjà effacé ?"%(os.path.join(rep, fichier_)))
