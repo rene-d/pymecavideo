@@ -8,10 +8,10 @@ a_enlever = {}
 
 a_enlever["lib/cv2"] = ["opencv_videoio_ffmpeg451_64.dll", "python39.dll"]
 
-#rep : "lib\PyQt6\Qt\bin"
+#rep : "lib\PyQt5\Qt\bin"
 # fichiers :
 
-a_enlever["lib/PyQt5/Qt5/bin"] = [
+a_enlever["lib/PyQt6/Qt6/bin"] = [
     "d3dcompiler_47.dll",
     "Qt6QmlModels.dll",
     "libcrypto-1_1-x64.dll",
@@ -38,7 +38,7 @@ a_enlever["lib/PyQt5/Qt5/bin"] = [
 
 
 
-a_enlever["lib/PyQt6/Qt/bin"] = [
+a_enlever["lib/PyQt5/Qt5/bin"] = [
     "d3dcompiler_47.dll",
     "Qt5QmlModels.dll",
     "libcrypto-1_1-x64.dll",
@@ -58,7 +58,7 @@ a_enlever["lib/PyQt6/Qt/bin"] = [
     "Qt5Location.dll",
 ]
 
-#rep : "lib\PyQt6\Qt5\plugins"
+#rep : "lib\PyQt5\Qt5\plugins"
 a_enlever["lib/PyQt5/Qt5/plugins"] = [
     "printsupport",
     "sensorgestures",
@@ -94,31 +94,31 @@ a_enlever["lib/PyQt5/Qt5/plugins/style"] = [
 
 #rep : "lib\PyQt6"
 a_enlever["lib/PyQt6"] = [
-    "python39.dll",
+    "python310.dll",
     # "qt5gui.dll",
     # "qt5widgets.dll"
     ]
     
 #rep : "lib\numpy\core"
 a_enlever["lib/numpy/core"] = [
-    "python39.dll"]
+    "python310.dll"]
  
 a_enlever["lib/numpy/fft"] = [
-    "python39.dll"]
+    "python310.dll"]
 a_enlever["lib/numpy/linalg"] = [
-    "python39.dll"]
+    "python310.dll"]
 a_enlever["lib/numpy/random"] = [
-    "python39.dll"]
+    "python310.dll"]
 a_enlever["lib/pandas/_libs"] = [
-    "python39.dll"]
+    "python310.dll"]
 a_enlever["lib/pandas/_libs/tslibs"] = [
-    "python39.dll"]
+    "python310.dll"]
 a_enlever["lib/pandas/_libs/window"] = [
-    "python39.dll"]    
+    "python310.dll"]
 a_enlever["lib/pandas/io/sas"] = [
-    "python39.dll"]  
+    "python310.dll"]
 a_enlever["lib"] = [
-    "python39.dll"] 
+    "python310.dll"]
 
 # a modifier
 os.chdir(dossier_du_build)
