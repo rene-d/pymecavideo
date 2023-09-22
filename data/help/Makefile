@@ -11,11 +11,7 @@ all: $(TARGETS) images help-fr.html
 images: $(GENERATED_W32)
 
 %-w32.png: %.svg
-	if [ -x /usr/bin/rsvg-convert ]; then \
-	  rsvg-convert -w 32 $< -o $@; \
-	else \
-	  inkscape --export-png=$@ --export-width=32 $<; \
-	fi
+	  rsvg-convert -w 32 $< -o $@
 
 clean:
 	rm -f *~ *.html

@@ -1,6 +1,6 @@
 numpy
 python-opencv
 pandas
-python-qt5
+pyqt6
 nbformat
 pyqtgraph

@@ -1,6 +1,5 @@
 DESTDIR = 
 HELPFILES = $(shell ls help | grep -E 'xhtml$$|css$$|png$$')
-LRELEASE = /usr/lib/qt5/bin/lrelease
 SOURCES = $(shell ls *.py | grep -v Ui_)
 TRANSLATIONS = $(shell find ../data/lang -name *.ts)
 COMPILED_TRANSLATIONS = $(patsubst %.ts, %.qm, $(TRANSLATIONS))
@@ -9,7 +8,7 @@ GRAPHS = $(shell ls *.dot)
 GRAPHS_SVG = $(patsubst %.dot, %.svg, $(GRAPHS))
 DOC_DEV = $(shell ls *.md)
 DOC_DEV_HTML = $(patsubst %.md, %.html, $(DOC_DEV))
-LRELEASE = /usr/lib/qt6/bin/lrelease
+LRELEASE = lrelease
 
 all: $(GRAPHS_SVG) $(DOC_DEV_HTML) $(COMPILED_TRANSLATIONS) helpfiles
 	cd interfaces; $(MAKE) $@
